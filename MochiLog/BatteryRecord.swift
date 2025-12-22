@@ -103,6 +103,11 @@ final class BatteryRecord {
     return designCapacity
   }
 
+  // SoC (チップ名) を機種名から自動取得
+  var soc: String? {
+    return DeviceLibrary.getSoC(for: deviceName)
+  }
+
   // 表示上の最大容量(パーセント)。もし `settingsDisplayPercent` があればそれを使い、なければ
   // nominal と raw の比率から算出する（保険的に0で割らないようガード）。
   var maxCapacityPercent: Double {

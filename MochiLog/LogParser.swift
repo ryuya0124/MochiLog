@@ -132,8 +132,14 @@ struct LogParser {
     let modelCode = batObj.hardwareModel
     result.deviceModelCode = modelCode
 
-    // 設計容量の取得 (辞書から)
-    let designCap = DeviceLibrary.getCapacity(for: modelCode ?? "") ?? 0
+    // 機種名を解決してから設計容量を取得
+    let deviceName = DeviceLibrary.getDeviceName(for: modelCode ?? "")
+    let designCap: Int
+    if let name = deviceName {
+      designCap = DeviceLibrary.getCapacity(for: name) ?? 0
+    } else {
+      designCap = 0
+    }
     result.designCapacity = designCap
 
     // 各種容量

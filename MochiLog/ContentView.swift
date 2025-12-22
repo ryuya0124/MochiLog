@@ -301,6 +301,9 @@ struct RecordDetailView: View {
         // --- 基本情報 ---
         Section("デバイス情報") {
           LabeledContent("機種名", value: record.deviceName)
+          if let soc = record.soc {
+            LabeledContent("SoC", value: soc)
+          }
           if let modelCode = record.deviceModelCode {
             LabeledContent("モデルコード", value: modelCode)
           }
