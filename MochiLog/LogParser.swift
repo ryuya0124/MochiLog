@@ -83,8 +83,13 @@ struct LogParser {
     var result = ParseResult()
 
     // 1. ヘッダー情報の取得 (timestamp, os_version)
-    // 先頭付近のJSONを探す
-    if let headerMatch = findJSON(in: text, containing: "timestamp"),
+    // timestamp はログファイルの先頭行にあるため、それ以降の行を切り捨てておく
+    let headerSource = text.replacingOccurrences(
+      of: "(?<=\\n).*",
+      with: "",
+      options: .regularExpression
+    )
+    if let headerMatch = findJSON(in: headerSource, containing: "timestamp"),
       let headerData = headerMatch.data(using: .utf8),
       let header = try? JSONDecoder().decode(HeaderJSON.self, from: headerData)
     {
@@ -225,8 +230,43 @@ struct LogParser {
 
   // 日付パース用
   private static func parseDate(_ str: String) -> Date? {
-    // Analyticsログの日付形式に合わせる (例: "2025-12-22T12:00:00Z")
+    // ISO8601 (with or without fractional seconds)
+    if let date = isoFormatter.date(from: str) {
+      return date
+    }
+    // Fallback for headers like "2025-12-22 09:00:00.00 +0900"
+    for formatter in fallbackFormatters {
+      if let date = formatter.date(from: str) {
+        return date
+      }
+    }
+    return nil
+  }
+
+  private static let isoFormatter: ISO8601DateFormatter = {
     let formatter = ISO8601DateFormatter()
-    return formatter.date(from: str)
+    formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+    return formatter
+  }()
+
+  private static let fallbackFormatters: [DateFormatter] = {
+    let base = DateFormatter()
+    base.locale = Locale(identifier: "en_US_POSIX")
+    base.timeZone = TimeZone(secondsFromGMT: 0)
+    return [
+      configuredFormatter(base, format: "yyyy-MM-dd HH:mm:ss.SS Z"),
+      configuredFormatter(base, format: "yyyy-MM-dd HH:mm:ss.S Z"),
+      configuredFormatter(base, format: "yyyy-MM-dd HH:mm:ss Z"),
+    ]
+  }()
+
+  private static func configuredFormatter(_ prototype: DateFormatter, format: String)
+    -> DateFormatter
+  {
+    let formatter = DateFormatter()
+    formatter.locale = prototype.locale
+    formatter.timeZone = prototype.timeZone
+    formatter.dateFormat = format
+    return formatter
   }
 }

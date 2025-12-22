@@ -121,11 +121,18 @@ struct ContentView: View {
     let result = LogParser.parse(text: text)
 
     // 必要なデータが最低限取れているか確認
-    guard let cycle = result.cycleCount,
+    guard let logDate = result.logDate,
+      let cycle = result.cycleCount,
       let nominal = result.nominalCapacity,
       let raw = result.rawCapacity
     else {
-      errorMessage = "ログデータの解析に失敗しました。バッテリー情報が含まれていません。"
+      errorMessage = "ログから日時やバッテリー情報を正しく取得できませんでした。"
+      showingErrorAlert = true
+      return
+    }
+
+    if hasDuplicateRecord(on: logDate, osVersion: result.osVersion) {
+      errorMessage = "同じログ確認日時のデータがすでに存在します。"
       showingErrorAlert = true
       return
     }
@@ -134,9 +141,10 @@ struct ContentView: View {
     let deviceName = DeviceLibrary.getDeviceName(for: result.deviceModelCode ?? "") ?? "Unknown"
 
     let newRecord = BatteryRecord(
-      logDate: result.logDate ?? Date(),
+      logDate: logDate,
       deviceName: deviceName,
       deviceModelCode: result.deviceModelCode,
+      osVersion: result.osVersion,
       storage: result.storage,
       ram: result.ram,
       manufactureDate: nil,
@@ -166,6 +174,19 @@ struct ContentView: View {
       for index in offsets {
         modelContext.delete(records[index])
       }
+    }
+  }
+
+  private func hasDuplicateRecord(on date: Date, osVersion: String?) -> Bool {
+    records.contains { existing in
+      let sameDate =
+        Calendar.current.compare(existing.logDate, to: date, toGranularity: .second) == .orderedSame
+      guard sameDate else { return false }
+      if let existingVersion = existing.osVersion, let newVersion = osVersion {
+        return existingVersion == newVersion
+      }
+      // Only treat as duplicate if both osVersion values are nil (unknown)
+      return existing.osVersion == nil && osVersion == nil
     }
   }
 }

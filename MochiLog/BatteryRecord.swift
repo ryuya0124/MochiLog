@@ -7,6 +7,7 @@ final class BatteryRecord {
   var logDate: Date  // ログファイルの日付
   var deviceName: String  // 機種名 (例: iPhone 15 Pro)
   var deviceModelCode: String?  // 内部モデル名 (例: iPhone16,1)
+  var osVersion: String?  // os_version (例: iOS 18.0)
 
   // --- ハードウェア/製造情報 ---
   var storage: String?  // ストレージ容量
@@ -43,6 +44,7 @@ final class BatteryRecord {
     logDate: Date,
     deviceName: String,
     deviceModelCode: String? = nil,
+    osVersion: String? = nil,
     storage: String? = nil,
     ram: String? = nil,
     manufactureDate: String? = nil,
@@ -66,6 +68,7 @@ final class BatteryRecord {
     self.logDate = logDate
     self.deviceName = deviceName
     self.deviceModelCode = deviceModelCode
+    self.osVersion = osVersion
     self.storage = storage
     self.ram = ram
     self.manufactureDate = manufactureDate
@@ -141,6 +144,7 @@ final class BatteryRecord {
       logDate: date,
       deviceName: deviceName,
       deviceModelCode: nil,
+      osVersion: nil,
       storage: nil,
       ram: nil,
       manufactureDate: nil,

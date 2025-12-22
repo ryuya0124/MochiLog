@@ -3,6 +3,7 @@ import SwiftUI
 
 @main
 struct MochiLogApp: App {
+  @Environment(\.scenePhase) private var scenePhase
 
   // アプリ起動時に「Application Support」フォルダがあるか確認し、なければ作る
   init() {
@@ -32,6 +33,14 @@ struct MochiLogApp: App {
         .onAppear {
           checkForSharedData()
         }
+        .onOpenURL { _ in
+          checkForSharedData()
+        }
+    }
+    .onChange(of: scenePhase) { newPhase in
+      if newPhase == .active {
+        checkForSharedData()
+      }
     }
     .modelContainer(for: BatteryRecord.self)
   }
