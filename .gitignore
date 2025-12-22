@@ -3,6 +3,9 @@
 .AppleDouble
 .LSOverride
 
+# --- VSCode ---
+.vscode
+
 # --- Xcode ---
 # ビルド生成物
 build/
