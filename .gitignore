@@ -1,0 +1,26 @@
+# --- macOS ---
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# --- Xcode ---
+# ビルド生成物
+build/
+DerivedData/
+
+*.mode1v3
+*.mode2v3
+*.mnt
+*.xbworkspace
+*.xcuserdata/
+
+# --- Swift Package Manager ---
+.build/
+
+# --- CocoaPods (もし使っている場合) ---
+Pods/
+
+# --- Other ---
+*.moved-aside
+*.xccheckout
+*.xcscmblueprint
