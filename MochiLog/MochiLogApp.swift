@@ -33,8 +33,8 @@ struct MochiLogApp: App {
         .onAppear {
           checkForSharedData()
         }
-        .onOpenURL { _ in
-          checkForSharedData()
+        .onOpenURL { url in
+          handleOpenURL(url)
         }
     }
     .onChange(of: scenePhase) { newPhase in
@@ -53,12 +53,29 @@ struct MochiLogApp: App {
       userDefaults?.removeObject(forKey: "sharedLogText")
       userDefaults?.synchronize()
 
-      // NotificationCenterで通知
-      NotificationCenter.default.post(
-        name: NSNotification.Name("ProcessSharedLog"),
-        object: nil,
-        userInfo: ["text": sharedText]
-      )
+      // メインスレッドで通知を送る
+      DispatchQueue.main.async {
+        NotificationCenter.default.post(
+          name: NSNotification.Name("ProcessSharedLog"),
+          object: nil,
+          userInfo: ["text": sharedText]
+        )
+      }
+    }
+  }
+
+  // 開かれたURLを確認して共有処理をトリガー
+  private func handleOpenURL(_ url: URL) {
+    // スキームとパスが意図したものであれば共有データを確認
+    guard url.scheme?.lowercased() == "mochilog" else { return }
+    let path = url.path.lowercased()
+    if path.contains("processsharedlog") || path.contains("processshared")
+      || path.contains("process")
+    {
+      checkForSharedData()
+    } else {
+      // 汎用的に確認
+      checkForSharedData()
     }
   }
 }

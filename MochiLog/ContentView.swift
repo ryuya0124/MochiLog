@@ -42,14 +42,21 @@ struct ContentView: View {
 
           // --- 履歴リストエリア ---
           List {
-            ForEach(records) { record in
-              RecordRowView(record: record)
-                .contentShape(Rectangle())
-                .onTapGesture {
-                  selectedRecord = record
+            ForEach(deviceSections) { section in
+              Section(section.displayName) {
+                ForEach(section.records) { record in
+                  RecordRowView(record: record)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                      selectedRecord = record
+                    }
                 }
+                .onDelete { offsets in
+                  let items = offsets.map { section.records[$0] }
+                  deleteRecords(items)
+                }
+              }
             }
-            .onDelete(perform: deleteItems)
           }
         }
       }
@@ -82,8 +89,14 @@ struct ContentView: View {
       .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ProcessSharedLog")))
       { notification in
         if let text = notification.userInfo?["text"] as? String {
-          addRecordFromText(text)
+          if let newRecord = addRecordFromText(text) {
+            // 共有から来た場合は処理後に詳細を自動で表示
+            selectedRecord = newRecord
+          }
         }
+      }
+      .onAppear {
+        reconcileUnknownDeviceNames()
       }
     }
   }
@@ -104,7 +117,9 @@ struct ContentView: View {
 
       do {
         let text = try String(contentsOf: url, encoding: .utf8)
-        addRecordFromText(text)
+        if let newRecord = addRecordFromText(text) {
+          selectedRecord = newRecord
+        }
       } catch {
         errorMessage = "ファイルの読み込みに失敗しました: \(error.localizedDescription)"
         showingErrorAlert = true
@@ -117,7 +132,8 @@ struct ContentView: View {
   }
 
   // データを追加する処理
-  private func addRecordFromText(_ text: String) {
+  // 処理したレコードを返す（呼び出し元で詳細表示などに使う）
+  private func addRecordFromText(_ text: String) -> BatteryRecord? {
     let result = LogParser.parse(text: text)
 
     // 必要なデータが最低限取れているか確認
@@ -128,13 +144,13 @@ struct ContentView: View {
     else {
       errorMessage = "ログから日時やバッテリー情報を正しく取得できませんでした。"
       showingErrorAlert = true
-      return
+      return nil
     }
 
     if hasDuplicateRecord(on: logDate, osVersion: result.osVersion) {
       errorMessage = "同じログ確認日時のデータがすでに存在します。"
       showingErrorAlert = true
-      return
+      return nil
     }
 
     // デバイス名を取得
@@ -167,13 +183,14 @@ struct ContentView: View {
     )
 
     modelContext.insert(newRecord)
+    // 永続化を試みる
+    try? modelContext.save()
+    return newRecord
   }
 
-  private func deleteItems(offsets: IndexSet) {
+  private func deleteRecords(_ items: [BatteryRecord]) {
     withAnimation {
-      for index in offsets {
-        modelContext.delete(records[index])
-      }
+      items.forEach { modelContext.delete($0) }
     }
   }
 
@@ -188,6 +205,45 @@ struct ContentView: View {
       // Only treat as duplicate if both osVersion values are nil (unknown)
       return existing.osVersion == nil && osVersion == nil
     }
+  }
+
+  private func reconcileUnknownDeviceNames() {
+    var needsSave = false
+    for record in records {
+      guard record.deviceName == "Unknown",
+        let code = record.deviceModelCode,
+        let resolved = DeviceLibrary.getDeviceName(for: code)
+      else {
+        continue
+      }
+      record.deviceName = resolved
+      needsSave = true
+    }
+    if needsSave {
+      try? modelContext.save()
+    }
+  }
+
+  private var deviceSections: [DeviceSection] {
+    var sections: [DeviceSection] = []
+    var indexForDevice: [String: Int] = [:]
+
+    for record in records {
+      let name = record.deviceName
+      if let index = indexForDevice[name] {
+        sections[index].records.append(record)
+      } else {
+        indexForDevice[name] = sections.count
+        sections.append(DeviceSection(id: name, displayName: name, records: [record]))
+      }
+    }
+    return sections
+  }
+
+  private struct DeviceSection: Identifiable {
+    let id: String
+    let displayName: String
+    var records: [BatteryRecord]
   }
 }
 
