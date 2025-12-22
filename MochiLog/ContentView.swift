@@ -13,6 +13,10 @@ struct ContentView: View {
   @State private var showingErrorAlert = false
   @State private var errorMessage = ""
   @State private var selectedRecord: BatteryRecord?
+  // Watch モデル選択用の状態
+  @State private var pendingParseResult: LogParser.ParseResult?
+  @State private var showingWatchSelection = false
+  @State private var watchCandidates: [String] = []
 
   // 無引数で `ContentView()` を呼べるように明示的なイニシャライザを追加
   init() {}
@@ -98,6 +102,28 @@ struct ContentView: View {
       .onAppear {
         reconcileUnknownDeviceNames()
       }
+      // Watch モデル選択ダイアログ
+      .confirmationDialog(
+        "デバイスを選択してください", isPresented: $showingWatchSelection, titleVisibility: .visible
+      ) {
+        ForEach(watchCandidates, id: \.self) { name in
+          Button(name) {
+            guard let result = pendingParseResult else { return }
+            let record = createRecord(from: result, deviceName: name)
+            modelContext.insert(record)
+            try? modelContext.save()
+            // 表示用に詳細を選択
+            selectedRecord = record
+            // クリア
+            pendingParseResult = nil
+            watchCandidates = []
+          }
+        }
+        Button("キャンセル", role: .cancel) {
+          pendingParseResult = nil
+          watchCandidates = []
+        }
+      }
     }
   }
 
@@ -138,9 +164,9 @@ struct ContentView: View {
 
     // 必要なデータが最低限取れているか確認
     guard let logDate = result.logDate,
-      let cycle = result.cycleCount,
-      let nominal = result.nominalCapacity,
-      let raw = result.rawCapacity
+      result.cycleCount != nil,
+      result.nominalCapacity != nil,
+      result.rawCapacity != nil
     else {
       errorMessage = "ログから日時やバッテリー情報を正しく取得できませんでした。"
       showingErrorAlert = true
@@ -153,22 +179,66 @@ struct ContentView: View {
       return nil
     }
 
-    // デバイス名を取得
-    let deviceName = DeviceLibrary.getDeviceName(for: result.deviceModelCode ?? "") ?? "Unknown"
+    // 識別子 -> 機種名を優先 (boardId から検出済みであればそちらを利用)
+    var deviceName = "Unknown"
+    var deviceModelCodeToUse: String? = result.detectedIdentifier ?? result.deviceModelCode
+    if let id = deviceModelCodeToUse,
+      let resolved = DeviceLibrary.getDeviceName(for: id)
+    {
+      deviceName = resolved
+    }
 
-    let newRecord = BatteryRecord(
+    // ログに機種識別子が無ければ、実行中デバイスの hw.machine を参照してフォールバック
+    if deviceName == "Unknown" {
+      if let localId = DeviceLibrary.localModelIdentifier(),
+        let resolved = DeviceLibrary.getDeviceName(for: localId)
+      {
+        deviceName = resolved
+        deviceModelCodeToUse = localId
+      }
+    }
+
+    // watchOS または Apple Watch のログだった場合、ユーザーに選択を促す
+    let isWatchOS = result.osVersion?.lowercased().contains("watch") ?? false
+    let looksLikeWatch = deviceName.contains("Apple Watch")
+    if isWatchOS || looksLikeWatch {
+      // 候補リストを作成（DeviceLibrary の辞書から Apple Watch 系を抽出）
+      watchCandidates = Array(Set(DeviceLibrary.deviceNames.values))
+        .filter { $0.contains("Apple Watch") }
+        .sorted()
+      pendingParseResult = result
+      showingWatchSelection = true
+      return nil
+    }
+
+    // 通常のレコード作成
+    let newRecord = createRecord(
+      from: result, deviceName: deviceName, deviceModelCodeOverride: deviceModelCodeToUse)
+    modelContext.insert(newRecord)
+    try? modelContext.save()
+    return newRecord
+  }
+
+  // 解析結果と選択機種名から実際の BatteryRecord を作るヘルパー
+  private func createRecord(
+    from result: LogParser.ParseResult, deviceName: String, deviceModelCodeOverride: String? = nil
+  ) -> BatteryRecord {
+    let logDate = result.logDate ?? Date()
+    let modelCodeUsed = deviceModelCodeOverride ?? result.deviceModelCode
+
+    return BatteryRecord(
       logDate: logDate,
       deviceName: deviceName,
-      deviceModelCode: result.deviceModelCode,
+      deviceModelCode: modelCodeUsed,
       osVersion: result.osVersion,
       storage: result.storage,
       ram: result.ram,
       manufactureDate: nil,
       firstUseDate: result.firstUseDate,
-      cycleCount: cycle,
-      designCapacity: result.designCapacity ?? nominal,
-      nominalCapacity: nominal,
-      rawCapacity: raw,
+      cycleCount: result.cycleCount ?? 0,
+      designCapacity: result.designCapacity ?? (result.nominalCapacity ?? 0),
+      nominalCapacity: result.nominalCapacity ?? 0,
+      rawCapacity: result.rawCapacity ?? 0,
       lowRateCapacity: result.lowRateCapacity,
       deflator: result.deflator,
       settingsDisplayPercent: result.settingsDisplayPercent,
@@ -181,11 +251,6 @@ struct ContentView: View {
       minSoC: result.dailyMinSoC,
       maxSoC: result.dailyMaxSoC
     )
-
-    modelContext.insert(newRecord)
-    // 永続化を試みる
-    try? modelContext.save()
-    return newRecord
   }
 
   private func deleteRecords(_ items: [BatteryRecord]) {

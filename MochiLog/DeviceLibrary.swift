@@ -1,3 +1,4 @@
+import Darwin
 import Foundation
 
 struct DeviceLibrary {
@@ -573,6 +574,21 @@ struct DeviceLibrary {
   /// 識別子（例: iPhone16,1）から機種名を取得
   static func getDeviceName(for identifier: String) -> String? {
     return deviceNamesJa[identifier]
+  }
+
+  /// 実行中デバイスのモデル識別子を取得（hw.machine を利用）
+  /// iOS/macOS 上で動作している場合に自端末の識別子（例: "iPhone13,2"）を返す
+  static func localModelIdentifier() -> String? {
+    var size: Int = 0
+    // 取得サイズをまず問い合わせ
+    if sysctlbyname("hw.machine", nil, &size, nil, 0) != 0 {
+      return nil
+    }
+    var machine = [CChar](repeating: 0, count: Int(size))
+    if sysctlbyname("hw.machine", &machine, &size, nil, 0) != 0 {
+      return nil
+    }
+    return String(cString: machine)
   }
 
   /// Board ID（例: D83AP）から識別子を取得

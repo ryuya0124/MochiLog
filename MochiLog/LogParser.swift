@@ -38,6 +38,10 @@ struct LogParser {
     var dailyMinSoC: Int?
 
     var diagnosticResult: String?
+    // 検出された識別子 (board id -> identifier から決定される場合あり)
+    var detectedIdentifier: String?
+    // 検出された board id (ログ中に直接見つかった文字列)
+    var detectedBoardId: String?
   }
 
   // JSONデコード用の構造体（ログの中身に合わせる）
@@ -128,17 +132,30 @@ struct LogParser {
 
     // --- 値の詰め込み ---
 
-    // 機種名 (HardwareModel)
+    // 機種名 (HardwareModel) - まずはJSONに含まれるモデルコードを格納
     let modelCode = batObj.hardwareModel
     result.deviceModelCode = modelCode
 
-    // 機種名を解決してから設計容量を取得
-    let deviceName = DeviceLibrary.getDeviceName(for: modelCode ?? "")
-    let designCap: Int
-    if let name = deviceName {
-      designCap = DeviceLibrary.getCapacity(for: name) ?? 0
-    } else {
-      designCap = 0
+    // ログ本文から Board ID が含まれていないか走査して識別子を検出する
+    // DeviceLibrary の boardToIdentifier のキー群を参照して、ログ内に含まれるものを探す
+    for boardId in DeviceLibrary.boardToIdentifier.keys {
+      if text.contains(boardId) {
+        result.detectedBoardId = boardId
+        result.detectedIdentifier = DeviceLibrary.getIdentifier(for: boardId)
+        // 優先的に deviceModelCode として記録しておく
+        if let id = result.detectedIdentifier {
+          result.deviceModelCode = id
+        }
+        break
+      }
+    }
+
+    // 識別子から機種名を解決して設計容量を取得
+    var designCap = 0
+    if let id = result.deviceModelCode, !id.isEmpty {
+      if let name = DeviceLibrary.getDeviceName(for: id) {
+        designCap = DeviceLibrary.getCapacity(for: name) ?? 0
+      }
     }
     result.designCapacity = designCap
 
