@@ -6,8 +6,37 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		4E0CF18B2EF9680800307800 /* MochiLogShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 4E0CF1812EF9680800307800 /* MochiLogShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		4E0CF1892EF9680800307800 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4E0CF1372EF9542800307800 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4E0CF1802EF9680800307800;
+			remoteInfo = MochiLogShareExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		4E0CF1902EF9680800307800 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				4E0CF18B2EF9680800307800 /* MochiLogShareExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		4E0CF13F2EF9542800307800 /* MochiLog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MochiLog.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4E0CF1812EF9680800307800 /* MochiLogShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MochiLogShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -17,6 +46,13 @@
 				Info.plist,
 			);
 			target = 4E0CF13E2EF9542800307800 /* MochiLog */;
+		};
+		4E0CF18F2EF9680800307800 /* Exceptions for "MochiLogShareExtension" folder in "MochiLogShareExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 4E0CF1802EF9680800307800 /* MochiLogShareExtension */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -29,10 +65,25 @@
 			path = MochiLog;
 			sourceTree = "<group>";
 		};
+		4E0CF1822EF9680800307800 /* MochiLogShareExtension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				4E0CF18F2EF9680800307800 /* Exceptions for "MochiLogShareExtension" folder in "MochiLogShareExtension" target */,
+			);
+			path = MochiLogShareExtension;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		4E0CF13C2EF9542800307800 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4E0CF17E2EF9680800307800 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -46,6 +97,7 @@
 			isa = PBXGroup;
 			children = (
 				4E0CF1412EF9542800307800 /* MochiLog */,
+				4E0CF1822EF9680800307800 /* MochiLogShareExtension */,
 				4E0CF1402EF9542800307800 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -54,6 +106,7 @@
 			isa = PBXGroup;
 			children = (
 				4E0CF13F2EF9542800307800 /* MochiLog.app */,
+				4E0CF1812EF9680800307800 /* MochiLogShareExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -68,10 +121,12 @@
 				4E0CF13B2EF9542800307800 /* Sources */,
 				4E0CF13C2EF9542800307800 /* Frameworks */,
 				4E0CF13D2EF9542800307800 /* Resources */,
+				4E0CF1902EF9680800307800 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				4E0CF18A2EF9680800307800 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				4E0CF1412EF9542800307800 /* MochiLog */,
@@ -82,6 +137,28 @@
 			productName = MochiLog;
 			productReference = 4E0CF13F2EF9542800307800 /* MochiLog.app */;
 			productType = "com.apple.product-type.application";
+		};
+		4E0CF1802EF9680800307800 /* MochiLogShareExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4E0CF18C2EF9680800307800 /* Build configuration list for PBXNativeTarget "MochiLogShareExtension" */;
+			buildPhases = (
+				4E0CF17D2EF9680800307800 /* Sources */,
+				4E0CF17E2EF9680800307800 /* Frameworks */,
+				4E0CF17F2EF9680800307800 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				4E0CF1822EF9680800307800 /* MochiLogShareExtension */,
+			);
+			name = MochiLogShareExtension;
+			packageProductDependencies = (
+			);
+			productName = MochiLogShareExtension;
+			productReference = 4E0CF1812EF9680800307800 /* MochiLogShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -94,6 +171,9 @@
 				LastUpgradeCheck = 2620;
 				TargetAttributes = {
 					4E0CF13E2EF9542800307800 = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					4E0CF1802EF9680800307800 = {
 						CreatedOnToolsVersion = 26.2;
 					};
 				};
@@ -113,12 +193,20 @@
 			projectRoot = "";
 			targets = (
 				4E0CF13E2EF9542800307800 /* MochiLog */,
+				4E0CF1802EF9680800307800 /* MochiLogShareExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		4E0CF13D2EF9542800307800 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4E0CF17F2EF9680800307800 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -135,7 +223,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4E0CF17D2EF9680800307800 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		4E0CF18A2EF9680800307800 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4E0CF1802EF9680800307800 /* MochiLogShareExtension */;
+			targetProxy = 4E0CF1892EF9680800307800 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		4E0CF14E2EF9542A00307800 /* Debug */ = {
@@ -143,6 +246,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MochiLog/MochiLog.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = FZ35ZF3CZV;
@@ -152,6 +256,7 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MochiLog/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -165,7 +270,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 15.6;
+				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "net.ryuya-dev.MochiLog";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -188,6 +293,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MochiLog/MochiLog.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = FZ35ZF3CZV;
@@ -197,6 +303,7 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MochiLog/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -210,7 +317,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 15.6;
+				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "net.ryuya-dev.MochiLog";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -344,6 +451,69 @@
 			};
 			name = Release;
 		};
+		4E0CF18D2EF9680800307800 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = MochiLogShareExtension/MochiLogShareExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FZ35ZF3CZV;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MochiLogShareExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MochiLogShareExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "net.ryuya-dev.MochiLog.MochiLogShareExtension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		4E0CF18E2EF9680800307800 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = MochiLogShareExtension/MochiLogShareExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FZ35ZF3CZV;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MochiLogShareExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MochiLogShareExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "net.ryuya-dev.MochiLog.MochiLogShareExtension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -361,6 +531,15 @@
 			buildConfigurations = (
 				4E0CF14E2EF9542A00307800 /* Debug */,
 				4E0CF14F2EF9542A00307800 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4E0CF18C2EF9680800307800 /* Build configuration list for PBXNativeTarget "MochiLogShareExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4E0CF18D2EF9680800307800 /* Debug */,
+				4E0CF18E2EF9680800307800 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
