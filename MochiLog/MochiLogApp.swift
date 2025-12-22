@@ -3,8 +3,6 @@ import SwiftUI
 
 @main
 struct MochiLogApp: App {
-  @Environment(\.scenePhase) private var scenePhase
-
   // アプリ起動時に「Application Support」フォルダがあるか確認し、なければ作る
   init() {
     do {
@@ -12,16 +10,6 @@ struct MochiLogApp: App {
       let appSupportURL = try fileManager.url(
         for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
       print("Database path checked: \(appSupportURL.path)")
-      // App Group 用の Application Support フォルダも作成しておく
-      if let groupURL = FileManager.default.containerURL(
-        forSecurityApplicationGroupIdentifier: "group.net.ryuya-dev.MochiLog")
-      {
-        let groupAppSupport = groupURL.appendingPathComponent(
-          "Library/Application Support", isDirectory: true)
-        try? fileManager.createDirectory(
-          at: groupAppSupport, withIntermediateDirectories: true, attributes: nil)
-        print("App Group Database path checked: \(groupAppSupport.path)")
-      }
     } catch {
       print("Failed to create Application Support directory: \(error)")
     }
@@ -30,52 +18,47 @@ struct MochiLogApp: App {
   var body: some Scene {
     WindowGroup {
       ContentView()
-        .onAppear {
-          checkForSharedData()
-        }
         .onOpenURL { url in
           handleOpenURL(url)
         }
     }
-    .onChange(of: scenePhase) { newPhase in
-      if newPhase == .active {
-        checkForSharedData()
-      }
-    }
     .modelContainer(for: BatteryRecord.self)
   }
 
-  // Share Extensionからの共有データをチェック
-  private func checkForSharedData() {
-    let userDefaults = UserDefaults(suiteName: "group.net.ryuya-dev.MochiLog")
-    if let sharedText = userDefaults?.string(forKey: "sharedLogText"), !sharedText.isEmpty {
-      // 処理後は削除
-      userDefaults?.removeObject(forKey: "sharedLogText")
-      userDefaults?.synchronize()
+  // 開かれたURLを確認して処理（Document Types経由）
+  private func handleOpenURL(_ url: URL) {
+    print("Opened via URL: \(url)")
 
-      // メインスレッドで通知を送る
+    guard url.isFileURL else { return }
+
+    // ファイルへのアクセス権を要求（共有シートからのファイルはInboxにコピーされる）
+    let secure = url.startAccessingSecurityScopedResource()
+    defer {
+      if secure { url.stopAccessingSecurityScopedResource() }
+      // 処理後にInboxのファイルを削除
+      cleanupInboxFile(url)
+    }
+
+    do {
+      let text = try String(contentsOf: url, encoding: .utf8)
+      // データを渡して処理を実行
       DispatchQueue.main.async {
         NotificationCenter.default.post(
           name: NSNotification.Name("ProcessSharedLog"),
           object: nil,
-          userInfo: ["text": sharedText]
+          userInfo: ["text": text]
         )
       }
+    } catch {
+      print("ファイルの読み込み失敗: \(error)")
     }
   }
 
-  // 開かれたURLを確認して共有処理をトリガー
-  private func handleOpenURL(_ url: URL) {
-    // スキームとパスが意図したものであれば共有データを確認
-    guard url.scheme?.lowercased() == "mochilog" else { return }
-    let path = url.path.lowercased()
-    if path.contains("processsharedlog") || path.contains("processshared")
-      || path.contains("process")
-    {
-      checkForSharedData()
-    } else {
-      // 汎用的に確認
-      checkForSharedData()
+  // Inboxフォルダにコピーされたファイルを削除
+  private func cleanupInboxFile(_ url: URL) {
+    // Inboxフォルダ内のファイルかどうかをチェック
+    if url.path.contains("/Inbox/") {
+      try? FileManager.default.removeItem(at: url)
     }
   }
 }
