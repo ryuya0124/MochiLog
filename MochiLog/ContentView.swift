@@ -360,9 +360,13 @@ struct RecordRowView: View {
       VStack(alignment: .leading, spacing: 4) {
         Text(record.deviceName)
           .font(.headline)
-        Text(record.logDate.formatted(date: .abbreviated, time: .omitted))
-          .font(.caption)
-          .foregroundStyle(.secondary)
+        Text(
+          record.logDate.formatted(
+            .dateTime.locale(Locale(identifier: "ja_JP")).year().month().day()
+          )
+        )
+        .font(.caption)
+        .foregroundStyle(.secondary)
         Text("サイクル: \(record.cycleCount)回")
           .font(.caption)
           .foregroundStyle(.secondary)
@@ -417,9 +421,19 @@ struct RecordDetailView: View {
           if let ram = record.ram {
             LabeledContent("RAM", value: ram)
           }
-          LabeledContent("ログ日付", value: record.logDate.formatted(date: .long, time: .shortened))
+          LabeledContent(
+            "ログ日付",
+            value: record.logDate.formatted(
+              .dateTime.locale(Locale(identifier: "ja_JP")).year().month().day()
+            )
+          )
           if let firstUse = record.firstUseDate {
-            LabeledContent("初使用日", value: firstUse.formatted(date: .long, time: .omitted))
+            LabeledContent(
+              "初使用日",
+              value: firstUse.formatted(
+                .dateTime.locale(Locale(identifier: "ja_JP")).year().month().day()
+              )
+            )
           }
         }
 
@@ -445,7 +459,7 @@ struct RecordDetailView: View {
             LabeledContent("OS表示", value: "\(display)%")
           }
           if let deflator = record.deflator {
-            LabeledContent("デフレータ", value: String(format: "%.4f", deflator))
+            LabeledContent("デフレータ", value: String(format: "%.1f%%", deflator))
           }
           if let diag = record.diagnosticResult {
             LabeledContent("診断結果", value: diag)

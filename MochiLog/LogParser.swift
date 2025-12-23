@@ -145,15 +145,16 @@ struct LogParser {
     // 機種名 (HardwareModel) - まずはJSONに含まれるモデルコードを格納
     let modelCode = batObj.hardwareModel
     result.deviceModelCode = modelCode
+    result.detectedIdentifier = modelCode
 
-    // 識別子から機種名を解決して設計容量を取得
-    var designCap = 0
-    if let id = result.deviceModelCode, !id.isEmpty {
-      if let name = DeviceLibrary.getDeviceName(for: id) {
-        designCap = DeviceLibrary.getCapacity(for: name) ?? 0
-      }
+    // 識別子から機種名を解決して設計容量を取得（取得できない場合は nil のままにしておく）
+    if let id = result.deviceModelCode,
+      !id.isEmpty,
+      let name = DeviceLibrary.getDeviceName(for: id),
+      let cap = DeviceLibrary.getCapacity(for: name)
+    {
+      result.designCapacity = cap
     }
-    result.designCapacity = designCap
 
     // 各種容量
     let nominal = msg.last_value_NominalChargeCapacity ?? 0
@@ -168,7 +169,7 @@ struct LogParser {
 
     // --- 計算処理 ---
 
-    if designCap > 0 {
+    if let designCap = result.designCapacity, designCap > 0 {
       // 割合計算: (値 / 設計) * 100
       result.nominalRatio = (Double(nominal) / Double(designCap)) * 100
       result.rawRatio = (Double(raw) / Double(designCap)) * 100
@@ -177,7 +178,7 @@ struct LogParser {
 
     // デフレーター: 公称 / 実測
     if raw > 0 {
-      result.deflator = Double(nominal) / Double(raw)
+      result.deflator = (Double(nominal) / Double(raw)) * 100
     }
 
     // 温度 (10で割る)
