@@ -85,15 +85,29 @@ struct LogParser {
   // ★メインの解析関数
   static func parse(text: String) -> ParseResult {
     var result = ParseResult()
+    var headerJSONString: String?
+    var hardwareJSONString: String?
+    var lastBatteryJSONString: String?
+
+    // 1パスで必要なJSONを走査する
+    text.enumerateLines { line, _ in
+      if headerJSONString == nil, line.contains("timestamp") {
+        headerJSONString = extractJSON(from: line)
+      }
+
+      if hardwareJSONString == nil, line.contains("deviceCapacity") {
+        hardwareJSONString = extractJSON(from: line)
+      }
+
+      if line.contains("NominalChargeCapacity") {
+        if let json = extractJSON(from: line) {
+          lastBatteryJSONString = json  // 見つかるたびに上書きして最後の値を保持
+        }
+      }
+    }
 
     // 1. ヘッダー情報の取得 (timestamp, os_version)
-    // timestamp はログファイルの先頭行にあるため、それ以降の行を切り捨てておく
-    let headerSource = text.replacingOccurrences(
-      of: "(?<=\\n).*",
-      with: "",
-      options: .regularExpression
-    )
-    if let headerMatch = findJSON(in: headerSource, containing: "timestamp"),
+    if let headerMatch = headerJSONString,
       let headerData = headerMatch.data(using: .utf8),
       let header = try? JSONDecoder().decode(HeaderJSON.self, from: headerData)
     {
@@ -106,7 +120,7 @@ struct LogParser {
     }
 
     // 2. スペック情報の取得 (deviceCapacity, dramSize)
-    if let hwMatch = findJSON(in: text, containing: "deviceCapacity"),
+    if let hwMatch = hardwareJSONString,
       let hwData = hwMatch.data(using: .utf8),
       let hw = try? JSONDecoder().decode(HardwareJSON.self, from: hwData)
     {
@@ -115,12 +129,8 @@ struct LogParser {
       if let dram = hw.dramSize { result.ram = "\(dram) GB" }
     }
 
-    // 3. バッテリー情報の取得
-    // "NominalChargeCapacity" を含むJSONを探す。
-    // ★重要: "JSONたくさんあるから最後のデータのみを取得"
-    let batteryMatches = findAllJSONs(in: text, containing: "NominalChargeCapacity")
-
-    guard let lastMatch = batteryMatches.last,
+    // 3. バッテリー情報の取得 (最後に見つかったものだけ採用)
+    guard let lastMatch = lastBatteryJSONString,
       let batData = lastMatch.data(using: .utf8),
       let batObj = try? JSONDecoder().decode(BatteryJSON.self, from: batData),
       let msg = batObj.message
@@ -135,20 +145,6 @@ struct LogParser {
     // 機種名 (HardwareModel) - まずはJSONに含まれるモデルコードを格納
     let modelCode = batObj.hardwareModel
     result.deviceModelCode = modelCode
-
-    // ログ本文から Board ID が含まれていないか走査して識別子を検出する
-    // DeviceLibrary の boardToIdentifier のキー群を参照して、ログ内に含まれるものを探す
-    for boardId in DeviceLibrary.boardToIdentifier.keys {
-      if text.contains(boardId) {
-        result.detectedBoardId = boardId
-        result.detectedIdentifier = DeviceLibrary.getIdentifier(for: boardId)
-        // 優先的に deviceModelCode として記録しておく
-        if let id = result.detectedIdentifier {
-          result.deviceModelCode = id
-        }
-        break
-      }
-    }
 
     // 識別子から機種名を解決して設計容量を取得
     var designCap = 0
@@ -220,35 +216,14 @@ struct LogParser {
     return result
   }
 
-  // --- ヘルパー関数: 正規表現でJSONブロックを抽出 ---
-
-  // 指定したキーワードを含むJSONブロック( {...} )を全て探して配列で返す
-  private static func findAllJSONs(in text: String, containing keyword: String) -> [String] {
-    // パターン: { (任意の文字) keyword (任意の文字) }
-    // 改行を含む可能性も考慮したいが、ログ形式的に1行1JSONが多い。
-    // 安全のため、行ごとにチェックして抽出する方式を採用。
-
-    var matches: [String] = []
-    let lines = text.components(separatedBy: .newlines)
-
-    for line in lines {
-      if line.contains(keyword) {
-        // 行の中にJSONがあるか簡易チェック（厳密にはRegexで {.*} を抜く）
-        if let start = line.firstIndex(of: "{"),
-          let end = line.lastIndex(of: "}")
-        {
-          let jsonString = String(line[start...end])
-          matches.append(jsonString)
-        }
-      }
+  // --- ヘルパー関数: 行内のJSONブロック抽出 ---
+  private static func extractJSON(from line: String) -> String? {
+    guard let start = line.firstIndex(of: "{"),
+      let end = line.lastIndex(of: "}")
+    else {
+      return nil
     }
-    return matches
-  }
-
-  // 最初の1個だけ見つける版
-  private static func findJSON(in text: String, containing keyword: String) -> String? {
-    let matches = findAllJSONs(in: text, containing: keyword)
-    return matches.first
+    return String(line[start...end])
   }
 
   // 日付パース用
