@@ -744,6 +744,48 @@
         "ja": { "stringUnit": { "state": "translated", "value": "検索" } },
         "en": { "stringUnit": { "state": "translated", "value": "Search" } }
       }
+    },
+    "register_watch_title": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "Apple Watchを登録しますか？" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Register Apple Watch?" } }
+      }
+    },
+    "register_watch_message": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "このApple Watchを登録すると、次回から自動的にこのモデルとして解析されます。" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Registering this Apple Watch will automatically use this model for future logs." } }
+      }
+    },
+    "register": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "登録する" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Register" } }
+      }
+    },
+    "donation_title": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "開発者を支援" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Support Developer" } }
+      }
+    },
+    "donation_description": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "MochiLogを気に入っていただけましたら、開発の継続のためにご支援をいただけると幸いです。" } },
+        "en": { "stringUnit": { "state": "translated", "value": "If you enjoy using MochiLog, please consider supporting the developer to help continue development." } }
+      }
+    },
+    "donation_options": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "寄付の選択肢" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Donation Options" } }
+      }
+    },
+    "purchase_error_message": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "購入処理中にエラーが発生しました。もう一度お試しください。" } },
+        "en": { "stringUnit": { "state": "translated", "value": "An error occurred during the purchase. Please try again." } }
+      }
     }
   },
   "version": "1.0"

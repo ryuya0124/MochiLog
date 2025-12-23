@@ -48,6 +48,9 @@ struct HomeView: View {
   @State private var showingMismatchAlert = false
   @State private var showingManualDevicePicker = false
 
+  @State private var showingRegisterWatchAlert = false
+  @State private var watchNameToRegister = ""
+
   var body: some View {
     NavigationStack {
       ZStack {
@@ -141,7 +144,23 @@ struct HomeView: View {
           try? modelContext.save()
           selectedRecord = record
           pendingParseResult = nil
+
+          // 未登録の場合は登録を促す
+          if appSettings.registeredWatchModel == nil {
+            watchNameToRegister = name
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+              showingRegisterWatchAlert = true
+            }
+          }
         }
+      }
+      .alert(String(localized: "register_watch_title"), isPresented: $showingRegisterWatchAlert) {
+        Button(String(localized: "register")) {
+          appSettings.registeredWatchModel = watchNameToRegister
+        }
+        Button(String(localized: "cancel"), role: .cancel) {}
+      } message: {
+        Text(String(localized: "register_watch_message"))
       }
       .alert(String(localized: "mismatch_warning_title"), isPresented: $showingMismatchAlert) {
         Button(String(localized: "select_manually")) {
@@ -165,6 +184,14 @@ struct HomeView: View {
           try? modelContext.save()
           selectedRecord = record
           pendingParseResult = nil
+
+          // Watchが選択され、かつ未登録の場合は登録を促す
+          if name.contains("Apple Watch") && appSettings.registeredWatchModel == nil {
+            watchNameToRegister = name
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+              showingRegisterWatchAlert = true
+            }
+          }
         }
       }
     }
