@@ -17,51 +17,71 @@ struct ContentView: View {
   @State private var pendingParseResult: LogParser.ParseResult?
   @State private var showingWatchSelection = false
   @State private var watchCandidates: [String] = []
+  // 処理中フラグ
+  @State private var isProcessing = false
 
   // 無引数で `ContentView()` を呼べるように明示的なイニシャライザを追加
   init() {}
 
   var body: some View {
     NavigationStack {
-      VStack {
-        if records.isEmpty {
-          ContentUnavailableView(
-            "データがありません", systemImage: "battery.0",
-            description: Text("右上の＋ボタンからログを追加してください"))
-        } else {
-          // --- グラフエリア ---
-          Chart {
-            ForEach(records) { record in
-              LineMark(
-                x: .value("日付", record.logDate),
-                y: .value("実容量", record.healthPercent)
-              )
-              .foregroundStyle(Color.green.gradient)
-              .symbol(by: .value("デバイス", record.deviceName))
+      ZStack {
+        VStack {
+          if records.isEmpty {
+            ContentUnavailableView(
+              "データがありません", systemImage: "battery.0",
+              description: Text("右上の＋ボタンからログを追加してください"))
+          } else {
+            // --- グラフエリア ---
+            Chart {
+              ForEach(records) { record in
+                LineMark(
+                  x: .value("日付", record.logDate),
+                  y: .value("実容量", record.healthPercent)
+                )
+                .foregroundStyle(Color.green.gradient)
+                .symbol(by: .value("デバイス", record.deviceName))
+              }
             }
-          }
-          .chartYScale(domain: 70...105)  // Y軸の範囲
-          .frame(height: 180)
-          .padding()
+            .chartYScale(domain: 70...105)  // Y軸の範囲
+            .frame(height: 180)
+            .padding()
 
-          // --- 履歴リストエリア ---
-          List {
-            ForEach(deviceSections) { section in
-              Section(section.displayName) {
-                ForEach(section.records) { record in
-                  RecordRowView(record: record)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                      selectedRecord = record
-                    }
-                }
-                .onDelete { offsets in
-                  let items = offsets.map { section.records[$0] }
-                  deleteRecords(items)
+            // --- 履歴リストエリア ---
+            List {
+              ForEach(deviceSections) { section in
+                Section(section.displayName) {
+                  ForEach(section.records) { record in
+                    RecordRowView(record: record)
+                      .contentShape(Rectangle())
+                      .onTapGesture {
+                        selectedRecord = record
+                      }
+                  }
+                  .onDelete { offsets in
+                    let items = offsets.map { section.records[$0] }
+                    deleteRecords(items)
+                  }
                 }
               }
             }
           }
+        }
+
+        // 処理中オーバーレイ
+        if isProcessing {
+          Color.black.opacity(0.3)
+            .ignoresSafeArea()
+          VStack(spacing: 16) {
+            ProgressView()
+              .scaleEffect(1.5)
+              .tint(.white)
+            Text("ログを解析中...")
+              .font(.headline)
+              .foregroundColor(.white)
+          }
+          .padding(32)
+          .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
         }
       }
       .navigationTitle("MochiLog")
@@ -70,6 +90,7 @@ struct ContentView: View {
           Button(action: { showingFilePicker = true }) {
             Image(systemName: "plus")
           }
+          .disabled(isProcessing)
         }
       }
       // --- ファイル選択シート ---
@@ -93,10 +114,8 @@ struct ContentView: View {
       .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ProcessSharedLog")))
       { notification in
         if let text = notification.userInfo?["text"] as? String {
-          if let newRecord = addRecordFromText(text) {
-            // 共有から来た場合は処理後に詳細を自動で表示
-            selectedRecord = newRecord
-          }
+          // 非同期で処理（Share Extension経由でも同様にローディング表示）
+          processLogTextAsync(text)
         }
       }
       .onAppear {
@@ -139,14 +158,14 @@ struct ContentView: View {
         showingErrorAlert = true
         return
       }
-      defer { url.stopAccessingSecurityScopedResource() }
 
       do {
         let text = try String(contentsOf: url, encoding: .utf8)
-        if let newRecord = addRecordFromText(text) {
-          selectedRecord = newRecord
-        }
+        url.stopAccessingSecurityScopedResource()
+        // 非同期でパース処理を実行
+        processLogTextAsync(text)
       } catch {
+        url.stopAccessingSecurityScopedResource()
         errorMessage = "ファイルの読み込みに失敗しました: \(error.localizedDescription)"
         showingErrorAlert = true
       }
@@ -157,11 +176,31 @@ struct ContentView: View {
     }
   }
 
-  // データを追加する処理
-  // 処理したレコードを返す（呼び出し元で詳細表示などに使う）
+  // 非同期でログテキストを処理
+  private func processLogTextAsync(_ text: String) {
+    isProcessing = true
+
+    DispatchQueue.global(qos: .userInitiated).async {
+      let parseResult = LogParser.parse(text: text)
+
+      DispatchQueue.main.async {
+        isProcessing = false
+        if let newRecord = addRecordFromParseResult(parseResult) {
+          selectedRecord = newRecord
+        }
+      }
+    }
+  }
+
+  // データを追加する処理（テキストから直接パースする版 - Share Extension用）
   private func addRecordFromText(_ text: String) -> BatteryRecord? {
     let result = LogParser.parse(text: text)
+    return addRecordFromParseResult(result)
+  }
 
+  // データを追加する処理（パース結果から作成）
+  // 処理したレコードを返す（呼び出し元で詳細表示などに使う）
+  private func addRecordFromParseResult(_ result: LogParser.ParseResult) -> BatteryRecord? {
     // 必要なデータが最低限取れているか確認
     guard let logDate = result.logDate,
       result.cycleCount != nil,
