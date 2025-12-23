@@ -654,45 +654,76 @@ struct DeviceLibrary {
 
   /// カテゴリに属するシリーズ一覧を取得
   static func getSeries(for category: Category) -> [String] {
-    let names = deviceNamesJa.values
-    let filtered = names.filter { $0.starts(with: category.rawValue) }
-
-    var series = Set<String>()
     let keywords = ["Pro", "Air", "mini", "SE", "Ultra", "Plus"]
+    var seriesToMaxIdentifier: [String: String] = [:]
 
-    for name in filtered {
+    for (identifier, name) in deviceNamesJa {
+      guard name.starts(with: category.rawValue) else { continue }
+
       let components = name.components(separatedBy: " ")
       var foundKeyword = false
       for keyword in keywords {
         if components.contains(keyword) {
-          series.insert(keyword)
+          if let currentMax = seriesToMaxIdentifier[keyword] {
+            if identifier.compare(currentMax, options: .numeric) == .orderedDescending {
+              seriesToMaxIdentifier[keyword] = identifier
+            }
+          } else {
+            seriesToMaxIdentifier[keyword] = identifier
+          }
           foundKeyword = true
         }
       }
+
       if !foundKeyword {
-        series.insert("Standard")
+        if let currentMax = seriesToMaxIdentifier["Standard"] {
+          if identifier.compare(currentMax, options: .numeric) == .orderedDescending {
+            seriesToMaxIdentifier["Standard"] = identifier
+          }
+        } else {
+          seriesToMaxIdentifier["Standard"] = identifier
+        }
       }
     }
 
-    return Array(series).sorted()
+    // シリーズを最新モデルの識別子順にソート
+    return seriesToMaxIdentifier.keys.sorted { s1, s2 in
+      let id1 = seriesToMaxIdentifier[s1]!
+      let id2 = seriesToMaxIdentifier[s2]!
+      return id1.compare(id2, options: .numeric) == .orderedDescending
+    }
   }
 
   /// カテゴリとシリーズに属するモデル一覧を取得
   static func getModels(for category: Category, series: String) -> [String] {
-    let names = Array(Set(deviceNamesJa.values)).sorted()
-    let categoryFiltered = names.filter { $0.starts(with: category.rawValue) }
     let keywords = ["Pro", "Air", "mini", "SE", "Ultra", "Plus"]
 
-    if series == "Standard" {
-      return categoryFiltered.filter { name in
-        let components = name.components(separatedBy: " ")
-        return !components.contains(where: { keywords.contains($0) })
+    // モデル名ごとに、そのモデルに属する最大の識別子を紐付ける
+    var modelToMaxIdentifier: [String: String] = [:]
+    for (identifier, name) in deviceNamesJa {
+      guard name.starts(with: category.rawValue) else { continue }
+
+      let components = name.components(separatedBy: " ")
+      let isStandard = !components.contains(where: { keywords.contains($0) })
+
+      if (series == "Standard" && isStandard)
+        || (series != "Standard" && components.contains(series))
+      {
+        if let currentMax = modelToMaxIdentifier[name] {
+          if identifier.compare(currentMax, options: .numeric) == .orderedDescending {
+            modelToMaxIdentifier[name] = identifier
+          }
+        } else {
+          modelToMaxIdentifier[name] = identifier
+        }
       }
-    } else {
-      return categoryFiltered.filter { name in
-        let components = name.components(separatedBy: " ")
-        return components.contains(series)
-      }
+    }
+
+    // 識別子の降順（新しい順）でソートしてモデル名を返す
+    return modelToMaxIdentifier.keys.sorted { name1, name2 in
+      let id1 = modelToMaxIdentifier[name1]!
+      let id2 = modelToMaxIdentifier[name2]!
+      return id1.compare(id2, options: .numeric) == .orderedDescending
     }
   }
 
