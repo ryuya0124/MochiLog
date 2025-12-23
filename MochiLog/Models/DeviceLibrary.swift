@@ -183,6 +183,15 @@ struct DeviceLibrary {
     "Watch7,9": "Apple Watch 10 (46mm)",
     "Watch7,10": "Apple Watch 10 (42mm)",
     "Watch7,11": "Apple Watch 10 (46mm)",
+    "Watch7,13": "Apple Watch SE (第3世代) (40mm)",
+    "Watch7,14": "Apple Watch SE (第3世代) (44mm)",
+    "Watch7,15": "Apple Watch SE (第3世代) (40mm)",
+    "Watch7,16": "Apple Watch SE (第3世代) (44mm)",
+    "Watch7,17": "Apple Watch 11 (42mm)",
+    "Watch7,18": "Apple Watch 11 (46mm)",
+    "Watch7,19": "Apple Watch 11 (42mm)",
+    "Watch7,20": "Apple Watch 11 (46mm)",
+    "Watch7,12": "Apple Watch Ultra (第3世代)",
   ]
 
   // MARK: - Board ID から識別子へのマッピング
