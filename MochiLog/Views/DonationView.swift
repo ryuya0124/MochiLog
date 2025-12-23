@@ -11,9 +11,9 @@ final class DonationManager: ObservableObject {
   @Published private(set) var purchasedProductIDs = Set<String>()
 
   private let productIDs = [
-    "net.ryuya-dev.net.mochilog.donation.small",
-    "net.ryuya-dev.net.mochilog.donation.medium",
-    "net.ryuya-dev.net.mochilog.donation.large",
+    "net.ryuya_dev.net.mochilog.donation.small",
+    "net.ryuya_dev.net.mochilog.donation.medium",
+    "net.ryuya_dev.net.mochilog.donation.large",
   ]
 
   private var updates: Task<Void, Never>? = nil
