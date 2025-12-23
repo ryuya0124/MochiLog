@@ -1,6 +1,7 @@
 import SwiftUI
 
-struct PrivacyPolicyView: View {
+/// Simple viewer for the Terms of Use markdown, reusing the same layout as PrivacyPolicyView
+struct TermsOfUseView: View {
   @Environment(\.dismiss) private var dismiss
   @State private var blocks: [Block] = []
   @State private var headerTitle: String? = nil
@@ -17,17 +18,16 @@ struct PrivacyPolicyView: View {
     NavigationStack {
       ScrollView {
         VStack(spacing: 18) {
-          // Decorative header
           HStack(spacing: 12) {
-            Image(systemName: "shield.checkerboard")
-              .font(.system(size: 36, weight: .semibold))
+            Image(systemName: "doc.text")
+              .font(.system(size: 34, weight: .semibold))
               .foregroundStyle(.secondary)
 
-            VStack(alignment: .leading, spacing: 2) {
-              Text(headerTitle ?? String(localized: "privacy_policy_title"))
+            VStack(alignment: .leading, spacing: 4) {
+              Text(headerTitle ?? String(localized: "terms_of_use_title"))
                 .font(.title2)
                 .fontWeight(.semibold)
-              Text(String(localized: "privacy_policy_subtitle"))
+              Text(String(localized: "terms_of_use_subtitle"))
                 .font(.caption)
                 .foregroundColor(.secondary)
             }
@@ -36,7 +36,6 @@ struct PrivacyPolicyView: View {
           }
           .padding(.horizontal)
 
-          // Content card
           VStack(spacing: 12) {
             ForEach(blocks) { block in
               switch block {
@@ -60,7 +59,7 @@ struct PrivacyPolicyView: View {
           .background(.regularMaterial)
           .cornerRadius(12)
           .padding(.horizontal)
-          .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)
+          .shadow(color: Color.black.opacity(0.06), radius: 6, x: 0, y: 3)
         }
         .padding(.vertical)
       }
@@ -81,26 +80,23 @@ struct PrivacyPolicyView: View {
     headerTitle = nil
     let resourceName = selectedResourceName()
     guard let url = Bundle.main.url(forResource: resourceName, withExtension: "md") else {
-      blocks = [.paragraph(AttributedString(String(localized: "privacy_policy_unavailable")))]
+      blocks = [.paragraph(AttributedString(String(localized: "terms_of_use_unavailable")))]
       return
     }
 
-    guard let data = try? Data(contentsOf: url), let raw = String(data: data, encoding: .utf8)
+    guard let data = try? Data(contentsOf: url), let str = String(data: data, encoding: .utf8)
     else {
-      blocks = [.paragraph(AttributedString(String(localized: "privacy_policy_unavailable")))]
+      blocks = [.paragraph(AttributedString(String(localized: "terms_of_use_unavailable")))]
       return
     }
 
-    // Ensure headings are separated by blank lines even when the source
-    // doesn't include an explicit blank line before them (handle "##"/"###")
-    var normalized = raw
+    var normalized = str
     if normalized.hasPrefix("## ") {
       normalized = "\n" + normalized
     }
     normalized = normalized.replacingOccurrences(of: "\n## ", with: "\n\n## ")
     normalized = normalized.replacingOccurrences(of: "\n### ", with: "\n\n### ")
 
-    // Split by blank lines into paragraphs
     let paragraphs = normalized.components(separatedBy: "\n\n")
 
     for (index, para) in paragraphs.enumerated() {
@@ -110,11 +106,9 @@ struct PrivacyPolicyView: View {
         continue
       }
 
-      // Check for heading markers
       if trimmed.hasPrefix("# ") {
         let text = String(trimmed.dropFirst(2)).trimmingCharacters(in: .whitespaces)
         headerTitle = text
-        // Skip including top-level as a block; header rendered already
         continue
       } else if trimmed.hasPrefix("## ") {
         let text = String(trimmed.dropFirst(3)).trimmingCharacters(in: .whitespaces)
@@ -126,14 +120,12 @@ struct PrivacyPolicyView: View {
         continue
       }
 
-      // For normal paragraphs, use AttributedString to preserve inline markdown (bold/italic/links)
       if let attr = try? AttributedString(markdown: trimmed) {
         blocks.append(.paragraph(attr))
       } else {
         blocks.append(.paragraph(AttributedString(trimmed)))
       }
 
-      // Preserve a small spacer between paragraphs
       if index < paragraphs.count - 1 {
         blocks.append(.empty)
       }
@@ -143,14 +135,15 @@ struct PrivacyPolicyView: View {
   private func selectedResourceName() -> String {
     let preferred = Locale.preferredLanguages.first ?? Locale.current.identifier
     if preferred.starts(with: "en") {
-      if Bundle.main.url(forResource: "PrivacyPolicy_en", withExtension: "md") != nil {
-        return "PrivacyPolicy_en"
+      // if English resource exists, prefer it
+      if Bundle.main.url(forResource: "TermsOfUse_en", withExtension: "md") != nil {
+        return "TermsOfUse_en"
       }
     }
-    return "PrivacyPolicy"
+    return "TermsOfUse"
   }
 }
 
 #Preview {
-  PrivacyPolicyView()
+  TermsOfUseView()
 }

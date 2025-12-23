@@ -13,6 +13,7 @@ struct SettingsView: View {
   @State private var showingSupportForm = false
   @State private var showingDonation = false
   @State private var showingPrivacyPolicy = false
+  @State private var showingTermsOfUse = false
   @State private var isAdvancedExpanded = false
 
   private var appVersion: String {
@@ -66,9 +67,12 @@ struct SettingsView: View {
           Button(action: { showingDonation = true }) {
             Label(String(localized: "donation_title"), systemImage: "heart.fill")
           }
-
           Button(action: { showingPrivacyPolicy = true }) {
             Label(String(localized: "privacy_policy"), systemImage: "hand.raised.fill")
+          }
+
+          Button(action: { showingTermsOfUse = true }) {
+            Label(String(localized: "terms_of_use"), systemImage: "doc.plaintext")
           }
         }
 
@@ -143,6 +147,9 @@ struct SettingsView: View {
       }
       .sheet(isPresented: $showingPrivacyPolicy) {
         PrivacyPolicyView()
+      }
+      .sheet(isPresented: $showingTermsOfUse) {
+        TermsOfUseView()
       }
       .alert(String(localized: "delete_all_data"), isPresented: $showingDeleteConfirmation) {
         Button(String(localized: "cancel"), role: .cancel) {}
