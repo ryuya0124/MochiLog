@@ -73,6 +73,24 @@
         "en": { "stringUnit": { "state": "translated", "value": "Select Device" } }
       }
     },
+    "select_category": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "カテゴリを選択" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Select Category" } }
+      }
+    },
+    "standard_models": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "標準モデル" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Standard Models" } }
+      }
+    },
+    "back": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "戻る" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Back" } }
+      }
+    },
     "file_access_denied": {
       "localizations": {
         "ja": { "stringUnit": { "state": "translated", "value": "ファイルへのアクセス権限がありません" } },
@@ -389,6 +407,60 @@
       "localizations": {
         "ja": { "stringUnit": { "state": "translated", "value": "ログの設計容量が端末スペックの N倍以上、または 1/N以下の時にエラーにします。" } },
         "en": { "stringUnit": { "state": "translated", "value": "Errors when log design capacity is N times or 1/N of device specs." } }
+      }
+    },
+    "mismatch_behavior": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "不一致時の挙動" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Mismatch Behavior" } }
+      }
+    },
+    "mismatch_behavior_manual": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "手動で機種選択" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Manual Selection" } }
+      }
+    },
+    "mismatch_behavior_error": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "エラーにする" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Show Error" } }
+      }
+    },
+    "mismatch_warning_title": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "容量の不一致" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Capacity Mismatch" } }
+      }
+    },
+    "mismatch_warning_message": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "ログの設計容量が端末スペックと大きく異なります。正しい機種を手動で選択しますか？" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Log design capacity differs significantly from device specs. Would you like to select the correct model manually?" } }
+      }
+    },
+    "select_manually": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "手動で選択" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Select Manually" } }
+      }
+    },
+    "category_iphone": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "iPhone" } },
+        "en": { "stringUnit": { "state": "translated", "value": "iPhone" } }
+      }
+    },
+    "category_ipad": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "iPad" } },
+        "en": { "stringUnit": { "state": "translated", "value": "iPad" } }
+      }
+    },
+    "category_watch": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "Apple Watch" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Apple Watch" } }
       }
     },
     "delete_all_data": {

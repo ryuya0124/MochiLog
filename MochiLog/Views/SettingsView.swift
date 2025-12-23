@@ -95,6 +95,14 @@ struct SettingsView: View {
                   }
                   Slider(value: $appSettings.capacityValidationThreshold, in: 2...20, step: 0.5)
                 }
+
+                Picker(
+                  String(localized: "mismatch_behavior"), selection: $appSettings.mismatchBehavior
+                ) {
+                  ForEach(AppSettings.MismatchBehavior.allCases) { behavior in
+                    Text(behavior.localizedName).tag(behavior)
+                  }
+                }
               }
 
               Text(String(localized: "validation_threshold_description"))
@@ -113,7 +121,10 @@ struct SettingsView: View {
       }
       .navigationTitle(String(localized: "settings"))
       .sheet(isPresented: $showingWatchPicker) {
-        WatchPickerView(appSettings: appSettings)
+        HierarchicalDevicePickerView(initialCategory: .watch, lockCategory: true) {
+          name, identifier in
+          appSettings.registerWatch(model: name)
+        }
       }
       .sheet(isPresented: $showingTutorial) {
         TutorialView()
@@ -137,50 +148,6 @@ struct SettingsView: View {
       modelContext.delete(record)
     }
     try? modelContext.save()
-  }
-}
-
-// MARK: - Apple Watch 選択ビュー
-struct WatchPickerView: View {
-  @ObservedObject var appSettings: AppSettings
-  @Environment(\.dismiss) private var dismiss
-  @State private var searchText = ""
-
-  private var filteredModels: [String] {
-    let models = appSettings.availableWatchModels()
-    if searchText.isEmpty {
-      return models
-    }
-    return models.filter { $0.localizedCaseInsensitiveContains(searchText) }
-  }
-
-  var body: some View {
-    NavigationStack {
-      List(filteredModels, id: \.self) { model in
-        Button(action: {
-          appSettings.registerWatch(model: model)
-          dismiss()
-        }) {
-          HStack {
-            Text(model)
-              .foregroundStyle(.primary)
-            Spacer()
-            if appSettings.registeredWatchModel == model {
-              Image(systemName: "checkmark")
-                .foregroundStyle(.green)
-            }
-          }
-        }
-      }
-      .searchable(text: $searchText, prompt: String(localized: "search"))
-      .navigationTitle(String(localized: "select_device"))
-      .navigationBarTitleDisplayMode(.inline)
-      .toolbar {
-        ToolbarItem(placement: .cancellationAction) {
-          Button(String(localized: "cancel")) { dismiss() }
-        }
-      }
-    }
   }
 }
 

@@ -12,6 +12,22 @@ final class AppSettings: ObservableObject {
     static let hasCompletedTutorial = "hasCompletedTutorial"
     static let enableCapacityValidation = "enableCapacityValidation"
     static let capacityValidationThreshold = "capacityValidationThreshold"
+    static let mismatchBehavior = "mismatchBehavior"
+  }
+
+  /// 容量不一致時の挙動
+  enum MismatchBehavior: String, CaseIterable, Identifiable {
+    case manualSelection = "manualSelection"
+    case error = "error"
+
+    var id: String { self.rawValue }
+
+    var localizedName: String {
+      switch self {
+      case .manualSelection: return String(localized: "mismatch_behavior_manual")
+      case .error: return String(localized: "mismatch_behavior_error")
+      }
+    }
   }
 
   // MARK: - Published Properties
@@ -27,6 +43,9 @@ final class AppSettings: ObservableObject {
 
   /// バッテリー容量バリデーションの閾値（倍率）
   @Published var capacityValidationThreshold: Double
+
+  /// 容量不一致時の挙動
+  @Published var mismatchBehavior: MismatchBehavior
 
   // MARK: - Initialization
 
@@ -44,6 +63,14 @@ final class AppSettings: ObservableObject {
 
     let threshold = UserDefaults.standard.double(forKey: Keys.capacityValidationThreshold)
     self.capacityValidationThreshold = threshold == 0 ? 10.0 : threshold
+
+    if let behaviorString = UserDefaults.standard.string(forKey: Keys.mismatchBehavior),
+      let behavior = MismatchBehavior(rawValue: behaviorString)
+    {
+      self.mismatchBehavior = behavior
+    } else {
+      self.mismatchBehavior = .manualSelection
+    }
 
     // プロパティの変更を監視してUserDefaultsに保存
     setupObservers()
@@ -77,6 +104,13 @@ final class AppSettings: ObservableObject {
       .dropFirst()
       .sink { value in
         UserDefaults.standard.set(value, forKey: Keys.capacityValidationThreshold)
+      }
+      .store(in: &cancellables)
+
+    $mismatchBehavior
+      .dropFirst()
+      .sink { value in
+        UserDefaults.standard.set(value.rawValue, forKey: Keys.mismatchBehavior)
       }
       .store(in: &cancellables)
   }

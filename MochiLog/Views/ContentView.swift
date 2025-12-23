@@ -43,8 +43,10 @@ struct HomeView: View {
   @State private var selectedRecord: BatteryRecord?
   @State private var pendingParseResult: LogParser.ParseResult?
   @State private var showingWatchSelection = false
-  @State private var watchCandidates: [String] = []
   @State private var isProcessing = false
+
+  @State private var showingMismatchAlert = false
+  @State private var showingManualDevicePicker = false
 
   var body: some View {
     NavigationStack {
@@ -126,25 +128,43 @@ struct HomeView: View {
       .onAppear {
         reconcileUnknownDeviceNames()
       }
-      .confirmationDialog(
-        String(localized: "select_device"),
-        isPresented: $showingWatchSelection,
-        titleVisibility: .visible
-      ) {
-        ForEach(watchCandidates, id: \.self) { name in
-          Button(name) {
-            guard let result = pendingParseResult else { return }
-            let record = createRecord(from: result, deviceName: name)
-            modelContext.insert(record)
-            try? modelContext.save()
-            selectedRecord = record
-            pendingParseResult = nil
-            watchCandidates = []
-          }
+      .sheet(isPresented: $showingWatchSelection) {
+        HierarchicalDevicePickerView(initialCategory: .watch, lockCategory: true) {
+          name, identifier in
+          guard let result = pendingParseResult else { return }
+          let record = createRecord(
+            from: result,
+            deviceName: name,
+            deviceModelCodeOverride: identifier
+          )
+          modelContext.insert(record)
+          try? modelContext.save()
+          selectedRecord = record
+          pendingParseResult = nil
+        }
+      }
+      .alert(String(localized: "mismatch_warning_title"), isPresented: $showingMismatchAlert) {
+        Button(String(localized: "select_manually")) {
+          showingManualDevicePicker = true
         }
         Button(String(localized: "cancel"), role: .cancel) {
           pendingParseResult = nil
-          watchCandidates = []
+        }
+      } message: {
+        Text(String(localized: "mismatch_warning_message"))
+      }
+      .sheet(isPresented: $showingManualDevicePicker) {
+        HierarchicalDevicePickerView { name, identifier in
+          guard let result = pendingParseResult else { return }
+          let record = createRecord(
+            from: result,
+            deviceName: name,
+            deviceModelCodeOverride: identifier
+          )
+          modelContext.insert(record)
+          try? modelContext.save()
+          selectedRecord = record
+          pendingParseResult = nil
         }
       }
     }
@@ -212,9 +232,16 @@ struct HomeView: View {
     }
 
     if result.isCapacityMismatch {
-      errorMessage = String(localized: "capacity_mismatch_error")
-      showingErrorAlert = true
-      return nil
+      if appSettings.mismatchBehavior == .error {
+        errorMessage = String(localized: "capacity_mismatch_error")
+        showingErrorAlert = true
+        return nil
+      } else {
+        // 手動選択フローへ
+        pendingParseResult = result
+        showingMismatchAlert = true
+        return nil
+      }
     }
 
     if hasDuplicateRecord(on: logDate, osVersion: result.osVersion) {
@@ -258,7 +285,6 @@ struct HomeView: View {
       }
 
       // 未登録の場合は選択ダイアログを表示
-      watchCandidates = appSettings.availableWatchModels()
       pendingParseResult = result
       showingWatchSelection = true
       return nil

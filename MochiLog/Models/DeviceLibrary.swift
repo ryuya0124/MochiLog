@@ -623,4 +623,72 @@ struct DeviceLibrary {
     guard let deviceName = getDeviceName(for: identifier) else { return nil }
     return getCapacity(for: deviceName)
   }
+
+  // MARK: - 階層的データ取得
+
+  enum Category: String, CaseIterable, Identifiable {
+    case iphone = "iPhone"
+    case ipad = "iPad"
+    case watch = "Apple Watch"
+    case ipod = "iPod"
+
+    var id: String { self.rawValue }
+    var localizedName: String {
+      switch self {
+      case .iphone: return String(localized: "category_iphone")
+      case .ipad: return String(localized: "category_ipad")
+      case .watch: return String(localized: "category_watch")
+      case .ipod: return "iPod"
+      }
+    }
+  }
+
+  /// カテゴリに属するシリーズ一覧を取得
+  static func getSeries(for category: Category) -> [String] {
+    let names = deviceNamesJa.values
+    let filtered = names.filter { $0.starts(with: category.rawValue) }
+
+    var series = Set<String>()
+    let keywords = ["Pro", "Air", "mini", "SE", "Ultra", "Plus"]
+
+    for name in filtered {
+      let components = name.components(separatedBy: " ")
+      var foundKeyword = false
+      for keyword in keywords {
+        if components.contains(keyword) {
+          series.insert(keyword)
+          foundKeyword = true
+        }
+      }
+      if !foundKeyword {
+        series.insert("Standard")
+      }
+    }
+
+    return Array(series).sorted()
+  }
+
+  /// カテゴリとシリーズに属するモデル一覧を取得
+  static func getModels(for category: Category, series: String) -> [String] {
+    let names = Array(Set(deviceNamesJa.values)).sorted()
+    let categoryFiltered = names.filter { $0.starts(with: category.rawValue) }
+    let keywords = ["Pro", "Air", "mini", "SE", "Ultra", "Plus"]
+
+    if series == "Standard" {
+      return categoryFiltered.filter { name in
+        let components = name.components(separatedBy: " ")
+        return !components.contains(where: { keywords.contains($0) })
+      }
+    } else {
+      return categoryFiltered.filter { name in
+        let components = name.components(separatedBy: " ")
+        return components.contains(series)
+      }
+    }
+  }
+
+  /// 機種名から最初の識別子を取得
+  static func getFirstIdentifier(for deviceName: String) -> String? {
+    return deviceNamesJa.first(where: { $1 == deviceName })?.key
+  }
 }
