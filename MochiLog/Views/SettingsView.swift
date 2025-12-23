@@ -12,6 +12,7 @@ struct SettingsView: View {
   @State private var showingTutorial = false
   @State private var showingSupportForm = false
   @State private var showingDonation = false
+  @State private var showingPrivacyPolicy = false
   @State private var isAdvancedExpanded = false
 
   private var appVersion: String {
@@ -66,7 +67,7 @@ struct SettingsView: View {
             Label(String(localized: "donation_title"), systemImage: "heart.fill")
           }
 
-          Link(destination: URL(string: "https://google.com")!) {
+          Button(action: { showingPrivacyPolicy = true }) {
             Label(String(localized: "privacy_policy"), systemImage: "hand.raised.fill")
           }
         }
@@ -136,9 +137,14 @@ struct SettingsView: View {
       }
       .sheet(isPresented: $showingSupportForm) {
         SupportFormView()
-      }.sheet(isPresented: $showingDonation) {
+      }
+      .sheet(isPresented: $showingDonation) {
         DonationView()
-      }.alert(String(localized: "delete_all_data"), isPresented: $showingDeleteConfirmation) {
+      }
+      .sheet(isPresented: $showingPrivacyPolicy) {
+        PrivacyPolicyView()
+      }
+      .alert(String(localized: "delete_all_data"), isPresented: $showingDeleteConfirmation) {
         Button(String(localized: "cancel"), role: .cancel) {}
         Button(String(localized: "delete"), role: .destructive) {
           deleteAllRecords()
