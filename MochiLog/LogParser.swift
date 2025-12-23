@@ -203,14 +203,14 @@ struct LogParser {
       }
     }
 
-    // 診断結果 (簡易ロジック)
+    // 診断結果 (簡易ロジック) - ローカライズキーを使用
     if let health = result.rawRatio {
       if health < 80.0 {
-        result.diagnosticResult = "⚠️ 交換推奨 (80%未満)"
+        result.diagnosticResult = String(localized: "diag_replace_recommended")
       } else if health < 90.0 {
-        result.diagnosticResult = "ℹ️ やや劣化 (90%未満)"
+        result.diagnosticResult = String(localized: "diag_slightly_degraded")
       } else {
-        result.diagnosticResult = "✅ 正常"
+        result.diagnosticResult = String(localized: "diag_normal")
       }
     }
 

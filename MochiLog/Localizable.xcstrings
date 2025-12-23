@@ -1,0 +1,648 @@
+{
+  "sourceLanguage": "ja",
+  "strings": {
+    "app_name": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "MochiLog" } },
+        "en": { "stringUnit": { "state": "translated", "value": "MochiLog" } }
+      }
+    },
+    "tab_home": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "ホーム" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Home" } }
+      }
+    },
+    "tab_analytics": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "分析" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Analytics" } }
+      }
+    },
+    "tab_settings": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "設定" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Settings" } }
+      }
+    },
+    "no_data": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "データがありません" } },
+        "en": { "stringUnit": { "state": "translated", "value": "No Data" } }
+      }
+    },
+    "no_data_description": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "右上の＋ボタンからログを追加してください" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Tap the + button to add logs" } }
+      }
+    },
+    "parsing_log": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "ログを解析中..." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Parsing log..." } }
+      }
+    },
+    "error": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "エラー" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Error" } }
+      }
+    },
+    "ok": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "OK" } },
+        "en": { "stringUnit": { "state": "translated", "value": "OK" } }
+      }
+    },
+    "cancel": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "キャンセル" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Cancel" } }
+      }
+    },
+    "close": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "閉じる" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Close" } }
+      }
+    },
+    "select_device": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "デバイスを選択してください" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Select Device" } }
+      }
+    },
+    "file_access_denied": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "ファイルへのアクセス権限がありません" } },
+        "en": { "stringUnit": { "state": "translated", "value": "File access denied" } }
+      }
+    },
+    "file_read_error": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "ファイルの読み込みに失敗しました" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Failed to read file" } }
+      }
+    },
+    "file_select_error": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "ファイル選択エラー" } },
+        "en": { "stringUnit": { "state": "translated", "value": "File selection error" } }
+      }
+    },
+    "parse_error": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "ログから日時やバッテリー情報を取得できませんでした" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Could not parse date or battery info from log" } }
+      }
+    },
+    "duplicate_record": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "同じ日時のログは既に登録されています" } },
+        "en": { "stringUnit": { "state": "translated", "value": "A log with the same date already exists" } }
+      }
+    },
+    "cycle_count": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "サイクル" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Cycles" } }
+      }
+    },
+    "cycle_count_format": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "%d回" } },
+        "en": { "stringUnit": { "state": "translated", "value": "%d cycles" } }
+      }
+    },
+    "os_display": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "OS表示" } },
+        "en": { "stringUnit": { "state": "translated", "value": "OS Display" } }
+      }
+    },
+    "detail": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "詳細" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Details" } }
+      }
+    },
+    "device_info": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "デバイス情報" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Device Info" } }
+      }
+    },
+    "device_name": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "機種名" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Device Name" } }
+      }
+    },
+    "soc": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "SoC" } },
+        "en": { "stringUnit": { "state": "translated", "value": "SoC" } }
+      }
+    },
+    "model_code": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "モデルコード" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Model Code" } }
+      }
+    },
+    "storage": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "ストレージ" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Storage" } }
+      }
+    },
+    "ram": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "RAM" } },
+        "en": { "stringUnit": { "state": "translated", "value": "RAM" } }
+      }
+    },
+    "log_date": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "ログ日付" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Log Date" } }
+      }
+    },
+    "first_use_date": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "初使用日" } },
+        "en": { "stringUnit": { "state": "translated", "value": "First Use Date" } }
+      }
+    },
+    "battery_capacity": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "バッテリー容量" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Battery Capacity" } }
+      }
+    },
+    "design_capacity": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "設計容量" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Design Capacity" } }
+      }
+    },
+    "nominal_capacity": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "公称容量" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Nominal Capacity" } }
+      }
+    },
+    "raw_capacity": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "実測容量" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Raw Capacity" } }
+      }
+    },
+    "low_rate_capacity": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "低レート容量" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Low Rate Capacity" } }
+      }
+    },
+    "battery_health": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "バッテリーヘルス" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Battery Health" } }
+      }
+    },
+    "real_health": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "実ヘルス" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Real Health" } }
+      }
+    },
+    "deflator": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "デフレータ" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Deflator" } }
+      }
+    },
+    "diagnostic_result": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "診断結果" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Diagnostic Result" } }
+      }
+    },
+    "temperature_daily": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "温度（日次）" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Temperature (Daily)" } }
+      }
+    },
+    "average": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "平均" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Average" } }
+      }
+    },
+    "maximum": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "最大" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Maximum" } }
+      }
+    },
+    "minimum": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "最小" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Minimum" } }
+      }
+    },
+    "voltage": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "電圧" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Voltage" } }
+      }
+    },
+    "charge_range_daily": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "充電範囲（日次）" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Charge Range (Daily)" } }
+      }
+    },
+    "max_soc": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "最大SoC" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Max SoC" } }
+      }
+    },
+    "min_soc": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "最小SoC" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Min SoC" } }
+      }
+    },
+    "settings": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "設定" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Settings" } }
+      }
+    },
+    "general": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "一般" } },
+        "en": { "stringUnit": { "state": "translated", "value": "General" } }
+      }
+    },
+    "apple_watch_settings": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "Apple Watch設定" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Apple Watch Settings" } }
+      }
+    },
+    "registered_watch": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "登録済みWatch" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Registered Watch" } }
+      }
+    },
+    "not_registered": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "未登録" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Not Registered" } }
+      }
+    },
+    "register_watch": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "Watchを登録" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Register Watch" } }
+      }
+    },
+    "change_watch": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "Watchを変更" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Change Watch" } }
+      }
+    },
+    "remove_watch": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "登録を解除" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Remove Registration" } }
+      }
+    },
+    "watch_selection_description": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "Apple Watchのログを解析する際に自動で使用されます" } },
+        "en": { "stringUnit": { "state": "translated", "value": "This will be used automatically when parsing Apple Watch logs" } }
+      }
+    },
+    "support": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "サポート" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Support" } }
+      }
+    },
+    "view_tutorial": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "チュートリアルを見る" } },
+        "en": { "stringUnit": { "state": "translated", "value": "View Tutorial" } }
+      }
+    },
+    "contact_support": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "サポートへ問い合わせ" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Contact Support" } }
+      }
+    },
+    "privacy_policy": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "プライバシーポリシー" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Privacy Policy" } }
+      }
+    },
+    "data_management": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "データ管理" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Data Management" } }
+      }
+    },
+    "delete_all_data": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "すべてのデータを削除" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Delete All Data" } }
+      }
+    },
+    "delete_all_data_confirm": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "すべてのバッテリー記録を削除しますか？この操作は取り消せません。" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Delete all battery records? This action cannot be undone." } }
+      }
+    },
+    "delete": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "削除" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Delete" } }
+      }
+    },
+    "app_version": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "アプリバージョン" } },
+        "en": { "stringUnit": { "state": "translated", "value": "App Version" } }
+      }
+    },
+    "tutorial": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "チュートリアル" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Tutorial" } }
+      }
+    },
+    "tutorial_welcome": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "MochiLogへようこそ" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Welcome to MochiLog" } }
+      }
+    },
+    "tutorial_step1_title": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "ログを取得する" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Get the Log" } }
+      }
+    },
+    "tutorial_step1_description": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "設定アプリ > プライバシーとセキュリティ > 解析と改善 > 解析データから「Analytics」で始まるファイルを探してください。" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Go to Settings > Privacy & Security > Analytics & Improvements > Analytics Data and find files starting with 'Analytics'." } }
+      }
+    },
+    "tutorial_step2_title": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "ログを共有する" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Share the Log" } }
+      }
+    },
+    "tutorial_step2_description": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "ログファイルを開いて共有ボタンをタップし、MochiLogを選択するか、＋ボタンからファイルを直接選択してください。" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Open the log file, tap the share button and select MochiLog, or use the + button to select the file directly." } }
+      }
+    },
+    "tutorial_step3_title": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "結果を確認する" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Check the Results" } }
+      }
+    },
+    "tutorial_step3_description": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "解析が完了すると、バッテリーの詳細情報が表示されます。履歴を追跡して、バッテリーの状態を監視しましょう。" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Once parsing is complete, you'll see detailed battery information. Track history to monitor your battery health." } }
+      }
+    },
+    "got_it": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "わかりました" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Got It" } }
+      }
+    },
+    "contact_form": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "お問い合わせフォーム" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Contact Form" } }
+      }
+    },
+    "your_name": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "お名前" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Your Name" } }
+      }
+    },
+    "email_address": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "メールアドレス" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Email Address" } }
+      }
+    },
+    "inquiry_type": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "お問い合わせ種別" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Inquiry Type" } }
+      }
+    },
+    "inquiry_bug": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "バグ報告" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Bug Report" } }
+      }
+    },
+    "inquiry_feature": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "機能リクエスト" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Feature Request" } }
+      }
+    },
+    "inquiry_question": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "質問" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Question" } }
+      }
+    },
+    "inquiry_other": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "その他" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Other" } }
+      }
+    },
+    "message": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "メッセージ" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Message" } }
+      }
+    },
+    "message_placeholder": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "お問い合わせ内容を入力してください" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Please enter your message" } }
+      }
+    },
+    "device_info_included": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "端末情報が自動で添付されます" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Device info will be automatically attached" } }
+      }
+    },
+    "send": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "送信" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Send" } }
+      }
+    },
+    "mail_not_configured": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "メールが設定されていません" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Mail is not configured" } }
+      }
+    },
+    "mail_not_configured_message": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "support@mochilog.ryuya-dev.net へ直接メールを送信してください。" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Please send an email directly to support@mochilog.ryuya-dev.net" } }
+      }
+    },
+    "analytics": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "分析" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Analytics" } }
+      }
+    },
+    "health_trend": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "ヘルス推移" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Health Trend" } }
+      }
+    },
+    "cycle_trend": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "サイクル推移" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Cycle Trend" } }
+      }
+    },
+    "no_records_for_device": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "このデバイスの記録がありません" } },
+        "en": { "stringUnit": { "state": "translated", "value": "No records for this device" } }
+      }
+    },
+    "select_a_device": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "デバイスを選択" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Select a Device" } }
+      }
+    },
+    "all_devices": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "すべてのデバイス" } },
+        "en": { "stringUnit": { "state": "translated", "value": "All Devices" } }
+      }
+    },
+    "real_capacity": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "実容量" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Actual Capacity" } }
+      }
+    },
+    "date": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "日付" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Date" } }
+      }
+    },
+    "diag_replace_recommended": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "⚠️ 交換推奨（80%未満）" } },
+        "en": { "stringUnit": { "state": "translated", "value": "⚠️ Replace Recommended (<80%)" } }
+      }
+    },
+    "diag_slightly_degraded": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "ℹ️ やや劣化（90%未満）" } },
+        "en": { "stringUnit": { "state": "translated", "value": "ℹ️ Slightly Degraded (<90%)" } }
+      }
+    },
+    "diag_normal": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "✅ 正常" } },
+        "en": { "stringUnit": { "state": "translated", "value": "✅ Normal" } }
+      }
+    },
+    "required_fields_empty": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "必須項目を入力してください" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Please fill in required fields" } }
+      }
+    },
+    "statistics": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "統計" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Statistics" } }
+      }
+    },
+    "record_count": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "記録数" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Records" } }
+      }
+    },
+    "average_health": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "平均ヘルス" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Average Health" } }
+      }
+    },
+    "latest_cycle": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "最新サイクル" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Latest Cycle" } }
+      }
+    },
+    "latest_health": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "最新ヘルス" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Latest Health" } }
+      }
+    },
+    "next": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "次へ" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Next" } }
+      }
+    },
+    "back": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "戻る" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Back" } }
+      }
+    },
+    "search": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "検索" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Search" } }
+      }
+    }
+  },
+  "version": "1.0"
+}

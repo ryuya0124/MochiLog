@@ -3,25 +3,48 @@ import SwiftData
 import SwiftUI
 import UniformTypeIdentifiers
 
-struct ContentView: View {
-  // データベースへの接続
+// MARK: - メインタブビュー
+struct MainTabView: View {
+  @State private var selectedTab = 0
+
+  var body: some View {
+    TabView(selection: $selectedTab) {
+      HomeView()
+        .tabItem {
+          Label(String(localized: "tab_home"), systemImage: "house.fill")
+        }
+        .tag(0)
+
+      AnalyticsView()
+        .tabItem {
+          Label(String(localized: "tab_analytics"), systemImage: "chart.line.uptrend.xyaxis")
+        }
+        .tag(1)
+
+      SettingsView()
+        .tabItem {
+          Label(String(localized: "tab_settings"), systemImage: "gearshape.fill")
+        }
+        .tag(2)
+    }
+    .tint(.green)
+  }
+}
+
+// MARK: - ホームビュー
+struct HomeView: View {
   @Environment(\.modelContext) private var modelContext
-  // 日付順にデータを取得
   @Query(sort: \BatteryRecord.logDate, order: .reverse) private var records: [BatteryRecord]
+  @StateObject private var appSettings = AppSettings.shared
 
   @State private var showingFilePicker = false
   @State private var showingErrorAlert = false
   @State private var errorMessage = ""
   @State private var selectedRecord: BatteryRecord?
-  // Watch モデル選択用の状態
   @State private var pendingParseResult: LogParser.ParseResult?
   @State private var showingWatchSelection = false
   @State private var watchCandidates: [String] = []
-  // 処理中フラグ
   @State private var isProcessing = false
-
-  // 無引数で `ContentView()` を呼べるように明示的なイニシャライザを追加
-  init() {}
 
   var body: some View {
     NavigationStack {
@@ -29,25 +52,11 @@ struct ContentView: View {
         VStack {
           if records.isEmpty {
             ContentUnavailableView(
-              "データがありません", systemImage: "battery.0",
-              description: Text("右上の＋ボタンからログを追加してください"))
+              String(localized: "no_data"),
+              systemImage: "battery.0",
+              description: Text(String(localized: "no_data_description"))
+            )
           } else {
-            // --- グラフエリア ---
-            Chart {
-              ForEach(records) { record in
-                LineMark(
-                  x: .value("日付", record.logDate),
-                  y: .value("実容量", record.healthPercent)
-                )
-                .foregroundStyle(Color.green.gradient)
-                .symbol(by: .value("デバイス", record.deviceName))
-              }
-            }
-            .chartYScale(domain: 70...105)  // Y軸の範囲
-            .frame(height: 180)
-            .padding()
-
-            // --- 履歴リストエリア ---
             List {
               ForEach(deviceSections) { section in
                 Section(section.displayName) {
@@ -76,7 +85,7 @@ struct ContentView: View {
             ProgressView()
               .scaleEffect(1.5)
               .tint(.white)
-            Text("ログを解析中...")
+            Text(String(localized: "parsing_log"))
               .font(.headline)
               .foregroundColor(.white)
           }
@@ -93,7 +102,6 @@ struct ContentView: View {
           .disabled(isProcessing)
         }
       }
-      // --- ファイル選択シート ---
       .fileImporter(
         isPresented: $showingFilePicker,
         allowedContentTypes: [.json, .plainText, .data],
@@ -101,29 +109,27 @@ struct ContentView: View {
       ) { result in
         handleFileImport(result: result)
       }
-      .alert("エラー", isPresented: $showingErrorAlert) {
-        Button("OK", role: .cancel) {}
+      .alert(String(localized: "error"), isPresented: $showingErrorAlert) {
+        Button(String(localized: "ok"), role: .cancel) {}
       } message: {
         Text(errorMessage)
       }
-      // 詳細シート
       .sheet(item: $selectedRecord) { record in
         RecordDetailView(record: record)
       }
-      // Share Extensionからの通知を受け取る
       .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ProcessSharedLog")))
       { notification in
         if let text = notification.userInfo?["text"] as? String {
-          // 非同期で処理（Share Extension経由でも同様にローディング表示）
           processLogTextAsync(text)
         }
       }
       .onAppear {
         reconcileUnknownDeviceNames()
       }
-      // Watch モデル選択ダイアログ
       .confirmationDialog(
-        "デバイスを選択してください", isPresented: $showingWatchSelection, titleVisibility: .visible
+        String(localized: "select_device"),
+        isPresented: $showingWatchSelection,
+        titleVisibility: .visible
       ) {
         ForEach(watchCandidates, id: \.self) { name in
           Button(name) {
@@ -131,14 +137,12 @@ struct ContentView: View {
             let record = createRecord(from: result, deviceName: name)
             modelContext.insert(record)
             try? modelContext.save()
-            // 表示用に詳細を選択
             selectedRecord = record
-            // クリア
             pendingParseResult = nil
             watchCandidates = []
           }
         }
-        Button("キャンセル", role: .cancel) {
+        Button(String(localized: "cancel"), role: .cancel) {
           pendingParseResult = nil
           watchCandidates = []
         }
@@ -146,15 +150,14 @@ struct ContentView: View {
     }
   }
 
-  // ファイルからデータを読み込んで解析・保存
+  // MARK: - ファイルインポート処理
   private func handleFileImport(result: Result<[URL], Error>) {
     switch result {
     case .success(let urls):
       guard let url = urls.first else { return }
 
-      // セキュリティスコープのアクセス開始
       guard url.startAccessingSecurityScopedResource() else {
-        errorMessage = "ファイルへのアクセス権限がありません"
+        errorMessage = String(localized: "file_access_denied")
         showingErrorAlert = true
         return
       }
@@ -162,21 +165,19 @@ struct ContentView: View {
       do {
         let text = try String(contentsOf: url, encoding: .utf8)
         url.stopAccessingSecurityScopedResource()
-        // 非同期でパース処理を実行
         processLogTextAsync(text)
       } catch {
         url.stopAccessingSecurityScopedResource()
-        errorMessage = "ファイルの読み込みに失敗しました: \(error.localizedDescription)"
+        errorMessage = "\(String(localized: "file_read_error")): \(error.localizedDescription)"
         showingErrorAlert = true
       }
 
     case .failure(let error):
-      errorMessage = "ファイル選択エラー: \(error.localizedDescription)"
+      errorMessage = "\(String(localized: "file_select_error")): \(error.localizedDescription)"
       showingErrorAlert = true
     }
   }
 
-  // 非同期でログテキストを処理
   private func processLogTextAsync(_ text: String) {
     isProcessing = true
 
@@ -192,33 +193,23 @@ struct ContentView: View {
     }
   }
 
-  // データを追加する処理（テキストから直接パースする版 - Share Extension用）
-  private func addRecordFromText(_ text: String) -> BatteryRecord? {
-    let result = LogParser.parse(text: text)
-    return addRecordFromParseResult(result)
-  }
-
-  // データを追加する処理（パース結果から作成）
-  // 処理したレコードを返す（呼び出し元で詳細表示などに使う）
   private func addRecordFromParseResult(_ result: LogParser.ParseResult) -> BatteryRecord? {
-    // 必要なデータが最低限取れているか確認
     guard let logDate = result.logDate,
       result.cycleCount != nil,
       result.nominalCapacity != nil,
       result.rawCapacity != nil
     else {
-      errorMessage = "ログから日時やバッテリー情報を正しく取得できませんでした。"
+      errorMessage = String(localized: "parse_error")
       showingErrorAlert = true
       return nil
     }
 
     if hasDuplicateRecord(on: logDate, osVersion: result.osVersion) {
-      errorMessage = "同じログ確認日時のデータがすでに存在します。"
+      errorMessage = String(localized: "duplicate_record")
       showingErrorAlert = true
       return nil
     }
 
-    // 識別子 -> 機種名を優先 (boardId から検出済みであればそちらを利用)
     var deviceName = "Unknown"
     var deviceModelCodeToUse: String? = result.detectedIdentifier ?? result.deviceModelCode
     if let id = deviceModelCodeToUse,
@@ -227,7 +218,6 @@ struct ContentView: View {
       deviceName = resolved
     }
 
-    // ログに機種識別子が無ければ、実行中デバイスの hw.machine を参照してフォールバック
     if deviceName == "Unknown" {
       if let localId = DeviceLibrary.localModelIdentifier(),
         let resolved = DeviceLibrary.getDeviceName(for: localId)
@@ -237,30 +227,44 @@ struct ContentView: View {
       }
     }
 
-    // watchOS または Apple Watch のログだった場合、ユーザーに選択を促す
+    // watchOS または Apple Watch のログだった場合
     let isWatchOS = result.osVersion?.lowercased().contains("watch") ?? false
     let looksLikeWatch = deviceName.contains("Apple Watch")
+
     if isWatchOS || looksLikeWatch {
-      // 候補リストを作成（DeviceLibrary の辞書から Apple Watch 系を抽出）
-      watchCandidates = Array(Set(DeviceLibrary.deviceNames.values))
-        .filter { $0.contains("Apple Watch") }
-        .sorted()
+      // 登録済みのApple Watchがあれば自動で使用
+      if let registeredWatch = appSettings.registeredWatchModel {
+        let newRecord = createRecord(
+          from: result,
+          deviceName: registeredWatch,
+          deviceModelCodeOverride: deviceModelCodeToUse
+        )
+        modelContext.insert(newRecord)
+        try? modelContext.save()
+        return newRecord
+      }
+
+      // 未登録の場合は選択ダイアログを表示
+      watchCandidates = appSettings.availableWatchModels()
       pendingParseResult = result
       showingWatchSelection = true
       return nil
     }
 
-    // 通常のレコード作成
     let newRecord = createRecord(
-      from: result, deviceName: deviceName, deviceModelCodeOverride: deviceModelCodeToUse)
+      from: result,
+      deviceName: deviceName,
+      deviceModelCodeOverride: deviceModelCodeToUse
+    )
     modelContext.insert(newRecord)
     try? modelContext.save()
     return newRecord
   }
 
-  // 解析結果と選択機種名から実際の BatteryRecord を作るヘルパー
   private func createRecord(
-    from result: LogParser.ParseResult, deviceName: String, deviceModelCodeOverride: String? = nil
+    from result: LogParser.ParseResult,
+    deviceName: String,
+    deviceModelCodeOverride: String? = nil
   ) -> BatteryRecord {
     let logDate = result.logDate ?? Date()
     let modelCodeUsed = deviceModelCodeOverride ?? result.deviceModelCode
@@ -306,7 +310,6 @@ struct ContentView: View {
       if let existingVersion = existing.osVersion, let newVersion = osVersion {
         return existingVersion == newVersion
       }
-      // Only treat as duplicate if both osVersion values are nil (unknown)
       return existing.osVersion == nil && osVersion == nil
     }
   }
@@ -360,14 +363,10 @@ struct RecordRowView: View {
       VStack(alignment: .leading, spacing: 4) {
         Text(record.deviceName)
           .font(.headline)
-        Text(
-          record.logDate.formatted(
-            .dateTime.locale(Locale(identifier: "ja_JP")).year().month().day()
-          )
-        )
-        .font(.caption)
-        .foregroundStyle(.secondary)
-        Text("サイクル: \(record.cycleCount)回")
+        Text(record.logDate, style: .date)
+          .font(.caption)
+          .foregroundStyle(.secondary)
+        Text(String(format: String(localized: "cycle_count_format"), record.cycleCount))
           .font(.caption)
           .foregroundStyle(.secondary)
       }
@@ -378,7 +377,7 @@ struct RecordRowView: View {
           .bold()
           .foregroundStyle(healthColor(record.healthPercent))
         if let display = record.settingsDisplayPercent {
-          Text("OS表示: \(display)%")
+          Text("\(String(localized: "os_display")): \(display)%")
             .font(.caption2)
             .foregroundStyle(.gray)
         }
@@ -406,110 +405,102 @@ struct RecordDetailView: View {
   var body: some View {
     NavigationStack {
       List {
-        // --- 基本情報 ---
-        Section("デバイス情報") {
-          LabeledContent("機種名", value: record.deviceName)
+        Section(String(localized: "device_info")) {
+          LabeledContent(String(localized: "device_name"), value: record.deviceName)
           if let soc = record.soc {
-            LabeledContent("SoC", value: soc)
+            LabeledContent(String(localized: "soc"), value: soc)
           }
           if let modelCode = record.deviceModelCode {
-            LabeledContent("モデルコード", value: modelCode)
+            LabeledContent(String(localized: "model_code"), value: modelCode)
           }
           if let storage = record.storage {
-            LabeledContent("ストレージ", value: storage)
+            LabeledContent(String(localized: "storage"), value: storage)
           }
           if let ram = record.ram {
-            LabeledContent("RAM", value: ram)
+            LabeledContent(String(localized: "ram"), value: ram)
           }
           LabeledContent(
-            "ログ日付",
-            value: record.logDate.formatted(
-              .dateTime.locale(Locale(identifier: "ja_JP")).year().month().day()
-            )
-          )
+            String(localized: "log_date"), value: record.logDate,
+            format: .dateTime.year().month().day())
           if let firstUse = record.firstUseDate {
             LabeledContent(
-              "初使用日",
-              value: firstUse.formatted(
-                .dateTime.locale(Locale(identifier: "ja_JP")).year().month().day()
-              )
-            )
+              String(localized: "first_use_date"), value: firstUse,
+              format: .dateTime.year().month().day())
           }
         }
 
-        // --- バッテリー容量 ---
-        Section("バッテリー容量") {
-          LabeledContent("サイクル数", value: "\(record.cycleCount)回")
-          LabeledContent("設計容量", value: "\(record.designCapacity) mAh")
-          LabeledContent("公称容量", value: "\(record.nominalCapacity) mAh")
-          LabeledContent("実測容量", value: "\(record.rawCapacity) mAh")
+        Section(String(localized: "battery_capacity")) {
+          LabeledContent(
+            String(localized: "cycle_count"),
+            value: String(format: String(localized: "cycle_count_format"), record.cycleCount))
+          LabeledContent(
+            String(localized: "design_capacity"), value: "\(record.designCapacity) mAh")
+          LabeledContent(
+            String(localized: "nominal_capacity"), value: "\(record.nominalCapacity) mAh")
+          LabeledContent(String(localized: "raw_capacity"), value: "\(record.rawCapacity) mAh")
           if let lowRate = record.lowRateCapacity {
-            LabeledContent("低レート容量", value: "\(lowRate) mAh")
+            LabeledContent(String(localized: "low_rate_capacity"), value: "\(lowRate) mAh")
           }
         }
 
-        // --- ヘルス ---
-        Section("バッテリーヘルス") {
-          LabeledContent("実ヘルス") {
+        Section(String(localized: "battery_health")) {
+          LabeledContent(String(localized: "real_health")) {
             Text("\(String(format: "%.1f", record.healthPercent))%")
               .foregroundStyle(healthColor(record.healthPercent))
               .bold()
           }
           if let display = record.settingsDisplayPercent {
-            LabeledContent("OS表示", value: "\(display)%")
+            LabeledContent(String(localized: "os_display"), value: "\(display)%")
           }
           if let deflator = record.deflator {
-            LabeledContent("デフレータ", value: String(format: "%.1f%%", deflator))
+            LabeledContent(String(localized: "deflator"), value: String(format: "%.1f%%", deflator))
           }
           if let diag = record.diagnosticResult {
-            LabeledContent("診断結果", value: diag)
+            LabeledContent(String(localized: "diagnostic_result"), value: diag)
           }
         }
 
-        // --- 温度 ---
         if record.avgTemp != nil || record.maxTemp != nil || record.minTemp != nil {
-          Section("温度 (日次)") {
+          Section(String(localized: "temperature_daily")) {
             if let avg = record.avgTemp {
-              LabeledContent("平均", value: String(format: "%.1f°C", avg))
+              LabeledContent(String(localized: "average"), value: String(format: "%.1f°C", avg))
             }
             if let max = record.maxTemp {
-              LabeledContent("最大", value: String(format: "%.1f°C", max))
+              LabeledContent(String(localized: "maximum"), value: String(format: "%.1f°C", max))
             }
             if let min = record.minTemp {
-              LabeledContent("最小", value: String(format: "%.1f°C", min))
+              LabeledContent(String(localized: "minimum"), value: String(format: "%.1f°C", min))
             }
           }
         }
 
-        // --- 電圧 ---
         if record.maxVoltage != nil || record.minVoltage != nil {
-          Section("電圧") {
+          Section(String(localized: "voltage")) {
             if let max = record.maxVoltage {
-              LabeledContent("最大", value: String(format: "%.0f mV", max))
+              LabeledContent(String(localized: "maximum"), value: String(format: "%.0f mV", max))
             }
             if let min = record.minVoltage {
-              LabeledContent("最小", value: String(format: "%.0f mV", min))
+              LabeledContent(String(localized: "minimum"), value: String(format: "%.0f mV", min))
             }
           }
         }
 
-        // --- SoC ---
         if record.maxSoC != nil || record.minSoC != nil {
-          Section("充電範囲 (日次)") {
+          Section(String(localized: "charge_range_daily")) {
             if let max = record.maxSoC {
-              LabeledContent("最大SoC", value: "\(max)%")
+              LabeledContent(String(localized: "max_soc"), value: "\(max)%")
             }
             if let min = record.minSoC {
-              LabeledContent("最小SoC", value: "\(min)%")
+              LabeledContent(String(localized: "min_soc"), value: "\(min)%")
             }
           }
         }
       }
-      .navigationTitle("詳細")
+      .navigationTitle(String(localized: "detail"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .confirmationAction) {
-          Button("閉じる") { dismiss() }
+          Button(String(localized: "close")) { dismiss() }
         }
       }
     }
@@ -519,6 +510,13 @@ struct RecordDetailView: View {
     if percent < 80 { return .red }
     if percent < 90 { return .orange }
     return .green
+  }
+}
+
+// MARK: - ContentView (互換性のため残す)
+struct ContentView: View {
+  var body: some View {
+    MainTabView()
   }
 }
 
