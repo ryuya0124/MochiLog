@@ -14,7 +14,66 @@
 
   ],
   "products" : [
-
+    {
+      "displayPrice" : "160",
+      "familyShareable" : false,
+      "internalID" : "5EA5921E",
+      "localizations" : [
+        {
+          "description" : "Caffeine helps me fix bugs.",
+          "displayName" : "Buy me a coffee",
+          "locale" : "en_US"
+        },
+        {
+          "description" : "カフェイン注入でバグを修正します。",
+          "displayName" : "開発者にコーヒーを奢る",
+          "locale" : "ja"
+        }
+      ],
+      "productID" : "net.ryuya_dev.net.mochilog.donation.small",
+      "referenceName" : "MochiLog Donation Small",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "C06732F8",
+      "localizations" : [
+        {
+          "description" : "Coding makes me hungry. Thanks!",
+          "displayName" : "Buy me a lunch",
+          "locale" : "en_US"
+        },
+        {
+          "description" : "お腹が空いてはコードが書けません。",
+          "displayName" : "開発者にランチを奢る",
+          "locale" : "ja"
+        }
+      ],
+      "productID" : "net.ryuya_dev.net.mochilog.donation.medium",
+      "referenceName" : "MochiLog Donation Medium",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "22FCBDFB",
+      "localizations" : [
+        {
+          "description" : "Keeps me fueled to code all night!",
+          "displayName" : "Buy me a dinner",
+          "locale" : "en_US"
+        },
+        {
+          "description" : "開発の励みになります！今夜はご馳走です。",
+          "displayName" : "開発者にディナーを奢る",
+          "locale" : "ja"
+        }
+      ],
+      "productID" : "net.ryuya_dev.net.mochilog.donation.large",
+      "referenceName" : "MochiLog Donation Large",
+      "type" : "Consumable"
+    }
   ],
   "settings" : {
     "_askToBuyEnabled" : false,
@@ -22,9 +81,9 @@
     "_billingIssuesEnabled" : false,
     "_disableDialogs" : false,
     "_failTransactionsEnabled" : false,
-    "_locale" : "en_US",
+    "_locale" : "ja",
     "_renewalBillingIssuesEnabled" : false,
-    "_storefront" : "USA",
+    "_storefront" : "JPN",
     "_storeKitErrors" : [
 
     ],
