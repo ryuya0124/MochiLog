@@ -142,13 +142,13 @@ struct HomeView: View {
           )
           modelContext.insert(record)
           try? modelContext.save()
-          selectedRecord = record
+          selectedRecord = nil  // シートを閉じるために一旦nilにする
           pendingParseResult = nil
 
           // 未登録の場合は登録を促す
           if appSettings.registeredWatchModel == nil {
             watchNameToRegister = name
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
               showingRegisterWatchAlert = true
             }
           }
@@ -182,13 +182,13 @@ struct HomeView: View {
           )
           modelContext.insert(record)
           try? modelContext.save()
-          selectedRecord = record
+          selectedRecord = nil  // シートを閉じるために一旦nilにする
           pendingParseResult = nil
 
           // Watchが選択され、かつ未登録の場合は登録を促す
           if name.contains("Apple Watch") && appSettings.registeredWatchModel == nil {
             watchNameToRegister = name
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
               showingRegisterWatchAlert = true
             }
           }
