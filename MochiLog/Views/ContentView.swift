@@ -181,8 +181,15 @@ struct HomeView: View {
   private func processLogTextAsync(_ text: String) {
     isProcessing = true
 
+    let enableValidation = AppSettings.shared.enableCapacityValidation
+    let threshold = AppSettings.shared.capacityValidationThreshold
+
     DispatchQueue.global(qos: .userInitiated).async {
-      let parseResult = LogParser.parse(text: text)
+      let parseResult = LogParser.parse(
+        text: text,
+        enableValidation: enableValidation,
+        validationThreshold: threshold
+      )
 
       DispatchQueue.main.async {
         isProcessing = false
@@ -200,6 +207,12 @@ struct HomeView: View {
       result.rawCapacity != nil
     else {
       errorMessage = String(localized: "parse_error")
+      showingErrorAlert = true
+      return nil
+    }
+
+    if result.isCapacityMismatch {
+      errorMessage = String(localized: "capacity_mismatch_error")
       showingErrorAlert = true
       return nil
     }

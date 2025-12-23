@@ -42,6 +42,9 @@ struct LogParser {
     var detectedIdentifier: String?
     // 検出された board id (ログ中に直接見つかった文字列)
     var detectedBoardId: String?
+
+    // バリデーション
+    var isCapacityMismatch: Bool = false
   }
 
   // JSONデコード用の構造体（ログの中身に合わせる）
@@ -59,6 +62,7 @@ struct LogParser {
   private struct BatteryJSON: Codable {
     struct Message: Codable {
       let last_value_CycleCount: Int?
+      let last_value_DesignCapacity: Int?
       let last_value_NominalChargeCapacity: Int?
       let last_value_AppleRawMaxCapacity: Int?
       let last_value_MinimumQmax: Int?
@@ -83,7 +87,11 @@ struct LogParser {
   }
 
   // ★メインの解析関数
-  static func parse(text: String) -> ParseResult {
+  static func parse(
+    text: String,
+    enableValidation: Bool = true,
+    validationThreshold: Double = 10.0
+  ) -> ParseResult {
     var result = ParseResult()
     var headerJSONString: String?
     var hardwareJSONString: String?
@@ -160,6 +168,18 @@ struct LogParser {
     let nominal = msg.last_value_NominalChargeCapacity ?? 0
     let raw = msg.last_value_AppleRawMaxCapacity ?? 0
     let lowRate = msg.last_value_MinimumQmax ?? 0
+
+    // バリデーション: ログ内の設計容量（または公称容量）とライブラリの設計容量を比較
+    if enableValidation, let libraryCap = result.designCapacity, libraryCap > 0 {
+      // ログに設計容量があればそれを使う、なければ公称容量で代用してチェック
+      let logCapToCheck = msg.last_value_DesignCapacity ?? nominal
+      if logCapToCheck > 0 {
+        let ratio = Double(logCapToCheck) / Double(libraryCap)
+        if ratio >= validationThreshold || ratio <= (1.0 / validationThreshold) {
+          result.isCapacityMismatch = true
+        }
+      }
+    }
 
     result.cycleCount = msg.last_value_CycleCount
     result.nominalCapacity = nominal

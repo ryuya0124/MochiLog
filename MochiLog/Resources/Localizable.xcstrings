@@ -103,6 +103,12 @@
         "en": { "stringUnit": { "state": "translated", "value": "A log with the same date already exists" } }
       }
     },
+    "capacity_mismatch_error": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "ログの設計容量が端末のスペックと大きく異なります" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Log design capacity differs significantly from device specs" } }
+      }
+    },
     "cycle_count": {
       "localizations": {
         "ja": { "stringUnit": { "state": "translated", "value": "サイクル" } },
@@ -359,6 +365,30 @@
       "localizations": {
         "ja": { "stringUnit": { "state": "translated", "value": "データ管理" } },
         "en": { "stringUnit": { "state": "translated", "value": "Data Management" } }
+      }
+    },
+    "advanced_settings": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "高度な設定" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Advanced Settings" } }
+      }
+    },
+    "enable_capacity_validation": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "容量のバリデーションを有効にする" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Enable Capacity Validation" } }
+      }
+    },
+    "validation_threshold": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "バリデーション閾値 (倍率)" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Validation Threshold (Multiplier)" } }
+      }
+    },
+    "validation_threshold_description": {
+      "localizations": {
+        "ja": { "stringUnit": { "state": "translated", "value": "ログの設計容量が端末スペックの N倍以上、または 1/N以下の時にエラーにします。" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Errors when log design capacity is N times or 1/N of device specs." } }
       }
     },
     "delete_all_data": {

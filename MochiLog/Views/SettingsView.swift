@@ -11,6 +11,7 @@ struct SettingsView: View {
   @State private var showingDeleteConfirmation = false
   @State private var showingTutorial = false
   @State private var showingSupportForm = false
+  @State private var isAdvancedExpanded = false
 
   private var appVersion: String {
     let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
@@ -71,6 +72,38 @@ struct SettingsView: View {
             Label(String(localized: "delete_all_data"), systemImage: "trash.fill")
           }
           .disabled(records.isEmpty)
+        }
+
+        // MARK: - 高度な設定
+        Section {
+          DisclosureGroup(String(localized: "advanced_settings"), isExpanded: $isAdvancedExpanded) {
+            VStack(spacing: 16) {
+              Toggle(
+                String(localized: "enable_capacity_validation"),
+                isOn: $appSettings.enableCapacityValidation
+              )
+              .padding(.top, 8)
+
+              if appSettings.enableCapacityValidation {
+                VStack(alignment: .leading, spacing: 8) {
+                  HStack {
+                    Text(String(localized: "validation_threshold"))
+                    Spacer()
+                    Text(String(format: "%.1f x", appSettings.capacityValidationThreshold))
+                      .monospacedDigit()
+                      .foregroundStyle(.secondary)
+                  }
+                  Slider(value: $appSettings.capacityValidationThreshold, in: 2...20, step: 0.5)
+                }
+              }
+
+              Text(String(localized: "validation_threshold_description"))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.bottom, 8)
+            }
+          }
         }
 
         // MARK: - アプリ情報

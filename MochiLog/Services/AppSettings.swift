@@ -10,6 +10,8 @@ final class AppSettings: ObservableObject {
   private enum Keys {
     static let registeredWatchModel = "registeredWatchModel"
     static let hasCompletedTutorial = "hasCompletedTutorial"
+    static let enableCapacityValidation = "enableCapacityValidation"
+    static let capacityValidationThreshold = "capacityValidationThreshold"
   }
 
   // MARK: - Published Properties
@@ -20,11 +22,28 @@ final class AppSettings: ObservableObject {
   /// チュートリアル完了済みフラグ
   @Published var hasCompletedTutorial: Bool
 
+  /// バッテリー容量のバリデーションを有効にするか
+  @Published var enableCapacityValidation: Bool
+
+  /// バッテリー容量バリデーションの閾値（倍率）
+  @Published var capacityValidationThreshold: Double
+
   // MARK: - Initialization
 
   private init() {
     self.registeredWatchModel = UserDefaults.standard.string(forKey: Keys.registeredWatchModel)
     self.hasCompletedTutorial = UserDefaults.standard.bool(forKey: Keys.hasCompletedTutorial)
+
+    // デフォルト値の設定
+    if UserDefaults.standard.object(forKey: Keys.enableCapacityValidation) == nil {
+      self.enableCapacityValidation = true
+    } else {
+      self.enableCapacityValidation = UserDefaults.standard.bool(
+        forKey: Keys.enableCapacityValidation)
+    }
+
+    let threshold = UserDefaults.standard.double(forKey: Keys.capacityValidationThreshold)
+    self.capacityValidationThreshold = threshold == 0 ? 10.0 : threshold
 
     // プロパティの変更を監視してUserDefaultsに保存
     setupObservers()
@@ -44,6 +63,20 @@ final class AppSettings: ObservableObject {
       .dropFirst()
       .sink { [weak self] value in
         UserDefaults.standard.set(value, forKey: Keys.hasCompletedTutorial)
+      }
+      .store(in: &cancellables)
+
+    $enableCapacityValidation
+      .dropFirst()
+      .sink { value in
+        UserDefaults.standard.set(value, forKey: Keys.enableCapacityValidation)
+      }
+      .store(in: &cancellables)
+
+    $capacityValidationThreshold
+      .dropFirst()
+      .sink { value in
+        UserDefaults.standard.set(value, forKey: Keys.capacityValidationThreshold)
       }
       .store(in: &cancellables)
   }
