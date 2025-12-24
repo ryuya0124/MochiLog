@@ -1743,6 +1743,23 @@
         }
       }
     },
+    "chart_range" : {
+      "comment" : "Label for the range picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Range"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "期間"
+          }
+        }
+      }
+    },
     "raw_capacity" : {
       "localizations" : {
         "en" : {

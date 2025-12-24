@@ -34,6 +34,8 @@ struct AnalyticsView: View {
 
   @State private var selectedRange: RangePreset = .oneMonth
 
+  @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
   private var deviceNames: [String] {
     Array(Set(records.map { $0.deviceName })).sorted()
   }
@@ -120,20 +122,38 @@ struct AnalyticsView: View {
           .padding()
       } else {
         // チャートコントロール：単位と範囲
-        HStack(spacing: 12) {
-          Picker(String(localized: "chart_unit_day"), selection: $appSettings.defaultChartUnit) {
-            ForEach(AppSettings.ChartUnit.allCases) { unit in
-              Text(unit.localizedName).tag(unit)
+        if horizontalSizeClass == .compact {
+          VStack(spacing: 8) {
+            Picker(String(localized: "chart_unit_day"), selection: $appSettings.defaultChartUnit) {
+              ForEach(AppSettings.ChartUnit.allCases) { unit in
+                Text(unit.localizedName).tag(unit)
+              }
             }
-          }
-          .pickerStyle(.segmented)
+            .pickerStyle(.menu)
 
-          Picker("Range", selection: $selectedRange) {
-            ForEach(RangePreset.allCases) { preset in
-              Text(preset.localizedName).tag(preset)
+            Picker(String(localized: "chart_range"), selection: $selectedRange) {
+              ForEach(RangePreset.allCases) { preset in
+                Text(preset.localizedName).tag(preset)
+              }
             }
+            .pickerStyle(.menu)
           }
-          .pickerStyle(.segmented)
+        } else {
+          HStack(spacing: 12) {
+            Picker(String(localized: "chart_unit_day"), selection: $appSettings.defaultChartUnit) {
+              ForEach(AppSettings.ChartUnit.allCases) { unit in
+                Text(unit.localizedName).tag(unit)
+              }
+            }
+            .pickerStyle(.segmented)
+
+            Picker(String(localized: "chart_range"), selection: $selectedRange) {
+              ForEach(RangePreset.allCases) { preset in
+                Text(preset.localizedName).tag(preset)
+              }
+            }
+            .pickerStyle(.segmented)
+          }
         }
 
         let endDate = Date()
