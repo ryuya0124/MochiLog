@@ -9,6 +9,7 @@ struct SettingsView: View {
 
   @State private var showingWatchPicker = false
   @State private var showingDeleteConfirmation = false
+  @State private var showingRemoveWatchConfirmation = false
   @State private var showingTutorial = false
   @State private var showingSupportForm = false
   @State private var showingDonation = false
@@ -78,7 +79,7 @@ struct SettingsView: View {
           }
 
           if appSettings.registeredWatchModel != nil {
-            Button(role: .destructive, action: { appSettings.unregisterWatch() }) {
+            Button(role: .destructive, action: { showingRemoveWatchConfirmation = true }) {
               Label(String(localized: "remove_watch"), systemImage: "minus.circle")
             }
           }
@@ -210,6 +211,14 @@ struct SettingsView: View {
         }
       } message: {
         Text(String(localized: "delete_all_data_confirm"))
+      }
+      .alert(String(localized: "remove_watch"), isPresented: $showingRemoveWatchConfirmation) {
+        Button(String(localized: "cancel"), role: .cancel) {}
+        Button(String(localized: "remove_watch"), role: .destructive) {
+          appSettings.unregisterWatch()
+        }
+      } message: {
+        Text(String(localized: "remove_watch_confirm"))
       }
       .alert(String(localized: "icloud_sync_failed"), isPresented: $showingICloudErrorAlert) {
         Button(String(localized: "ok"), role: .cancel) {}

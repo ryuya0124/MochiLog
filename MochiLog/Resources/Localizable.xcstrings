@@ -1835,6 +1835,22 @@
         }
       }
     },
+    "remove_watch_confirm" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove the registered Apple Watch? This will stop automatic model detection for future logs."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登録済みのApple Watchを解除しますか？今後ログで自動的にこのモデルが適用されなくなります。"
+          }
+        }
+      }
+    },
     "required_fields_empty" : {
       "localizations" : {
         "en" : {
