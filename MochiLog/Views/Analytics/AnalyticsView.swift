@@ -16,6 +16,20 @@ struct AnalyticsView: View {
     case all = "all"
 
     var id: String { self.rawValue }
+
+    /// ローカライズされた表示名
+    var localizedName: String {
+      switch self {
+      case .oneWeek:
+        return String(localized: "range_1w")
+      case .oneMonth:
+        return String(localized: "range_1m")
+      case .threeMonths:
+        return String(localized: "range_3m")
+      case .all:
+        return String(localized: "range_all")
+      }
+    }
   }
 
   @State private var selectedRange: RangePreset = .oneMonth
@@ -116,7 +130,7 @@ struct AnalyticsView: View {
 
           Picker("Range", selection: $selectedRange) {
             ForEach(RangePreset.allCases) { preset in
-              Text(preset.rawValue).tag(preset)
+              Text(preset.localizedName).tag(preset)
             }
           }
           .pickerStyle(.segmented)
