@@ -38,7 +38,7 @@ struct MochiLogApp: App {
 
   var body: some Scene {
     WindowGroup {
-      ContentView()
+      MainTabView()
         .onOpenURL { url in
           handleOpenURL(url)
         }
@@ -61,14 +61,44 @@ struct MochiLogApp: App {
     }
 
     do {
-      let text = try String(contentsOf: url, encoding: .utf8)
-      // データを渡して処理を実行
-      DispatchQueue.main.async {
-        NotificationCenter.default.post(
-          name: NSNotification.Name("ProcessSharedLog"),
-          object: nil,
-          userInfo: ["text": text]
-        )
+      // Try common encodings to be resilient to sharing sources
+      var text: String? = nil
+      // 1. UTF-8
+      if let s = try? String(contentsOf: url, encoding: .utf8) { text = s }
+      // 2. UTF-16
+      if text == nil, let s = try? String(contentsOf: url, encoding: .utf16) { text = s }
+      // 3. ISO Latin 1
+      if text == nil, let s = try? String(contentsOf: url, encoding: .isoLatin1) { text = s }
+      // 4. Shift-JIS (Japanese logs sometimes encoded in Shift-JIS)
+      if text == nil, let data = try? Data(contentsOf: url),
+        let s = String(data: data, encoding: .shiftJIS)
+      {
+        text = s
+      }
+      // 5. Fallback to platform default initializer
+      if text == nil, let s = try? String(contentsOf: url) { text = s }
+
+      if let text = text {
+        DispatchQueue.main.async {
+          NotificationCenter.default.post(
+            name: NSNotification.Name("ProcessSharedLog"),
+            object: nil,
+            userInfo: ["text": text]
+          )
+          // Persist as fallback in case the HomeView hasn't registered yet
+          UserDefaults.standard.set(text, forKey: "PendingSharedLogText")
+        }
+      } else {
+        print("ファイルの読み込み失敗（対応する文字エンコーディングが見つかりません）: \(url)")
+        DispatchQueue.main.async {
+          NotificationCenter.default.post(
+            name: NSNotification.Name("ProcessSharedLog"),
+            object: nil,
+            userInfo: ["text": ""]
+          )
+          // Avoid persisting an empty string; notify via UserDefaults that read failed
+          UserDefaults.standard.removeObject(forKey: "PendingSharedLogText")
+        }
       }
     } catch {
       print("ファイルの読み込み失敗: \(error)")

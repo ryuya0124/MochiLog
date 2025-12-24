@@ -16,6 +16,11 @@ struct SettingsView: View {
   @State private var showingTermsOfUse = false
   @State private var isAdvancedExpanded = false
 
+  // iCloud トグル用ローカル状態とエラー表示
+  @State private var localICloudToggle: Bool = false
+  @State private var showingICloudErrorAlert = false
+  @State private var iCloudErrorMessage: String = ""
+
   private var appVersion: String {
     let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
     let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
@@ -84,6 +89,30 @@ struct SettingsView: View {
           .disabled(records.isEmpty)
         }
 
+        // MARK: - 同期
+        Section(String(localized: "sync")) {
+          Toggle(String(localized: "enable_icloud_sync"), isOn: $localICloudToggle)
+            .onChange(of: localICloudToggle) { newValue in
+              let result = appSettings.attemptSetICloudSync(newValue)
+              switch result {
+              case .success:
+                // OK
+                break
+              case .failure(let err):
+                // Revert toggle and show error
+                localICloudToggle = appSettings.iCloudSyncEnabled
+                iCloudErrorMessage = err.errorDescription ?? String(localized: "icloud_sync_failed")
+                showingICloudErrorAlert = true
+              }
+            }
+
+          if let blocked = appSettings.iCloudSyncBlockedReason {
+            Text(blocked)
+              .font(.caption)
+              .foregroundColor(.red)
+          }
+        }
+
         // MARK: - 高度な設定
         Section {
           DisclosureGroup(String(localized: "advanced_settings"), isExpanded: $isAdvancedExpanded) {
@@ -120,6 +149,23 @@ struct SettingsView: View {
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.bottom, 8)
+
+              VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                  Text(String(localized: "icloud_storage_threshold"))
+                  Spacer()
+                  Text(String(format: "%.0f MB", appSettings.iCloudStorageThresholdMB))
+                    .foregroundStyle(.secondary)
+                }
+                Slider(value: $appSettings.iCloudStorageThresholdMB, in: 10...1024, step: 10)
+              }
+
+              if let blocked = appSettings.iCloudSyncBlockedReason {
+                Text(blocked)
+                  .font(.caption)
+                  .foregroundColor(.red)
+                  .frame(maxWidth: .infinity, alignment: .leading)
+              }
             }
           }
         }
@@ -130,6 +176,7 @@ struct SettingsView: View {
         }
       }
       .navigationTitle(String(localized: "settings"))
+      .onAppear { localICloudToggle = appSettings.iCloudSyncEnabled }
       .sheet(isPresented: $showingWatchPicker) {
         HierarchicalDevicePickerView(initialCategory: .watch, lockCategory: true) {
           name, identifier in
@@ -158,6 +205,11 @@ struct SettingsView: View {
         }
       } message: {
         Text(String(localized: "delete_all_data_confirm"))
+      }
+      .alert(String(localized: "icloud_sync_failed"), isPresented: $showingICloudErrorAlert) {
+        Button(String(localized: "ok"), role: .cancel) {}
+      } message: {
+        Text(iCloudErrorMessage)
       }
     }
   }

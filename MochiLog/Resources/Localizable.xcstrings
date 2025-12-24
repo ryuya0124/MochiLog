@@ -1331,6 +1331,22 @@
         }
       }
     },
+    "no_supported_files" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No supported files were selected"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "対応するファイルが選択されていません"
+          }
+        }
+      }
+    },
     "nominal_capacity" : {
       "localizations" : {
         "en" : {
@@ -2191,6 +2207,60 @@
         }
       }
     },
+    "enable_icloud_sync" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Enable iCloud Sync" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "iCloud同期を有効にする" } }
+      }
+    },
+    "icloud_storage_threshold" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "iCloud storage threshold (MB)" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "iCloud 同期抑制閾値 (MB)" } }
+      }
+    },
+    "icloud_sync_blocked_low_space" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "iCloud sync blocked: free space less than %d MB" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "iCloud 同期をブロックしました: 空き容量が %d MB 未満です" } }
+      }
+    },
+    "chart_unit_hour" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Hour" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "時間" } }
+      }
+    },
+    "chart_unit_day" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Day" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "日" } }
+      }
+    },
+    "chart_unit_week" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Week" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "週" } }
+      }
+    },
+    "chart_unit_month" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Month" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "月" } }
+      }
+    },
+    "sync" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sync" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "同期" } }
+      }
+    },
+    "icloud_sync_failed" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "iCloud sync failed" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "iCloud同期に失敗しました" } }
+      }
+    },
     "view_tutorial" : {
       "localizations" : {
         "en" : {
@@ -2254,6 +2324,9 @@
           }
         }
       }
+    },
+    "zip_extract_failed" : {
+
     }
   },
   "version" : "1.1"

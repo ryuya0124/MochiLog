@@ -1,0 +1,199 @@
+// HomeView+Import.swift
+// HomeViewのファイルインポート処理・フォルダ/ZIPヘルパー実装（ロジック用途）
+
+import SwiftUI
+import UniformTypeIdentifiers
+import ZIPFoundation
+
+// HomeView 拡張として各種インポート・ヘルパー
+extension HomeView {
+  /// ファイルインポート処理（複数・フォルダ・ZIP対応）
+  func handleFileImport(result: Result<[URL], Error>) async {
+    switch result {
+    case .success(let urls):
+      if urls.isEmpty { return }
+      await MainActor.run { isProcessing = true }
+      defer { Task { await MainActor.run { isProcessing = false } } }
+      var allFileURLs: [URL] = []
+      for url in urls {
+        guard url.startAccessingSecurityScopedResource() else {
+          await MainActor.run {
+            errorMessage = String(localized: "file_access_denied")
+            showingErrorAlert = true
+          }
+          continue
+        }
+        defer { url.stopAccessingSecurityScopedResource() }
+        // フォルダかZIPか、通常ファイルか判定して展開
+        if url.hasDirectoryPath {
+          if let folderContents = try? await ImportHelper.recursiveContentsOfFolder(url: url) {
+            allFileURLs.append(contentsOf: folderContents)
+          }
+        } else if url.pathExtension.lowercased() == "zip" {
+          if let extracted = try? await ImportHelper.extractZipContents(zipURL: url) {
+            allFileURLs.append(contentsOf: extracted)
+          } else {
+            await MainActor.run {
+              errorMessage =
+                "\(String(localized: "file_read_error")): \(url.lastPathComponent) \(String(localized: "zip_extract_failed"))"
+              showingErrorAlert = true
+            }
+          }
+        } else {
+          allFileURLs.append(url)
+        }
+      }
+      // フィルター: 対応ファイルのみ（zip, txt, .ips, .ips.ca.syned を受け付ける）
+      let supportedTypes: [UTType] = [.plainText]
+      allFileURLs = ImportHelper.filterSupportedFiles(allFileURLs, supportedTypes: supportedTypes)
+      if allFileURLs.isEmpty {
+        await MainActor.run {
+          errorMessage = String(localized: "no_supported_files")
+          showingErrorAlert = true
+        }
+        return
+      }
+      // 並列で全ファイルからテキスト読み込み＆パース実行
+      var parseResults: [LogParser.ParseResult] = []
+      var errors: [String] = []
+      // AppSettings へのアクセスはここでキャプチャしておく（TaskGroup内での同期アクセス回避）
+      let enableValidation = AppSettings.shared.enableCapacityValidation
+      let threshold = AppSettings.shared.capacityValidationThreshold
+      await withTaskGroup(of: (LogParser.ParseResult?, String?).self) { group in
+        for fileURL in allFileURLs {
+          group.addTask {
+            do {
+              let text = try String(contentsOf: fileURL, encoding: .utf8)
+              let result = await LogParser.parse(
+                text: text,
+                enableValidation: enableValidation,
+                validationThreshold: threshold
+              )
+              return (result, nil)
+            } catch {
+              return (nil, "\(fileURL.lastPathComponent): \(error.localizedDescription)")
+            }
+          }
+        }
+        for await (result, error) in group {
+          if let result = result {
+            parseResults.append(result)
+          }
+          if let error = error {
+            errors.append(error)
+          }
+        }
+      }
+      // 重複排除（logDate+osVersion）、日付昇順ソート
+      var dict: [String: LogParser.ParseResult] = [:]
+      for r in parseResults {
+        guard let date = r.logDate else { continue }
+        let osVer = r.osVersion ?? ""
+        let key = "\(date.timeIntervalSince1970)_\(osVer)"
+        if dict[key] == nil {
+          dict[key] = r
+        }
+      }
+      let uniqueResults = dict.values.sorted { ($0.logDate ?? Date()) < ($1.logDate ?? Date()) }
+      // 追加処理
+      var addedAny = false
+      var addErrors: [String] = []
+      await MainActor.run {
+        for result in uniqueResults {
+          if let newRecord = addRecordFromParseResult(result) {
+            selectedRecord = newRecord
+            addedAny = true
+          } else {
+            addErrors.append(String(localized: "parse_error"))
+          }
+        }
+      }
+      // エラーがあったらまとめて通知
+      if !errors.isEmpty || !addErrors.isEmpty {
+        let combinedErrors = (errors + addErrors).joined(separator: "\n")
+        await MainActor.run {
+          errorMessage = combinedErrors
+          showingErrorAlert = true
+        }
+      }
+      // 追加成功してひとつも選択されていなかったら最初の追加を選択
+      if !addedAny, let first = uniqueResults.first {
+        await MainActor.run {
+          selectedRecord = addRecordFromParseResult(first)
+        }
+      }
+    case .failure(let error):
+      await MainActor.run {
+        errorMessage = "\(String(localized: "file_select_error")): \(error.localizedDescription)"
+        showingErrorAlert = true
+      }
+    }
+  }
+}
+
+// 汎用インポートヘルパー（フォルダ再帰、ZIP展開、ファイルタイプフィルター）
+struct ImportHelper {
+  /// フォルダ内を再帰してファイルURL一覧を返す（非同期・投げる）
+  static func recursiveContentsOfFolder(url: URL) async throws -> [URL] {
+    var results: [URL] = []
+    let fm = FileManager.default
+    guard
+      let enumerator = fm.enumerator(
+        at: url, includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles])
+    else {
+      return results
+    }
+    while let item = enumerator.nextObject() {
+      guard let fileURL = item as? URL else { continue }
+      if let values = try? fileURL.resourceValues(forKeys: [.isRegularFileKey, .isDirectoryKey]),
+        values.isRegularFile == true
+      {
+        results.append(fileURL)
+      }
+    }
+    return results
+  }
+
+  /// ZIPを一時ディレクトリに展開して中のファイルURL一覧を返す
+  static func extractZipContents(zipURL: URL) async throws -> [URL] {
+    let fm = FileManager.default
+    let tempDir = fm.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    try fm.createDirectory(at: tempDir, withIntermediateDirectories: true)
+
+    let archive = try ZIPFoundation.Archive(url: zipURL, accessMode: .read)
+
+    var extracted: [URL] = []
+    for entry in archive {
+      let destinationURL = tempDir.appendingPathComponent(entry.path)
+      let destDir = destinationURL.deletingLastPathComponent()
+      try fm.createDirectory(at: destDir, withIntermediateDirectories: true)
+      _ = try archive.extract(entry, to: destinationURL)
+      extracted.append(destinationURL)
+    }
+    return extracted
+  }
+
+  /// 対応するUTTypeのみを残す
+  static func filterSupportedFiles(_ urls: [URL], supportedTypes: [UTType]) -> [URL] {
+    return urls.filter { url in
+      let filename = url.lastPathComponent.lowercased()
+      // Accept multi-part suffix first (e.g. .ips.ca.syned)
+      if filename.hasSuffix(".ips.ca.syned") { return true }
+
+      // Accept simple extensions (include last-extension 'syned' for .ips.ca.syned)
+      let ext = url.pathExtension.lowercased()
+      let allowedExtensions: Set<String> = ["txt", "ips", "zip", "syned"]
+      if allowedExtensions.contains(ext) { return true }
+
+      // UTType-based check (plain text / archive / data fallback)
+      if let type = try? url.resourceValues(forKeys: [.contentTypeKey]).contentType {
+        if supportedTypes.contains(where: { type.conforms(to: $0) }) { return true }
+        if type.conforms(to: .archive) || type == UTType.zip || type.conforms(to: .data) {
+          return true
+        }
+      }
+
+      return false
+    }
+  }
+}

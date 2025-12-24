@@ -1,9 +1,9 @@
+import Charts
+import SwiftData
 // HomeView.swift
 // 別ファイルへ分離
 import SwiftUI
-import SwiftData
 import UniformTypeIdentifiers
-import Charts
 
 // MARK: - メインタブビュー
 struct MainTabView: View {
@@ -38,19 +38,372 @@ struct HomeView: View {
   @StateObject private var appSettings = AppSettings.shared
 
   @State private var showingFilePicker = false
-  @State private var showingErrorAlert = false
-  @State private var errorMessage = ""
-  @State private var selectedRecord: BatteryRecord?
+  @State var showingErrorAlert = false
+  @State var errorMessage = ""
+  @State var selectedRecord: BatteryRecord?
+  @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @State private var pendingParseResult: LogParser.ParseResult?
   @State private var showingWatchSelection = false
-  @State private var isProcessing = false
+  @State var isProcessing = false
   @State private var showingMismatchAlert = false
   @State private var showingManualDevicePicker = false
   @State private var showingRegisterWatchAlert = false
   @State private var watchNameToRegister = ""
 
-  // 本体のUIと navigation, toolbars
   var body: some View {
-    // ...本体実装は ContentView.swift の HomeView 本体部分からコピペ...
+    NavigationStack {
+      ZStack {
+        VStack {
+          if records.isEmpty {
+            ContentUnavailableView(
+              String(localized: "no_data"),
+              systemImage: "battery.0",
+              description: Text(String(localized: "no_data_description"))
+            )
+          } else {
+            List {
+              ForEach(deviceSections) { section in
+                Section(section.displayName) {
+                  ForEach(section.records) { record in
+                    if horizontalSizeClass == .regular {
+                      NavigationLink(destination: RecordDetailView(record: record)) {
+                        RecordRowView(record: record)
+                      }
+                    } else {
+                      RecordRowView(record: record)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                          selectedRecord = record
+                        }
+                    }
+                  }
+                  .onDelete { offsets in
+                    let items = offsets.map { section.records[$0] }
+                    deleteRecords(items)
+                  }
+                }
+              }
+            }
+          }
+        }
+        if isProcessing {
+          Color.black.opacity(0.3)
+            .ignoresSafeArea()
+          VStack(spacing: 16) {
+            ProgressView()
+              .scaleEffect(1.5)
+              .tint(.white)
+            Text(String(localized: "parsing_log"))
+              .font(.headline)
+              .foregroundColor(.white)
+          }
+          .padding(32)
+          .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+        }
+      }
+      .navigationTitle("MochiLog")
+      .toolbar {
+        ToolbarItem(placement: .navigationBarTrailing) {
+          Button(action: { showingFilePicker = true }) {
+            Image(systemName: "plus")
+          }
+          .disabled(isProcessing)
+        }
+      }
+      .fileImporter(
+        isPresented: $showingFilePicker,
+        allowedContentTypes: [
+          .json,
+          .plainText,
+          .data,
+          .folder,
+          UTType(filenameExtension: "zip")!,
+          UTType(filenameExtension: "ips")!,
+          UTType(filenameExtension: "syned")!,
+        ],
+        allowsMultipleSelection: true
+      ) { result in
+        Task {
+          await handleFileImport(result: result)
+        }
+      }
+      .alert(String(localized: "error"), isPresented: $showingErrorAlert) {
+        Button(String(localized: "ok"), role: .cancel) {}
+      } message: {
+        Text(errorMessage)
+      }
+      .sheet(item: $selectedRecord) { record in
+        RecordDetailView(record: record)
+      }
+      .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ProcessSharedLog")))
+      { notification in
+        if let text = notification.userInfo?["text"] as? String {
+          // Remove persisted fallback and process
+          UserDefaults.standard.removeObject(forKey: "PendingSharedLogText")
+          processLogTextAsync(text)
+        }
+      }
+      .onAppear {
+        reconcileUnknownDeviceNames()
+        // If a shared log was persisted before HomeView appeared, process it now
+        if let pending = UserDefaults.standard.string(forKey: "PendingSharedLogText") {
+          UserDefaults.standard.removeObject(forKey: "PendingSharedLogText")
+          processLogTextAsync(pending)
+        }
+      }
+      .sheet(isPresented: $showingWatchSelection) {
+        HierarchicalDevicePickerView(initialCategory: .watch, lockCategory: true) {
+          name, identifier in
+          guard let result = pendingParseResult else { return }
+          let record = createRecord(
+            from: result,
+            deviceName: name,
+            deviceModelCodeOverride: identifier
+          )
+          modelContext.insert(record)
+          try? modelContext.save()
+          selectedRecord = nil
+          pendingParseResult = nil
+
+          if appSettings.registeredWatchModel == nil {
+            watchNameToRegister = name
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+              showingRegisterWatchAlert = true
+            }
+          }
+        }
+      }
+      .alert(String(localized: "register_watch_title"), isPresented: $showingRegisterWatchAlert) {
+        Button(String(localized: "register")) {
+          appSettings.registeredWatchModel = watchNameToRegister
+        }
+        Button(String(localized: "cancel"), role: .cancel) {}
+      } message: {
+        Text(String(localized: "register_watch_message"))
+      }
+      .alert(String(localized: "mismatch_warning_title"), isPresented: $showingMismatchAlert) {
+        Button(String(localized: "select_manually")) {
+          showingManualDevicePicker = true
+        }
+        Button(String(localized: "cancel"), role: .cancel) {
+          pendingParseResult = nil
+        }
+      } message: {
+        Text(String(localized: "mismatch_warning_message"))
+      }
+      .sheet(isPresented: $showingManualDevicePicker) {
+        HierarchicalDevicePickerView { name, identifier in
+          guard let result = pendingParseResult else { return }
+          let record = createRecord(
+            from: result,
+            deviceName: name,
+            deviceModelCodeOverride: identifier
+          )
+          modelContext.insert(record)
+          try? modelContext.save()
+          selectedRecord = nil
+          pendingParseResult = nil
+
+          if name.contains("Apple Watch") && appSettings.registeredWatchModel == nil {
+            watchNameToRegister = name
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+              showingRegisterWatchAlert = true
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // --- 以下のメソッドは HomeView+Import.swift へ分離済み ---
+  // handleFileImport, recursiveContentsOfFolder, extractZipContents
+  // --- 以下のサブビュー/ユーティリティも RecordViews.swift, ZipArchiveHelper.swift へ分離済み ---
+
+  // 残すべき内部ロジック
+  private func processLogTextAsync(_ text: String) {
+    isProcessing = true
+
+    let enableValidation = AppSettings.shared.enableCapacityValidation
+    let threshold = AppSettings.shared.capacityValidationThreshold
+
+    DispatchQueue.global(qos: .userInitiated).async {
+      let parseResult = LogParser.parse(
+        text: text,
+        enableValidation: enableValidation,
+        validationThreshold: threshold
+      )
+
+      DispatchQueue.main.async {
+        isProcessing = false
+        if let newRecord = addRecordFromParseResult(parseResult) {
+          selectedRecord = newRecord
+        }
+      }
+    }
+  }
+
+  func addRecordFromParseResult(_ result: LogParser.ParseResult) -> BatteryRecord? {
+    guard let logDate = result.logDate,
+      result.cycleCount != nil,
+      result.nominalCapacity != nil,
+      result.rawCapacity != nil
+    else {
+      errorMessage = String(localized: "parse_error")
+      showingErrorAlert = true
+      return nil
+    }
+
+    if result.isCapacityMismatch {
+      if appSettings.mismatchBehavior == .error {
+        errorMessage = String(localized: "capacity_mismatch_error")
+        showingErrorAlert = true
+        return nil
+      } else {
+        pendingParseResult = result
+        showingMismatchAlert = true
+        return nil
+      }
+    }
+
+    if hasDuplicateRecord(on: logDate, osVersion: result.osVersion) {
+      errorMessage = String(localized: "duplicate_record")
+      showingErrorAlert = true
+      return nil
+    }
+
+    var deviceName = "Unknown"
+    var deviceModelCodeToUse: String? = result.detectedIdentifier ?? result.deviceModelCode
+    if let id = deviceModelCodeToUse,
+      let resolved = DeviceLibrary.getDeviceName(for: id)
+    {
+      deviceName = resolved
+    }
+
+    if deviceName == "Unknown" {
+      if let localId = DeviceLibrary.localModelIdentifier(),
+        let resolved = DeviceLibrary.getDeviceName(for: localId)
+      {
+        deviceName = resolved
+        deviceModelCodeToUse = localId
+      }
+    }
+
+    let isWatchOS = result.osVersion?.lowercased().contains("watch") ?? false
+    let looksLikeWatch = deviceName.contains("Apple Watch")
+
+    if isWatchOS || looksLikeWatch {
+      if let registeredWatch = appSettings.registeredWatchModel {
+        let newRecord = createRecord(
+          from: result,
+          deviceName: registeredWatch,
+          deviceModelCodeOverride: deviceModelCodeToUse
+        )
+        modelContext.insert(newRecord)
+        try? modelContext.save()
+        return newRecord
+      }
+      pendingParseResult = result
+      showingWatchSelection = true
+      return nil
+    }
+
+    let newRecord = createRecord(
+      from: result,
+      deviceName: deviceName,
+      deviceModelCodeOverride: deviceModelCodeToUse
+    )
+    modelContext.insert(newRecord)
+    try? modelContext.save()
+    return newRecord
+  }
+
+  private func createRecord(
+    from result: LogParser.ParseResult,
+    deviceName: String,
+    deviceModelCodeOverride: String? = nil
+  ) -> BatteryRecord {
+    let logDate = result.logDate ?? Date()
+    let modelCodeUsed = deviceModelCodeOverride ?? result.deviceModelCode
+    return BatteryRecord(
+      logDate: logDate,
+      deviceName: deviceName,
+      deviceModelCode: modelCodeUsed,
+      osVersion: result.osVersion,
+      storage: result.storage,
+      ram: result.ram,
+      manufactureDate: nil,
+      firstUseDate: result.firstUseDate,
+      cycleCount: result.cycleCount ?? 0,
+      designCapacity: result.designCapacity ?? (result.nominalCapacity ?? 0),
+      nominalCapacity: result.nominalCapacity ?? 0,
+      rawCapacity: result.rawCapacity ?? 0,
+      lowRateCapacity: result.lowRateCapacity,
+      deflator: result.deflator,
+      settingsDisplayPercent: result.settingsDisplayPercent,
+      diagnosticResult: result.diagnosticResult,
+      avgTemp: result.avgTemp,
+      maxTemp: result.maxTemp,
+      minTemp: result.minTemp,
+      maxVoltage: result.maxVoltage,
+      minVoltage: result.minVoltage,
+      minSoC: result.dailyMinSoC,
+      maxSoC: result.dailyMaxSoC
+    )
+  }
+
+  private func deleteRecords(_ items: [BatteryRecord]) {
+    withAnimation {
+      items.forEach { modelContext.delete($0) }
+    }
+  }
+
+  private func hasDuplicateRecord(on date: Date, osVersion: String?) -> Bool {
+    records.contains { existing in
+      let sameDate =
+        Calendar.current.compare(existing.logDate, to: date, toGranularity: .second) == .orderedSame
+      guard sameDate else { return false }
+      if let existingVersion = existing.osVersion, let newVersion = osVersion {
+        return existingVersion == newVersion
+      }
+      return existing.osVersion == nil && osVersion == nil
+    }
+  }
+
+  private func reconcileUnknownDeviceNames() {
+    var needsSave = false
+    for record in records {
+      guard record.deviceName == "Unknown",
+        let code = record.deviceModelCode,
+        let resolved = DeviceLibrary.getDeviceName(for: code)
+      else {
+        continue
+      }
+      record.deviceName = resolved
+      needsSave = true
+    }
+    if needsSave {
+      try? modelContext.save()
+    }
+  }
+
+  private var deviceSections: [DeviceSection] {
+    var sections: [DeviceSection] = []
+    var indexForDevice: [String: Int] = [:]
+    for record in records {
+      let name = record.deviceName
+      if let index = indexForDevice[name] {
+        sections[index].records.append(record)
+      } else {
+        indexForDevice[name] = sections.count
+        sections.append(DeviceSection(id: name, displayName: name, records: [record]))
+      }
+    }
+    return sections
+  }
+
+  private struct DeviceSection: Identifiable {
+    let id: String
+    let displayName: String
+    var records: [BatteryRecord]
   }
 }

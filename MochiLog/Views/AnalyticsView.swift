@@ -6,6 +6,19 @@ import SwiftUI
 struct AnalyticsView: View {
   @Query(sort: \BatteryRecord.logDate, order: .forward) private var records: [BatteryRecord]
   @State private var selectedDevice: String?
+  @StateObject private var appSettings = AppSettings.shared
+
+  // チャート単位/範囲用
+  enum RangePreset: String, CaseIterable, Identifiable {
+    case oneWeek = "1w"
+    case oneMonth = "1m"
+    case threeMonths = "3m"
+    case all = "all"
+
+    var id: String { self.rawValue }
+  }
+
+  @State private var selectedRange: RangePreset = .oneMonth
 
   private var deviceNames: [String] {
     Array(Set(records.map { $0.deviceName })).sorted()
@@ -92,17 +105,57 @@ struct AnalyticsView: View {
           .frame(maxWidth: .infinity, alignment: .center)
           .padding()
       } else {
+        // チャートコントロール：単位と範囲
+        HStack(spacing: 12) {
+          Picker(String(localized: "chart_unit_day"), selection: $appSettings.defaultChartUnit) {
+            ForEach(AppSettings.ChartUnit.allCases) { unit in
+              Text(unit.localizedName).tag(unit)
+            }
+          }
+          .pickerStyle(.segmented)
+
+          Picker("Range", selection: $selectedRange) {
+            ForEach(RangePreset.allCases) { preset in
+              Text(preset.rawValue).tag(preset)
+            }
+          }
+          .pickerStyle(.segmented)
+        }
+
+        let endDate = Date()
+        let calendar = Calendar.current
+        let startDate: Date = {
+          switch selectedRange {
+          case .oneWeek:
+            return calendar.date(byAdding: .day, value: -7, to: endDate) ?? endDate
+          case .oneMonth:
+            return calendar.date(byAdding: .month, value: -1, to: endDate) ?? endDate
+          case .threeMonths:
+            return calendar.date(byAdding: .month, value: -3, to: endDate) ?? endDate
+          case .all:
+            return (filteredRecords.min(by: { $0.logDate < $1.logDate })?.logDate) ?? endDate
+          }
+        }()
+
+        let visibleRecords = filteredRecords.filter {
+          $0.logDate >= startDate && $0.logDate <= endDate
+        }
+
         Chart {
-          ForEach(filteredRecords) { record in
+          ForEach(visibleRecords) { record in
             LineMark(
-              x: .value(String(localized: "date"), record.logDate),
+              x: .value(
+                String(localized: "date"), record.logDate,
+                unit: appSettings.defaultChartUnit.calendarComponent),
               y: .value(String(localized: "real_capacity"), record.healthPercent)
             )
             .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
             .symbol(by: .value(String(localized: "device_name"), record.deviceName))
 
             PointMark(
-              x: .value(String(localized: "date"), record.logDate),
+              x: .value(
+                String(localized: "date"), record.logDate,
+                unit: appSettings.defaultChartUnit.calendarComponent),
               y: .value(String(localized: "real_capacity"), record.healthPercent)
             )
             .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
@@ -119,6 +172,11 @@ struct AnalyticsView: View {
             }
         }
         .chartYScale(domain: 70...105)
+        .chartXAxis {
+          // 範囲を明示的に指定
+          AxisMarks(values: .automatic(desiredCount: 5))
+        }
+        .chartXScale(domain: startDate...endDate)
         .chartYAxis {
           AxisMarks(values: [70, 80, 90, 100]) { value in
             AxisGridLine()
@@ -148,15 +206,38 @@ struct AnalyticsView: View {
           .frame(maxWidth: .infinity, alignment: .center)
           .padding()
       } else {
+        // 同じ範囲フィルタを再利用
+        let endDate = Date()
+        let calendar = Calendar.current
+        let startDate: Date = {
+          switch selectedRange {
+          case .oneWeek:
+            return calendar.date(byAdding: .day, value: -7, to: endDate) ?? endDate
+          case .oneMonth:
+            return calendar.date(byAdding: .month, value: -1, to: endDate) ?? endDate
+          case .threeMonths:
+            return calendar.date(byAdding: .month, value: -3, to: endDate) ?? endDate
+          case .all:
+            return (filteredRecords.min(by: { $0.logDate < $1.logDate })?.logDate) ?? endDate
+          }
+        }()
+
+        let visibleRecords = filteredRecords.filter {
+          $0.logDate >= startDate && $0.logDate <= endDate
+        }
+
         Chart {
-          ForEach(filteredRecords) { record in
+          ForEach(visibleRecords) { record in
             BarMark(
-              x: .value(String(localized: "date"), record.logDate),
+              x: .value(
+                String(localized: "date"), record.logDate,
+                unit: appSettings.defaultChartUnit.calendarComponent),
               y: .value(String(localized: "cycle_count"), record.cycleCount)
             )
             .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
           }
         }
+        .chartXScale(domain: startDate...Date())
         .frame(height: 180)
       }
     }

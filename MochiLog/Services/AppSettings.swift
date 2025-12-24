@@ -13,6 +13,11 @@ final class AppSettings: ObservableObject {
     static let enableCapacityValidation = "enableCapacityValidation"
     static let capacityValidationThreshold = "capacityValidationThreshold"
     static let mismatchBehavior = "mismatchBehavior"
+
+    // 新規: チャートとiCloud設定
+    static let defaultChartUnit = "defaultChartUnit"
+    static let iCloudSyncEnabled = "iCloudSyncEnabled"
+    static let iCloudStorageThresholdMB = "iCloudStorageThresholdMB"
   }
 
   /// 容量不一致時の挙動
@@ -26,6 +31,34 @@ final class AppSettings: ObservableObject {
       switch self {
       case .manualSelection: return String(localized: "mismatch_behavior_manual")
       case .error: return String(localized: "mismatch_behavior_error")
+      }
+    }
+  }
+
+  /// チャートで利用する単位
+  enum ChartUnit: String, CaseIterable, Identifiable {
+    case hour
+    case day
+    case week
+    case month
+
+    var id: String { self.rawValue }
+
+    var localizedName: String {
+      switch self {
+      case .hour: return String(localized: "chart_unit_hour")
+      case .day: return String(localized: "chart_unit_day")
+      case .week: return String(localized: "chart_unit_week")
+      case .month: return String(localized: "chart_unit_month")
+      }
+    }
+
+    var calendarComponent: Calendar.Component {
+      switch self {
+      case .hour: return .hour
+      case .day: return .day
+      case .week: return .weekOfYear
+      case .month: return .month
       }
     }
   }
@@ -46,6 +79,18 @@ final class AppSettings: ObservableObject {
 
   /// 容量不一致時の挙動
   @Published var mismatchBehavior: MismatchBehavior
+
+  /// デフォルトのチャート単位
+  @Published var defaultChartUnit: ChartUnit
+
+  /// iCloud同期を有効にするか（設定）
+  @Published var iCloudSyncEnabled: Bool
+
+  /// iCloud同期を抑制するための容量閾値（MB）
+  @Published var iCloudStorageThresholdMB: Double
+
+  /// iCloud 同期がブロックされた際の説明（ユーザ表示用）
+  @Published var iCloudSyncBlockedReason: String?
 
   // MARK: - Initialization
 
@@ -72,8 +117,34 @@ final class AppSettings: ObservableObject {
       self.mismatchBehavior = .manualSelection
     }
 
+    // 新規: チャート単位とiCloud設定の初期値
+    if let chartUnitString = UserDefaults.standard.string(forKey: Keys.defaultChartUnit),
+      let unit = ChartUnit(rawValue: chartUnitString)
+    {
+      self.defaultChartUnit = unit
+    } else {
+      self.defaultChartUnit = .day
+    }
+
+    if UserDefaults.standard.object(forKey: Keys.iCloudSyncEnabled) == nil {
+      self.iCloudSyncEnabled = false
+    } else {
+      self.iCloudSyncEnabled = UserDefaults.standard.bool(forKey: Keys.iCloudSyncEnabled)
+    }
+
+    let storageThreshold = UserDefaults.standard.double(forKey: Keys.iCloudStorageThresholdMB)
+    self.iCloudStorageThresholdMB = storageThreshold == 0 ? 100.0 : storageThreshold
+
+    // ブロック理由は起動時には空
+    self.iCloudSyncBlockedReason = nil
+
     // プロパティの変更を監視してUserDefaultsに保存
     setupObservers()
+
+    // 起動時に iCloud 同期が有効な場合は再評価して必要なら無効化する
+    if self.iCloudSyncEnabled {
+      _ = attemptSetICloudSync(true)
+    }
   }
 
   private var cancellables = Set<AnyCancellable>()
@@ -81,14 +152,14 @@ final class AppSettings: ObservableObject {
   private func setupObservers() {
     $registeredWatchModel
       .dropFirst()
-      .sink { [weak self] value in
+      .sink { value in
         UserDefaults.standard.set(value, forKey: Keys.registeredWatchModel)
       }
       .store(in: &cancellables)
 
     $hasCompletedTutorial
       .dropFirst()
-      .sink { [weak self] value in
+      .sink { value in
         UserDefaults.standard.set(value, forKey: Keys.hasCompletedTutorial)
       }
       .store(in: &cancellables)
@@ -111,6 +182,31 @@ final class AppSettings: ObservableObject {
       .dropFirst()
       .sink { value in
         UserDefaults.standard.set(value.rawValue, forKey: Keys.mismatchBehavior)
+      }
+      .store(in: &cancellables)
+
+    // 新規: チャート単位の永続化
+    $defaultChartUnit
+      .dropFirst()
+      .sink { value in
+        UserDefaults.standard.set(value.rawValue, forKey: Keys.defaultChartUnit)
+      }
+      .store(in: &cancellables)
+
+    // 新規: iCloud 同期設定の永続化・検証
+    $iCloudSyncEnabled
+      .dropFirst()
+      .sink { [weak self] value in
+        UserDefaults.standard.set(value, forKey: Keys.iCloudSyncEnabled)
+        // 同期を有効にしたときは容量チェック
+        if value { _ = self?.attemptSetICloudSync(true) }
+      }
+      .store(in: &cancellables)
+
+    $iCloudStorageThresholdMB
+      .dropFirst()
+      .sink { value in
+        UserDefaults.standard.set(value, forKey: Keys.iCloudStorageThresholdMB)
       }
       .store(in: &cancellables)
   }
@@ -158,5 +254,68 @@ final class AppSettings: ObservableObject {
       言語 / Language: \(Locale.current.language.languageCode?.identifier ?? "Unknown")
       ---
       """
+  }
+
+  // MARK: - iCloud / Storage helpers
+
+  /// デバイスの空き容量をMBで取得
+  func deviceFreeSpaceMB() -> Double {
+    do {
+      let attrs = try FileManager.default.attributesOfFileSystem(forPath: NSHomeDirectory())
+      if let free = attrs[.systemFreeSize] as? NSNumber {
+        return free.doubleValue / 1024.0 / 1024.0
+      }
+    } catch {
+      return 0
+    }
+    return 0
+  }
+
+  /// iCloud 有効化時の失敗理由
+  enum ICloudError: LocalizedError {
+    case lowSpace(requiredMB: Int)
+    case unknown
+
+    var errorDescription: String? {
+      switch self {
+      case .lowSpace(let requiredMB):
+        return String(format: String(localized: "icloud_sync_blocked_low_space"), requiredMB)
+      case .unknown:
+        return String(localized: "icloud_sync_failed")
+      }
+    }
+  }
+
+  /// iCloud 同期を有効化する前に容量を評価する。
+  func canEnableICloudSync() -> Result<Void, ICloudError> {
+    let freeMB = deviceFreeSpaceMB()
+    if freeMB < iCloudStorageThresholdMB {
+      return .failure(.lowSpace(requiredMB: Int(iCloudStorageThresholdMB)))
+    }
+    return .success(())
+  }
+
+  /// ユーザーが iCloud 同期を切り替えようとしたときに呼ぶ。失敗時はエラーを返す（UI側でアラート等を表示する）
+  func attemptSetICloudSync(_ enabled: Bool) -> Result<Void, ICloudError> {
+    if enabled {
+      switch canEnableICloudSync() {
+      case .success:
+        iCloudSyncEnabled = true
+        iCloudSyncBlockedReason = nil
+        // TODO: 実際の iCloud / CloudKit 同期処理の開始
+        return .success(())
+      case .failure(let err):
+        // do not enable and record reason
+        iCloudSyncBlockedReason = err.errorDescription
+        iCloudSyncEnabled = false
+        return .failure(err)
+      }
+    } else {
+      // Disable sync
+      iCloudSyncEnabled = false
+      iCloudSyncBlockedReason = nil
+      // TODO: 停止処理
+      return .success(())
+    }
   }
 }

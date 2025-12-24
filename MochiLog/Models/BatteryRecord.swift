@@ -4,8 +4,9 @@ import SwiftData
 @Model
 final class BatteryRecord {
   // --- 基本情報 ---
-  var logDate: Date  // ログファイルの日付
-  var deviceName: String  // 機種名 (例: iPhone 15 Pro)
+  // Default values added to satisfy CloudKit requirements (attributes must be optional or have defaults)
+  var logDate: Date = Date()  // ログファイルの日付
+  var deviceName: String = "Unknown"  // 機種名 (例: iPhone 15 Pro)
   var deviceModelCode: String?  // 内部モデル名 (例: iPhone16,1)
   var osVersion: String?  // os_version (例: iOS 18.0)
 
@@ -16,10 +17,10 @@ final class BatteryRecord {
   var firstUseDate: Date?  // 初使用日
 
   // --- カウント/容量 (mAh) ---
-  var cycleCount: Int  // 充放電回数
-  var designCapacity: Int  // 設計容量 (Design)
-  var nominalCapacity: Int  // 交渉容量 (Nominal)
-  var rawCapacity: Int  // 実測容量 (Raw)
+  var cycleCount: Int = 0  // 充放電回数
+  var designCapacity: Int = 0  // 設計容量 (Design)
+  var nominalCapacity: Int = 0  // 公称容量 (Nominal)
+  var rawCapacity: Int = 0  // 実測容量 (Raw)
   var lowRateCapacity: Int?  // 低レート放電容量 (計算値)
 
   // --- 補正/計算値 ---
