@@ -446,13 +446,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cycles"
+            "value" : "Charge/Discharge Count"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "サイクル"
+            "value" : "充放電回数"
           }
         }
       }
@@ -462,7 +462,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%d cycles"
+            "value" : "%d charge cycles"
           }
         },
         "ja" : {
@@ -1203,13 +1203,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Max SoC"
+            "value" : "Max Charge %"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最大SoC"
+            "value" : "最大充電%"
           }
         }
       }
@@ -1268,13 +1268,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Min SoC"
+            "value" : "Min Charge %"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最小SoC"
+            "value" : "最小充電%"
           }
         }
       }
@@ -1528,13 +1528,93 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "OS Display"
+            "value" : "Settings Display"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "OS表示"
+            "value" : "設定上の表示"
+          }
+        }
+      }
+    },
+    "settings_display_diagnostic" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diagnostic comment"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "診断コメント"
+          }
+        }
+      }
+    },
+    "settings_display_diagnostic_high" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings display is %d%% (display capped at 100%). This often reflects calibration differences; battery appears healthy."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定上の表示は %d%% です（表示は100%に丸めています）。校正差の可能性が高く、状態は良好に見えます。"
+          }
+        }
+      }
+    },
+    "settings_display_diagnostic_normal" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings display is %d%% — battery health is good."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定上の表示は %d%% です。バッテリーの状態は良好です。"
+          }
+        }
+      }
+    },
+    "settings_display_diagnostic_low" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings display is %d%% — battery health is low; consider replacing the battery."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定上の表示は %d%% です。バッテリーの状態が低下しています。交換を検討してください。"
+          }
+        }
+      }
+    },
+    "not_official_note" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Note: These values and comments are not official Apple data."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "注: これらの数値やコメントは Apple の公式データではありません。"
           }
         }
       }
