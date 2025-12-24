@@ -196,10 +196,11 @@ final class AppSettings: ObservableObject {
     // 新規: iCloud 同期設定の永続化・検証
     $iCloudSyncEnabled
       .dropFirst()
-      .sink { [weak self] value in
+      .sink { value in
         UserDefaults.standard.set(value, forKey: Keys.iCloudSyncEnabled)
-        // 同期を有効にしたときは容量チェック
-        if value { _ = self?.attemptSetICloudSync(true) }
+        // NOTE: Do NOT call `attemptSetICloudSync` here to avoid re-entrant calls that can
+        // lead to infinite recursion (setting the published property from within its own sink).
+        // Validation/activation should be triggered explicitly from UI (SettingsView) or during init.
       }
       .store(in: &cancellables)
 
@@ -295,8 +296,16 @@ final class AppSettings: ObservableObject {
     return .success(())
   }
 
+  /// 互換性用: 古い evaluateStorageAndMaybeBlockSync 呼び出しを解決するヘルパー
+  private func evaluateStorageAndMaybeBlockSync() {
+    _ = attemptSetICloudSync(true)
+  }
+
   /// ユーザーが iCloud 同期を切り替えようとしたときに呼ぶ。失敗時はエラーを返す（UI側でアラート等を表示する）
   func attemptSetICloudSync(_ enabled: Bool) -> Result<Void, ICloudError> {
+    // Short-circuit if state is already the desired one to avoid unnecessary sinks and re-entry
+    if iCloudSyncEnabled == enabled { return .success(()) }
+
     if enabled {
       switch canEnableICloudSync() {
       case .success:

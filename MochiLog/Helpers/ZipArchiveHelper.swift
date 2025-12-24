@@ -1,15 +1,6 @@
 // ZipArchiveHelper.swift
-// ZIPFoundationユーティリティ拡張
+// 保守: 以前は Archive のラッパを提供していましたが、プロジェクト内では直接 throwing 初期化子を使用しています。
+// このファイルは一旦空にしてコンパイル警告/エラーを避けます。
 import Foundation
-import ZIPFoundation
 
-extension ZIPFoundation.Archive {
-  @discardableResult
-  static func makeArchive(url: URL, accessMode: AccessMode) -> ZIPFoundation.Archive? {
-    do {
-      return try ZIPFoundation.Archive(url: url, accessMode: accessMode)
-    } catch {
-      return nil
-    }
-  }
-}
+// NOTE: Use `try ZIPFoundation.Archive(url:accessMode:)` directly where needed.

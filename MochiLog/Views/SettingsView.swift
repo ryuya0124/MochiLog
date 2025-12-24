@@ -91,20 +91,25 @@ struct SettingsView: View {
 
         // MARK: - 同期
         Section(String(localized: "sync")) {
-          Toggle(String(localized: "enable_icloud_sync"), isOn: $localICloudToggle)
-            .onChange(of: localICloudToggle) { newValue in
-              let result = appSettings.attemptSetICloudSync(newValue)
-              switch result {
-              case .success:
-                // OK
-                break
-              case .failure(let err):
-                // Revert toggle and show error
-                localICloudToggle = appSettings.iCloudSyncEnabled
-                iCloudErrorMessage = err.errorDescription ?? String(localized: "icloud_sync_failed")
-                showingICloudErrorAlert = true
-              }
-            }
+          Toggle(
+            String(localized: "enable_icloud_sync"),
+            isOn: Binding(
+              get: {
+                localICloudToggle
+              },
+              set: { newValue in
+                localICloudToggle = newValue
+                let result = appSettings.attemptSetICloudSync(newValue)
+                switch result {
+                case .success:
+                  break
+                case .failure(let err):
+                  localICloudToggle = appSettings.iCloudSyncEnabled
+                  iCloudErrorMessage =
+                    err.errorDescription ?? String(localized: "icloud_sync_failed")
+                  showingICloudErrorAlert = true
+                }
+              }))
 
           if let blocked = appSettings.iCloudSyncBlockedReason {
             Text(blocked)

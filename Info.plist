@@ -34,6 +34,11 @@
             </array>
         </dict>
     </array>
+    <!-- Background modes required for CloudKit push notifications -->
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>remote-notification</string>
+    </array>
     <key>UTImportedTypeDeclarations</key>
     <array>
         <dict>

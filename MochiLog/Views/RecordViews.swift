@@ -44,6 +44,42 @@ struct RecordRowView: View {
   }
 }
 
+// Small card component for iPad detail layout
+struct DetailCard<Content: View>: View {
+  let title: String
+  let systemImage: String?
+  let content: Content
+
+  init(title: String, systemImage: String? = nil, @ViewBuilder content: () -> Content) {
+    self.title = title
+    self.systemImage = systemImage
+    self.content = content()
+  }
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 12) {
+      HStack(alignment: .center, spacing: 12) {
+        if let sys = systemImage {
+          ZStack {
+            Circle().fill(Color.accentColor.opacity(0.12)).frame(width: 36, height: 36)
+            Image(systemName: sys)
+              .foregroundStyle(Color.accentColor)
+              .font(.system(size: 16, weight: .semibold))
+          }
+        }
+        Text(title).font(.headline)
+        Spacer()
+      }
+      content
+    }
+    .padding()
+    .frame(minHeight: 120, maxHeight: .infinity, alignment: .top)
+    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(uiColor: .separator).opacity(0.08)))
+    .shadow(color: Color.black.opacity(0.03), radius: 6, x: 0, y: 3)
+  }
+}
+
 struct RecordDetailView: View {
   let record: BatteryRecord
   @Environment(\.dismiss) private var dismiss
@@ -53,26 +89,27 @@ struct RecordDetailView: View {
   var body: some View {
     NavigationStack {
       Group {
-        // iPad / Regular width: より広く2カラムで表示
+        // iPad / Regular width: bento-styleカードグリッド
         if horizontalSizeClass == .regular {
           ScrollView {
-            HStack(alignment: .top, spacing: 20) {
-              VStack(alignment: .leading, spacing: 16) {
-                GroupBox(label: Text(String(localized: "device_info")).font(.headline)) {
+            HStack {
+              LazyVGrid(
+                columns: [GridItem(.adaptive(minimum: 220, maximum: 420), spacing: 20)],
+                alignment: .leading,
+                spacing: 20
+              ) {
+                // Device info
+                DetailCard(title: String(localized: "device_info"), systemImage: "iphone") {
                   VStack(alignment: .leading, spacing: 8) {
                     LabeledContent(String(localized: "device_name"), value: record.deviceName)
-                    if let soc = record.soc {
-                      LabeledContent(String(localized: "soc"), value: soc)
-                    }
+                    if let soc = record.soc { LabeledContent(String(localized: "soc"), value: soc) }
                     if let modelCode = record.deviceModelCode {
                       LabeledContent(String(localized: "model_code"), value: modelCode)
                     }
                     if let storage = record.storage {
                       LabeledContent(String(localized: "storage"), value: storage)
                     }
-                    if let ram = record.ram {
-                      LabeledContent(String(localized: "ram"), value: ram)
-                    }
+                    if let ram = record.ram { LabeledContent(String(localized: "ram"), value: ram) }
                     LabeledContent(
                       String(localized: "log_date"), value: record.logDate,
                       format: .dateTime.year().month().day())
@@ -85,7 +122,9 @@ struct RecordDetailView: View {
                   .padding(.vertical, 4)
                 }
 
-                GroupBox(label: Text(String(localized: "battery_capacity")).font(.headline)) {
+                // Battery capacity
+                DetailCard(title: String(localized: "battery_capacity"), systemImage: "battery.100")
+                {
                   VStack(alignment: .leading, spacing: 8) {
                     LabeledContent(
                       String(localized: "cycle_count"),
@@ -104,10 +143,9 @@ struct RecordDetailView: View {
                   }
                   .padding(.vertical, 4)
                 }
-              }
 
-              VStack(alignment: .leading, spacing: 16) {
-                GroupBox(label: Text(String(localized: "battery_health")).font(.headline)) {
+                // Battery health
+                DetailCard(title: String(localized: "battery_health"), systemImage: "heart.fill") {
                   VStack(alignment: .leading, spacing: 8) {
                     LabeledContent(String(localized: "real_health")) {
                       Text("\(String(format: "%.1f", record.healthPercent))%")
@@ -128,8 +166,11 @@ struct RecordDetailView: View {
                   .padding(.vertical, 4)
                 }
 
+                // Temperature (optional)
                 if record.avgTemp != nil || record.maxTemp != nil || record.minTemp != nil {
-                  GroupBox(label: Text(String(localized: "temperature_daily")).font(.headline)) {
+                  DetailCard(
+                    title: String(localized: "temperature_daily"), systemImage: "thermometer"
+                  ) {
                     VStack(alignment: .leading, spacing: 8) {
                       if let avg = record.avgTemp {
                         LabeledContent(
@@ -148,8 +189,9 @@ struct RecordDetailView: View {
                   }
                 }
 
+                // Voltage (optional)
                 if record.maxVoltage != nil || record.minVoltage != nil {
-                  GroupBox(label: Text(String(localized: "voltage")).font(.headline)) {
+                  DetailCard(title: String(localized: "voltage"), systemImage: "bolt.fill") {
                     VStack(alignment: .leading, spacing: 8) {
                       if let max = record.maxVoltage {
                         LabeledContent(
@@ -164,8 +206,11 @@ struct RecordDetailView: View {
                   }
                 }
 
+                // Charge range (optional)
                 if record.maxSoC != nil || record.minSoC != nil {
-                  GroupBox(label: Text(String(localized: "charge_range_daily")).font(.headline)) {
+                  DetailCard(
+                    title: String(localized: "charge_range_daily"), systemImage: "battery.75"
+                  ) {
                     VStack(alignment: .leading, spacing: 8) {
                       if let max = record.maxSoC {
                         LabeledContent(String(localized: "max_soc"), value: "\(max)%")
@@ -178,9 +223,14 @@ struct RecordDetailView: View {
                   }
                 }
               }
+              .frame(maxWidth: .infinity)
             }
-            .padding()
+            .padding(.vertical, 18)
           }
+          .scrollContentBackground(.hidden)
+          .background(Color(uiColor: .systemGroupedBackground))
+          .padding(.horizontal, 20)
+          .padding(.vertical, 10)
         } else {
           // Compact width (iPhone): 既存の List ベース UI
           List {
@@ -283,8 +333,10 @@ struct RecordDetailView: View {
       .navigationTitle(String(localized: "detail"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
-        ToolbarItem(placement: .confirmationAction) {
-          Button(String(localized: "close")) { dismiss() }
+        if horizontalSizeClass != .regular {
+          ToolbarItem(placement: .confirmationAction) {
+            Button(String(localized: "close")) { dismiss() }
+          }
         }
       }
     }
