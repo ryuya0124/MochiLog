@@ -1560,13 +1560,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Settings display is %d%% (display capped at 100%). This often reflects calibration differences; battery appears healthy."
+            "value" : "Settings display is %d%%. This often reflects calibration differences; battery appears healthy."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "設定上の表示は %d%% です（表示は100%に丸めています）。校正差の可能性が高く、状態は良好に見えます。"
+            "value" : "設定上の表示は %d%% です。校正差の可能性が高く、状態は良好に見えます。"
           }
         }
       }

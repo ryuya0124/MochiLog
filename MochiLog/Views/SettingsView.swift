@@ -30,6 +30,35 @@ struct SettingsView: View {
   var body: some View {
     NavigationStack {
       List {
+        // MARK: - 同期
+        Section(String(localized: "sync")) {
+          Toggle(
+            String(localized: "enable_icloud_sync"),
+            isOn: Binding(
+              get: {
+                localICloudToggle
+              },
+              set: { newValue in
+                localICloudToggle = newValue
+                let result = appSettings.attemptSetICloudSync(newValue)
+                switch result {
+                case .success:
+                  break
+                case .failure(let err):
+                  localICloudToggle = appSettings.iCloudSyncEnabled
+                  iCloudErrorMessage =
+                    err.errorDescription ?? String(localized: "icloud_sync_failed")
+                  showingICloudErrorAlert = true
+                }
+              }))
+
+          if let blocked = appSettings.iCloudSyncBlockedReason {
+            Text(blocked)
+              .font(.caption)
+              .foregroundColor(.red)
+          }
+        }
+
         // MARK: - Apple Watch 設定
         Section {
           HStack {
@@ -59,6 +88,14 @@ struct SettingsView: View {
           Text(String(localized: "watch_selection_description"))
         }
 
+        // MARK: - データ管理
+        Section(String(localized: "data_management")) {
+          Button(role: .destructive, action: { showingDeleteConfirmation = true }) {
+            Label(String(localized: "delete_all_data"), systemImage: "trash.fill")
+          }
+          .disabled(records.isEmpty)
+        }
+
         // MARK: - サポート
         Section(String(localized: "support")) {
           Button(action: { showingTutorial = true }) {
@@ -78,43 +115,6 @@ struct SettingsView: View {
 
           Button(action: { showingTermsOfUse = true }) {
             Label(String(localized: "terms_of_use"), systemImage: "doc.plaintext")
-          }
-        }
-
-        // MARK: - データ管理
-        Section(String(localized: "data_management")) {
-          Button(role: .destructive, action: { showingDeleteConfirmation = true }) {
-            Label(String(localized: "delete_all_data"), systemImage: "trash.fill")
-          }
-          .disabled(records.isEmpty)
-        }
-
-        // MARK: - 同期
-        Section(String(localized: "sync")) {
-          Toggle(
-            String(localized: "enable_icloud_sync"),
-            isOn: Binding(
-              get: {
-                localICloudToggle
-              },
-              set: { newValue in
-                localICloudToggle = newValue
-                let result = appSettings.attemptSetICloudSync(newValue)
-                switch result {
-                case .success:
-                  break
-                case .failure(let err):
-                  localICloudToggle = appSettings.iCloudSyncEnabled
-                  iCloudErrorMessage =
-                    err.errorDescription ?? String(localized: "icloud_sync_failed")
-                  showingICloudErrorAlert = true
-                }
-              }))
-
-          if let blocked = appSettings.iCloudSyncBlockedReason {
-            Text(blocked)
-              .font(.caption)
-              .foregroundColor(.red)
           }
         }
 
