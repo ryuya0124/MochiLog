@@ -3,16 +3,37 @@ import SwiftUI
 
 @main
 struct MochiLogApp: App {
-  // アプリ起動時に「Application Support」フォルダがあるか確認し、なければ作る
+  private static let appGroupIdentifier = "group.net.ryuya-dev.MochiLog"
+
   init() {
+    prepareApplicationSupportDirectories()
+  }
+
+  private func prepareApplicationSupportDirectories() {
     do {
       let fileManager = FileManager.default
       let appSupportURL = try fileManager.url(
         for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+      try fileManager.createDirectory(at: appSupportURL, withIntermediateDirectories: true)
       print("Database path checked: \(appSupportURL.path)")
+      try ensureAppGroupApplicationSupport(in: fileManager)
     } catch {
       print("Failed to create Application Support directory: \(error)")
     }
+  }
+
+  private func ensureAppGroupApplicationSupport(in fileManager: FileManager) throws {
+    guard
+      let containerURL = fileManager.containerURL(
+        forSecurityApplicationGroupIdentifier: Self.appGroupIdentifier)
+    else {
+      return
+    }
+    let libraryURL = containerURL.appendingPathComponent("Library", isDirectory: true)
+    let appGroupSupportURL = libraryURL.appendingPathComponent(
+      "Application Support", isDirectory: true)
+    try fileManager.createDirectory(at: appGroupSupportURL, withIntermediateDirectories: true)
+    print("App Group database path checked: \(appGroupSupportURL.path)")
   }
 
   var body: some Scene {
