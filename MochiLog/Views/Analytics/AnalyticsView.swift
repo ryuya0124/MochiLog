@@ -35,6 +35,7 @@ struct AnalyticsView: View {
   @State private var selectedRange: RangePreset = .oneMonth
 
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+  @State private var animateChart: Bool = false
 
   private var deviceNames: [String] {
     Array(Set(records.map { $0.deviceName })).sorted()
@@ -185,6 +186,8 @@ struct AnalyticsView: View {
             )
             .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
             .symbol(by: .value(String(localized: "device_name"), record.deviceName))
+            .interpolationMethod(.catmullRom)
+            .opacity(animateChart ? 1 : 0)
 
             PointMark(
               x: .value(
@@ -193,6 +196,7 @@ struct AnalyticsView: View {
               y: .value(String(localized: "real_capacity"), record.healthPercent)
             )
             .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
+            .opacity(animateChart ? 1 : 0)
           }
 
           // 80%ラインを表示
@@ -222,6 +226,22 @@ struct AnalyticsView: View {
           }
         }
         .frame(height: 220)
+        // アニメーション: 範囲や単位変更時にチャートをアニメート
+        .animation(.easeOut(duration: 0.55), value: selectedRange)
+        .animation(.easeOut(duration: 0.45), value: appSettings.defaultChartUnit)
+        .onAppear {
+          // 初回フェードイン
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            withAnimation(.easeOut(duration: 0.6)) { animateChart = true }
+          }
+        }
+        .onChange(of: selectedRange) { _ in
+          // 範囲が変わったら一旦リセットして再アニメーション
+          animateChart = false
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
+            withAnimation(.easeOut(duration: 0.5)) { animateChart = true }
+          }
+        }
       }
     }
     .padding()
