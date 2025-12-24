@@ -235,7 +235,7 @@ struct AnalyticsView: View {
             withAnimation(.easeOut(duration: 0.6)) { animateChart = true }
           }
         }
-        .onChange(of: selectedRange) { _ in
+        .onChange(of: selectedRange) {
           // 範囲が変わったら一旦リセットして再アニメーション
           animateChart = false
           DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
