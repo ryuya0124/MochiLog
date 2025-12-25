@@ -317,6 +317,23 @@
         }
       }
     },
+    "chart_unit" : {
+      "comment" : "Label for the unit picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unit"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "表示単位"
+          }
+        }
+      }
+    },
     "chart_unit_day" : {
       "localizations" : {
         "en" : {
@@ -1981,6 +1998,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "デバイスを選択"
+          }
+        }
+      }
+    },
+    "select_a_device_description" : {
+      "comment" : "Short description for device selection UI",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose a device to filter the charts and statistics."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "グラフと統計を絞り込むデバイスを選んでください。"
           }
         }
       }

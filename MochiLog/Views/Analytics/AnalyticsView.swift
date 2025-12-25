@@ -33,6 +33,9 @@ struct AnalyticsView: View {
   }
 
   @State private var selectedRange: RangePreset = .oneMonth
+  // デバイス選択用のシート制御と検索クエリ
+  @State private var isShowingDevicePicker: Bool = false
+  @State private var deviceSearchQuery: String = ""
 
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @State private var animateChart: Bool = false
@@ -44,6 +47,20 @@ struct AnalyticsView: View {
   private var filteredRecords: [BatteryRecord] {
     guard let device = selectedDevice else { return records }
     return records.filter { $0.deviceName == device }
+  }
+
+  /// データの分布に基づいて初期レンジを決定する（短い期間しかなければ小さいレンジを選ぶ）
+  private func autoRange(for records: [BatteryRecord]) -> RangePreset {
+    guard let first = records.min(by: { $0.logDate < $1.logDate })?.logDate,
+      let last = records.max(by: { $0.logDate < $1.logDate })?.logDate
+    else { return .oneMonth }
+
+    let days = Calendar.current.dateComponents([.day], from: first, to: last).day ?? 0
+
+    if days <= 7 { return .oneWeek }
+    if days <= 30 { return .oneMonth }
+    if days <= 90 { return .threeMonths }
+    return .all
   }
 
   var body: some View {
@@ -75,6 +92,27 @@ struct AnalyticsView: View {
         }
         .padding()
       }
+      .onAppear {
+        // 起動セッション内で一度だけ、現在の（フィルタ済み）データに合わせてレンジを自動設定（ユーザー選択は上書きしない）
+        if !appSettings.hasAutoInitializedChartRange {
+          selectedRange = autoRange(for: filteredRecords)
+          appSettings.hasAutoInitializedChartRange = true
+        }
+      }
+      .onChange(of: records) { _ in
+        // records 更新時に、まだセッション内で自動初期化が済んでいなければ適用
+        if !appSettings.hasAutoInitializedChartRange {
+          selectedRange = autoRange(for: filteredRecords)
+          appSettings.hasAutoInitializedChartRange = true
+        }
+      }
+      .onChange(of: selectedDevice) { _ in
+        // デバイス切替時もセッション内の初回のみ適用（既に初期化済みならユーザー選択を尊重）
+        if !appSettings.hasAutoInitializedChartRange {
+          selectedRange = autoRange(for: filteredRecords)
+          appSettings.hasAutoInitializedChartRange = true
+        }
+      }
       .navigationTitle(String(localized: "analytics"))
       .background(Color(.systemGroupedBackground))
     }
@@ -83,26 +121,81 @@ struct AnalyticsView: View {
   // MARK: - デバイス選択
   private var devicePickerSection: some View {
     VStack(alignment: .leading, spacing: 8) {
-      Text(String(localized: "select_a_device"))
-        .font(.headline)
-        .foregroundStyle(.secondary)
+      HStack(alignment: .center) {
+        VStack(alignment: .leading, spacing: 4) {
+          Text(String(localized: "select_a_device"))
+            .font(.headline)
+            .foregroundStyle(.secondary)
 
-      ScrollView(.horizontal, showsIndicators: false) {
-        HStack(spacing: 12) {
-          // 全デバイス
-          DeviceChip(
-            name: String(localized: "all_devices"),
-            isSelected: selectedDevice == nil
-          ) {
-            selectedDevice = nil
+          Text(String(localized: "select_a_device_description"))
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .lineLimit(2)
+        }
+
+        Spacer()
+
+        // 検索対応のデバイス選択シートを開くボタン（右端）
+        Button {
+          deviceSearchQuery = ""
+          isShowingDevicePicker = true
+        } label: {
+          HStack(spacing: 8) {
+            Text(selectedDevice ?? String(localized: "all_devices"))
+              .foregroundStyle(.primary)
+            Image(systemName: "chevron.down")
+              .foregroundStyle(.secondary)
           }
+          .padding(.vertical, 8)
+          .padding(.horizontal, 12)
+          .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+        }
+        .accessibilityLabel(Text(String(localized: "select_a_device")))
+        .frame(minWidth: 140)
+        .sheet(isPresented: $isShowingDevicePicker) {
+          NavigationStack {
+            List {
+              Button {
+                selectedDevice = nil
+                isShowingDevicePicker = false
+              } label: {
+                HStack {
+                  Text(String(localized: "all_devices"))
+                    .foregroundStyle(.primary)
+                  Spacer()
+                  if selectedDevice == nil {
+                    Image(systemName: "checkmark")
+                  }
+                }
+              }
 
-          ForEach(deviceNames, id: \.self) { device in
-            DeviceChip(
-              name: device,
-              isSelected: selectedDevice == device
-            ) {
-              selectedDevice = device
+              ForEach(
+                deviceNames.filter {
+                  deviceSearchQuery.isEmpty
+                    ? true : $0.localizedCaseInsensitiveContains(deviceSearchQuery)
+                }, id: \.self
+              ) { device in
+                Button {
+                  selectedDevice = device
+                  isShowingDevicePicker = false
+                } label: {
+                  HStack {
+                    Text(device)
+                      .foregroundStyle(.primary)
+                    Spacer()
+                    if selectedDevice == device {
+                      Image(systemName: "checkmark")
+                    }
+                  }
+                }
+              }
+            }
+            .searchable(text: $deviceSearchQuery)
+            .navigationTitle(Text(String(localized: "select_a_device")))
+            .toolbar {
+              ToolbarItem(placement: .cancellationAction) {
+                Button(String(localized: "cancel")) { isShowingDevicePicker = false }
+              }
             }
           }
         }
@@ -124,36 +217,62 @@ struct AnalyticsView: View {
       } else {
         // チャートコントロール：単位と範囲
         if horizontalSizeClass == .compact {
-          VStack(spacing: 8) {
-            Picker(String(localized: "chart_unit_day"), selection: $appSettings.defaultChartUnit) {
-              ForEach(AppSettings.ChartUnit.allCases) { unit in
-                Text(unit.localizedName).tag(unit)
+          HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+              Text(String(localized: "chart_unit"))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+              Picker("", selection: $appSettings.defaultChartUnit) {
+                ForEach(AppSettings.ChartUnit.allCases) { unit in
+                  Text(unit.localizedName).tag(unit)
+                }
               }
+              .pickerStyle(.menu)
+              .accessibilityLabel(Text(String(localized: "chart_unit")))
             }
-            .pickerStyle(.menu)
+            .frame(maxWidth: .infinity, alignment: .leading)
 
-            Picker(String(localized: "chart_range"), selection: $selectedRange) {
-              ForEach(RangePreset.allCases) { preset in
-                Text(preset.localizedName).tag(preset)
+            VStack(alignment: .leading, spacing: 4) {
+              Text(String(localized: "chart_range"))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+              Picker("", selection: $selectedRange) {
+                ForEach(RangePreset.allCases) { preset in
+                  Text(preset.localizedName).tag(preset)
+                }
               }
+              .pickerStyle(.menu)
+              .accessibilityLabel(Text(String(localized: "chart_range")))
             }
-            .pickerStyle(.menu)
+            .frame(maxWidth: .infinity, alignment: .leading)
           }
         } else {
           HStack(spacing: 12) {
-            Picker(String(localized: "chart_unit_day"), selection: $appSettings.defaultChartUnit) {
-              ForEach(AppSettings.ChartUnit.allCases) { unit in
-                Text(unit.localizedName).tag(unit)
+            VStack(alignment: .leading, spacing: 6) {
+              Text(String(localized: "chart_unit"))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+              Picker("", selection: $appSettings.defaultChartUnit) {
+                ForEach(AppSettings.ChartUnit.allCases) { unit in
+                  Text(unit.localizedName).tag(unit)
+                }
               }
+              .pickerStyle(.segmented)
+              .accessibilityLabel(Text(String(localized: "chart_unit")))
             }
-            .pickerStyle(.segmented)
 
-            Picker(String(localized: "chart_range"), selection: $selectedRange) {
-              ForEach(RangePreset.allCases) { preset in
-                Text(preset.localizedName).tag(preset)
+            VStack(alignment: .leading, spacing: 6) {
+              Text(String(localized: "chart_range"))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+              Picker("", selection: $selectedRange) {
+                ForEach(RangePreset.allCases) { preset in
+                  Text(preset.localizedName).tag(preset)
+                }
               }
+              .pickerStyle(.segmented)
+              .accessibilityLabel(Text(String(localized: "chart_range")))
             }
-            .pickerStyle(.segmented)
           }
         }
 
@@ -185,7 +304,6 @@ struct AnalyticsView: View {
               y: .value(String(localized: "real_capacity"), record.healthPercent)
             )
             .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
-            .symbol(by: .value(String(localized: "device_name"), record.deviceName))
             .interpolationMethod(.catmullRom)
             .opacity(animateChart ? 1 : 0)
 
@@ -196,7 +314,9 @@ struct AnalyticsView: View {
               y: .value(String(localized: "real_capacity"), record.healthPercent)
             )
             .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
+            .symbol(.circle)
             .opacity(animateChart ? 1 : 0)
+          }
 
           // 80%ラインを表示
           RuleMark(y: .value("Threshold", 80))
@@ -210,8 +330,14 @@ struct AnalyticsView: View {
         }
         .chartYScale(domain: 70...105)
         .chartXAxis {
-          // 範囲を明示的に指定
-          AxisMarks(values: .automatic(desiredCount: 5))
+          // X 軸を月/日の短い形式で表示（ex. 12/1）
+          AxisMarks(values: .automatic(desiredCount: 5)) { value in
+            AxisValueLabel {
+              if let date = value.as(Date.self) {
+                Text(date.formatted(.dateTime.month(.defaultDigits).day()))
+              }
+            }
+          }
         }
         .chartXScale(domain: startDate...endDate)
         .chartYAxis {
@@ -307,7 +433,7 @@ struct AnalyticsView: View {
             )
             .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
             .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
-.opacity(animateChart ? 1 : 0)
+            .opacity(animateChart ? 1 : 0)
 
             PointMark(
               x: .value(
@@ -316,8 +442,18 @@ struct AnalyticsView: View {
               y: .value(String(localized: "cycle_count"), record.cycleCount)
             )
             .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
+            .symbol(.circle)
             .symbolSize(40)
             .opacity(animateChart ? 1 : 0)
+          }
+        }
+        .chartXAxis {
+          AxisMarks(values: .automatic(desiredCount: 5)) { value in
+            AxisValueLabel {
+              if let date = value.as(Date.self) {
+                Text(date.formatted(.dateTime.month(.defaultDigits).day()))
+              }
+            }
           }
         }
         .chartXScale(domain: startDate...Date())
@@ -363,7 +499,7 @@ struct AnalyticsView: View {
 
         if let latest = filteredRecords.last {
           StatCard(
-            title: String(localized: "latest_cycle"),
+            title: String(localized: "cycle_count"),
             value: "\(latest.cycleCount)",
             icon: "arrow.triangle.2.circlepath",
             color: .purple

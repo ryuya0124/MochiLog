@@ -92,6 +92,10 @@ final class AppSettings: ObservableObject {
   /// iCloud 同期がブロックされた際の説明（ユーザ表示用）
   @Published var iCloudSyncBlockedReason: String?
 
+  /// セッション内（アプリ再起動まで）にチャートのレンジ初期化を自動で行ったかどうか
+  /// - 注意: 永続化しない。一度 true になるとアプリが再起動するまで上書きしない（ユーザーの選択を尊重するため）
+  @Published var hasAutoInitializedChartRange: Bool = false
+
   // MARK: - Initialization
 
   private init() {
