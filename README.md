@@ -1,5 +1,5 @@
 # MochiLog
-MochiLog は Apple Watch と iPhone のバッテリー・サイクル情報を記録・可視化する軽量な macOS/iOS アプリです。
+MochiLog は Apple Watch と iPhone のバッテリー・サイクル情報を記録・可視化する軽量な iOS/iPadOS アプリです。
 
 ## ✨ 主な特徴
 
@@ -49,5 +49,3 @@ xcodebuild -project MochiLog.xcodeproj -scheme MochiLog -configuration Debug bui
 ## 🔗 参考 / 連絡先
 
 - リポジトリ: https://github.com/ryuya0124/MochiLog
-
----
