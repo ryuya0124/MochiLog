@@ -80,13 +80,16 @@ struct MochiLogApp: App {
 
       if let text = text {
         DispatchQueue.main.async {
+          // Persist first as a fallback in case the HomeView hasn't registered yet.
+          // Write before posting to avoid a race where the observer removes the pending
+          // key before it has been set (which could cause double-processing).
+          UserDefaults.standard.set(text, forKey: "PendingSharedLogText")
+
           NotificationCenter.default.post(
             name: NSNotification.Name("ProcessSharedLog"),
             object: nil,
             userInfo: ["text": text]
           )
-          // Persist as fallback in case the HomeView hasn't registered yet
-          UserDefaults.standard.set(text, forKey: "PendingSharedLogText")
         }
       } else {
         print("ファイルの読み込み失敗（対応する文字エンコーディングが見つかりません）: \(url)")
