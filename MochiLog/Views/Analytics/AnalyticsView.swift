@@ -63,6 +63,25 @@ struct AnalyticsView: View {
     return .all
   }
 
+  /// レコードに応じて表示単位（Hour/Day/Week/Month）を自動決定する
+  private func autoUnit(for records: [BatteryRecord], range: RangePreset) -> AppSettings.ChartUnit {
+    guard !records.isEmpty else { return .day }
+
+    let first = records.min(by: { $0.logDate < $1.logDate })!.logDate
+    let last = records.max(by: { $0.logDate < $1.logDate })!.logDate
+    let days = Calendar.current.dateComponents([.day], from: first, to: last).day ?? 0
+    let count = records.count
+
+    // 短い期間で多数のサンプルがある場合は hour
+    if days <= 2 && count > 24 { return .hour }
+    // 2週間以下は day が見やすい
+    if days <= 14 { return .day }
+    // 4ヶ月以下は週次表示
+    if days <= 120 { return .week }
+    // それ以上は月次表示
+    return .month
+  }
+
   var body: some View {
     NavigationStack {
       ScrollView {
@@ -215,23 +234,9 @@ struct AnalyticsView: View {
           .frame(maxWidth: .infinity, alignment: .center)
           .padding()
       } else {
-        // チャートコントロール：単位と範囲
+        // チャートコントロール：範囲のみ（表示単位は自動決定）
         if horizontalSizeClass == .compact {
           HStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 4) {
-              Text(String(localized: "chart_unit"))
-                .font(.caption)
-                .foregroundStyle(.secondary)
-              Picker("", selection: $appSettings.defaultChartUnit) {
-                ForEach(AppSettings.ChartUnit.allCases) { unit in
-                  Text(unit.localizedName).tag(unit)
-                }
-              }
-              .pickerStyle(.menu)
-              .accessibilityLabel(Text(String(localized: "chart_unit")))
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-
             VStack(alignment: .leading, spacing: 4) {
               Text(String(localized: "chart_range"))
                 .font(.caption)
@@ -248,19 +253,6 @@ struct AnalyticsView: View {
           }
         } else {
           HStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 6) {
-              Text(String(localized: "chart_unit"))
-                .font(.caption)
-                .foregroundStyle(.secondary)
-              Picker("", selection: $appSettings.defaultChartUnit) {
-                ForEach(AppSettings.ChartUnit.allCases) { unit in
-                  Text(unit.localizedName).tag(unit)
-                }
-              }
-              .pickerStyle(.segmented)
-              .accessibilityLabel(Text(String(localized: "chart_unit")))
-            }
-
             VStack(alignment: .leading, spacing: 6) {
               Text(String(localized: "chart_range"))
                 .font(.caption)
@@ -295,12 +287,14 @@ struct AnalyticsView: View {
           $0.logDate >= startDate && $0.logDate <= endDate
         }
 
+        let unit = autoUnit(for: visibleRecords, range: selectedRange)
+
         Chart {
           ForEach(visibleRecords) { record in
             LineMark(
               x: .value(
                 String(localized: "date"), record.logDate,
-                unit: appSettings.defaultChartUnit.calendarComponent),
+                unit: unit.calendarComponent),
               y: .value(String(localized: "real_capacity"), record.healthPercent)
             )
             .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
@@ -310,7 +304,7 @@ struct AnalyticsView: View {
             PointMark(
               x: .value(
                 String(localized: "date"), record.logDate,
-                unit: appSettings.defaultChartUnit.calendarComponent),
+                unit: unit.calendarComponent),
               y: .value(String(localized: "real_capacity"), record.healthPercent)
             )
             .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
@@ -378,13 +372,7 @@ struct AnalyticsView: View {
             withAnimation(.easeOut(duration: 0.5)) { animateChart = true }
           }
         }
-        .onChange(of: appSettings.defaultChartUnit) {
-          // 単位が変わったらデータ部のみ再アニメーション
-          animateChart = false
-          DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
-            withAnimation(.easeOut(duration: 0.45)) { animateChart = true }
-          }
-        }
+
       }
     }
     .padding()
@@ -423,12 +411,14 @@ struct AnalyticsView: View {
           $0.logDate >= startDate && $0.logDate <= endDate
         }
 
+        let unit = autoUnit(for: visibleRecords, range: selectedRange)
+
         Chart {
           ForEach(visibleRecords) { record in
             LineMark(
               x: .value(
                 String(localized: "date"), record.logDate,
-                unit: appSettings.defaultChartUnit.calendarComponent),
+                unit: unit.calendarComponent),
               y: .value(String(localized: "cycle_count"), record.cycleCount)
             )
             .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
@@ -438,7 +428,7 @@ struct AnalyticsView: View {
             PointMark(
               x: .value(
                 String(localized: "date"), record.logDate,
-                unit: appSettings.defaultChartUnit.calendarComponent),
+                unit: unit.calendarComponent),
               y: .value(String(localized: "cycle_count"), record.cycleCount)
             )
             .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
