@@ -196,7 +196,8 @@ struct AnalyticsView: View {
               y: .value(String(localized: "real_capacity"), record.healthPercent)
             )
             .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
-            .opacity(animateChart ? 1 : 0
+            .opacity(animateChart ? 1 : 0)
+
           // 80%ラインを表示
           RuleMark(y: .value("Threshold", 80))
             .foregroundStyle(.red.opacity(0.5))
