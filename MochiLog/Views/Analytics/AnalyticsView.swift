@@ -226,11 +226,15 @@ struct AnalyticsView: View {
           }
         }
         .frame(height: 220)
-        // アニメーション: 範囲や単位変更時にチャートをアニメート
+        // 伸びるアニメーション（下から上にスケール）
+        .scaleEffect(y: animateChart ? 1 : 0, anchor: .bottom)
+        // アニメーション: animateChart の変化でチャートを伸ばす
+        .animation(.easeOut(duration: 0.6), value: animateChart)
+        // 既存のレンジ・単位変更アニメーション
         .animation(.easeOut(duration: 0.55), value: selectedRange)
         .animation(.easeOut(duration: 0.45), value: appSettings.defaultChartUnit)
         .onAppear {
-          // 初回フェードイン
+          // 初回フェードインと伸びるアニメーション
           DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
             withAnimation(.easeOut(duration: 0.6)) { animateChart = true }
           }
@@ -282,17 +286,30 @@ struct AnalyticsView: View {
 
         Chart {
           ForEach(visibleRecords) { record in
-            BarMark(
+            LineMark(
               x: .value(
                 String(localized: "date"), record.logDate,
                 unit: appSettings.defaultChartUnit.calendarComponent),
               y: .value(String(localized: "cycle_count"), record.cycleCount)
             )
             .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
+            .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+
+            PointMark(
+              x: .value(
+                String(localized: "date"), record.logDate,
+                unit: appSettings.defaultChartUnit.calendarComponent),
+              y: .value(String(localized: "cycle_count"), record.cycleCount)
+            )
+            .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
+            .symbolSize(40)
           }
         }
         .chartXScale(domain: startDate...Date())
         .frame(height: 180)
+        // 伸びるアニメーション
+        .scaleEffect(y: animateChart ? 1 : 0, anchor: .bottom)
+        .animation(.easeOut(duration: 0.6), value: animateChart)
       }
     }
     .padding()
