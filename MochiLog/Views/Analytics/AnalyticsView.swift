@@ -187,10 +187,7 @@ struct AnalyticsView: View {
             .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
             .symbol(by: .value(String(localized: "device_name"), record.deviceName))
             .interpolationMethod(.catmullRom)
-            // データ部分のみ下から伸びるアニメーション
-            .scaleEffect(y: animateChart ? 1 : 0, anchor: .bottom)
             .opacity(animateChart ? 1 : 0)
-            .animation(.easeOut(duration: 0.6), value: animateChart)
 
             PointMark(
               x: .value(
@@ -230,9 +227,21 @@ struct AnalyticsView: View {
             }
           }
         }
+        // プロットエリアだけをマスクして、軸を静的に保つ（データだけ下から伸びる）
+        .chartPlotStyle { plotArea in
+          plotArea
+            .mask {
+              GeometryReader { geo in
+                Rectangle()
+                  .frame(height: animateChart ? geo.size.height : 0, alignment: .bottom)
+                  .frame(maxHeight: .infinity, alignment: .bottom)
+                  .animation(.easeOut(duration: 0.6), value: animateChart)
+              }
+            }
+        }
         .frame(height: 220)
         // 伸びるアニメーション（下から上にスケール）
-        
+
         .onAppear {
           // 初回フェードインと伸びるアニメーション
           DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
@@ -314,12 +323,22 @@ struct AnalyticsView: View {
             )
             .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
             .symbolSize(40)
-            .scaleEffect(y: animateChart ? 1 : 0, anchor: .bottom)
             .opacity(animateChart ? 1 : 0)
-            .animation(.easeOut(duration: 0.6), value: animateChart)
           }
         }
         .chartXScale(domain: startDate...Date())
+        // プロットエリアだけをマスクしてデータ部のみアニメーション（軸は動かさない）
+        .chartPlotStyle { plotArea in
+          plotArea
+            .mask {
+              GeometryReader { geo in
+                Rectangle()
+                  .frame(height: animateChart ? geo.size.height : 0, alignment: .bottom)
+                  .frame(maxHeight: .infinity, alignment: .bottom)
+                  .animation(.easeOut(duration: 0.6), value: animateChart)
+              }
+            }
+        }
         .frame(height: 180)
       }
     }
