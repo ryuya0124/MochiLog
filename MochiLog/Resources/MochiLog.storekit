@@ -5,7 +5,12 @@
       {
         "locale" : "en_US",
         "policyText" : "",
-        "policyURL" : ""
+        "policyURL" : "https://mochilog.ryuya-dev.net/privacy?lang=en"
+      },
+      {
+        "locale" : "ja",
+        "policyText" : "",
+        "policyURL" : "https://mochilog.ryuya-dev.net/privacy?lang=ja"
       }
     ]
   },
