@@ -40,7 +40,26 @@ struct RecordRowView: View {
     return appSettings.accentColor.color
   }
 }
+// MARK: - Previews ✅
+#if DEBUG
+  struct RecordViews_Previews: PreviewProvider {
+    static var previews: some View {
+      let sample = BatteryRecord(
+        date: Date(), cycleCount: 420, maxCapacityPercent: 90, realCapacitymAh: 3200,
+        designCapacitymAh: 3500, deviceName: "iPhone 15 Pro")
 
+      Group {
+        RecordDetailView(record: sample)
+          .previewDevice(PreviewDevice(rawValue: "iPad Air (5th generation)"))
+          .previewDisplayName("iPad - Regular")
+
+        RecordDetailView(record: sample)
+          .previewDevice(PreviewDevice(rawValue: "iPhone 14"))
+          .previewDisplayName("iPhone - Compact")
+      }
+    }
+  }
+#endif
 // Small card component for iPad detail layout
 struct DetailCard<Content: View>: View {
   let title: String
@@ -58,10 +77,22 @@ struct DetailCard<Content: View>: View {
       HStack(alignment: .center, spacing: 12) {
         if let sys = systemImage {
           ZStack {
-            Circle().fill(Color.accentColor.opacity(0.12)).frame(width: 36, height: 36)
+            Circle()
+              .fill(
+                LinearGradient(
+                  gradient: Gradient(colors: [
+                    AppSettings.shared.accentColor.color.opacity(0.16),
+                    Color(uiColor: .systemBackground).opacity(0.06),
+                  ]),
+                  startPoint: .topLeading,
+                  endPoint: .bottomTrailing
+                )
+              )
+              .frame(width: 44, height: 44)
+              .shadow(color: Color.black.opacity(0.03), radius: 6, x: 0, y: 2)
             Image(systemName: sys)
-              .foregroundStyle(Color.accentColor)
-              .font(.system(size: 16, weight: .semibold))
+              .foregroundStyle(AppSettings.shared.accentColor.color)
+              .font(.system(size: 18, weight: .semibold))
           }
         }
         Text(title).font(.headline)
@@ -71,8 +102,8 @@ struct DetailCard<Content: View>: View {
     }
     .padding()
     .frame(minHeight: 120, maxHeight: .infinity, alignment: .top)
-    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
-    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(uiColor: .separator).opacity(0.08)))
+    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 18))
+    .overlay(RoundedRectangle(cornerRadius: 18).stroke(Color(uiColor: .separator).opacity(0.08)))
     .shadow(color: Color.black.opacity(0.03), radius: 6, x: 0, y: 3)
   }
 }
@@ -87,168 +118,296 @@ struct RecordDetailView: View {
   var body: some View {
     NavigationStack {
       Group {
-        // iPad / Regular width: bento-styleカードグリッド
+        // iPad / Regular width: bento-styleカードグリッド with polished header and summary panel
         if horizontalSizeClass == .regular {
           ScrollView {
-            HStack {
-              VStack(alignment: .leading, spacing: 20) {
-                // Device info spans full width on iPad
-                DetailCard(title: String(localized: "device_info"), systemImage: "iphone") {
-                  VStack(alignment: .leading, spacing: 8) {
-                    LabeledContent(String(localized: "device_name"), value: record.deviceName)
-                    if let soc = record.soc { LabeledContent(String(localized: "soc"), value: soc) }
-                    if let modelCode = record.deviceModelCode {
-                      LabeledContent(String(localized: "model_code"), value: modelCode)
-                    }
-                    if let storage = record.storage, let formatted = formattedStorage(storage) {
-                      LabeledContent(String(localized: "storage"), value: formatted)
-                    }
-                    if let ram = record.ram, let formattedRam = formattedRAM(ram) {
-                      LabeledContent(String(localized: "ram"), value: formattedRam)
-                    }
-                    LabeledContent(
-                      String(localized: "log_date"), value: record.logDate,
-                      format: .dateTime.year().month().day())
-                    if let firstUse = record.firstUseDate {
-                      LabeledContent(
-                        String(localized: "first_use_date"), value: firstUse,
-                        format: .dateTime.year().month().day())
-                    }
+            VStack(spacing: 18) {
+              // Header with large circular health ring and summary info
+              HStack(alignment: .center, spacing: 20) {
+                ZStack {
+                  Circle()
+                    .stroke(Color(uiColor: .systemGray5), lineWidth: 12)
+                    .frame(width: 120, height: 120)
+                  Circle()
+                    .trim(from: 0, to: CGFloat(min(max(record.realHealthPercent, 0), 100)) / 100.0)
+                    .stroke(
+                      AngularGradient(
+                        gradient: Gradient(colors: [
+                          AppSettings.shared.accentColor.color, Color.green,
+                        ]), center: .center),
+                      style: StrokeStyle(lineWidth: 12, lineCap: .round)
+                    )
+                    .rotationEffect(.degrees(-90))
+                    .frame(width: 120, height: 120)
+                  VStack {
+                    Text("\(String(format: "%.0f", record.realHealthPercent))%")
+                      .font(.title)
+                      .bold()
+                    Text(String(localized: "health"))
+                      .font(.caption)
+                      .foregroundStyle(.secondary)
                   }
-                  .padding(.vertical, 4)
                 }
 
-                // Remaining cards in grid
-                LazyVGrid(
-                  columns: [GridItem(.adaptive(minimum: 220, maximum: 420), spacing: 20)],
-                  alignment: .leading,
-                  spacing: 20
-                ) {
-                  // Battery (capacity & health)
-                  DetailCard(
-                    title: String(localized: "battery_capacity"), systemImage: "battery.100"
-                  ) {
+                VStack(alignment: .leading, spacing: 6) {
+                  Text(record.deviceName).font(.title2).bold()
+                  if let code = record.deviceModelCode {
+                    Text(code).font(.subheadline).foregroundStyle(.secondary)
+                  }
+                  Text(record.logDate, style: .date).font(.subheadline).foregroundStyle(.secondary)
+
+                  HStack(spacing: 12) {
+                    Label(
+                      String(format: String(localized: "cycle_count_format"), record.cycleCount),
+                      systemImage: "gauge"
+                    )
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    Label("\(record.nominalCapacity) mAh", systemImage: "battery.25")
+                      .font(.caption)
+                      .foregroundStyle(.secondary)
+                  }
+                }
+
+                Spacer()
+
+                VStack(spacing: 8) {
+                  Button {
+                    // TODO: implement share action
+                  } label: {
+                    Label(String(localized: "share"), systemImage: "square.and.arrow.up")
+                  }
+                  .buttonStyle(.borderedProminent)
+
+                  Button {
+                    // TODO: implement export action
+                  } label: {
+                    Label(String(localized: "export"), systemImage: "doc")
+                  }
+                  .buttonStyle(.bordered)
+                }
+                .frame(minWidth: 120)
+              }
+              .padding()
+              .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20))
+
+              HStack(alignment: .top, spacing: 20) {
+                // Left column: the existing cards (device info + grid)
+                VStack(alignment: .leading, spacing: 20) {
+                  // Device info spans full width on iPad
+                  DetailCard(title: String(localized: "device_info"), systemImage: "iphone") {
                     VStack(alignment: .leading, spacing: 8) {
-                      LabeledContent(
-                        String(localized: "cycle_count"),
-                        value: String(
-                          format: String(localized: "cycle_count_format"), record.cycleCount))
-                      if record.designCapacity > 0 {
-                        LabeledContent(
-                          String(localized: "design_capacity"),
-                          value: "\(record.designCapacity) mAh (100%)")
-                      } else {
-                        LabeledContent(
-                          String(localized: "design_capacity"), value: String(localized: "unknown"))
+                      LabeledContent(String(localized: "device_name"), value: record.deviceName)
+                      if let soc = record.soc {
+                        LabeledContent(String(localized: "soc"), value: soc)
+                      }
+                      if let modelCode = record.deviceModelCode {
+                        LabeledContent(String(localized: "model_code"), value: modelCode)
+                      }
+                      if let storage = record.storage, let formatted = formattedStorage(storage) {
+                        LabeledContent(String(localized: "storage"), value: formatted)
+                      }
+                      if let ram = record.ram, let formattedRam = formattedRAM(ram) {
+                        LabeledContent(String(localized: "ram"), value: formattedRam)
                       }
                       LabeledContent(
-                        String(localized: "nominal_capacity"),
-                        value:
-                          "\(record.nominalCapacity) mAh (\(String(format: "%.1f%%", record.designCapacity > 0 ? (Double(record.nominalCapacity) / Double(record.designCapacity)) * 100.0 : record.realHealthPercent)))"
-                      )
-                      LabeledContent(String(localized: "raw_capacity")) {
-                        HStack(spacing: 8) {
-                          Text("\(record.rawCapacity) mAh")
-                          Text("(\(String(format: "%.1f%%", record.realHealthPercent)))")
-                            .foregroundStyle(healthColorLocal(record.realHealthPercent))
-                        }
-                      }
-                      if let lowRate = record.lowRateCapacity {
+                        String(localized: "log_date"), value: record.logDate,
+                        format: .dateTime.year().month().day())
+                      if let firstUse = record.firstUseDate {
                         LabeledContent(
-                          String(localized: "low_rate_capacity"),
-                          value:
-                            "\(lowRate) mAh (\(String(format: "%.1f%%", record.designCapacity > 0 ? (Double(lowRate) / Double(record.designCapacity)) * 100.0 : 0.0)))"
-                        )
+                          String(localized: "first_use_date"), value: firstUse,
+                          format: .dateTime.year().month().day())
                       }
-                      if let display = record.settingsDisplayPercent {
-                        LabeledContent(
-                          String(localized: "os_display"), value: "\(min(display, 100))%")
-                      }
-
-                      Divider().padding(.vertical, 6)
-
-                      if let deflator = record.deflator {
-                        LabeledContent(
-                          String(localized: "deflator"), value: String(format: "%.1f%%", deflator))
-                      }
-                      if let diag = record.diagnosticResult {
-                        LabeledContent(String(localized: "diagnostic_result"), value: diag)
-                      }
-                      if let displayDiagnostic = settingsDisplayDiagnosticMessage(
-                        record.settingsDisplayPercent)
-                      {
-                        LabeledContent(
-                          String(localized: "settings_display_diagnostic"), value: displayDiagnostic
-                        )
-                      }
-                      Text(String(localized: "not_official_note"))
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
                     }
                     .padding(.vertical, 4)
                   }
 
-                  // Temperature (optional)
-                  if record.avgTemp != nil || record.maxTemp != nil || record.minTemp != nil {
+                  // Remaining cards in grid
+                  LazyVGrid(
+                    columns: [GridItem(.adaptive(minimum: 220, maximum: 420), spacing: 20)],
+                    alignment: .leading,
+                    spacing: 20
+                  ) {
+                    // Battery (capacity & health)
                     DetailCard(
-                      title: String(localized: "temperature_daily"), systemImage: "thermometer"
+                      title: String(localized: "battery_capacity"), systemImage: "battery.100"
                     ) {
                       VStack(alignment: .leading, spacing: 8) {
-                        if let avg = record.avgTemp {
+                        LabeledContent(
+                          String(localized: "cycle_count"),
+                          value: String(
+                            format: String(localized: "cycle_count_format"), record.cycleCount))
+                        if record.designCapacity > 0 {
                           LabeledContent(
-                            String(localized: "average"), value: String(format: "%.1f°C", avg))
-                        }
-                        if let max = record.maxTemp {
+                            String(localized: "design_capacity"),
+                            value: "\(record.designCapacity) mAh (100%)")
+                        } else {
                           LabeledContent(
-                            String(localized: "maximum"), value: String(format: "%.1f°C", max))
+                            String(localized: "design_capacity"),
+                            value: String(localized: "unknown"))
                         }
-                        if let min = record.minTemp {
+                        LabeledContent(
+                          String(localized: "nominal_capacity"),
+                          value:
+                            "\(record.nominalCapacity) mAh (\(String(format: "%.1f%%", record.designCapacity > 0 ? (Double(record.nominalCapacity) / Double(record.designCapacity)) * 100.0 : record.realHealthPercent)))"
+                        )
+                        LabeledContent(String(localized: "raw_capacity")) {
+                          HStack(spacing: 8) {
+                            Text("\(record.rawCapacity) mAh")
+                            Text("(\(String(format: "%.1f%%", record.realHealthPercent)))")
+                              .foregroundStyle(healthColorLocal(record.realHealthPercent))
+                          }
+                        }
+                        if let lowRate = record.lowRateCapacity {
                           LabeledContent(
-                            String(localized: "minimum"), value: String(format: "%.1f°C", min))
+                            String(localized: "low_rate_capacity"),
+                            value:
+                              "\(lowRate) mAh (\(String(format: "%.1f%%", record.designCapacity > 0 ? (Double(lowRate) / Double(record.designCapacity)) * 100.0 : 0.0)))"
+                          )
                         }
+                        if let display = record.settingsDisplayPercent {
+                          LabeledContent(
+                            String(localized: "os_display"), value: "\(min(display, 100))%")
+                        }
+
+                        Divider().padding(.vertical, 6)
+
+                        if let deflator = record.deflator {
+                          LabeledContent(
+                            String(localized: "deflator"), value: String(format: "%.1f%%", deflator)
+                          )
+                        }
+                        if let diag = record.diagnosticResult {
+                          LabeledContent(String(localized: "diagnostic_result"), value: diag)
+                        }
+                        if let displayDiagnostic = settingsDisplayDiagnosticMessage(
+                          record.settingsDisplayPercent)
+                        {
+                          LabeledContent(
+                            String(localized: "settings_display_diagnostic"),
+                            value: displayDiagnostic
+                          )
+                        }
+                        Text(String(localized: "not_official_note"))
+                          .font(.caption2)
+                          .foregroundStyle(.secondary)
                       }
                       .padding(.vertical, 4)
                     }
-                  }
 
-                  // Voltage (optional)
-                  if record.maxVoltage != nil || record.minVoltage != nil {
-                    DetailCard(title: String(localized: "voltage"), systemImage: "bolt.fill") {
-                      VStack(alignment: .leading, spacing: 8) {
-                        if let max = record.maxVoltage {
-                          LabeledContent(
-                            String(localized: "maximum"), value: String(format: "%.0f mV", max))
+                    // Temperature (optional)
+                    if record.avgTemp != nil || record.maxTemp != nil || record.minTemp != nil {
+                      DetailCard(
+                        title: String(localized: "temperature_daily"), systemImage: "thermometer"
+                      ) {
+                        VStack(alignment: .leading, spacing: 8) {
+                          if let avg = record.avgTemp {
+                            LabeledContent(
+                              String(localized: "average"), value: String(format: "%.1f°C", avg))
+                          }
+                          if let max = record.maxTemp {
+                            LabeledContent(
+                              String(localized: "maximum"), value: String(format: "%.1f°C", max))
+                          }
+                          if let min = record.minTemp {
+                            LabeledContent(
+                              String(localized: "minimum"), value: String(format: "%.1f°C", min))
+                          }
                         }
-                        if let min = record.minVoltage {
-                          LabeledContent(
-                            String(localized: "minimum"), value: String(format: "%.0f mV", min))
-                        }
+                        .padding(.vertical, 4)
                       }
-                      .padding(.vertical, 4)
                     }
-                  }
 
-                  // Charge range (optional)
-                  if record.maxSoC != nil || record.minSoC != nil {
-                    DetailCard(
-                      title: String(localized: "charge_range_daily"), systemImage: "battery.75"
-                    ) {
-                      VStack(alignment: .leading, spacing: 8) {
-                        if let max = record.maxSoC {
-                          LabeledContent(String(localized: "max_soc"), value: "\(max)%")
+                    // Voltage (optional)
+                    if record.maxVoltage != nil || record.minVoltage != nil {
+                      DetailCard(title: String(localized: "voltage"), systemImage: "bolt.fill") {
+                        VStack(alignment: .leading, spacing: 8) {
+                          if let max = record.maxVoltage {
+                            LabeledContent(
+                              String(localized: "maximum"), value: String(format: "%.0f mV", max))
+                          }
+                          if let min = record.minVoltage {
+                            LabeledContent(
+                              String(localized: "minimum"), value: String(format: "%.0f mV", min))
+                          }
                         }
-                        if let min = record.minSoC {
-                          LabeledContent(String(localized: "min_soc"), value: "\(min)%")
-                        }
+                        .padding(.vertical, 4)
                       }
-                      .padding(.vertical, 4)
+                    }
+
+                    // Charge range (optional)
+                    if record.maxSoC != nil || record.minSoC != nil {
+                      DetailCard(
+                        title: String(localized: "charge_range_daily"), systemImage: "battery.75"
+                      ) {
+                        VStack(alignment: .leading, spacing: 8) {
+                          if let max = record.maxSoC {
+                            LabeledContent(String(localized: "max_soc"), value: "\(max)%")
+                          }
+                          if let min = record.minSoC {
+                            LabeledContent(String(localized: "min_soc"), value: "\(min)%")
+                          }
+                        }
+                        .padding(.vertical, 4)
+                      }
                     }
                   }
                 }
+                .frame(maxWidth: .infinity)
+
+                // Right column: summary / quick actions
+                VStack(alignment: .leading, spacing: 16) {
+                  DetailCard(title: String(localized: "summary"), systemImage: "chart.bar") {
+                    VStack(alignment: .leading, spacing: 8) {
+                      HStack(alignment: .firstTextBaseline, spacing: 8) {
+                        Text("\(String(format: "%.1f", record.realHealthPercent))%")
+                          .font(.largeTitle)
+                          .bold()
+                        VStack(alignment: .leading) {
+                          Text(String(localized: "real_health"))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                          Text(String(localized: "nominal_capacity"))
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                        }
+                      }
+
+                      Divider()
+
+                      HStack {
+                        Button {
+                          // TODO: implement share
+                        } label: {
+                          Label(String(localized: "share"), systemImage: "square.and.arrow.up")
+                        }
+                        .buttonStyle(.bordered)
+
+                        Button {
+                          // TODO: implement export
+                        } label: {
+                          Label(String(localized: "export"), systemImage: "doc")
+                        }
+                        .buttonStyle(.bordered)
+                      }
+                    }
+                    .padding(.vertical, 4)
+                  }
+
+                  // Add a place for future summary widgets / charts
+                  DetailCard(title: String(localized: "quick_actions"), systemImage: "bolt.fill") {
+                    VStack(alignment: .leading, spacing: 8) {
+                      Text(String(localized: "actions_hint"))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    }
+                    .padding(.vertical, 4)
+                  }
+                }
+                .frame(width: 320)
               }
-              .frame(maxWidth: .infinity)
+              .padding(.vertical, 18)
             }
-            .padding(.vertical, 18)
           }
           .scrollContentBackground(.hidden)
           .background(Color(uiColor: .systemGroupedBackground))
