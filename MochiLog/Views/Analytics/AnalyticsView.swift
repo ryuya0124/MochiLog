@@ -114,7 +114,13 @@ struct AnalyticsView: View {
   }
 
   private func windowContainsData(start: Date, end: Date, in records: [BatteryRecord]) -> Bool {
-    return records.contains { $0.logDate >= start && $0.logDate <= end }
+    let cal = Calendar.current
+    let startDay = cal.startOfDay(for: start)
+    let endDay = cal.startOfDay(for: end)
+    return records.contains {
+      let d = cal.startOfDay(for: $0.logDate)
+      return d >= startDay && d <= endDay
+    }
   }
 
   /// 初期化時・レンジ変更時に、現在時点や最終記録を考慮して表示ウィンドウの終了日時を決める
@@ -486,8 +492,11 @@ struct AnalyticsView: View {
           }
         }()
 
+        let startDay = calendar.startOfDay(for: startDate)
+        let endDay = calendar.startOfDay(for: end)
         let visibleRecords = filteredRecords.filter {
-          $0.logDate >= startDate && $0.logDate <= end
+          let d = calendar.startOfDay(for: $0.logDate)
+          return d >= startDay && d <= endDay
         }
 
         let unit = autoUnit(for: visibleRecords, range: selectedRange)
@@ -496,7 +505,7 @@ struct AnalyticsView: View {
           ForEach(visibleRecords) { record in
             LineMark(
               x: .value(
-                String(localized: "date"), record.logDate,
+                String(localized: "date"), calendar.startOfDay(for: record.logDate),
                 unit: unit.calendarComponent),
               y: .value(String(localized: "real_capacity"), record.healthPercent)
             )
@@ -506,7 +515,7 @@ struct AnalyticsView: View {
 
             PointMark(
               x: .value(
-                String(localized: "date"), record.logDate,
+                String(localized: "date"), calendar.startOfDay(for: record.logDate),
                 unit: unit.calendarComponent),
               y: .value(String(localized: "real_capacity"), record.healthPercent)
             )
@@ -515,32 +524,29 @@ struct AnalyticsView: View {
             .opacity(animateChart ? 1 : 0)
           }
 
-          // 80%ラインを表示
-          RuleMark(y: .value("Threshold", 80))
-            .foregroundStyle(.red.opacity(0.5))
-            .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 5]))
-            .annotation(position: .trailing, alignment: .leading) {
-              Text("80%")
-                .font(.caption2)
-                .foregroundStyle(.red)
-            }
         }
         .chartYScale(domain: 70...105)
         .chartXAxis {
-          // X 軸を月/日の短い形式で表示（ex. 12/1）
-          AxisMarks(values: .automatic(desiredCount: 5)) { value in
-            // 日付区切りに薄い縦線を表示
+          // X 軸は表示単位に合わせて日付を等間隔に表示する（stride）
+          AxisMarks(values: .stride(by: unit.calendarComponent, count: 1)) { value in
             AxisGridLine()
-              .foregroundStyle(.secondary.opacity(0.25))
+              .foregroundStyle(.white.opacity(0.95))
 
             AxisValueLabel {
               if let date = value.as(Date.self) {
-                Text(date.formatted(.dateTime.month(.defaultDigits).day()))
+                switch unit {
+                case .hour, .day:
+                  Text(date.formatted(.dateTime.month(.defaultDigits).day()))
+                case .week:
+                  Text(date.formatted(.dateTime.month(.defaultDigits).day()))
+                case .month:
+                  Text(date.formatted(.dateTime.year().month()))
+                }
               }
             }
           }
         }
-        .chartXScale(domain: startDate...end)
+        .chartXScale(domain: startDay...endDay)
         .chartYAxis {
           AxisMarks(values: [70, 80, 90, 100]) { value in
             AxisGridLine()
@@ -614,8 +620,11 @@ struct AnalyticsView: View {
           }
         }()
 
+        let startDay = calendar.startOfDay(for: startDate)
+        let endDay = calendar.startOfDay(for: end)
         let visibleRecords = filteredRecords.filter {
-          $0.logDate >= startDate && $0.logDate <= end
+          let d = calendar.startOfDay(for: $0.logDate)
+          return d >= startDay && d <= endDay
         }
 
         let unit = autoUnit(for: visibleRecords, range: selectedRange)
@@ -624,7 +633,7 @@ struct AnalyticsView: View {
           ForEach(visibleRecords) { record in
             LineMark(
               x: .value(
-                String(localized: "date"), record.logDate,
+                String(localized: "date"), calendar.startOfDay(for: record.logDate),
                 unit: unit.calendarComponent),
               y: .value(String(localized: "cycle_count"), record.cycleCount)
             )
@@ -634,7 +643,7 @@ struct AnalyticsView: View {
 
             PointMark(
               x: .value(
-                String(localized: "date"), record.logDate,
+                String(localized: "date"), calendar.startOfDay(for: record.logDate),
                 unit: unit.calendarComponent),
               y: .value(String(localized: "cycle_count"), record.cycleCount)
             )
@@ -645,19 +654,25 @@ struct AnalyticsView: View {
           }
         }
         .chartXAxis {
-          AxisMarks(values: .automatic(desiredCount: 5)) { value in
-            // 日付区切りに薄い縦線を表示
+          AxisMarks(values: .stride(by: unit.calendarComponent, count: 1)) { value in
             AxisGridLine()
-              .foregroundStyle(.secondary.opacity(0.25))
+              .foregroundStyle(.white.opacity(0.95))
 
             AxisValueLabel {
               if let date = value.as(Date.self) {
-                Text(date.formatted(.dateTime.month(.defaultDigits).day()))
+                switch unit {
+                case .hour, .day:
+                  Text(date.formatted(.dateTime.month(.defaultDigits).day()))
+                case .week:
+                  Text(date.formatted(.dateTime.month(.defaultDigits).day()))
+                case .month:
+                  Text(date.formatted(.dateTime.year().month()))
+                }
               }
             }
           }
         }
-        .chartXScale(domain: startDate...end)
+        .chartXScale(domain: startDay...endDay)
         // プロットエリアだけをマスクしてデータ部のみアニメーション（軸は動かさない）
         .chartPlotStyle { plotArea in
           plotArea
