@@ -507,7 +507,7 @@ struct AnalyticsView: View {
               x: .value(
                 String(localized: "date"), calendar.startOfDay(for: record.logDate),
                 unit: unit.calendarComponent),
-              y: .value(String(localized: "real_capacity"), record.healthPercent)
+              y: .value(String(localized: "real_capacity"), record.realHealthPercent)
             )
             .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
             .interpolationMethod(.catmullRom)
@@ -517,7 +517,7 @@ struct AnalyticsView: View {
               x: .value(
                 String(localized: "date"), calendar.startOfDay(for: record.logDate),
                 unit: unit.calendarComponent),
-              y: .value(String(localized: "real_capacity"), record.healthPercent)
+              y: .value(String(localized: "real_capacity"), record.realHealthPercent)
             )
             .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
             .symbol(.circle)
@@ -723,9 +723,9 @@ struct AnalyticsView: View {
 
           StatCard(
             title: String(localized: "latest_health"),
-            value: String(format: "%.1f%%", latest.healthPercent),
+            value: String(format: "%.1f%%", latest.realHealthPercent),
             icon: "battery.100",
-            color: healthColor(latest.healthPercent)
+            color: healthColor(latest.realHealthPercent)
           )
         }
       }
@@ -736,14 +736,14 @@ struct AnalyticsView: View {
 
   private var averageHealth: Double {
     guard !filteredRecords.isEmpty else { return 0 }
-    let total = filteredRecords.reduce(0) { $0 + $1.healthPercent }
+    let total = filteredRecords.reduce(0) { $0 + $1.realHealthPercent }
     return total / Double(filteredRecords.count)
   }
 
   private func healthColor(_ percent: Double) -> Color {
     if percent < 80 { return .red }
     if percent < 90 { return .orange }
-    return .green
+    return appSettings.accentColor.color
   }
 }
 
@@ -752,6 +752,7 @@ struct DeviceChip: View {
   let name: String
   let isSelected: Bool
   let action: () -> Void
+  @StateObject private var appSettings = AppSettings.shared
 
   var body: some View {
     Button(action: action) {
@@ -762,14 +763,14 @@ struct DeviceChip: View {
         .padding(.vertical, 8)
         .background(
           isSelected
-            ? Color.green.opacity(0.2)
+            ? appSettings.accentColor.color.opacity(0.2)
             : Color(.systemGray5)
         )
-        .foregroundStyle(isSelected ? .green : .primary)
+        .foregroundStyle(isSelected ? appSettings.accentColor.color : .primary)
         .clipShape(Capsule())
         .overlay(
           Capsule()
-            .stroke(isSelected ? Color.green : Color.clear, lineWidth: 1.5)
+            .stroke(isSelected ? appSettings.accentColor.color : Color.clear, lineWidth: 1.5)
         )
     }
     .buttonStyle(.plain)

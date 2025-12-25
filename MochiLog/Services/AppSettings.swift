@@ -18,6 +18,7 @@ final class AppSettings: ObservableObject {
     static let defaultChartUnit = "defaultChartUnit"
     static let iCloudSyncEnabled = "iCloudSyncEnabled"
     static let iCloudStorageThresholdMB = "iCloudStorageThresholdMB"
+    static let accentColor = "accentColor"
   }
 
   /// 容量不一致時の挙動
@@ -63,6 +64,34 @@ final class AppSettings: ObservableObject {
     }
   }
 
+  /// アプリのアクセントカラー（テーマ色）
+  enum ThemeColor: String, CaseIterable, Identifiable {
+    case green
+    case blue
+    case orange
+    case purple
+
+    var id: String { self.rawValue }
+
+    var localizedName: String {
+      switch self {
+      case .green: return String(localized: "theme_color_green")
+      case .blue: return String(localized: "theme_color_blue")
+      case .orange: return String(localized: "theme_color_orange")
+      case .purple: return String(localized: "theme_color_purple")
+      }
+    }
+
+    var color: Color {
+      switch self {
+      case .green: return .green
+      case .blue: return .blue
+      case .orange: return .orange
+      case .purple: return .purple
+      }
+    }
+  }
+
   // MARK: - Published Properties
 
   /// 登録済みのApple Watchモデル名
@@ -91,6 +120,9 @@ final class AppSettings: ObservableObject {
 
   /// iCloud 同期がブロックされた際の説明（ユーザ表示用）
   @Published var iCloudSyncBlockedReason: String?
+
+  /// アプリのアクセント（テーマ）カラー
+  @Published var accentColor: ThemeColor
 
   /// セッション内（アプリ再起動まで）にチャートのレンジ初期化を自動で行ったかどうか
   /// - 注意: 永続化しない。一度 true になるとアプリが再起動するまで上書きしない（ユーザーの選択を尊重するため）
@@ -138,6 +170,15 @@ final class AppSettings: ObservableObject {
 
     let storageThreshold = UserDefaults.standard.double(forKey: Keys.iCloudStorageThresholdMB)
     self.iCloudStorageThresholdMB = storageThreshold == 0 ? 100.0 : storageThreshold
+
+    // アクセントカラー: 永続化された値があれば読み込む
+    if let colorString = UserDefaults.standard.string(forKey: Keys.accentColor),
+      let theme = ThemeColor(rawValue: colorString)
+    {
+      self.accentColor = theme
+    } else {
+      self.accentColor = .green
+    }
 
     // ブロック理由は起動時には空
     self.iCloudSyncBlockedReason = nil
@@ -212,6 +253,14 @@ final class AppSettings: ObservableObject {
       .dropFirst()
       .sink { value in
         UserDefaults.standard.set(value, forKey: Keys.iCloudStorageThresholdMB)
+      }
+      .store(in: &cancellables)
+
+    // Persist accent color changes
+    $accentColor
+      .dropFirst()
+      .sink { value in
+        UserDefaults.standard.set(value.rawValue, forKey: Keys.accentColor)
       }
       .store(in: &cancellables)
   }

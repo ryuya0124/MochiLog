@@ -60,6 +60,22 @@ struct SettingsView: View {
           }
         }
 
+        // MARK: - 表示設定
+        Section(String(localized: "appearance")) {
+          Picker(String(localized: "accent_color"), selection: $appSettings.accentColor) {
+            ForEach(AppSettings.ThemeColor.allCases) { theme in
+              HStack(spacing: 12) {
+                RoundedRectangle(cornerRadius: 4)
+                  .fill(theme.color)
+                  .frame(width: 18, height: 18)
+                Text(theme.localizedName)
+              }
+              .tag(theme)
+            }
+          }
+          .pickerStyle(.menu)
+        }
+
         // MARK: - Apple Watch 設定
         Section {
           HStack {
@@ -187,6 +203,7 @@ struct SettingsView: View {
             Label(String(localized: "view_on_github"), systemImage: "link")
           }
         }
+
       }
       .navigationTitle(String(localized: "settings"))
       .onAppear { localICloudToggle = appSettings.iCloudSyncEnabled }

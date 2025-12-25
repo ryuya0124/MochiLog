@@ -4,6 +4,7 @@ import SwiftUI
 
 struct RecordRowView: View {
   let record: BatteryRecord
+  @StateObject private var appSettings = AppSettings.shared
 
   var body: some View {
     HStack {
@@ -19,10 +20,10 @@ struct RecordRowView: View {
       }
       Spacer()
       VStack(alignment: .trailing, spacing: 4) {
-        Text("\(String(format: "%.1f", record.healthPercent))%")
+        Text("\(String(format: "%.1f", record.realHealthPercent))%")
           .font(.title2)
           .bold()
-          .foregroundStyle(healthColor(record.healthPercent))
+          .foregroundStyle(healthColor(record.realHealthPercent))
         if let diag = record.diagnosticResult {
           Text(diag)
             .font(.caption2)
@@ -35,7 +36,7 @@ struct RecordRowView: View {
   private func healthColor(_ percent: Double) -> Color {
     if percent < 80 { return .red }
     if percent < 90 { return .orange }
-    return .green
+    return appSettings.accentColor.color
   }
 }
 
@@ -77,6 +78,7 @@ struct DetailCard<Content: View>: View {
 
 struct RecordDetailView: View {
   let record: BatteryRecord
+  @StateObject private var appSettings = AppSettings.shared
   @Environment(\.dismiss) private var dismiss
 
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -119,7 +121,7 @@ struct RecordDetailView: View {
                   alignment: .leading,
                   spacing: 20
                 ) {
-                  // Battery capacity
+                  // Battery (capacity & health)
                   DetailCard(
                     title: String(localized: "battery_capacity"), systemImage: "battery.100"
                   ) {
@@ -136,11 +138,13 @@ struct RecordDetailView: View {
                         value:
                           "\(record.nominalCapacity) mAh (\(String(format: "%.1f%%", record.designCapacity > 0 ? (Double(record.nominalCapacity) / Double(record.designCapacity)) * 100.0 : record.realHealthPercent)))"
                       )
-                      LabeledContent(
-                        String(localized: "raw_capacity"),
-                        value:
-                          "\(record.rawCapacity) mAh (\(String(format: "%.1f%%", record.healthPercent)))"
-                      )
+                      LabeledContent(String(localized: "raw_capacity")) {
+                        HStack(spacing: 8) {
+                          Text("\(record.rawCapacity) mAh")
+                          Text("(\(String(format: "%.1f%%", record.realHealthPercent)))")
+                            .foregroundStyle(healthColorLocal(record.realHealthPercent))
+                        }
+                      }
                       if let lowRate = record.lowRateCapacity {
                         LabeledContent(
                           String(localized: "low_rate_capacity"),
@@ -152,23 +156,13 @@ struct RecordDetailView: View {
                         LabeledContent(
                           String(localized: "os_display"), value: "\(min(display, 100))%")
                       }
-                      if let diagnostic = settingsDisplayDiagnosticMessage(
-                        record.settingsDisplayPercent)
-                      {
-                        LabeledContent(
-                          String(localized: "settings_display_diagnostic"), value: diagnostic)
-                      }
-                    }
-                    .padding(.vertical, 4)
-                  }
 
-                  // Battery health
-                  DetailCard(title: String(localized: "battery_health"), systemImage: "heart.fill")
-                  {
-                    VStack(alignment: .leading, spacing: 8) {
+                      Divider().padding(.vertical, 6)
+
+                      // Health info
                       LabeledContent(String(localized: "real_health")) {
-                        Text("\(String(format: "%.1f", record.healthPercent))%")
-                          .foregroundStyle(healthColor(record.healthPercent))
+                        Text("\(String(format: "%.1f", record.realHealthPercent))%")
+                          .foregroundStyle(healthColor(record.realHealthPercent))
                           .bold()
                       }
 
@@ -297,10 +291,13 @@ struct RecordDetailView: View {
                 value:
                   "\(record.nominalCapacity) mAh (\(String(format: "%.1f%%", record.designCapacity > 0 ? (Double(record.nominalCapacity) / Double(record.designCapacity)) * 100.0 : record.realHealthPercent)))"
               )
-              LabeledContent(
-                String(localized: "raw_capacity"),
-                value:
-                  "\(record.rawCapacity) mAh (\(String(format: "%.1f%%", record.healthPercent)))")
+              LabeledContent(String(localized: "raw_capacity")) {
+                HStack(spacing: 8) {
+                  Text("\(record.rawCapacity) mAh")
+                  Text("(\(String(format: "%.1f%%", record.realHealthPercent)))")
+                    .foregroundStyle(healthColorLocal(record.realHealthPercent))
+                }
+              }
               if let lowRate = record.lowRateCapacity {
                 LabeledContent(
                   String(localized: "low_rate_capacity"),
@@ -311,15 +308,11 @@ struct RecordDetailView: View {
               if let display = record.settingsDisplayPercent {
                 LabeledContent(String(localized: "os_display"), value: "\(min(display, 100))%")
               }
-              if let diagnostic = settingsDisplayDiagnosticMessage(record.settingsDisplayPercent) {
-                LabeledContent(String(localized: "settings_display_diagnostic"), value: diagnostic)
-              }
-            }
 
-            Section(String(localized: "battery_health")) {
+              // Health info
               LabeledContent(String(localized: "real_health")) {
-                Text("\(String(format: "%.1f", record.healthPercent))%")
-                  .foregroundStyle(healthColor(record.healthPercent))
+                Text("\(String(format: "%.1f", record.realHealthPercent))%")
+                  .foregroundStyle(healthColor(record.realHealthPercent))
                   .bold()
               }
 
@@ -393,10 +386,17 @@ struct RecordDetailView: View {
     }
   }
 
+  // Local helper that uses accent color for 'good' state when available
+  private func healthColorLocal(_ percent: Double) -> Color {
+    if percent < 80 { return .red }
+    if percent < 90 { return .orange }
+    return AppSettings.shared.accentColor.color
+  }
+
   private func healthColor(_ percent: Double) -> Color {
     if percent < 80 { return .red }
     if percent < 90 { return .orange }
-    return .green
+    return AppSettings.shared.accentColor.color
   }
 
   private func settingsDisplayDiagnosticMessage(_ percent: Int?) -> String? {

@@ -7,6 +7,7 @@ import UniformTypeIdentifiers
 
 // MARK: - メインタブビュー
 struct MainTabView: View {
+  @StateObject private var appSettings = AppSettings.shared
   @State private var selectedTab = 0
 
   var body: some View {
@@ -27,7 +28,7 @@ struct MainTabView: View {
         }
         .tag(2)
     }
-    .tint(.green)
+    .tint(appSettings.accentColor.color)
   }
 }
 
