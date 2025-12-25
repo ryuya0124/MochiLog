@@ -9,6 +9,7 @@ struct SettingsView: View {
 
   @State private var showingWatchPicker = false
   @State private var showingDeleteConfirmation = false
+  @State private var showingNoDataToDeleteAlert = false
   @State private var showingRemoveWatchConfirmation = false
   @State private var showingTutorial = false
   @State private var showingSupportForm = false
@@ -107,10 +108,15 @@ struct SettingsView: View {
 
         // MARK: - データ管理
         Section(String(localized: "data_management")) {
-          Button(role: .destructive, action: { showingDeleteConfirmation = true }) {
+          Button(role: .destructive) {
+            if records.isEmpty {
+              showingNoDataToDeleteAlert = true
+            } else {
+              showingDeleteConfirmation = true
+            }
+          } label: {
             Label(String(localized: "delete_all_data"), systemImage: "trash.fill")
           }
-          .disabled(records.isEmpty)
         }
 
         // MARK: - サポート
@@ -132,6 +138,14 @@ struct SettingsView: View {
 
           Button(action: { showingTermsOfUse = true }) {
             Label(String(localized: "terms_of_use"), systemImage: "doc.plaintext")
+          }
+
+          // Debug: エラーログ保存を有効化する
+          Toggle(String(localized: "enable_debug_logging"), isOn: $appSettings.enableDebugLogging)
+
+          // エラーログを表示
+          NavigationLink(destination: DebugLogsView()) {
+            Label(String(localized: "view_error_logs"), systemImage: "exclamationmark.triangle")
           }
         }
 
@@ -236,6 +250,12 @@ struct SettingsView: View {
       } message: {
         Text(String(localized: "delete_all_data_confirm"))
       }
+      .alert(String(localized: "no_data_to_delete_title"), isPresented: $showingNoDataToDeleteAlert)
+      {
+        Button(String(localized: "ok"), role: .cancel) {}
+      } message: {
+        Text(String(localized: "no_data_to_delete_message"))
+      }
       .alert(String(localized: "remove_watch"), isPresented: $showingRemoveWatchConfirmation) {
         Button(String(localized: "cancel"), role: .cancel) {}
         Button(String(localized: "remove_watch"), role: .destructive) {
@@ -257,6 +277,13 @@ struct SettingsView: View {
       modelContext.delete(record)
     }
     try? modelContext.save()
+
+    // Remove any persisted shared log fallback
+    UserDefaults.standard.removeObject(forKey: "PendingSharedLogText")
+
+    // Notify other components (HomeView etc.) to clear transient UI state
+    NotificationCenter.default.post(
+      name: NSNotification.Name("DeleteAllDataPerformed"), object: nil)
   }
 }
 

@@ -19,6 +19,7 @@ final class AppSettings: ObservableObject {
     static let iCloudSyncEnabled = "iCloudSyncEnabled"
     static let iCloudStorageThresholdMB = "iCloudStorageThresholdMB"
     static let accentColor = "accentColor"
+    static let enableDebugLogging = "enableDebugLogging"
   }
 
   /// 容量不一致時の挙動
@@ -121,6 +122,9 @@ final class AppSettings: ObservableObject {
   /// iCloud 同期がブロックされた際の説明（ユーザ表示用）
   @Published var iCloudSyncBlockedReason: String?
 
+  /// デバッグログを有効にするか（パース失敗時に詳細を保存）
+  @Published var enableDebugLogging: Bool
+
   /// アプリのアクセント（テーマ）カラー
   @Published var accentColor: ThemeColor
 
@@ -170,6 +174,13 @@ final class AppSettings: ObservableObject {
 
     let storageThreshold = UserDefaults.standard.double(forKey: Keys.iCloudStorageThresholdMB)
     self.iCloudStorageThresholdMB = storageThreshold == 0 ? 100.0 : storageThreshold
+
+    // デバッグログ: デフォルトは false
+    if UserDefaults.standard.object(forKey: Keys.enableDebugLogging) == nil {
+      self.enableDebugLogging = false
+    } else {
+      self.enableDebugLogging = UserDefaults.standard.bool(forKey: Keys.enableDebugLogging)
+    }
 
     // アクセントカラー: 永続化された値があれば読み込む
     if let colorString = UserDefaults.standard.string(forKey: Keys.accentColor),
@@ -253,6 +264,14 @@ final class AppSettings: ObservableObject {
       .dropFirst()
       .sink { value in
         UserDefaults.standard.set(value, forKey: Keys.iCloudStorageThresholdMB)
+      }
+      .store(in: &cancellables)
+
+    // Persist debug logging setting
+    $enableDebugLogging
+      .dropFirst()
+      .sink { value in
+        UserDefaults.standard.set(value, forKey: Keys.enableDebugLogging)
       }
       .store(in: &cancellables)
 

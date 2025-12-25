@@ -133,9 +133,14 @@ struct RecordDetailView: View {
                         String(localized: "cycle_count"),
                         value: String(
                           format: String(localized: "cycle_count_format"), record.cycleCount))
-                      LabeledContent(
-                        String(localized: "design_capacity"),
-                        value: "\(record.designCapacity) mAh (100%)")
+                      if record.designCapacity > 0 {
+                        LabeledContent(
+                          String(localized: "design_capacity"),
+                          value: "\(record.designCapacity) mAh (100%)")
+                      } else {
+                        LabeledContent(
+                          String(localized: "design_capacity"), value: String(localized: "unknown"))
+                      }
                       LabeledContent(
                         String(localized: "nominal_capacity"),
                         value:
@@ -161,13 +166,6 @@ struct RecordDetailView: View {
                       }
 
                       Divider().padding(.vertical, 6)
-
-                      // Health info
-                      LabeledContent(String(localized: "real_health")) {
-                        Text("\(String(format: "%.1f", record.realHealthPercent))%")
-                          .foregroundStyle(healthColor(record.realHealthPercent))
-                          .bold()
-                      }
 
                       if let deflator = record.deflator {
                         LabeledContent(
@@ -287,8 +285,14 @@ struct RecordDetailView: View {
               LabeledContent(
                 String(localized: "cycle_count"),
                 value: String(format: String(localized: "cycle_count_format"), record.cycleCount))
-              LabeledContent(
-                String(localized: "design_capacity"), value: "\(record.designCapacity) mAh (100%)")
+              if record.designCapacity > 0 {
+                LabeledContent(
+                  String(localized: "design_capacity"), value: "\(record.designCapacity) mAh (100%)"
+                )
+              } else {
+                LabeledContent(
+                  String(localized: "design_capacity"), value: String(localized: "unknown"))
+              }
               LabeledContent(
                 String(localized: "nominal_capacity"),
                 value:
@@ -310,13 +314,6 @@ struct RecordDetailView: View {
               }
               if let display = record.settingsDisplayPercent {
                 LabeledContent(String(localized: "os_display"), value: "\(min(display, 100))%")
-              }
-
-              // Health info
-              LabeledContent(String(localized: "real_health")) {
-                Text("\(String(format: "%.1f", record.realHealthPercent))%")
-                  .foregroundStyle(healthColor(record.realHealthPercent))
-                  .bold()
               }
 
               if let deflator = record.deflator {

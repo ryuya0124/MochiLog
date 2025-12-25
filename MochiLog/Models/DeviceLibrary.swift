@@ -585,6 +585,11 @@ struct DeviceLibrary {
     return deviceNamesJa[identifier]
   }
 
+  /// 機種名から識別子を取得（例: "Apple Watch 9 (45mm)" -> "Watch7,2"）
+  static func getIdentifierForDeviceName(_ deviceName: String) -> String? {
+    return deviceNamesJa.first { $0.value == deviceName }?.key
+  }
+
   /// 実行中デバイスのモデル識別子を取得（hw.machine を利用）
   /// iOS/macOS 上で動作している場合に自端末の識別子（例: "iPhone13,2"）を返す
   static func localModelIdentifier() -> String? {

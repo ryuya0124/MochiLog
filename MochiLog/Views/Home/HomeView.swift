@@ -50,17 +50,31 @@ struct HomeView: View {
   @State private var showingManualDevicePicker = false
   @State private var showingRegisterWatchAlert = false
   @State private var watchNameToRegister = ""
+  @State private var showingParseErrorSavedAlert = false
+  @State private var showingDebugLogsSheet = false
 
   var body: some View {
     NavigationStack {
       ZStack {
         VStack {
           if records.isEmpty {
-            ContentUnavailableView(
-              String(localized: "no_data"),
-              systemImage: "battery.0",
-              description: Text(String(localized: "no_data_description"))
-            )
+            GeometryReader { proxy in
+              ScrollView {
+                VStack {
+                  Spacer(minLength: 0)
+                  ContentUnavailableView(
+                    String(localized: "no_data"),
+                    systemImage: "battery.0",
+                    description: Text(String(localized: "no_data_description"))
+                  )
+                  Spacer(minLength: 0)
+                }
+                .frame(minHeight: proxy.size.height)
+                .frame(maxWidth: .infinity)
+              }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding()
           } else {
             List {
               ForEach(deviceSections) { section in
@@ -144,8 +158,35 @@ struct HomeView: View {
           processLogTextAsync(text)
         }
       }
+      .onReceive(
+        NotificationCenter.default.publisher(for: NSNotification.Name("DeleteAllDataPerformed"))
+      ) { _ in
+        // Clear transient UI and pending state when all data is removed
+        pendingParseResult = nil
+        selectedRecord = nil
+        showingMismatchAlert = false
+        showingWatchSelection = false
+        showingManualDevicePicker = false
+        showingRegisterWatchAlert = false
+      }
+      .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ParseErrorSaved")))
+      { _ in
+        showingParseErrorSavedAlert = true
+      }
+      .alert(String(localized: "log_saved"), isPresented: $showingParseErrorSavedAlert) {
+        Button(String(localized: "view_log")) {
+          showingDebugLogsSheet = true
+        }
+        Button(String(localized: "ok"), role: .cancel) {}
+      } message: {
+        Text(String(localized: "log_saved_message"))
+      }
+      .sheet(isPresented: $showingDebugLogsSheet) {
+        DebugLogsView()
+      }
       .onAppear {
         reconcileUnknownDeviceNames()
+        reconcileMissingDesignCapacities()
         // If a shared log was persisted before HomeView appeared, process it now
         if let pending = UserDefaults.standard.string(forKey: "PendingSharedLogText") {
           UserDefaults.standard.removeObject(forKey: "PendingSharedLogText")
@@ -159,7 +200,8 @@ struct HomeView: View {
           let record = createRecord(
             from: result,
             deviceName: name,
-            deviceModelCodeOverride: identifier
+            deviceModelCodeOverride: identifier,
+            designCapacityOverride: DeviceLibrary.getCapacity(for: name)
           )
           modelContext.insert(record)
           try? modelContext.save()
@@ -198,7 +240,8 @@ struct HomeView: View {
           let record = createRecord(
             from: result,
             deviceName: name,
-            deviceModelCodeOverride: identifier
+            deviceModelCodeOverride: identifier,
+            designCapacityOverride: DeviceLibrary.getCapacity(for: name)
           )
           modelContext.insert(record)
           try? modelContext.save()
@@ -266,7 +309,9 @@ struct HomeView: View {
       }
     }
 
-    if hasDuplicateRecord(on: logDate, osVersion: result.osVersion) {
+    if hasDuplicateRecord(
+      on: logDate, osVersion: result.osVersion, deviceModelCode: result.deviceModelCode)
+    {
       errorMessage = String(localized: "duplicate_record")
       showingErrorAlert = true
       return nil
@@ -294,10 +339,14 @@ struct HomeView: View {
 
     if isWatchOS || looksLikeWatch {
       if let registeredWatch = appSettings.registeredWatchModel {
+        let registeredModelCode =
+          DeviceLibrary.getIdentifierForDeviceName(registeredWatch) ?? deviceModelCodeToUse
+        let registeredDesignCap = DeviceLibrary.getCapacity(for: registeredWatch)
         let newRecord = createRecord(
           from: result,
           deviceName: registeredWatch,
-          deviceModelCodeOverride: deviceModelCodeToUse
+          deviceModelCodeOverride: registeredModelCode,
+          designCapacityOverride: registeredDesignCap
         )
         modelContext.insert(newRecord)
         try? modelContext.save()
@@ -321,11 +370,13 @@ struct HomeView: View {
   private func createRecord(
     from result: LogParser.ParseResult,
     deviceName: String,
-    deviceModelCodeOverride: String? = nil
+    deviceModelCodeOverride: String? = nil,
+    designCapacityOverride: Int? = nil
   ) -> BatteryRecord {
     let logDate = result.logDate ?? Date()
     let modelCodeUsed = deviceModelCodeOverride ?? result.deviceModelCode
-    return BatteryRecord(
+    let designCapacityUsed = designCapacityOverride ?? result.designCapacity ?? 0
+    let record = BatteryRecord(
       logDate: logDate,
       deviceName: deviceName,
       deviceModelCode: modelCodeUsed,
@@ -335,7 +386,7 @@ struct HomeView: View {
       manufactureDate: nil,
       firstUseDate: result.firstUseDate,
       cycleCount: result.cycleCount ?? 0,
-      designCapacity: result.designCapacity ?? (result.nominalCapacity ?? 0),
+      designCapacity: designCapacityUsed,
       nominalCapacity: result.nominalCapacity ?? 0,
       rawCapacity: result.rawCapacity ?? 0,
       lowRateCapacity: result.lowRateCapacity,
@@ -350,23 +401,61 @@ struct HomeView: View {
       minSoC: result.dailyMinSoC,
       maxSoC: result.dailyMaxSoC
     )
+
+    // If diagnostic result is missing but we have a design capacity, compute it from raw
+    if record.diagnosticResult == nil && designCapacityUsed > 0 && record.rawCapacity > 0 {
+      let rawRatio = (Double(record.rawCapacity) / Double(designCapacityUsed)) * 100.0
+      if rawRatio < 80.0 {
+        record.diagnosticResult = String(localized: "diag_replace_recommended")
+      } else if rawRatio < 90.0 {
+        record.diagnosticResult = String(localized: "diag_slightly_degraded")
+      } else {
+        record.diagnosticResult = String(localized: "diag_normal")
+      }
+    }
+
+    return record
   }
 
   private func deleteRecords(_ items: [BatteryRecord]) {
     withAnimation {
-      items.forEach { modelContext.delete($0) }
+      for item in items {
+        // 選択中のレコードが削除対象なら先に選択を解除
+        if let selected = selectedRecord, selected === item {
+          selectedRecord = nil
+        }
+        modelContext.delete(item)
+      }
+      // 保存して Query を更新（削除が UI に反映されるようにする）
+      try? modelContext.save()
     }
   }
 
-  private func hasDuplicateRecord(on date: Date, osVersion: String?) -> Bool {
+  private func hasDuplicateRecord(on date: Date, osVersion: String?, deviceModelCode: String?)
+    -> Bool
+  {
     records.contains { existing in
       let sameDate =
         Calendar.current.compare(existing.logDate, to: date, toGranularity: .second) == .orderedSame
       guard sameDate else { return false }
+
+      // Compare OS version
+      let versionsMatch: Bool
       if let existingVersion = existing.osVersion, let newVersion = osVersion {
-        return existingVersion == newVersion
+        versionsMatch = (existingVersion == newVersion)
+      } else {
+        versionsMatch = (existing.osVersion == nil && osVersion == nil)
       }
-      return existing.osVersion == nil && osVersion == nil
+
+      // Compare device model code
+      let modelsMatch: Bool
+      if let existingModel = existing.deviceModelCode, let newModel = deviceModelCode {
+        modelsMatch = (existingModel == newModel)
+      } else {
+        modelsMatch = (existing.deviceModelCode == nil && deviceModelCode == nil)
+      }
+
+      return versionsMatch && modelsMatch
     }
   }
 
@@ -385,6 +474,54 @@ struct HomeView: View {
     if needsSave {
       try? modelContext.save()
     }
+  }
+
+  /// 起動時にライブラリに設計容量が登録されていない既存レコードを補完する
+  private func reconcileMissingDesignCapacities() {
+    var needsSave = false
+    for record in records {
+      // 0 は「未登録・情報なし」を表す (既存のコードとの互換性維持)
+      guard record.designCapacity == 0 else { continue }
+
+      // まずは model code から解決を試みる
+      if let code = record.deviceModelCode,
+        let resolvedName = DeviceLibrary.getDeviceName(for: code),
+        let cap = DeviceLibrary.getCapacity(for: resolvedName),
+        cap > 0
+      {
+        record.designCapacity = cap
+        // 設計容量が埋まったら診断結果を再計算する
+        if record.rawCapacity > 0 {
+          let rawRatio = (Double(record.rawCapacity) / Double(cap)) * 100.0
+          if rawRatio < 80.0 {
+            record.diagnosticResult = String(localized: "diag_replace_recommended")
+          } else if rawRatio < 90.0 {
+            record.diagnosticResult = String(localized: "diag_slightly_degraded")
+          } else {
+            record.diagnosticResult = String(localized: "diag_normal")
+          }
+        }
+        needsSave = true
+        continue
+      }
+
+      // 次に deviceName から解決できるか試す
+      if let cap = DeviceLibrary.getCapacity(for: record.deviceName), cap > 0 {
+        record.designCapacity = cap
+        if record.rawCapacity > 0 {
+          let rawRatio = (Double(record.rawCapacity) / Double(cap)) * 100.0
+          if rawRatio < 80.0 {
+            record.diagnosticResult = String(localized: "diag_replace_recommended")
+          } else if rawRatio < 90.0 {
+            record.diagnosticResult = String(localized: "diag_slightly_degraded")
+          } else {
+            record.diagnosticResult = String(localized: "diag_normal")
+          }
+        }
+        needsSave = true
+      }
+    }
+    if needsSave { try? modelContext.save() }
   }
 
   private var deviceSections: [DeviceSection] {

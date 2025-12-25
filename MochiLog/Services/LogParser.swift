@@ -144,7 +144,12 @@ struct LogParser {
       let msg = batObj.message
     else {
 
-      print("エラー: バッテリーデータが見つかりませんでした")
+      let msg = "バッテリーデータが見つかりませんでした"
+      // デバッグログが有効なら詳細を保存
+      if AppSettings.shared.enableDebugLogging {
+        ErrorLogStore.shared.saveLog(message: msg, rawText: text)
+        NotificationCenter.default.post(name: NSNotification.Name("ParseErrorSaved"), object: nil)
+      }
       return result
     }
 
@@ -155,7 +160,7 @@ struct LogParser {
     result.deviceModelCode = modelCode
     result.detectedIdentifier = modelCode
 
-    // 識別子から機種名を解決して設計容量を取得（取得できない場合は nil のままにしておく）
+    // 識別子から機種名を解決して設計容量を取得（まずはライブラリを参照、無ければログの設計容量をフォールバック）
     if let id = result.deviceModelCode,
       !id.isEmpty,
       let name = DeviceLibrary.getDeviceName(for: id),
@@ -169,13 +174,13 @@ struct LogParser {
     let raw = msg.last_value_AppleRawMaxCapacity ?? 0
     let lowRate = msg.last_value_MinimumQmax ?? 0
 
-    // バリデーション: ログ内の設計容量（または公称容量）とライブラリの設計容量を比較
+    // バリデーション: ライブラリの設計容量とログ内の値を比較（閾値はパーセント差）
     if enableValidation, let libraryCap = result.designCapacity, libraryCap > 0 {
-      // ログに設計容量があればそれを使う、なければ公称容量で代用してチェック
       let logCapToCheck = msg.last_value_DesignCapacity ?? nominal
       if logCapToCheck > 0 {
-        let ratio = Double(logCapToCheck) / Double(libraryCap)
-        if ratio >= validationThreshold || ratio <= (1.0 / validationThreshold) {
+        let diffPercent =
+          abs(Double(logCapToCheck) - Double(libraryCap)) / Double(libraryCap) * 100.0
+        if diffPercent > validationThreshold {
           result.isCapacityMismatch = true
         }
       }
@@ -232,6 +237,20 @@ struct LogParser {
       } else {
         result.diagnosticResult = String(localized: "diag_normal")
       }
+    }
+
+    // デバッグ: 重要フィールドが欠けている場合はログを保存
+    var missingFields: [String] = []
+    if result.logDate == nil { missingFields.append("logDate") }
+    if result.cycleCount == nil { missingFields.append("cycleCount") }
+    if result.nominalCapacity == nil || result.nominalCapacity == 0 {
+      missingFields.append("nominalCapacity")
+    }
+    if result.rawCapacity == nil || result.rawCapacity == 0 { missingFields.append("rawCapacity") }
+    if !missingFields.isEmpty && AppSettings.shared.enableDebugLogging {
+      let message = "Parse missing fields: \(missingFields.joined(separator: ", "))"
+      ErrorLogStore.shared.saveLog(message: message, rawText: text)
+      NotificationCenter.default.post(name: NSNotification.Name("ParseErrorSaved"), object: nil)
     }
 
     return result
