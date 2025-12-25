@@ -33,6 +33,9 @@ struct AnalyticsView: View {
   }
 
   @State private var selectedRange: RangePreset = .oneMonth
+  // 表示ウィンドウの終了日時（endDate）。範囲を前後に移動すると変更される。デフォルトは現在時刻。
+  @State private var windowEnd: Date = Date()
+
   // デバイス選択用のシート制御と検索クエリ
   @State private var isShowingDevicePicker: Bool = false
   @State private var deviceSearchQuery: String = ""
@@ -82,6 +85,140 @@ struct AnalyticsView: View {
     return .month
   }
 
+  // MARK: - ウィンドウ（前後移動）ヘルパー
+  private func periodComponent(for preset: RangePreset) -> DateComponents? {
+    switch preset {
+    case .oneWeek:
+      return DateComponents(day: 7)
+    case .oneMonth:
+      return DateComponents(month: 1)
+    case .threeMonths:
+      return DateComponents(month: 3)
+    case .all:
+      return nil
+    }
+  }
+
+  private func windowStart(for endDate: Date, range: RangePreset) -> Date {
+    let calendar = Calendar.current
+    switch range {
+    case .oneWeek:
+      return calendar.date(byAdding: .day, value: -7, to: endDate) ?? endDate
+    case .oneMonth:
+      return calendar.date(byAdding: .month, value: -1, to: endDate) ?? endDate
+    case .threeMonths:
+      return calendar.date(byAdding: .month, value: -3, to: endDate) ?? endDate
+    case .all:
+      return (filteredRecords.min(by: { $0.logDate < $1.logDate })?.logDate) ?? endDate
+    }
+  }
+
+  private func windowContainsData(start: Date, end: Date, in records: [BatteryRecord]) -> Bool {
+    return records.contains { $0.logDate >= start && $0.logDate <= end }
+  }
+
+  /// 初期化時・レンジ変更時に、現在時点や最終記録を考慮して表示ウィンドウの終了日時を決める
+  private func initializeWindowEndIfNeeded() {
+    guard !filteredRecords.isEmpty else {
+      windowEnd = Date()
+      return
+    }
+
+    // all のときは最新記録までを表示
+    if selectedRange == .all {
+      windowEnd = filteredRecords.max(by: { $0.logDate < $1.logDate })?.logDate ?? Date()
+      return
+    }
+
+    // 通常は現在時刻を優先して、ウィンドウ内にデータが含まれるか確認
+    let now = Date()
+    let startNow = windowStart(for: now, range: selectedRange)
+    if windowContainsData(start: startNow, end: now, in: filteredRecords) {
+      windowEnd = now
+      return
+    }
+
+    // そうでなければ最後の記録日時をウィンドウ終了にする
+    if let last = filteredRecords.max(by: { $0.logDate < $1.logDate })?.logDate {
+      windowEnd = last
+    } else {
+      windowEnd = now
+    }
+  }
+
+  /// 前方に移動できるウィンドウ（endDate）を探す（返り値は新しい endDate）
+  private func findNextWindowEnd() -> Date? {
+    guard let comp = periodComponent(for: selectedRange) else { return nil }
+    var candidateEnd = windowEnd
+    let now = Date()
+
+    // 移動先は現在より未来にならないようにする
+    while true {
+      guard let nextEnd = Calendar.current.date(byAdding: comp, to: candidateEnd) else { break }
+      // 次のウィンドウが現在時刻を超える場合、終了日時は現在時刻に合わせる
+      let endLimited = min(nextEnd, now)
+      // すでに前と同じ位置なら進めない
+      if endLimited <= candidateEnd { break }
+
+      let start = windowStart(for: endLimited, range: selectedRange)
+      if windowContainsData(start: start, end: endLimited, in: filteredRecords) {
+        return endLimited
+      }
+      // 進めてもデータが見つからない場合は次へ
+      if endLimited >= now { break }
+      candidateEnd = endLimited
+    }
+    return nil
+  }
+
+  /// 後方に移動できるウィンドウ（endDate）を探す
+  private func findPreviousWindowEnd() -> Date? {
+    guard let comp = periodComponent(for: selectedRange) else { return nil }
+    var candidateEnd = windowEnd
+
+    while true {
+      // comp を負数で加算するヘルパーを使って後退
+      guard let prevEnd = dateByAdding(comp, multiplier: -1, to: candidateEnd) else { break }
+      let prevStart = windowStart(for: prevEnd, range: selectedRange)
+      if windowContainsData(start: prevStart, end: prevEnd, in: filteredRecords) {
+        return prevEnd
+      }
+      // 到達点: prevEnd が最古の記録より前なら打ち切り
+      if let earliest = filteredRecords.min(by: { $0.logDate < $1.logDate })?.logDate,
+        prevEnd <= earliest
+      {
+        break
+      }
+      candidateEnd = prevEnd
+    }
+    return nil
+  }
+
+  private func shiftWindow(backward: Bool) {
+    if backward {
+      if let prev = findPreviousWindowEnd() {
+        windowEnd = prev
+      }
+    } else {
+      if let next = findNextWindowEnd() {
+        windowEnd = next
+      }
+    }
+  }
+
+  // MARK: - 前後移動の可否
+  private var canMoveNext: Bool { selectedRange != .all && findNextWindowEnd() != nil }
+  private var canMovePrevious: Bool { selectedRange != .all && findPreviousWindowEnd() != nil }
+
+  /// comp を multiplier 倍して date に加算して返す（DateComponents を簡単に +/- で使えるようにする）
+  private func dateByAdding(_ comp: DateComponents, multiplier: Int, to date: Date) -> Date? {
+    var c = DateComponents()
+    if let d = comp.day { c.day = d * multiplier }
+    if let m = comp.month { c.month = m * multiplier }
+    if let h = comp.hour { c.hour = h * multiplier }
+    return Calendar.current.date(byAdding: c, to: date)
+  }
+
   var body: some View {
     NavigationStack {
       ScrollView {
@@ -115,21 +252,38 @@ struct AnalyticsView: View {
         // 起動セッション内で一度だけ、現在の（フィルタ済み）データに合わせてレンジを自動設定（ユーザー選択は上書きしない）
         if !appSettings.hasAutoInitializedChartRange {
           selectedRange = autoRange(for: filteredRecords)
+          initializeWindowEndIfNeeded()
           appSettings.hasAutoInitializedChartRange = true
+        } else {
+          // 既にセッション内で初期化済みなら、現在のウィンドウがデータを含むか確認し、必要なら調整
+          initializeWindowEndIfNeeded()
         }
       }
       .onChange(of: records) { _ in
         // records 更新時に、まだセッション内で自動初期化が済んでいなければ適用
         if !appSettings.hasAutoInitializedChartRange {
           selectedRange = autoRange(for: filteredRecords)
+          initializeWindowEndIfNeeded()
           appSettings.hasAutoInitializedChartRange = true
+        } else {
+          // 変更により現在ウィンドウにデータがなくなった場合はウィンドウを調整
+          let start = windowStart(for: windowEnd, range: selectedRange)
+          if !windowContainsData(start: start, end: windowEnd, in: filteredRecords) {
+            initializeWindowEndIfNeeded()
+          }
         }
       }
       .onChange(of: selectedDevice) { _ in
         // デバイス切替時もセッション内の初回のみ適用（既に初期化済みならユーザー選択を尊重）
         if !appSettings.hasAutoInitializedChartRange {
           selectedRange = autoRange(for: filteredRecords)
+          initializeWindowEndIfNeeded()
           appSettings.hasAutoInitializedChartRange = true
+        } else {
+          let start = windowStart(for: windowEnd, range: selectedRange)
+          if !windowContainsData(start: start, end: windowEnd, in: filteredRecords) {
+            initializeWindowEndIfNeeded()
+          }
         }
       }
       .navigationTitle(String(localized: "analytics"))
@@ -236,18 +390,36 @@ struct AnalyticsView: View {
       } else {
         // チャートコントロール：範囲のみ（表示単位は自動決定）
         if horizontalSizeClass == .compact {
-          HStack(spacing: 12) {
+          HStack(spacing: 8) {
             VStack(alignment: .leading, spacing: 4) {
               Text(String(localized: "chart_range"))
                 .font(.caption)
                 .foregroundStyle(.secondary)
-              Picker("", selection: $selectedRange) {
-                ForEach(RangePreset.allCases) { preset in
-                  Text(preset.localizedName).tag(preset)
+              HStack(spacing: 8) {
+                Button {
+                  // 前のウィンドウへ
+                  shiftWindow(backward: true)
+                } label: {
+                  Image(systemName: "chevron.left")
                 }
+                .disabled(!canMovePrevious)
+
+                Picker("", selection: $selectedRange) {
+                  ForEach(RangePreset.allCases) { preset in
+                    Text(preset.localizedName).tag(preset)
+                  }
+                }
+                .pickerStyle(.menu)
+                .accessibilityLabel(Text(String(localized: "chart_range")))
+
+                Button {
+                  // 次のウィンドウへ
+                  shiftWindow(backward: false)
+                } label: {
+                  Image(systemName: "chevron.right")
+                }
+                .disabled(!canMoveNext)
               }
-              .pickerStyle(.menu)
-              .accessibilityLabel(Text(String(localized: "chart_range")))
             }
             .frame(maxWidth: .infinity, alignment: .leading)
           }
@@ -257,34 +429,65 @@ struct AnalyticsView: View {
               Text(String(localized: "chart_range"))
                 .font(.caption)
                 .foregroundStyle(.secondary)
-              Picker("", selection: $selectedRange) {
-                ForEach(RangePreset.allCases) { preset in
-                  Text(preset.localizedName).tag(preset)
+              HStack(spacing: 12) {
+                Button {
+                  shiftWindow(backward: true)
+                } label: {
+                  Image(systemName: "chevron.left")
                 }
+                .disabled(selectedRange == .all || findPreviousWindowEnd() == nil)
+
+                Picker("", selection: $selectedRange) {
+                  ForEach(RangePreset.allCases) { preset in
+                    Text(preset.localizedName).tag(preset)
+                  }
+                }
+                .pickerStyle(.segmented)
+                .accessibilityLabel(Text(String(localized: "chart_range")))
+
+                Button {
+                  shiftWindow(backward: false)
+                } label: {
+                  Image(systemName: "chevron.right")
+                }
+                .disabled(!canMoveNext)
               }
-              .pickerStyle(.segmented)
-              .accessibilityLabel(Text(String(localized: "chart_range")))
+
+              // 現在表示中の期間ラベル
+              HStack {
+                let end = windowEnd
+                let start = windowStart(for: end, range: selectedRange)
+                Text(start.formatted(.dateTime.month().day()))
+                  .font(.caption2)
+                  .foregroundStyle(.secondary)
+                Text("–")
+                  .font(.caption2)
+                  .foregroundStyle(.secondary)
+                Text(end.formatted(.dateTime.month().day()))
+                  .font(.caption2)
+                  .foregroundStyle(.secondary)
+              }
             }
           }
         }
 
-        let endDate = Date()
+        let end = windowEnd
         let calendar = Calendar.current
         let startDate: Date = {
           switch selectedRange {
           case .oneWeek:
-            return calendar.date(byAdding: .day, value: -7, to: endDate) ?? endDate
+            return calendar.date(byAdding: .day, value: -7, to: end) ?? end
           case .oneMonth:
-            return calendar.date(byAdding: .month, value: -1, to: endDate) ?? endDate
+            return calendar.date(byAdding: .month, value: -1, to: end) ?? end
           case .threeMonths:
-            return calendar.date(byAdding: .month, value: -3, to: endDate) ?? endDate
+            return calendar.date(byAdding: .month, value: -3, to: end) ?? end
           case .all:
-            return (filteredRecords.min(by: { $0.logDate < $1.logDate })?.logDate) ?? endDate
+            return (filteredRecords.min(by: { $0.logDate < $1.logDate })?.logDate) ?? end
           }
         }()
 
         let visibleRecords = filteredRecords.filter {
-          $0.logDate >= startDate && $0.logDate <= endDate
+          $0.logDate >= startDate && $0.logDate <= end
         }
 
         let unit = autoUnit(for: visibleRecords, range: selectedRange)
@@ -326,6 +529,10 @@ struct AnalyticsView: View {
         .chartXAxis {
           // X 軸を月/日の短い形式で表示（ex. 12/1）
           AxisMarks(values: .automatic(desiredCount: 5)) { value in
+            // 日付区切りに薄い縦線を表示
+            AxisGridLine()
+              .foregroundStyle(.secondary.opacity(0.25))
+
             AxisValueLabel {
               if let date = value.as(Date.self) {
                 Text(date.formatted(.dateTime.month(.defaultDigits).day()))
@@ -333,7 +540,7 @@ struct AnalyticsView: View {
             }
           }
         }
-        .chartXScale(domain: startDate...endDate)
+        .chartXScale(domain: startDate...end)
         .chartYAxis {
           AxisMarks(values: [70, 80, 90, 100]) { value in
             AxisGridLine()
@@ -392,23 +599,23 @@ struct AnalyticsView: View {
           .padding()
       } else {
         // 同じ範囲フィルタを再利用
-        let endDate = Date()
+        let end = windowEnd
         let calendar = Calendar.current
         let startDate: Date = {
           switch selectedRange {
           case .oneWeek:
-            return calendar.date(byAdding: .day, value: -7, to: endDate) ?? endDate
+            return calendar.date(byAdding: .day, value: -7, to: end) ?? end
           case .oneMonth:
-            return calendar.date(byAdding: .month, value: -1, to: endDate) ?? endDate
+            return calendar.date(byAdding: .month, value: -1, to: end) ?? end
           case .threeMonths:
-            return calendar.date(byAdding: .month, value: -3, to: endDate) ?? endDate
+            return calendar.date(byAdding: .month, value: -3, to: end) ?? end
           case .all:
-            return (filteredRecords.min(by: { $0.logDate < $1.logDate })?.logDate) ?? endDate
+            return (filteredRecords.min(by: { $0.logDate < $1.logDate })?.logDate) ?? end
           }
         }()
 
         let visibleRecords = filteredRecords.filter {
-          $0.logDate >= startDate && $0.logDate <= endDate
+          $0.logDate >= startDate && $0.logDate <= end
         }
 
         let unit = autoUnit(for: visibleRecords, range: selectedRange)
@@ -439,6 +646,10 @@ struct AnalyticsView: View {
         }
         .chartXAxis {
           AxisMarks(values: .automatic(desiredCount: 5)) { value in
+            // 日付区切りに薄い縦線を表示
+            AxisGridLine()
+              .foregroundStyle(.secondary.opacity(0.25))
+
             AxisValueLabel {
               if let date = value.as(Date.self) {
                 Text(date.formatted(.dateTime.month(.defaultDigits).day()))
@@ -446,7 +657,7 @@ struct AnalyticsView: View {
             }
           }
         }
-        .chartXScale(domain: startDate...Date())
+        .chartXScale(domain: startDate...end)
         // プロットエリアだけをマスクしてデータ部のみアニメーション（軸は動かさない）
         .chartPlotStyle { plotArea in
           plotArea
