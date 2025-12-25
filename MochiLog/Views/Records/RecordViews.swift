@@ -1,3 +1,4 @@
+import Foundation
 // RecordViews.swift
 // 一覧行ビューと詳細ビュー
 import SwiftUI
@@ -99,10 +100,12 @@ struct RecordDetailView: View {
                     if let modelCode = record.deviceModelCode {
                       LabeledContent(String(localized: "model_code"), value: modelCode)
                     }
-                    if let storage = record.storage {
-                      LabeledContent(String(localized: "storage"), value: storage)
+                    if let storage = record.storage, let formatted = formattedStorage(storage) {
+                      LabeledContent(String(localized: "storage"), value: formatted)
                     }
-                    if let ram = record.ram { LabeledContent(String(localized: "ram"), value: ram) }
+                    if let ram = record.ram, let formattedRam = formattedRAM(ram) {
+                      LabeledContent(String(localized: "ram"), value: formattedRam)
+                    }
                     LabeledContent(
                       String(localized: "log_date"), value: record.logDate,
                       format: .dateTime.year().month().day())
@@ -264,11 +267,11 @@ struct RecordDetailView: View {
               if let modelCode = record.deviceModelCode {
                 LabeledContent(String(localized: "model_code"), value: modelCode)
               }
-              if let storage = record.storage {
-                LabeledContent(String(localized: "storage"), value: storage)
+              if let storage = record.storage, let formatted = formattedStorage(storage) {
+                LabeledContent(String(localized: "storage"), value: formatted)
               }
-              if let ram = record.ram {
-                LabeledContent(String(localized: "ram"), value: ram)
+              if let ram = record.ram, let formattedRam = formattedRAM(ram) {
+                LabeledContent(String(localized: "ram"), value: formattedRam)
               }
               LabeledContent(
                 String(localized: "log_date"), value: record.logDate,
@@ -397,6 +400,65 @@ struct RecordDetailView: View {
     if percent < 80 { return .red }
     if percent < 90 { return .orange }
     return AppSettings.shared.accentColor.color
+  }
+
+  // Format storage strings: convert >= 1024 GB to TB (e.g. 1024GB -> 1 TB, 1536GB -> 1.5 TB)
+  private func formattedStorage(_ raw: String?) -> String? {
+    guard let raw = raw?.trimmingCharacters(in: .whitespacesAndNewlines), !raw.isEmpty else {
+      return nil
+    }
+    let s = raw.replacingOccurrences(of: " ", with: "")
+    let lower = s.lowercased()
+    if lower.contains("tb") { return s.replacingOccurrences(of: " ", with: " ") }
+
+    do {
+      let re = try NSRegularExpression(
+        pattern: "([0-9]+(?:\\.[0-9]+)?)\\s*(gb|g)$", options: .caseInsensitive)
+      let ns = s as NSString
+      if let m = re.firstMatch(in: s, options: [], range: NSRange(location: 0, length: ns.length)) {
+        let numStr = ns.substring(with: m.range(at: 1))
+        if let val = Double(numStr) {
+          if val >= 1024 {
+            let tb = val / 1024.0
+            if tb.truncatingRemainder(dividingBy: 1) == 0 {
+              return String(format: "%.0f TB", tb)
+            }
+            return String(format: "%.1f TB", tb)
+          }
+          if val.truncatingRemainder(dividingBy: 1) == 0 {
+            return String(format: "%.0f GB", val)
+          }
+          return String(format: "%.1f GB", val)
+        }
+      }
+    } catch {
+      return raw
+    }
+    return raw
+  }
+
+  // Format RAM: round to nearest GB; special-case 15 -> 16
+  private func formattedRAM(_ raw: String?) -> String? {
+    guard let raw = raw?.trimmingCharacters(in: .whitespacesAndNewlines), !raw.isEmpty else {
+      return nil
+    }
+    do {
+      let re = try NSRegularExpression(
+        pattern: "([0-9]+(?:\\.[0-9]+)?)\\s*(gb|g)$", options: .caseInsensitive)
+      let ns = raw as NSString
+      if let m = re.firstMatch(in: raw, options: [], range: NSRange(location: 0, length: ns.length))
+      {
+        let numStr = ns.substring(with: m.range(at: 1))
+        if let val = Double(numStr) {
+          var rounded = Int(round(val))
+          if rounded == 15 { rounded = 16 }
+          return "\(rounded) GB"
+        }
+      }
+    } catch {
+      return raw
+    }
+    return raw
   }
 
   private func settingsDisplayDiagnosticMessage(_ percent: Int?) -> String? {
