@@ -109,6 +109,22 @@
         }
       }
     },
+    "view_on_github" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View on GitHub"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GitHubで表示"
+          }
+        }
+      }
+    },
     "apple_watch_settings" : {
       "localizations" : {
         "en" : {

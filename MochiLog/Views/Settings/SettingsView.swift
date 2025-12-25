@@ -180,6 +180,13 @@ struct SettingsView: View {
         Section {
           LabeledContent(String(localized: "app_version"), value: appVersion)
         }
+
+        // MARK: - プロジェクト
+        Section {
+          Link(destination: URL(string: "https://github.com/ryuya0124/MochiLog")!) {
+            Label(String(localized: "view_on_github"), systemImage: "link")
+          }
+        }
       }
       .navigationTitle(String(localized: "settings"))
       .onAppear { localICloudToggle = appSettings.iCloudSyncEnabled }
