@@ -186,6 +186,18 @@ struct SettingsView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.bottom, 8)
 
+              // 新規: 共有インポート時にアプリを開くかどうか
+              Toggle(
+                String(localized: "open_app_after_share_import"),
+                isOn: $appSettings.openAppAfterShareImport
+              )
+
+              Text(String(localized: "open_app_after_share_import_description"))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.bottom, 8)
+
               VStack(alignment: .leading, spacing: 8) {
                 HStack {
                   Text(String(localized: "icloud_storage_threshold"))
@@ -280,6 +292,7 @@ struct SettingsView: View {
 
     // Remove any persisted shared log fallback
     UserDefaults.standard.removeObject(forKey: "PendingSharedLogText")
+    UserDefaults.standard.removeObject(forKey: "PendingSharedLogSilent")
 
     // Notify other components (HomeView etc.) to clear transient UI state
     NotificationCenter.default.post(

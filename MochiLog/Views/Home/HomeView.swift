@@ -153,9 +153,12 @@ struct HomeView: View {
       .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ProcessSharedLog")))
       { notification in
         if let text = notification.userInfo?["text"] as? String {
+          // Determine whether we should process silently (don't show UI)
+          let silent = (notification.userInfo?["silent"] as? Bool) ?? false
           // Remove persisted fallback and process
           UserDefaults.standard.removeObject(forKey: "PendingSharedLogText")
-          processLogTextAsync(text)
+          UserDefaults.standard.removeObject(forKey: "PendingSharedLogSilent")
+          processLogTextAsync(text, silent: silent)
         }
       }
       .onReceive(
@@ -189,8 +192,10 @@ struct HomeView: View {
         reconcileMissingDesignCapacities()
         // If a shared log was persisted before HomeView appeared, process it now
         if let pending = UserDefaults.standard.string(forKey: "PendingSharedLogText") {
+          let silent = UserDefaults.standard.bool(forKey: "PendingSharedLogSilent")
           UserDefaults.standard.removeObject(forKey: "PendingSharedLogText")
-          processLogTextAsync(pending)
+          UserDefaults.standard.removeObject(forKey: "PendingSharedLogSilent")
+          processLogTextAsync(pending, silent: silent)
         }
       }
       .sheet(isPresented: $showingWatchSelection) {
@@ -264,7 +269,7 @@ struct HomeView: View {
   // --- 以下のサブビュー/ユーティリティも RecordViews.swift, ZipArchiveHelper.swift へ分離済み ---
 
   // 残すべき内部ロジック
-  private func processLogTextAsync(_ text: String) {
+  private func processLogTextAsync(_ text: String, silent: Bool = false) {
     isProcessing = true
 
     let enableValidation = AppSettings.shared.enableCapacityValidation
@@ -279,9 +284,121 @@ struct HomeView: View {
 
       DispatchQueue.main.async {
         isProcessing = false
-        if let newRecord = addRecordFromParseResult(parseResult) {
-          selectedRecord = newRecord
+
+        if !silent {
+          // Normal interactive flow: existing behavior
+          if let newRecord = addRecordFromParseResult(parseResult) {
+            selectedRecord = newRecord
+          }
+          return
         }
+
+        // Silent mode flow: do not present UI; just insert if possible and notify result
+        // Check basic parse validity
+        let canCreate =
+          (parseResult.logDate != nil) && (parseResult.cycleCount != nil)
+          && (parseResult.nominalCapacity != nil) && (parseResult.rawCapacity != nil)
+
+        if !canCreate {
+          NotificationHelper.scheduleImportResultNotification(
+            title: String(localized: "import_silent_failure"),
+            body: String(localized: "parse_error")
+          )
+          return
+        }
+
+        // Capacity mismatch handling
+        if parseResult.isCapacityMismatch && AppSettings.shared.mismatchBehavior == .error {
+          NotificationHelper.scheduleImportResultNotification(
+            title: String(localized: "import_silent_failure"),
+            body: String(localized: "capacity_mismatch_error")
+          )
+          return
+        }
+
+        // Duplicate check
+        if let logDate = parseResult.logDate,
+          hasDuplicateRecord(
+            on: logDate, osVersion: parseResult.osVersion,
+            deviceModelCode: parseResult.deviceModelCode)
+        {
+          NotificationHelper.scheduleImportResultNotification(
+            title: String(localized: "import_silent_failure"),
+            body: String(localized: "duplicate_record")
+          )
+          return
+        }
+
+        // Device resolution
+        var deviceName = "Unknown"
+        var deviceModelCodeToUse: String? =
+          parseResult.detectedIdentifier ?? parseResult.deviceModelCode
+        if let id = deviceModelCodeToUse,
+          let resolved = DeviceLibrary.getDeviceName(for: id)
+        {
+          deviceName = resolved
+        }
+
+        if deviceName == "Unknown" {
+          if let localId = DeviceLibrary.localModelIdentifier(),
+            let resolved = DeviceLibrary.getDeviceName(for: localId)
+          {
+            deviceName = resolved
+            deviceModelCodeToUse = localId
+          }
+        }
+
+        let isWatchOS = parseResult.osVersion?.lowercased().contains("watch") ?? false
+        let looksLikeWatch = deviceName.contains("Apple Watch")
+
+        if isWatchOS || looksLikeWatch {
+          if let registeredWatch = AppSettings.shared.registeredWatchModel {
+            // Use registered watch
+            let registeredModelCode =
+              DeviceLibrary.getIdentifierForDeviceName(registeredWatch) ?? deviceModelCodeToUse
+            let registeredDesignCap = DeviceLibrary.getCapacity(for: registeredWatch)
+            let record = createRecord(
+              from: parseResult,
+              deviceName: registeredWatch,
+              deviceModelCodeOverride: registeredModelCode,
+              designCapacityOverride: registeredDesignCap
+            )
+            modelContext.insert(record)
+            try? modelContext.save()
+
+            // Notify success
+            let body = String(
+              format: String(localized: "import_silent_success_body"), registeredWatch,
+              DateFormatter.localizedString(
+                from: record.logDate, dateStyle: .medium, timeStyle: .short))
+            NotificationHelper.scheduleImportResultNotification(
+              title: String(localized: "import_silent_success"), body: body)
+            return
+          } else {
+            // Requires manual selection -> notify failure requiring user action
+            NotificationHelper.scheduleImportResultNotification(
+              title: String(localized: "import_silent_failure"),
+              body: String(localized: "watch_selection_required")
+            )
+            return
+          }
+        }
+
+        // Normal-device flow
+        let record = createRecord(
+          from: parseResult,
+          deviceName: deviceName,
+          deviceModelCodeOverride: deviceModelCodeToUse
+        )
+        modelContext.insert(record)
+        try? modelContext.save()
+
+        let body = String(
+          format: String(localized: "import_silent_success_body"), deviceName,
+          DateFormatter.localizedString(from: record.logDate, dateStyle: .medium, timeStyle: .short)
+        )
+        NotificationHelper.scheduleImportResultNotification(
+          title: String(localized: "import_silent_success"), body: body)
       }
     }
   }

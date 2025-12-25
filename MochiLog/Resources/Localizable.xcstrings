@@ -44,6 +44,102 @@
         }
       }
     },
+    "open_app_after_share_import" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open app when importing from Share"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共有から取り込むときアプリを開く"
+          }
+        }
+      }
+    },
+    "open_app_after_share_import_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When enabled, the app will open and show the imported record. When disabled, the import runs silently and you will get a notification of success or failure."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効にすると共有で取り込んだときアプリが開いて取り込んだレコードを表示します。無効にするとアプリを開かずに取り込みを行い、成功/失敗は通知でお知らせします。"
+          }
+        }
+      }
+    },
+    "import_silent_success" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import Succeeded"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取り込みに成功しました"
+          }
+        }
+      }
+    },
+    "import_silent_success_body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imported %@ (%@)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@（%@）のログを取り込みました"
+          }
+        }
+      }
+    },
+    "import_silent_failure" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import Failed"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取り込みに失敗しました"
+          }
+        }
+      }
+    },
+    "watch_selection_required" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Watch device not registered; manual selection required."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Watchの登録が必要です。手動でデバイスを選択してください。"
+          }
+        }
+      }
+    },
     "all_devices" : {
       "localizations" : {
         "en" : {

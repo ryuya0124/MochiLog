@@ -60,51 +60,51 @@ struct MochiLogApp: App {
       cleanupInboxFile(url)
     }
 
-    do {
-      // Try common encodings to be resilient to sharing sources
-      var text: String? = nil
-      // 1. UTF-8
-      if let s = try? String(contentsOf: url, encoding: .utf8) { text = s }
-      // 2. UTF-16
-      if text == nil, let s = try? String(contentsOf: url, encoding: .utf16) { text = s }
-      // 3. ISO Latin 1
-      if text == nil, let s = try? String(contentsOf: url, encoding: .isoLatin1) { text = s }
-      // 4. Shift-JIS (Japanese logs sometimes encoded in Shift-JIS)
-      if text == nil, let data = try? Data(contentsOf: url),
-        let s = String(data: data, encoding: .shiftJIS)
-      {
-        text = s
-      }
-      // 5. Fallback to platform default initializer
-      if text == nil, let s = try? String(contentsOf: url) { text = s }
+    // Try common encodings to be resilient to sharing sources
+    var text: String? = nil
+    // 1. UTF-8
+    if let s = try? String(contentsOf: url, encoding: .utf8) { text = s }
+    // 2. UTF-16
+    if text == nil, let s = try? String(contentsOf: url, encoding: .utf16) { text = s }
+    // 3. ISO Latin 1
+    if text == nil, let s = try? String(contentsOf: url, encoding: .isoLatin1) { text = s }
+    // 4. Shift-JIS (Japanese logs sometimes encoded in Shift-JIS)
+    if text == nil, let data = try? Data(contentsOf: url),
+      let s = String(data: data, encoding: .shiftJIS)
+    {
+      text = s
+    }
+    // 5. Fallback to platform default initializer
+    if text == nil, let s = try? String(contentsOf: url) { text = s }
 
-      if let text = text {
-        DispatchQueue.main.async {
-          // Persist first as a fallback in case the HomeView hasn't registered yet.
-          // Write before posting to avoid a race where the observer removes the pending
-          // key before it has been set (which could cause double-processing).
-          UserDefaults.standard.set(text, forKey: "PendingSharedLogText")
+    if let text = text {
+      DispatchQueue.main.async {
+        // Persist first as a fallback in case the HomeView hasn't registered yet.
+        // Write before posting to avoid a race where the observer removes the pending
+        // key before it has been set (which could cause double-processing).
+        let silent = !AppSettings.shared.openAppAfterShareImport
+        UserDefaults.standard.set(text, forKey: "PendingSharedLogText")
+        UserDefaults.standard.set(silent, forKey: "PendingSharedLogSilent")
 
-          NotificationCenter.default.post(
-            name: NSNotification.Name("ProcessSharedLog"),
-            object: nil,
-            userInfo: ["text": text]
-          )
-        }
-      } else {
-        print("ファイルの読み込み失敗（対応する文字エンコーディングが見つかりません）: \(url)")
-        DispatchQueue.main.async {
-          NotificationCenter.default.post(
-            name: NSNotification.Name("ProcessSharedLog"),
-            object: nil,
-            userInfo: ["text": ""]
-          )
-          // Avoid persisting an empty string; notify via UserDefaults that read failed
-          UserDefaults.standard.removeObject(forKey: "PendingSharedLogText")
-        }
+        NotificationCenter.default.post(
+          name: NSNotification.Name("ProcessSharedLog"),
+          object: nil,
+          userInfo: ["text": text, "silent": silent]
+        )
       }
-    } catch {
-      print("ファイルの読み込み失敗: \(error)")
+    } else {
+      print("ファイルの読み込み失敗（対応する文字エンコーディングが見つかりません）: \(url)")
+      DispatchQueue.main.async {
+        let silent = !AppSettings.shared.openAppAfterShareImport
+        NotificationCenter.default.post(
+          name: NSNotification.Name("ProcessSharedLog"),
+          object: nil,
+          userInfo: ["text": "", "silent": silent]
+        )
+        // Avoid persisting an empty string; notify via UserDefaults that read failed
+        UserDefaults.standard.removeObject(forKey: "PendingSharedLogText")
+        UserDefaults.standard.removeObject(forKey: "PendingSharedLogSilent")
+      }
     }
   }
 

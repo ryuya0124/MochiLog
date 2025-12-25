@@ -20,6 +20,9 @@ final class AppSettings: ObservableObject {
     static let iCloudStorageThresholdMB = "iCloudStorageThresholdMB"
     static let accentColor = "accentColor"
     static let enableDebugLogging = "enableDebugLogging"
+
+    // 新規: 共有インポート時にアプリを開くかどうか
+    static let openAppAfterShareImport = "openAppAfterShareImport"
   }
 
   /// 容量不一致時の挙動
@@ -125,6 +128,9 @@ final class AppSettings: ObservableObject {
   /// デバッグログを有効にするか（パース失敗時に詳細を保存）
   @Published var enableDebugLogging: Bool
 
+  /// 共有インポート時にアプリを開くかどうか（true = 開く、false = 開かない）
+  @Published var openAppAfterShareImport: Bool
+
   /// アプリのアクセント（テーマ）カラー
   @Published var accentColor: ThemeColor
 
@@ -180,6 +186,14 @@ final class AppSettings: ObservableObject {
       self.enableDebugLogging = false
     } else {
       self.enableDebugLogging = UserDefaults.standard.bool(forKey: Keys.enableDebugLogging)
+    }
+
+    // 共有インポート時にアプリを開くかどうか: デフォルトは true
+    if UserDefaults.standard.object(forKey: Keys.openAppAfterShareImport) == nil {
+      self.openAppAfterShareImport = true
+    } else {
+      self.openAppAfterShareImport = UserDefaults.standard.bool(
+        forKey: Keys.openAppAfterShareImport)
     }
 
     // アクセントカラー: 永続化された値があれば読み込む
@@ -272,6 +286,14 @@ final class AppSettings: ObservableObject {
       .dropFirst()
       .sink { value in
         UserDefaults.standard.set(value, forKey: Keys.enableDebugLogging)
+      }
+      .store(in: &cancellables)
+
+    // Persist 'open app after share import' setting
+    $openAppAfterShareImport
+      .dropFirst()
+      .sink { value in
+        UserDefaults.standard.set(value, forKey: Keys.openAppAfterShareImport)
       }
       .store(in: &cancellables)
 
