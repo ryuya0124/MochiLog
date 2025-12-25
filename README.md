@@ -33,15 +33,6 @@ xcodebuild -project MochiLog.xcodeproj -scheme MochiLog -configuration Debug bui
 
 > 注意: 実機での実行には有効な署名とプロビジョニングプロファイルが必要です。
 
-## 🧪 テスト / 検証
-
-- 単体テストは現時点で限定的です。主要な機能は手動で UI を確認してください。
-
-## 🤝 貢献方法
-
-1. Issue を立てるか、Pull Request を送ってください。
-2. 変更点は簡潔にまとめ、可能ならテストを追加してください。
-
 ## 📄 ライセンス
 
 このプロジェクトは `LICENSE` に従います。
