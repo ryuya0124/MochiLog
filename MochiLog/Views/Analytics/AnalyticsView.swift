@@ -187,7 +187,10 @@ struct AnalyticsView: View {
             .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
             .symbol(by: .value(String(localized: "device_name"), record.deviceName))
             .interpolationMethod(.catmullRom)
+            // データ部分のみ下から伸びるアニメーション
+            .scaleEffect(y: animateChart ? 1 : 0, anchor: .bottom)
             .opacity(animateChart ? 1 : 0)
+            .animation(.easeOut(duration: 0.6), value: animateChart)
 
             PointMark(
               x: .value(
@@ -196,7 +199,9 @@ struct AnalyticsView: View {
               y: .value(String(localized: "real_capacity"), record.healthPercent)
             )
             .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
+            .scaleEffect(y: animateChart ? 1 : 0, anchor: .bottom)
             .opacity(animateChart ? 1 : 0)
+            .animation(.easeOut(duration: 0.6), value: animateChart)
           }
 
           // 80%ラインを表示
@@ -227,12 +232,7 @@ struct AnalyticsView: View {
         }
         .frame(height: 220)
         // 伸びるアニメーション（下から上にスケール）
-        .scaleEffect(y: animateChart ? 1 : 0, anchor: .bottom)
-        // アニメーション: animateChart の変化でチャートを伸ばす
-        .animation(.easeOut(duration: 0.6), value: animateChart)
-        // 既存のレンジ・単位変更アニメーション
-        .animation(.easeOut(duration: 0.55), value: selectedRange)
-        .animation(.easeOut(duration: 0.45), value: appSettings.defaultChartUnit)
+        
         .onAppear {
           // 初回フェードインと伸びるアニメーション
           DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
@@ -240,10 +240,17 @@ struct AnalyticsView: View {
           }
         }
         .onChange(of: selectedRange) {
-          // 範囲が変わったら一旦リセットして再アニメーション
+          // 範囲が変わったら一旦リセットして再アニメーション（軸はアニメーションしない）
           animateChart = false
           DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
             withAnimation(.easeOut(duration: 0.5)) { animateChart = true }
+          }
+        }
+        .onChange(of: appSettings.defaultChartUnit) {
+          // 単位が変わったらデータ部のみ再アニメーション
+          animateChart = false
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
+            withAnimation(.easeOut(duration: 0.45)) { animateChart = true }
           }
         }
       }
@@ -294,6 +301,10 @@ struct AnalyticsView: View {
             )
             .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
             .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+            // データ部分のみ下から伸びるアニメーション
+            .scaleEffect(y: animateChart ? 1 : 0, anchor: .bottom)
+            .opacity(animateChart ? 1 : 0)
+            .animation(.easeOut(duration: 0.6), value: animateChart)
 
             PointMark(
               x: .value(
@@ -303,13 +314,13 @@ struct AnalyticsView: View {
             )
             .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
             .symbolSize(40)
+            .scaleEffect(y: animateChart ? 1 : 0, anchor: .bottom)
+            .opacity(animateChart ? 1 : 0)
+            .animation(.easeOut(duration: 0.6), value: animateChart)
           }
         }
         .chartXScale(domain: startDate...Date())
         .frame(height: 180)
-        // 伸びるアニメーション
-        .scaleEffect(y: animateChart ? 1 : 0, anchor: .bottom)
-        .animation(.easeOut(duration: 0.6), value: animateChart)
       }
     }
     .padding()
