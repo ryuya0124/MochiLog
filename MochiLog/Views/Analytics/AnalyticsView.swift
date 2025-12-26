@@ -13,6 +13,7 @@ struct AnalyticsView: View {
 
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @State private var animateChart: Bool = false
+  @State private var showingSampleData: Bool = false
 
   private var deviceNames: [String] {
     Array(Set(records.map { $0.deviceName })).sorted()
@@ -199,15 +200,39 @@ struct AnalyticsView: View {
   var body: some View {
     NavigationStack {
       GeometryReader { geometry in
-        ScrollView {
-          if records.isEmpty {
-            ContentUnavailableView(
-              String(localized: "no_data"),
-              systemImage: "chart.line.uptrend.xyaxis",
-              description: Text(String(localized: "no_data_description"))
+        if records.isEmpty && !showingSampleData {
+          // データなし + サンプルモードOFF → ボタン表示（縦中央配置）
+          VStack {
+            Spacer()
+            VStack(spacing: 16) {
+              ContentUnavailableView(
+                String(localized: "no_data"),
+                systemImage: "chart.line.uptrend.xyaxis",
+                description: Text(String(localized: "no_data_description"))
+              )
+              Button {
+                withAnimation {
+                  showingSampleData = true
+                }
+              } label: {
+                Label(String(localized: "view_sample_data"), systemImage: "eye")
+              }
+              .buttonStyle(.borderedProminent)
+            }
+            Spacer()
+          }
+          .frame(width: geometry.size.width, height: geometry.size.height)
+        } else if records.isEmpty && showingSampleData {
+          // データなし + サンプルモードON → サンプルグラフ表示
+          ScrollView {
+            SampleDataAnalyticsContent(
+              showingSampleData: $showingSampleData,
+              animateChart: $animateChart,
+              selectedRange: $selectedRange
             )
-            .frame(width: geometry.size.width, height: geometry.size.height)
-          } else {
+          }
+        } else {
+          ScrollView {
             VStack(spacing: 20) {
               // デバイス選択ピッカー
               DevicePickerView(deviceNames: deviceNames, selectedDevice: $selectedDevice)

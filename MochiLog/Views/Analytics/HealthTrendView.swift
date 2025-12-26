@@ -104,6 +104,9 @@ struct HealthTrendView: View {
           }
         }
 
+        // データ点が多い場合はPointMarkを非表示（すっきり見せる）
+        let showPoints = visibleRecords.count <= 15
+
         Chart {
           ForEach(visibleRecords) { record in
             LineMark(
@@ -116,21 +119,38 @@ struct HealthTrendView: View {
             .interpolationMethod(.catmullRom)
             .opacity(animateChart ? 1 : 0)
 
-            PointMark(
-              x: .value(
-                String(localized: "date"), Calendar.current.startOfDay(for: record.logDate),
-                unit: unit.calendarComponent),
-              y: .value(String(localized: "real_capacity"), record.realHealthPercent)
-            )
-            .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
-            .symbol(.circle)
-            .opacity(animateChart ? 1 : 0)
+            if showPoints {
+              PointMark(
+                x: .value(
+                  String(localized: "date"), Calendar.current.startOfDay(for: record.logDate),
+                  unit: unit.calendarComponent),
+                y: .value(String(localized: "real_capacity"), record.realHealthPercent)
+              )
+              .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
+              .symbol(.circle)
+              .opacity(animateChart ? 1 : 0)
+            }
           }
 
         }
         .chartYScale(domain: 70...105)
         .chartXAxis {
-          AxisMarks(values: .stride(by: unit.calendarComponent, count: 1)) { value in
+          // 期間に応じてラベル間隔を調整
+          let strideCount: Int = {
+            switch unit {
+            case .hour, .day:
+              return 1
+            case .week:
+              return 1
+            case .month:
+              // 6ヶ月以上の場合は3ヶ月ごとにラベル表示
+              let months =
+                Calendar.current.dateComponents([.month], from: startDay, to: endDay).month ?? 0
+              return months > 12 ? 6 : (months > 6 ? 3 : 1)
+            }
+          }()
+
+          AxisMarks(values: .stride(by: unit.calendarComponent, count: strideCount)) { value in
             AxisGridLine()
               .foregroundStyle(.white.opacity(0.95))
 
@@ -142,7 +162,15 @@ struct HealthTrendView: View {
                 case .week:
                   Text(date.formatted(.dateTime.month(.defaultDigits).day()))
                 case .month:
-                  Text(date.formatted(.dateTime.year().month()))
+                  // 長期間の場合は年と月を短く表示
+                  let months =
+                    Calendar.current.dateComponents([.month], from: startDay, to: endDay).month ?? 0
+                  if months > 12 {
+                    Text(date.formatted(.dateTime.year(.twoDigits).month(.abbreviated)))
+                      .font(.caption2)
+                  } else {
+                    Text(date.formatted(.dateTime.year(.twoDigits).month(.defaultDigits)))
+                  }
                 }
               }
             }

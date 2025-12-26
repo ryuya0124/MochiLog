@@ -19,28 +19,51 @@ struct CycleTrendView: View {
           .frame(maxWidth: .infinity, alignment: .center)
           .padding()
       } else {
+        // データ点が多い場合はPointMarkを非表示
+        let showPoints = visibleRecords.count <= 15
+
         Chart {
           ForEach(visibleRecords) { record in
             LineMark(
-              x: .value(String(localized: "date"), Calendar.current.startOfDay(for: record.logDate), unit: unit.calendarComponent),
+              x: .value(
+                String(localized: "date"), Calendar.current.startOfDay(for: record.logDate),
+                unit: unit.calendarComponent),
               y: .value(String(localized: "cycle_count"), record.cycleCount)
             )
             .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
             .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
             .opacity(animateChart ? 1 : 0)
 
-            PointMark(
-              x: .value(String(localized: "date"), Calendar.current.startOfDay(for: record.logDate), unit: unit.calendarComponent),
-              y: .value(String(localized: "cycle_count"), record.cycleCount)
-            )
-            .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
-            .symbol(.circle)
-            .symbolSize(40)
-            .opacity(animateChart ? 1 : 0)
+            if showPoints {
+              PointMark(
+                x: .value(
+                  String(localized: "date"), Calendar.current.startOfDay(for: record.logDate),
+                  unit: unit.calendarComponent),
+                y: .value(String(localized: "cycle_count"), record.cycleCount)
+              )
+              .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
+              .symbol(.circle)
+              .symbolSize(40)
+              .opacity(animateChart ? 1 : 0)
+            }
           }
         }
         .chartXAxis {
-          AxisMarks(values: .stride(by: unit.calendarComponent, count: 1)) { value in
+          // 期間に応じてラベル間隔を調整
+          let strideCount: Int = {
+            switch unit {
+            case .hour, .day:
+              return 1
+            case .week:
+              return 1
+            case .month:
+              let months =
+                Calendar.current.dateComponents([.month], from: startDay, to: endDay).month ?? 0
+              return months > 12 ? 6 : (months > 6 ? 3 : 1)
+            }
+          }()
+
+          AxisMarks(values: .stride(by: unit.calendarComponent, count: strideCount)) { value in
             AxisGridLine()
               .foregroundStyle(.white.opacity(0.95))
 
@@ -52,7 +75,14 @@ struct CycleTrendView: View {
                 case .week:
                   Text(date.formatted(.dateTime.month(.defaultDigits).day()))
                 case .month:
-                  Text(date.formatted(.dateTime.year().month()))
+                  let months =
+                    Calendar.current.dateComponents([.month], from: startDay, to: endDay).month ?? 0
+                  if months > 12 {
+                    Text(date.formatted(.dateTime.year(.twoDigits).month(.abbreviated)))
+                      .font(.caption2)
+                  } else {
+                    Text(date.formatted(.dateTime.year(.twoDigits).month(.defaultDigits)))
+                  }
                 }
               }
             }

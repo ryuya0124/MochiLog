@@ -52,30 +52,40 @@ struct HomeView: View {
   @State private var watchNameToRegister = ""
   @State private var showingParseErrorSavedAlert = false
   @State private var showingDebugLogsSheet = false
+  @State private var showingSampleData = false
 
   var body: some View {
     NavigationStack {
       ZStack {
-        VStack {
-          if records.isEmpty {
-            GeometryReader { proxy in
-              ScrollView {
-                VStack {
-                  Spacer(minLength: 0)
-                  ContentUnavailableView(
-                    String(localized: "no_data"),
-                    systemImage: "battery.0",
-                    description: Text(String(localized: "no_data_description"))
-                  )
-                  Spacer(minLength: 0)
+        if records.isEmpty && !showingSampleData {
+          // データなし + サンプルモードOFF → 中央にボタン表示
+          GeometryReader { geometry in
+            VStack(spacing: 16) {
+              ContentUnavailableView(
+                String(localized: "no_data"),
+                systemImage: "battery.0",
+                description: Text(String(localized: "no_data_description"))
+              )
+              Button {
+                withAnimation {
+                  showingSampleData = true
                 }
-                .frame(minHeight: proxy.size.height)
-                .frame(maxWidth: .infinity)
+              } label: {
+                Label(String(localized: "view_sample_data"), systemImage: "eye")
               }
+              .buttonStyle(.borderedProminent)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding()
-          } else {
+            .frame(width: geometry.size.width, height: geometry.size.height)
+          }
+        } else if records.isEmpty && showingSampleData {
+          // データなし + サンプルモードON → サンプルリスト表示
+          SampleDataHomeView(
+            showingSampleData: $showingSampleData,
+            openFilePicker: {
+              showingFilePicker = true
+            })
+        } else {
+          VStack {
             List {
               ForEach(deviceSections) { section in
                 Section(section.displayName) {
