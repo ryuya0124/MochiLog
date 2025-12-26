@@ -304,6 +304,7 @@ struct HomeView: View {
             title: String(localized: "import_silent_failure"),
             body: String(localized: "parse_error")
           )
+          self.redirectToSettingsAfterSilentImport()
           return
         }
 
@@ -313,23 +314,11 @@ struct HomeView: View {
             title: String(localized: "import_silent_failure"),
             body: String(localized: "capacity_mismatch_error")
           )
+          self.redirectToSettingsAfterSilentImport()
           return
         }
 
-        // Duplicate check
-        if let logDate = parseResult.logDate,
-          hasDuplicateRecord(
-            on: logDate, osVersion: parseResult.osVersion,
-            deviceModelCode: parseResult.deviceModelCode)
-        {
-          NotificationHelper.scheduleImportResultNotification(
-            title: String(localized: "import_silent_failure"),
-            body: String(localized: "duplicate_record")
-          )
-          return
-        }
-
-        // Device resolution
+        // Device resolution (moved before duplicate check)
         var deviceName = "Unknown"
         var deviceModelCodeToUse: String? =
           parseResult.detectedIdentifier ?? parseResult.deviceModelCode
@@ -346,6 +335,18 @@ struct HomeView: View {
             deviceName = resolved
             deviceModelCodeToUse = localId
           }
+        }
+
+        // Duplicate check (after device name is resolved)
+        if let logDate = parseResult.logDate,
+          hasDuplicateRecord(on: logDate, deviceName: deviceName)
+        {
+          NotificationHelper.scheduleImportResultNotification(
+            title: String(localized: "import_silent_failure"),
+            body: String(localized: "duplicate_record")
+          )
+          self.redirectToSettingsAfterSilentImport()
+          return
         }
 
         let isWatchOS = parseResult.osVersion?.lowercased().contains("watch") ?? false
@@ -373,6 +374,7 @@ struct HomeView: View {
                 from: record.logDate, dateStyle: .medium, timeStyle: .short))
             NotificationHelper.scheduleImportResultNotification(
               title: String(localized: "import_silent_success"), body: body)
+            self.redirectToSettingsAfterSilentImport()
             return
           } else {
             // Requires manual selection -> notify failure requiring user action
@@ -380,15 +382,18 @@ struct HomeView: View {
               title: String(localized: "import_silent_failure"),
               body: String(localized: "watch_selection_required")
             )
+            self.redirectToSettingsAfterSilentImport()
             return
           }
         }
 
         // Normal-device flow
+        let designCap = DeviceLibrary.getCapacity(for: deviceName)
         let record = createRecord(
           from: parseResult,
           deviceName: deviceName,
-          deviceModelCodeOverride: deviceModelCodeToUse
+          deviceModelCodeOverride: deviceModelCodeToUse,
+          designCapacityOverride: designCap
         )
         modelContext.insert(record)
         try? modelContext.save()
@@ -399,6 +404,7 @@ struct HomeView: View {
         )
         NotificationHelper.scheduleImportResultNotification(
           title: String(localized: "import_silent_success"), body: body)
+        self.redirectToSettingsAfterSilentImport()
       }
     }
   }
@@ -426,14 +432,6 @@ struct HomeView: View {
       }
     }
 
-    if hasDuplicateRecord(
-      on: logDate, osVersion: result.osVersion, deviceModelCode: result.deviceModelCode)
-    {
-      errorMessage = String(localized: "duplicate_record")
-      showingErrorAlert = true
-      return nil
-    }
-
     var deviceName = "Unknown"
     var deviceModelCodeToUse: String? = result.detectedIdentifier ?? result.deviceModelCode
     if let id = deviceModelCodeToUse,
@@ -449,6 +447,13 @@ struct HomeView: View {
         deviceName = resolved
         deviceModelCodeToUse = localId
       }
+    }
+
+    // Duplicate check (after device name is resolved)
+    if hasDuplicateRecord(on: logDate, deviceName: deviceName) {
+      errorMessage = String(localized: "duplicate_record")
+      showingErrorAlert = true
+      return nil
     }
 
     let isWatchOS = result.osVersion?.lowercased().contains("watch") ?? false
@@ -474,10 +479,12 @@ struct HomeView: View {
       return nil
     }
 
+    let designCap = DeviceLibrary.getCapacity(for: deviceName)
     let newRecord = createRecord(
       from: result,
       deviceName: deviceName,
-      deviceModelCodeOverride: deviceModelCodeToUse
+      deviceModelCodeOverride: deviceModelCodeToUse,
+      designCapacityOverride: designCap
     )
     modelContext.insert(newRecord)
     try? modelContext.save()
@@ -548,31 +555,24 @@ struct HomeView: View {
     }
   }
 
-  private func hasDuplicateRecord(on date: Date, osVersion: String?, deviceModelCode: String?)
-    -> Bool
-  {
+  /// silentインポート完了後に設定アプリにリダイレクトする
+  /// 「アプリを開く」がオフの場合、ユーザーはアプリを見たくないので即座に元の画面に戻す
+  private func redirectToSettingsAfterSilentImport() {
+    // prefs: URLスキームで設定アプリの特定の画面に遷移
+    // これによりアプリがバックグラウンドに移動し、ユーザーにとってはアプリが開かなかったように見える
+    if let url = URL(string: "prefs:root=Privacy&path=PROBLEM_REPORTING/DIAGNOSTIC_USAGE_DATA") {
+      UIApplication.shared.open(url)
+    }
+  }
+
+  private func hasDuplicateRecord(on date: Date, deviceName: String) -> Bool {
     records.contains { existing in
-      let sameDate =
-        Calendar.current.compare(existing.logDate, to: date, toGranularity: .second) == .orderedSame
+      // 日付を「日単位」で比較（時刻は無視）
+      let sameDate = Calendar.current.isDate(existing.logDate, inSameDayAs: date)
       guard sameDate else { return false }
 
-      // Compare OS version
-      let versionsMatch: Bool
-      if let existingVersion = existing.osVersion, let newVersion = osVersion {
-        versionsMatch = (existingVersion == newVersion)
-      } else {
-        versionsMatch = (existing.osVersion == nil && osVersion == nil)
-      }
-
-      // Compare device model code
-      let modelsMatch: Bool
-      if let existingModel = existing.deviceModelCode, let newModel = deviceModelCode {
-        modelsMatch = (existingModel == newModel)
-      } else {
-        modelsMatch = (existing.deviceModelCode == nil && deviceModelCode == nil)
-      }
-
-      return versionsMatch && modelsMatch
+      // デバイス名（機種名）で比較
+      return existing.deviceName == deviceName
     }
   }
 

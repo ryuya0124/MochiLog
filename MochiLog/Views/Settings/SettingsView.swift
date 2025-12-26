@@ -32,8 +32,8 @@ struct SettingsView: View {
   var body: some View {
     NavigationStack {
       List {
-        // MARK: - 同期
-        Section(String(localized: "sync")) {
+        // MARK: - 一般
+        Section(String(localized: "general")) {
           Toggle(
             String(localized: "enable_icloud_sync"),
             isOn: Binding(
@@ -59,10 +59,7 @@ struct SettingsView: View {
               .font(.caption)
               .foregroundColor(.red)
           }
-        }
 
-        // MARK: - 表示設定
-        Section(String(localized: "appearance")) {
           Picker(String(localized: "accent_color"), selection: $appSettings.accentColor) {
             ForEach(AppSettings.ThemeColor.allCases) { theme in
               HStack(spacing: 12) {
@@ -139,11 +136,12 @@ struct SettingsView: View {
           Button(action: { showingTermsOfUse = true }) {
             Label(String(localized: "terms_of_use"), systemImage: "doc.plaintext")
           }
+        }
 
-          // Debug: エラーログ保存を有効化する
+        // MARK: - デバッグ
+        Section(String(localized: "debug")) {
           Toggle(String(localized: "enable_debug_logging"), isOn: $appSettings.enableDebugLogging)
 
-          // エラーログを表示
           NavigationLink(destination: DebugLogsView()) {
             Label(String(localized: "view_error_logs"), systemImage: "exclamationmark.triangle")
           }
@@ -153,11 +151,23 @@ struct SettingsView: View {
         Section {
           DisclosureGroup(String(localized: "advanced_settings"), isExpanded: $isAdvancedExpanded) {
             VStack(spacing: 16) {
+              // 共有インポート時にアプリを開くかどうか
+              Toggle(
+                String(localized: "open_app_after_share_import"),
+                isOn: $appSettings.openAppAfterShareImport
+              )
+              .padding(.top, 8)
+
+              Text(String(localized: "open_app_after_share_import_description"))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.bottom, 8)
+
               Toggle(
                 String(localized: "enable_capacity_validation"),
                 isOn: $appSettings.enableCapacityValidation
               )
-              .padding(.top, 8)
 
               if appSettings.enableCapacityValidation {
                 VStack(alignment: .leading, spacing: 8) {
@@ -181,18 +191,6 @@ struct SettingsView: View {
               }
 
               Text(String(localized: "validation_threshold_description"))
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.bottom, 8)
-
-              // 新規: 共有インポート時にアプリを開くかどうか
-              Toggle(
-                String(localized: "open_app_after_share_import"),
-                isOn: $appSettings.openAppAfterShareImport
-              )
-
-              Text(String(localized: "open_app_after_share_import_description"))
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)

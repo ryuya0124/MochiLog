@@ -566,6 +566,22 @@
         }
       }
     },
+    "debug" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Debug"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバッグ"
+          }
+        }
+      }
+    },
     "data_management" : {
       "localizations" : {
         "en" : {
@@ -1922,7 +1938,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "共有から取り込むときアプリを開く"
+            "value" : "共有から取り込むときにポップアップを表示しない"
           }
         }
       }
@@ -1938,7 +1954,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "有効にすると共有で取り込んだときアプリが開いて取り込んだレコードを表示します。無効にするとアプリを開かずに取り込みを行い、成功/失敗は通知でお知らせします。"
+            "value" : "無効にすると共有で取り込んだときにポップアップを表示せずに自動で取り込みを行い、成功/失敗は通知でお知らせします。有効にするとアプリが開いて取り込んだレコードを表示します。"
           }
         }
       }
