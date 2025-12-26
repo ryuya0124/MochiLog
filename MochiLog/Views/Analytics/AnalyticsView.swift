@@ -203,12 +203,11 @@ struct AnalyticsView: View {
           // データなし + サンプルモードOFF → ボタン表示（縦中央配置）
           VStack {
             Spacer()
-            VStack(spacing: 16) {
-              ContentUnavailableView(
-                String(localized: "no_data"),
-                systemImage: "chart.line.uptrend.xyaxis",
-                description: Text(String(localized: "no_data_description"))
-              )
+            ContentUnavailableView {
+              Label(String(localized: "no_data"), systemImage: "chart.line.uptrend.xyaxis")
+            } description: {
+              Text(String(localized: "no_data_description"))
+            } actions: {
               Button {
                 withAnimation {
                   appSettings.showingSampleData = true
@@ -218,6 +217,7 @@ struct AnalyticsView: View {
               }
               .buttonStyle(.borderedProminent)
             }
+
             Spacer()
           }
           .frame(width: geometry.size.width, height: geometry.size.height)

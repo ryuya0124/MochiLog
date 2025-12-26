@@ -61,19 +61,20 @@ struct HomeView: View {
           // データなし + サンプルモードOFF → 中央にボタン表示
           GeometryReader { geometry in
             VStack(spacing: 16) {
-              ContentUnavailableView(
-                String(localized: "no_data"),
-                systemImage: "battery.0",
-                description: Text(String(localized: "no_data_description"))
-              )
-              Button {
-                withAnimation {
-                  appSettings.showingSampleData = true
+              ContentUnavailableView {
+                Label(String(localized: "no_data"), systemImage: "battery.0")
+              } description: {
+                Text(String(localized: "no_data_description"))
+              } actions: {
+                Button {
+                  withAnimation {
+                    appSettings.showingSampleData = true
+                  }
+                } label: {
+                  Label(String(localized: "view_sample_data"), systemImage: "eye")
                 }
-              } label: {
-                Label(String(localized: "view_sample_data"), systemImage: "eye")
+                .buttonStyle(.borderedProminent)
               }
-              .buttonStyle(.borderedProminent)
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
           }
