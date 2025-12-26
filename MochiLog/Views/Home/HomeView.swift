@@ -79,26 +79,56 @@ struct HomeView: View {
           // データなし + サンプルモードON → サンプルリスト表示
           SampleDataHomeView(
             showingSampleData: $appSettings.showingSampleData,
+            selectedRecord: $selectedRecord,
             openFilePicker: {
               showingFilePicker = true
             })
         } else {
-          VStack {
+          if horizontalSizeClass == .regular {
+            ScrollView {
+              LazyVGrid(columns: [GridItem(.adaptive(minimum: 320), spacing: 16)], spacing: 16) {
+                ForEach(deviceSections) { section in
+                  Section(
+                    header: Text(section.displayName)
+                      .font(.title3)
+                      .bold()
+                      .foregroundStyle(.secondary)
+                      .frame(maxWidth: .infinity, alignment: .leading)
+                      .padding(.top, 8)
+                      .padding(.bottom, 4)
+                  ) {
+                    ForEach(section.records) { record in
+                      NavigationLink(destination: RecordDetailView(record: record)) {
+                        RecordRowView(record: record)
+                          .padding()
+                          .background(Color(uiColor: .secondarySystemGroupedBackground))
+                          .clipShape(RoundedRectangle(cornerRadius: 12))
+                      }
+                      .buttonStyle(.plain)
+                      .contextMenu {
+                        Button(role: .destructive) {
+                          deleteRecords([record])
+                        } label: {
+                          Label(String(localized: "delete"), systemImage: "trash")
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+              .padding()
+            }
+            .background(Color(uiColor: .systemGroupedBackground))
+          } else {
             List {
               ForEach(deviceSections) { section in
                 Section(section.displayName) {
                   ForEach(section.records) { record in
-                    if horizontalSizeClass == .regular {
-                      NavigationLink(destination: RecordDetailView(record: record)) {
-                        RecordRowView(record: record)
+                    RecordRowView(record: record)
+                      .contentShape(Rectangle())
+                      .onTapGesture {
+                        selectedRecord = record
                       }
-                    } else {
-                      RecordRowView(record: record)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                          selectedRecord = record
-                        }
-                    }
                   }
                   .onDelete { offsets in
                     let items = offsets.map { section.records[$0] }
