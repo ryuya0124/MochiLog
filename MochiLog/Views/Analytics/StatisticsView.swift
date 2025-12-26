@@ -5,7 +5,11 @@ struct StatisticsView: View {
 
   private var averageHealth: Double {
     guard !filteredRecords.isEmpty else { return 0 }
-    let total = filteredRecords.reduce(0) { $0 + $1.realHealthPercent }
+    let total = filteredRecords.reduce(0) { sum, record in
+      sum
+        + (appSettings.analysisDataSource == .nominal
+          ? record.nominalHealthPercent : record.healthPercent)
+    }
     return total / Double(filteredRecords.count)
   }
 
@@ -41,9 +45,14 @@ struct StatisticsView: View {
 
           StatCard(
             title: String(localized: "latest_health"),
-            value: String(format: "%.1f%%", latest.realHealthPercent),
+            value: String(
+              format: "%.1f%%",
+              appSettings.analysisDataSource == .nominal
+                ? latest.nominalHealthPercent : latest.healthPercent),
             icon: "battery.100",
-            color: healthColor(latest.realHealthPercent)
+            color: healthColor(
+              appSettings.analysisDataSource == .nominal
+                ? latest.nominalHealthPercent : latest.healthPercent)
           )
         }
       }

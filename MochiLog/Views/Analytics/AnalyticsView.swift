@@ -335,12 +335,6 @@ struct AnalyticsView: View {
     }
   }
 
-  private var averageHealth: Double {
-    guard !filteredRecords.isEmpty else { return 0 }
-    let total = filteredRecords.reduce(0) { $0 + $1.realHealthPercent }
-    return total / Double(filteredRecords.count)
-  }
-
   private func healthColor(_ percent: Double) -> Color {
     if percent < 80 { return .red }
     if percent < 90 { return .orange }

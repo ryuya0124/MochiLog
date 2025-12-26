@@ -11,9 +11,9 @@ enum SampleDataProvider {
       currentHealth: Double, currentCycles: Int
     )] =
       [
-        ("iPhone 15 Pro", "iPhone16,1", 3274, 100.0, 94.2, 385),
-        ("iPhone 14", "iPhone14,7", 3279, 100.0, 87.5, 892),
-        ("Apple Watch Series 9", "Watch7,3", 308, 100.0, 91.3, 520),
+        ("iPhone 15 Pro", "iPhone16,1", 3274, 100.0, 89.0, 420),
+        ("iPhone 14", "iPhone14,7", 3279, 100.0, 82.5, 950),
+        ("Apple Watch Series 9", "Watch7,3", 308, 100.0, 86.0, 580),
       ]
 
   /// 3年分のサンプルレコードを生成（非線形な変動を含む）
@@ -43,12 +43,12 @@ enum SampleDataProvider {
         let nominalCapacity = Int(Double(device.designCapacity) * (currentNominalHealth / 100.0))
 
         // 実測容量（Raw）は公称容量を基準に、大きなブレ（ノイズ）と外れ値を持つ
-        // ノイズ: 通常 ±1.5% 程度のブレ
-        var noisePercent = Double.random(in: -1.5...1.5)
+        // ノイズ: 通常 ±2.0% 程度のブレ（かなり大きい）
+        var noisePercent = Double.random(in: -2.0...2.0)
 
-        // 外れ値: 5%の確率でさらに大きくブレる（主に下振れ）
-        if Int.random(in: 1...20) == 1 {
-          noisePercent += Double.random(in: -4.0...(-1.0))
+        // 外れ値: 10%の確率でさらに大きくブレる（主に下振れ）
+        if Int.random(in: 1...10) == 1 {
+          noisePercent += Double.random(in: -5.0...(-1.0))
         }
 
         let currentRawHealth = currentNominalHealth + noisePercent

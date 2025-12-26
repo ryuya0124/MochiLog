@@ -21,10 +21,13 @@ struct RecordRowView: View {
       }
       Spacer()
       VStack(alignment: .trailing, spacing: 4) {
-        Text("\(String(format: "%.1f", record.realHealthPercent))%")
+        let health =
+          appSettings.analysisDataSource == .nominal
+          ? record.nominalHealthPercent : record.healthPercent
+        Text("\(String(format: "%.1f", health))%")
           .font(.title2)
           .bold()
-          .foregroundStyle(healthColor(record.realHealthPercent))
+          .foregroundStyle(healthColor(health))
         if let diag = record.diagnosticResult {
           Text(diag)
             .font(.caption2)
@@ -129,7 +132,15 @@ struct RecordDetailView: View {
                     .stroke(Color(uiColor: .systemGray5), lineWidth: 12)
                     .frame(width: 120, height: 120)
                   Circle()
-                    .trim(from: 0, to: CGFloat(min(max(record.realHealthPercent, 0), 100)) / 100.0)
+                    .trim(
+                      from: 0,
+                      to: CGFloat(
+                        min(
+                          max(
+                            appSettings.analysisDataSource == .nominal
+                              ? record.nominalHealthPercent : record.healthPercent, 0), 100))
+                        / 100.0
+                    )
                     .stroke(
                       AngularGradient(
                         gradient: Gradient(colors: [
@@ -140,7 +151,10 @@ struct RecordDetailView: View {
                     .rotationEffect(.degrees(-90))
                     .frame(width: 120, height: 120)
                   VStack {
-                    Text("\(String(format: "%.0f", record.realHealthPercent))%")
+                    let health =
+                      appSettings.analysisDataSource == .nominal
+                      ? record.nominalHealthPercent : record.healthPercent
+                    Text("\(String(format: "%.0f", health))%")
                       .font(.title)
                       .bold()
                     Text(String(localized: "health"))
@@ -254,8 +268,8 @@ struct RecordDetailView: View {
                         LabeledContent(String(localized: "raw_capacity")) {
                           HStack(spacing: 8) {
                             Text("\(record.rawCapacity) mAh")
-                            Text("(\(String(format: "%.1f%%", record.realHealthPercent)))")
-                              .foregroundStyle(healthColorLocal(record.realHealthPercent))
+                            Text("(\(String(format: "%.1f%%", record.healthPercent)))")
+                              .foregroundStyle(healthColorLocal(record.healthPercent))
                           }
                         }
                         if let lowRate = record.lowRateCapacity {
@@ -360,7 +374,10 @@ struct RecordDetailView: View {
                   DetailCard(title: String(localized: "summary"), systemImage: "chart.bar") {
                     VStack(alignment: .leading, spacing: 8) {
                       HStack(alignment: .firstTextBaseline, spacing: 8) {
-                        Text("\(String(format: "%.1f", record.realHealthPercent))%")
+                        let health =
+                          appSettings.analysisDataSource == .nominal
+                          ? record.nominalHealthPercent : record.healthPercent
+                        Text("\(String(format: "%.1f", health))%")
                           .font(.largeTitle)
                           .bold()
                         VStack(alignment: .leading) {
@@ -460,8 +477,8 @@ struct RecordDetailView: View {
               LabeledContent(String(localized: "raw_capacity")) {
                 HStack(spacing: 8) {
                   Text("\(record.rawCapacity) mAh")
-                  Text("(\(String(format: "%.1f%%", record.realHealthPercent)))")
-                    .foregroundStyle(healthColorLocal(record.realHealthPercent))
+                  Text("(\(String(format: "%.1f%%", record.healthPercent)))")
+                    .foregroundStyle(healthColorLocal(record.healthPercent))
                 }
               }
               if let lowRate = record.lowRateCapacity {

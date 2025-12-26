@@ -116,7 +116,7 @@ struct HealthTrendView: View {
               y: .value(
                 String(localized: "real_capacity"),
                 appSettings.analysisDataSource == .nominal
-                  ? record.nominalHealthPercent : record.realHealthPercent)
+                  ? record.nominalHealthPercent : record.healthPercent)
             )
             .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
             .interpolationMethod(.catmullRom)
@@ -130,7 +130,7 @@ struct HealthTrendView: View {
                 y: .value(
                   String(localized: "real_capacity"),
                   appSettings.analysisDataSource == .nominal
-                    ? record.nominalHealthPercent : record.realHealthPercent)
+                    ? record.nominalHealthPercent : record.healthPercent)
               )
               .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
               .symbol(.circle)

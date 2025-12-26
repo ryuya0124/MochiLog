@@ -122,6 +122,8 @@ final class BatteryRecord {
   }
 
   // 実際のヘルス（%）を UI 側の `realHealthPercent` として提供
+  // 注意: これは「実測容量 / 公称容量」であり、通常は100%前後になります。
+  // 本来の意味でのヘルス（劣化度）を表すものではなく、公称値に対するばらつきを表します。
   var realHealthPercent: Double {
     if nominalCapacity > 0 {
       return (Double(rawCapacity) / Double(nominalCapacity)) * 100.0
@@ -129,7 +131,7 @@ final class BatteryRecord {
     return 0.0
   }
 
-  // 公称容量ベースのヘルス（%）
+  // 公称容量ベースのヘルス（%）(Nominal / Design)
   var nominalHealthPercent: Double {
     if designCapacity > 0 {
       return (Double(nominalCapacity) / Double(designCapacity)) * 100.0
@@ -137,7 +139,8 @@ final class BatteryRecord {
     return 0.0
   }
 
-  // 設計容量ベースのヘルス（%）
+  // 設計容量ベースのヘルス（%）(Raw / Design)
+  // これが本来の意味での「実測容量ベースの劣化度」を表します。
   var healthPercent: Double {
     if designCapacity > 0 {
       return (Double(rawCapacity) / Double(designCapacity)) * 100.0
