@@ -109,8 +109,9 @@ enum SampleDataProvider {
       }
     }
 
-    // 日付順にソート（新しい順）
-    return records.sorted { $0.logDate > $1.logDate }
+    // 日付順にソート（古い順 = 昇順）
+    // StatisticsView で .last を取得した際に最新（現在に近い）データになるようにする
+    return records.sorted { $0.logDate < $1.logDate }
   }
 
   /// サンプルデータのデバイス名一覧

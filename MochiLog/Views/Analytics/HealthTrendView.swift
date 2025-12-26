@@ -17,8 +17,12 @@ struct HealthTrendView: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
-      Text(String(localized: "health_trend"))
-        .font(.headline)
+      Text(
+        String(
+          localized: appSettings.analysisDataSource == .nominal
+            ? "health_trend_nominal" : "health_trend_actual")
+      )
+      .font(.headline)
 
       if visibleRecords.isEmpty {
         Text(String(localized: "no_records_for_device"))
@@ -149,10 +153,10 @@ struct HealthTrendView: View {
             case .week:
               return 1
             case .month:
-              // 6ヶ月以上の場合は3ヶ月ごとにラベル表示
+              // 2年（24ヶ月）程度なら4ヶ月ごと、それ以上は6ヶ月ごと
               let months =
                 Calendar.current.dateComponents([.month], from: startDay, to: endDay).month ?? 0
-              return months > 12 ? 6 : (months > 6 ? 3 : 1)
+              return months > 36 ? 12 : (months > 24 ? 6 : (months > 12 ? 3 : (months > 6 ? 3 : 1)))
             }
           }()
 

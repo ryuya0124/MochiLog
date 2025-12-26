@@ -65,6 +65,22 @@
         }
       }
     },
+    "add_data" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add Data"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データを追加"
+          }
+        }
+      }
+    },
     "advanced_settings" : {
       "localizations" : {
         "en" : {
@@ -194,38 +210,6 @@
         }
       }
     },
-    "sort_devices" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sort Devices"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "端末の並び替え"
-          }
-        }
-      }
-    },
-    "save" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Save"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "保存"
-          }
-        }
-      }
-    },
     "appearance" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -276,6 +260,7 @@
       }
     },
     "average_health" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1240,6 +1225,7 @@
       }
     },
     "health_trend" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1251,6 +1237,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "実容量推移"
+          }
+        }
+      }
+    },
+    "health_trend_actual" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actual Capacity Trend"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "実測容量推移"
+          }
+        }
+      }
+    },
+    "health_trend_nominal" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nominal Capacity Trend"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "公称容量推移"
           }
         }
       }
@@ -1453,6 +1473,7 @@
       }
     },
     "latest_health" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2443,6 +2464,54 @@
         }
       }
     },
+    "sample_data_hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add your own data to see your battery health"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "実際のデータを追加してバッテリー状態を確認しましょう"
+          }
+        }
+      }
+    },
+    "sample_data_viewing" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Viewing Sample Data"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サンプルデータ表示中"
+          }
+        }
+      }
+    },
+    "save" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存"
+          }
+        }
+      }
+    },
     "search" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -2669,6 +2738,22 @@
         }
       }
     },
+    "sort_devices" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sort Devices"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "端末の並び替え"
+          }
+        }
+      }
+    },
     "standard_models" : {
       "localizations" : {
         "en" : {
@@ -2681,6 +2766,74 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "標準モデル"
+          }
+        }
+      }
+    },
+    "stat_average_actual" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Average Actual Capacity"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平均実測容量"
+          }
+        }
+      }
+    },
+    "stat_average_nominal" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Average Nominal Capacity"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平均公称容量"
+          }
+        }
+      }
+    },
+    "stat_latest_actual" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Latest Actual Capacity"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最新実測容量"
+          }
+        }
+      }
+    },
+    "stat_latest_nominal" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Latest Nominal Capacity"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最新公称容量"
           }
         }
       }
@@ -3176,6 +3329,22 @@
         }
       }
     },
+    "view_sample_data" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View Sample Data"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サンプルデータを見る"
+          }
+        }
+      }
+    },
     "view_tutorial" : {
       "localizations" : {
         "en" : {
@@ -3258,70 +3427,6 @@
     },
     "zip_extract_failed" : {
 
-    },
-    "view_sample_data" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "View Sample Data"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "サンプルデータを見る"
-          }
-        }
-      }
-    },
-    "sample_data_viewing" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Viewing Sample Data"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "サンプルデータ表示中"
-          }
-        }
-      }
-    },
-    "sample_data_hint" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Add your own data to see your battery health"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "実際のデータを追加してバッテリー状態を確認しましょう"
-          }
-        }
-      }
-    },
-    "add_data" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Add Data"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "データを追加"
-          }
-        }
-      }
     }
   },
   "version" : "1.1"

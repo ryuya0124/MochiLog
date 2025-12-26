@@ -59,7 +59,7 @@ struct CycleTrendView: View {
             case .month:
               let months =
                 Calendar.current.dateComponents([.month], from: startDay, to: endDay).month ?? 0
-              return months > 12 ? 6 : (months > 6 ? 3 : 1)
+              return months > 36 ? 12 : (months > 24 ? 6 : (months > 12 ? 3 : (months > 6 ? 3 : 1)))
             }
           }()
 

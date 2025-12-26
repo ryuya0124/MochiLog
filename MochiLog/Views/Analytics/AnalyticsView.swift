@@ -93,7 +93,7 @@ struct AnalyticsView: View {
     case .oneYear:
       return calendar.date(byAdding: .year, value: -1, to: endDate) ?? endDate
     case .twoYears:
-      return calendar.date(byAdding: .year, value: -2, to: endDate) ?? endDate
+      return calendar.date(byAdding: .month, value: -24, to: endDate) ?? endDate
     case .all:
       return (filteredRecords.min(by: { $0.logDate < $1.logDate })?.logDate) ?? endDate
     }

@@ -29,7 +29,9 @@ struct StatisticsView: View {
         )
 
         StatCard(
-          title: String(localized: "average_health"),
+          title: String(
+            localized: appSettings.analysisDataSource == .nominal
+              ? "stat_average_nominal" : "stat_average_actual"),
           value: String(format: "%.1f%%", averageHealth),
           icon: "heart.fill",
           color: healthColor(averageHealth)
@@ -44,7 +46,9 @@ struct StatisticsView: View {
           )
 
           StatCard(
-            title: String(localized: "latest_health"),
+            title: String(
+              localized: appSettings.analysisDataSource == .nominal
+                ? "stat_latest_nominal" : "stat_latest_actual"),
             value: String(
               format: "%.1f%%",
               appSettings.analysisDataSource == .nominal

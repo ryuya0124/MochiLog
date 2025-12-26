@@ -159,6 +159,11 @@ struct SampleDataHomeView: View {
       }
     }
 
+    // Sort records within each section by date descending (newest first)
+    for i in 0..<sections.count {
+      sections[i].records.sort { $0.logDate > $1.logDate }
+    }
+
     // Apply sort order
     let sortOrder = appSettings.deviceSortOrder
     if !sortOrder.isEmpty {
