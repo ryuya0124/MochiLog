@@ -113,7 +113,10 @@ struct HealthTrendView: View {
               x: .value(
                 String(localized: "date"), Calendar.current.startOfDay(for: record.logDate),
                 unit: unit.calendarComponent),
-              y: .value(String(localized: "real_capacity"), record.realHealthPercent)
+              y: .value(
+                String(localized: "real_capacity"),
+                appSettings.analysisDataSource == .nominal
+                  ? record.nominalHealthPercent : record.realHealthPercent)
             )
             .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
             .interpolationMethod(.catmullRom)
@@ -124,7 +127,10 @@ struct HealthTrendView: View {
                 x: .value(
                   String(localized: "date"), Calendar.current.startOfDay(for: record.logDate),
                   unit: unit.calendarComponent),
-                y: .value(String(localized: "real_capacity"), record.realHealthPercent)
+                y: .value(
+                  String(localized: "real_capacity"),
+                  appSettings.analysisDataSource == .nominal
+                    ? record.nominalHealthPercent : record.realHealthPercent)
               )
               .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
               .symbol(.circle)

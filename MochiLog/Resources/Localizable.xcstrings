@@ -97,6 +97,54 @@
         }
       }
     },
+    "analysis_source" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analysis Source"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分析の計算基準"
+          }
+        }
+      }
+    },
+    "analysis_source_actual" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Based on Actual"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "実測値ベース"
+          }
+        }
+      }
+    },
+    "analysis_source_nominal" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Based on Nominal"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "公称値ベース"
+          }
+        }
+      }
+    },
     "analytics" : {
       "localizations" : {
         "en" : {

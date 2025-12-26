@@ -129,6 +129,14 @@ final class BatteryRecord {
     return 0.0
   }
 
+  // 公称容量ベースのヘルス（%）
+  var nominalHealthPercent: Double {
+    if designCapacity > 0 {
+      return (Double(nominalCapacity) / Double(designCapacity)) * 100.0
+    }
+    return 0.0
+  }
+
   // 設計容量ベースのヘルス（%）
   var healthPercent: Double {
     if designCapacity > 0 {

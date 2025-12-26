@@ -159,6 +159,19 @@ struct SettingsView: View {
         Section {
           DisclosureGroup(String(localized: "advanced_settings"), isExpanded: $isAdvancedExpanded) {
             VStack(spacing: 16) {
+              // 分析データの計算基準
+              Picker(
+                String(localized: "analysis_source"), selection: $appSettings.analysisDataSource
+              ) {
+                ForEach(AppSettings.AnalysisDataSource.allCases) { source in
+                  Text(source.localizedName).tag(source)
+                }
+              }
+              .pickerStyle(.menu)
+              .padding(.top, 4)
+
+              Divider()
+
               // 共有インポート時にアプリを開くかどうか
               Toggle(
                 String(localized: "open_app_after_share_import"),

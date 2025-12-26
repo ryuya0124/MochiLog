@@ -26,6 +26,9 @@ final class AppSettings: ObservableObject {
 
     // 新規: デバイスの並び順
     static let deviceSortOrder = "deviceSortOrder"
+
+    // 新規: 分析データの計算基準
+    static let analysisDataSource = "analysisDataSource"
   }
 
   /// 容量不一致時の挙動
@@ -39,6 +42,21 @@ final class AppSettings: ObservableObject {
       switch self {
       case .manualSelection: return String(localized: "mismatch_behavior_manual")
       case .error: return String(localized: "mismatch_behavior_error")
+      }
+    }
+  }
+
+  /// 分析データの計算基準
+  enum AnalysisDataSource: String, CaseIterable, Identifiable {
+    case actual = "actual"
+    case nominal = "nominal"
+
+    var id: String { self.rawValue }
+
+    var localizedName: String {
+      switch self {
+      case .actual: return String(localized: "analysis_source_actual")
+      case .nominal: return String(localized: "analysis_source_nominal")
       }
     }
   }
@@ -151,6 +169,9 @@ final class AppSettings: ObservableObject {
   /// デバイスの並び順（名前の配列）
   @Published var deviceSortOrder: [String] = []
 
+  /// 分析データの計算基準
+  @Published var analysisDataSource: AnalysisDataSource
+
   // MARK: - Initialization
 
   private init() {
@@ -223,6 +244,15 @@ final class AppSettings: ObservableObject {
 
     // デバイス並び順の読み込み
     self.deviceSortOrder = UserDefaults.standard.stringArray(forKey: Keys.deviceSortOrder) ?? []
+
+    // 分析データソースの初期化
+    if let sourceString = UserDefaults.standard.string(forKey: Keys.analysisDataSource),
+      let source = AnalysisDataSource(rawValue: sourceString)
+    {
+      self.analysisDataSource = source
+    } else {
+      self.analysisDataSource = .actual
+    }
 
     // プロパティの変更を監視してUserDefaultsに保存
     setupObservers()
@@ -325,6 +355,13 @@ final class AppSettings: ObservableObject {
       .dropFirst()
       .sink { value in
         UserDefaults.standard.set(value, forKey: Keys.deviceSortOrder)
+      }
+      .store(in: &cancellables)
+
+    $analysisDataSource
+      .dropFirst()
+      .sink { value in
+        UserDefaults.standard.set(value.rawValue, forKey: Keys.analysisDataSource)
       }
       .store(in: &cancellables)
   }

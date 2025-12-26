@@ -35,11 +35,24 @@ enum SampleDataProvider {
         let progress = Double(35 - monthOffset) / 35.0
 
         // ヘルスは非線形に減少（使い始めは緩やか、後半で加速）+ ランダム変動
-        let healthDecayRate = pow(progress, 1.3)  // 非線形カーブ
-        let baseHealth =
-          device.startHealth - (device.startHealth - device.currentHealth) * healthDecayRate
-        let randomVariation = Double.random(in: -0.3...0.3)
-        let currentHealth = max(baseHealth + randomVariation, device.currentHealth - 1)
+        // 公称容量（Nominal）は滑らかに減少
+        // startHealth から currentHealth へ、非線形カーブで推移
+        let progressDecay = pow(progress, 1.2)
+        let currentNominalHealth =
+          device.startHealth - (device.startHealth - device.currentHealth) * progressDecay
+        let nominalCapacity = Int(Double(device.designCapacity) * (currentNominalHealth / 100.0))
+
+        // 実測容量（Raw）は公称容量を基準に、大きなブレ（ノイズ）と外れ値を持つ
+        // ノイズ: 通常 ±1.5% 程度のブレ
+        var noisePercent = Double.random(in: -1.5...1.5)
+
+        // 外れ値: 5%の確率でさらに大きくブレる（主に下振れ）
+        if Int.random(in: 1...20) == 1 {
+          noisePercent += Double.random(in: -4.0...(-1.0))
+        }
+
+        let currentRawHealth = currentNominalHealth + noisePercent
+        let rawCapacity = Int(Double(device.designCapacity) * (currentRawHealth / 100.0))
 
         // サイクルカウントは非線形（季節変動、使用頻度の変化をシミュレート）
         // 夏と冬は使用量増加、春秋は少なめ
@@ -63,9 +76,8 @@ enum SampleDataProvider {
           ? 0 : previousCycles + max(Int(monthlyIncrease + randomCycleVariation), 5)
         previousCycles = currentCycles
 
-        // 容量を計算
-        let rawCapacity = Int(Double(device.designCapacity) * (currentHealth / 100.0))
-        let nominalCapacity = device.designCapacity
+        // 表示用ヘルス（設定画面での表示）は公称値をベースにするのが一般的
+        let settingsDisplayPercent = Int(currentNominalHealth)
 
         let record = BatteryRecord(
           logDate: logDate,
@@ -82,8 +94,8 @@ enum SampleDataProvider {
           rawCapacity: rawCapacity,
           lowRateCapacity: nil,
           deflator: nil,
-          settingsDisplayPercent: Int(currentHealth),
-          diagnosticResult: currentHealth >= 80
+          settingsDisplayPercent: settingsDisplayPercent,
+          diagnosticResult: currentNominalHealth >= 80
             ? String(localized: "diag_normal") : String(localized: "diag_slightly_degraded"),
           avgTemp: Double.random(in: 25.0...32.0),
           maxTemp: Double.random(in: 33.0...38.0),
