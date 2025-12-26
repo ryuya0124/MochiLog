@@ -49,6 +49,22 @@
         }
       }
     },
+    "actions_hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap to share or export this log."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログを共有または書き出すにはタップしてください。"
+          }
+        }
+      }
+    },
     "advanced_settings" : {
       "localizations" : {
         "en" : {
@@ -131,6 +147,7 @@
       }
     },
     "appearance" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -566,22 +583,6 @@
         }
       }
     },
-    "debug" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Debug"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "デバッグ"
-          }
-        }
-      }
-    },
     "data_management" : {
       "localizations" : {
         "en" : {
@@ -610,6 +611,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "日付"
+          }
+        }
+      }
+    },
+    "debug" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Debug"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバッグ"
           }
         }
       }
@@ -998,6 +1015,22 @@
         }
       }
     },
+    "export" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "書き出す"
+          }
+        }
+      }
+    },
     "export_log" : {
       "localizations" : {
         "en" : {
@@ -1079,7 +1112,6 @@
       }
     },
     "general" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1107,6 +1139,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "わかりました"
+          }
+        }
+      }
+    },
+    "health" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ヘルス"
           }
         }
       }
@@ -1368,118 +1416,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ログ詳細"
-          }
-        }
-      }
-    },
-    "health" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Health"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ヘルス"
-          }
-        }
-      }
-    },
-    "share" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Share"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "共有"
-          }
-        }
-      }
-    },
-    "export" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Export"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "書き出す"
-          }
-        }
-      }
-    },
-    "summary" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Summary"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "概要"
-          }
-        }
-      }
-    },
-    "real_health" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Real Health"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "実容量"
-          }
-        }
-      }
-    },
-    "quick_actions" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quick Actions"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "クイック操作"
-          }
-        }
-      }
-    },
-    "actions_hint" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tap to share or export this log."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ログを共有または書き出すにはタップしてください。"
           }
         }
       }
@@ -2087,6 +2023,22 @@
         }
       }
     },
+    "quick_actions" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quick Actions"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "クイック操作"
+          }
+        }
+      }
+    },
     "ram" : {
       "localizations" : {
         "en" : {
@@ -2204,7 +2156,6 @@
       }
     },
     "real_health" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2558,6 +2509,22 @@
         }
       }
     },
+    "share" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共有"
+          }
+        }
+      }
+    },
     "soc" : {
       "localizations" : {
         "en" : {
@@ -2622,6 +2589,22 @@
         }
       }
     },
+    "summary" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Summary"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "概要"
+          }
+        }
+      }
+    },
     "support" : {
       "localizations" : {
         "en" : {
@@ -2639,6 +2622,7 @@
       }
     },
     "sync" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
