@@ -34,6 +34,9 @@ struct AnalyticsView: View {
     if days <= 7 { return .oneWeek }
     if days <= 30 { return .oneMonth }
     if days <= 90 { return .threeMonths }
+    if days <= 180 { return .sixMonths }
+    if days <= 365 { return .oneYear }
+    if days <= 730 { return .twoYears }
     return .all
   }
 
@@ -65,6 +68,12 @@ struct AnalyticsView: View {
       return DateComponents(month: 1)
     case .threeMonths:
       return DateComponents(month: 3)
+    case .sixMonths:
+      return DateComponents(month: 6)
+    case .oneYear:
+      return DateComponents(year: 1)
+    case .twoYears:
+      return DateComponents(year: 2)
     case .all:
       return nil
     }
@@ -79,6 +88,12 @@ struct AnalyticsView: View {
       return calendar.date(byAdding: .month, value: -1, to: endDate) ?? endDate
     case .threeMonths:
       return calendar.date(byAdding: .month, value: -3, to: endDate) ?? endDate
+    case .sixMonths:
+      return calendar.date(byAdding: .month, value: -6, to: endDate) ?? endDate
+    case .oneYear:
+      return calendar.date(byAdding: .year, value: -1, to: endDate) ?? endDate
+    case .twoYears:
+      return calendar.date(byAdding: .year, value: -2, to: endDate) ?? endDate
     case .all:
       return (filteredRecords.min(by: { $0.logDate < $1.logDate })?.logDate) ?? endDate
     }
@@ -192,6 +207,7 @@ struct AnalyticsView: View {
     var c = DateComponents()
     if let d = comp.day { c.day = d * multiplier }
     if let m = comp.month { c.month = m * multiplier }
+    if let y = comp.year { c.year = y * multiplier }
     if let h = comp.hour { c.hour = h * multiplier }
     return Calendar.current.date(byAdding: c, to: date)
   }
@@ -247,6 +263,12 @@ struct AnalyticsView: View {
                   return calendar.date(byAdding: .month, value: -1, to: end) ?? end
                 case .threeMonths:
                   return calendar.date(byAdding: .month, value: -3, to: end) ?? end
+                case .sixMonths:
+                  return calendar.date(byAdding: .month, value: -6, to: end) ?? end
+                case .oneYear:
+                  return calendar.date(byAdding: .year, value: -1, to: end) ?? end
+                case .twoYears:
+                  return calendar.date(byAdding: .year, value: -2, to: end) ?? end
                 case .all:
                   return (filteredRecords.min(by: { $0.logDate < $1.logDate })?.logDate) ?? end
                 }

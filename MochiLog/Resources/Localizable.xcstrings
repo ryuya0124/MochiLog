@@ -2169,6 +2169,38 @@
         }
       }
     },
+    "range_1y" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Year"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1年"
+          }
+        }
+      }
+    },
+    "range_2y" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 Years"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2年"
+          }
+        }
+      }
+    },
     "range_3m" : {
       "comment" : "3 months range label",
       "localizations" : {
@@ -2182,6 +2214,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "3ヶ月"
+          }
+        }
+      }
+    },
+    "range_6m" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "6 Months"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "半年"
           }
         }
       }
