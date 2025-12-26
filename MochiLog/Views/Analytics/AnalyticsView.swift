@@ -198,73 +198,75 @@ struct AnalyticsView: View {
 
   var body: some View {
     NavigationStack {
-      ScrollView {
-        VStack(spacing: 20) {
+      GeometryReader { geometry in
+        ScrollView {
           if records.isEmpty {
             ContentUnavailableView(
               String(localized: "no_data"),
               systemImage: "chart.line.uptrend.xyaxis",
               description: Text(String(localized: "no_data_description"))
             )
-            .frame(maxHeight: .infinity)
+            .frame(width: geometry.size.width, height: geometry.size.height)
           } else {
-            // デバイス選択ピッカー
-            DevicePickerView(deviceNames: deviceNames, selectedDevice: $selectedDevice)
+            VStack(spacing: 20) {
+              // デバイス選択ピッカー
+              DevicePickerView(deviceNames: deviceNames, selectedDevice: $selectedDevice)
 
-            // 共通の期間計算（ヘルス・サイクルで共用）
-            let end = windowEnd
-            let calendar = Calendar.current
-            let startDate: Date = {
-              switch selectedRange {
-              case .oneWeek:
-                return calendar.date(byAdding: .day, value: -7, to: end) ?? end
-              case .oneMonth:
-                return calendar.date(byAdding: .month, value: -1, to: end) ?? end
-              case .threeMonths:
-                return calendar.date(byAdding: .month, value: -3, to: end) ?? end
-              case .all:
-                return (filteredRecords.min(by: { $0.logDate < $1.logDate })?.logDate) ?? end
+              // 共通の期間計算（ヘルス・サイクルで共用）
+              let end = windowEnd
+              let calendar = Calendar.current
+              let startDate: Date = {
+                switch selectedRange {
+                case .oneWeek:
+                  return calendar.date(byAdding: .day, value: -7, to: end) ?? end
+                case .oneMonth:
+                  return calendar.date(byAdding: .month, value: -1, to: end) ?? end
+                case .threeMonths:
+                  return calendar.date(byAdding: .month, value: -3, to: end) ?? end
+                case .all:
+                  return (filteredRecords.min(by: { $0.logDate < $1.logDate })?.logDate) ?? end
+                }
+              }()
+
+              let startDay = calendar.startOfDay(for: startDate)
+              let endDay = calendar.startOfDay(for: end)
+              let visibleRecords = filteredRecords.filter {
+                let d = calendar.startOfDay(for: $0.logDate)
+                return d >= startDay && d <= endDay
               }
-            }()
 
-            let startDay = calendar.startOfDay(for: startDate)
-            let endDay = calendar.startOfDay(for: end)
-            let visibleRecords = filteredRecords.filter {
-              let d = calendar.startOfDay(for: $0.logDate)
-              return d >= startDay && d <= endDay
+              let unit = autoUnit(for: visibleRecords, range: selectedRange)
+
+              // ヘルス推移グラフ
+              HealthTrendView(
+                visibleRecords: visibleRecords,
+                startDay: startDay,
+                endDay: endDay,
+                unit: unit,
+                selectedRange: $selectedRange,
+                canMoveNext: canMoveNext,
+                canMovePrevious: canMovePrevious,
+                shiftWindow: shiftWindow,
+                animateChart: $animateChart
+              )
+
+              // サイクル推移グラフ
+              CycleTrendView(
+                visibleRecords: visibleRecords,
+                startDay: startDay,
+                endDay: endDay,
+                unit: unit,
+                animateChart: $animateChart
+              )
+
+              // 統計情報
+              if !filteredRecords.isEmpty {
+                StatisticsView(filteredRecords: filteredRecords)
+              }
             }
-
-            let unit = autoUnit(for: visibleRecords, range: selectedRange)
-
-            // ヘルス推移グラフ
-            HealthTrendView(
-              visibleRecords: visibleRecords,
-              startDay: startDay,
-              endDay: endDay,
-              unit: unit,
-              selectedRange: $selectedRange,
-              canMoveNext: canMoveNext,
-              canMovePrevious: canMovePrevious,
-              shiftWindow: shiftWindow,
-              animateChart: $animateChart
-            )
-
-            // サイクル推移グラフ
-            CycleTrendView(
-              visibleRecords: visibleRecords,
-              startDay: startDay,
-              endDay: endDay,
-              unit: unit,
-              animateChart: $animateChart
-            )
-
-            // 統計情報
-            if !filteredRecords.isEmpty {
-              StatisticsView(filteredRecords: filteredRecords)
-            }
+            .padding()
           }
         }
-        .padding()
       }
       .onAppear {
         // 起動セッション内で一度だけ、現在の（フィルタ済み）データに合わせてレンジを自動設定（ユーザー選択は上書きしない）
