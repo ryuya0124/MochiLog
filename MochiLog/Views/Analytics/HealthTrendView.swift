@@ -198,9 +198,8 @@ struct HealthTrendView: View {
             .mask {
               GeometryReader { geo in
                 Rectangle()
-                  .frame(height: animateChart ? geo.size.height : 0, alignment: .bottom)
-                  .frame(maxHeight: .infinity, alignment: .bottom)
-                  .animation(.easeOut(duration: 0.6), value: animateChart)
+                  .frame(width: animateChart ? geo.size.width : 0)
+                  .frame(maxWidth: .infinity, alignment: .leading)
               }
             }
         }
