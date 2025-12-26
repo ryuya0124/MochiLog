@@ -141,6 +141,9 @@ final class AppSettings: ObservableObject {
   /// サンプルデータ表示モード（タブ間で共有、非永続化）
   @Published var showingSampleData: Bool = false
 
+  /// 選択されているタブのインデックス（0: Home, 1: Analytics, 2: Settings）
+  @Published var selectedTabIndex: Int = 0
+
   // MARK: - Initialization
 
   private init() {

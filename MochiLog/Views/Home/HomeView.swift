@@ -8,10 +8,9 @@ import UniformTypeIdentifiers
 // MARK: - メインタブビュー
 struct MainTabView: View {
   @StateObject private var appSettings = AppSettings.shared
-  @State private var selectedTab = 0
 
   var body: some View {
-    TabView(selection: $selectedTab) {
+    TabView(selection: $appSettings.selectedTabIndex) {
       HomeView()
         .tabItem {
           Label(String(localized: "tab_home"), systemImage: "house.fill")
