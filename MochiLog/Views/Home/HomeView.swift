@@ -52,6 +52,7 @@ struct HomeView: View {
   @State private var showingParseErrorSavedAlert = false
   @State private var showingDebugLogsSheet = false
   @State private var collapsedSections: Set<String> = []
+  @State private var showingReorderSheet = false
 
   var body: some View {
     NavigationStack {
@@ -189,11 +190,26 @@ struct HomeView: View {
       .navigationTitle("MochiLog")
       .toolbar {
         ToolbarItem(placement: .navigationBarTrailing) {
+          if !records.isEmpty {
+            Button(action: { showingReorderSheet = true }) {
+              Image(systemName: "arrow.up.arrow.down")
+            }
+          }
+        }
+        ToolbarItem(placement: .navigationBarTrailing) {
           Button(action: { showingFilePicker = true }) {
             Image(systemName: "plus")
           }
           .disabled(isProcessing)
         }
+      }
+      .sheet(isPresented: $showingReorderSheet) {
+        DeviceReorderView(
+          items: deviceSections.map { $0.id },
+          onSave: { newOrder in
+            appSettings.deviceSortOrder = newOrder
+          }
+        )
       }
       .fileImporter(
         isPresented: $showingFilePicker,
@@ -721,6 +737,16 @@ struct HomeView: View {
       } else {
         indexForDevice[name] = sections.count
         sections.append(DeviceSection(id: name, displayName: name, records: [record]))
+      }
+    }
+
+    // Apply sort order
+    let sortOrder = appSettings.deviceSortOrder
+    if !sortOrder.isEmpty {
+      sections.sort { (a, b) -> Bool in
+        let indexA = sortOrder.firstIndex(of: a.id) ?? Int.max
+        let indexB = sortOrder.firstIndex(of: b.id) ?? Int.max
+        return indexA < indexB
       }
     }
     return sections

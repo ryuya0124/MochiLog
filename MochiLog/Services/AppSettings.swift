@@ -23,6 +23,9 @@ final class AppSettings: ObservableObject {
 
     // 新規: 共有インポート時にアプリを開くかどうか
     static let openAppAfterShareImport = "openAppAfterShareImport"
+
+    // 新規: デバイスの並び順
+    static let deviceSortOrder = "deviceSortOrder"
   }
 
   /// 容量不一致時の挙動
@@ -142,7 +145,11 @@ final class AppSettings: ObservableObject {
   @Published var showingSampleData: Bool = false
 
   /// 選択されているタブのインデックス（0: Home, 1: Analytics, 2: Settings）
+  /// 選択されているタブのインデックス（0: Home, 1: Analytics, 2: Settings）
   @Published var selectedTabIndex: Int = 0
+
+  /// デバイスの並び順（名前の配列）
+  @Published var deviceSortOrder: [String] = []
 
   // MARK: - Initialization
 
@@ -213,6 +220,9 @@ final class AppSettings: ObservableObject {
 
     // ブロック理由は起動時には空
     self.iCloudSyncBlockedReason = nil
+
+    // デバイス並び順の読み込み
+    self.deviceSortOrder = UserDefaults.standard.stringArray(forKey: Keys.deviceSortOrder) ?? []
 
     // プロパティの変更を監視してUserDefaultsに保存
     setupObservers()
@@ -308,6 +318,13 @@ final class AppSettings: ObservableObject {
       .dropFirst()
       .sink { value in
         UserDefaults.standard.set(value.rawValue, forKey: Keys.accentColor)
+      }
+      .store(in: &cancellables)
+
+    $deviceSortOrder
+      .dropFirst()
+      .sink { value in
+        UserDefaults.standard.set(value, forKey: Keys.deviceSortOrder)
       }
       .store(in: &cancellables)
   }

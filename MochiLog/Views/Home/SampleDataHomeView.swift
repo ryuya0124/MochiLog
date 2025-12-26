@@ -9,6 +9,7 @@ struct SampleDataHomeView: View {
   @StateObject private var appSettings = AppSettings.shared
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @State private var collapsedSections: Set<String> = []
+  @State private var showingReorderSheet = false
 
   private let sampleRecords = SampleDataProvider.generateSampleRecords()
 
@@ -65,6 +66,21 @@ struct SampleDataHomeView: View {
         }
       }
       .background(Color(uiColor: .systemGroupedBackground))
+      .toolbar {
+        ToolbarItem(placement: .navigationBarTrailing) {
+          Button(action: { showingReorderSheet = true }) {
+            Image(systemName: "arrow.up.arrow.down")
+          }
+        }
+      }
+      .sheet(isPresented: $showingReorderSheet) {
+        DeviceReorderView(
+          items: deviceSections.map { $0.id },
+          onSave: { newOrder in
+            appSettings.deviceSortOrder = newOrder
+          }
+        )
+      }
     } else {
       // サンプルデータリスト（バナーもリスト内でスクロール）
       List {
@@ -112,6 +128,21 @@ struct SampleDataHomeView: View {
           }
         }
       }
+      .toolbar {
+        ToolbarItem(placement: .navigationBarTrailing) {
+          Button(action: { showingReorderSheet = true }) {
+            Image(systemName: "arrow.up.arrow.down")
+          }
+        }
+      }
+      .sheet(isPresented: $showingReorderSheet) {
+        DeviceReorderView(
+          items: deviceSections.map { $0.id },
+          onSave: { newOrder in
+            appSettings.deviceSortOrder = newOrder
+          }
+        )
+      }
     }
   }
 
@@ -125,6 +156,16 @@ struct SampleDataHomeView: View {
       } else {
         indexForDevice[name] = sections.count
         sections.append(DeviceSection(id: name, displayName: name, records: [record]))
+      }
+    }
+
+    // Apply sort order
+    let sortOrder = appSettings.deviceSortOrder
+    if !sortOrder.isEmpty {
+      sections.sort { (a, b) -> Bool in
+        let indexA = sortOrder.firstIndex(of: a.id) ?? Int.max
+        let indexB = sortOrder.firstIndex(of: b.id) ?? Int.max
+        return indexA < indexB
       }
     }
     return sections
