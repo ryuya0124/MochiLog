@@ -51,6 +51,7 @@ struct HomeView: View {
   @State private var watchNameToRegister = ""
   @State private var showingParseErrorSavedAlert = false
   @State private var showingDebugLogsSheet = false
+  @State private var collapsedSections: Set<String> = []
 
   var body: some View {
     NavigationStack {
@@ -92,7 +93,9 @@ struct HomeView: View {
                 let minSectionWidth: CGFloat = 340
                 let maxColumns = max(1, Int(availableWidth / minSectionWidth))
                 let columnsCount = min(deviceSections.count, maxColumns)
-                let outerColumns = Array(repeating: GridItem(.flexible(), spacing: 24, alignment: .top), count: max(1, columnsCount))
+                let outerColumns = Array(
+                  repeating: GridItem(.flexible(), spacing: 24, alignment: .top),
+                  count: max(1, columnsCount))
 
                 LazyVGrid(columns: outerColumns, alignment: .leading, spacing: 24) {
                   ForEach(deviceSections) { section in
@@ -104,7 +107,9 @@ struct HomeView: View {
                         .padding(.leading, 4)
 
                       // Inner Grid: Cards within the device section
-                      LazyVGrid(columns: [GridItem(.adaptive(minimum: 280), spacing: 16)], spacing: 16) {
+                      LazyVGrid(
+                        columns: [GridItem(.adaptive(minimum: 280), spacing: 16)], spacing: 16
+                      ) {
                         ForEach(section.records) { record in
                           NavigationLink(destination: RecordDetailView(record: record)) {
                             RecordRowView(record: record)
@@ -132,17 +137,34 @@ struct HomeView: View {
           } else {
             List {
               ForEach(deviceSections) { section in
-                Section(section.displayName) {
-                  ForEach(section.records) { record in
-                    RecordRowView(record: record)
-                      .contentShape(Rectangle())
-                      .onTapGesture {
-                        selectedRecord = record
+                Section {
+                  DisclosureGroup(
+                    isExpanded: Binding(
+                      get: { !collapsedSections.contains(section.id) },
+                      set: { isExpanded in
+                        if isExpanded {
+                          collapsedSections.remove(section.id)
+                        } else {
+                          collapsedSections.insert(section.id)
+                        }
                       }
-                  }
-                  .onDelete { offsets in
-                    let items = offsets.map { section.records[$0] }
-                    deleteRecords(items)
+                    )
+                  ) {
+                    ForEach(section.records) { record in
+                      RecordRowView(record: record)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                          selectedRecord = record
+                        }
+                    }
+                    .onDelete { offsets in
+                      let items = offsets.map { section.records[$0] }
+                      deleteRecords(items)
+                    }
+                  } label: {
+                    Text(section.displayName)
+                      .font(.headline)
+                      .foregroundStyle(.primary)
                   }
                 }
               }

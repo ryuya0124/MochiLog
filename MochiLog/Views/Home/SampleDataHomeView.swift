@@ -8,6 +8,7 @@ struct SampleDataHomeView: View {
   let openFilePicker: () -> Void
   @StateObject private var appSettings = AppSettings.shared
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+  @State private var collapsedSections: Set<String> = []
 
   private let sampleRecords = SampleDataProvider.generateSampleRecords()
 
@@ -82,14 +83,31 @@ struct SampleDataHomeView: View {
         }
 
         ForEach(deviceSections) { section in
-          Section(section.displayName) {
-            ForEach(section.records) { record in
-              RecordRowView(record: record)
-                .opacity(0.85)
-                .contentShape(Rectangle())
-                .onTapGesture {
-                  selectedRecord = record
+          Section {
+            DisclosureGroup(
+              isExpanded: Binding(
+                get: { !collapsedSections.contains(section.id) },
+                set: { isExpanded in
+                  if isExpanded {
+                    collapsedSections.remove(section.id)
+                  } else {
+                    collapsedSections.insert(section.id)
+                  }
                 }
+              )
+            ) {
+              ForEach(section.records) { record in
+                RecordRowView(record: record)
+                  .opacity(0.85)
+                  .contentShape(Rectangle())
+                  .onTapGesture {
+                    selectedRecord = record
+                  }
+              }
+            } label: {
+              Text(section.displayName)
+                .font(.headline)
+                .foregroundStyle(.primary)
             }
           }
         }
