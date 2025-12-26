@@ -251,7 +251,7 @@ final class AppSettings: ObservableObject {
     {
       self.analysisDataSource = source
     } else {
-      self.analysisDataSource = .actual
+      self.analysisDataSource = .nominal
     }
 
     // プロパティの変更を監視してUserDefaultsに保存
