@@ -85,38 +85,48 @@ struct HomeView: View {
             })
         } else {
           if horizontalSizeClass == .regular {
-            ScrollView {
-              LazyVGrid(columns: [GridItem(.adaptive(minimum: 320), spacing: 16)], spacing: 16) {
-                ForEach(deviceSections) { section in
-                  Section(
-                    header: Text(section.displayName)
-                      .font(.title3)
-                      .bold()
-                      .foregroundStyle(.secondary)
-                      .frame(maxWidth: .infinity, alignment: .leading)
-                      .padding(.top, 8)
-                      .padding(.bottom, 4)
-                  ) {
-                    ForEach(section.records) { record in
-                      NavigationLink(destination: RecordDetailView(record: record)) {
-                        RecordRowView(record: record)
-                          .padding()
-                          .background(Color(uiColor: .secondarySystemGroupedBackground))
-                          .clipShape(RoundedRectangle(cornerRadius: 12))
-                      }
-                      .buttonStyle(.plain)
-                      .contextMenu {
-                        Button(role: .destructive) {
-                          deleteRecords([record])
-                        } label: {
-                          Label(String(localized: "delete"), systemImage: "trash")
+            GeometryReader { geometry in
+              ScrollView {
+                // Outer Grid: Divide space among devices
+                let availableWidth = geometry.size.width
+                let minSectionWidth: CGFloat = 340
+                let maxColumns = max(1, Int(availableWidth / minSectionWidth))
+                let columnsCount = min(deviceSections.count, maxColumns)
+                let outerColumns = Array(repeating: GridItem(.flexible(), spacing: 24, alignment: .top), count: max(1, columnsCount))
+
+                LazyVGrid(columns: outerColumns, alignment: .leading, spacing: 24) {
+                  ForEach(deviceSections) { section in
+                    VStack(alignment: .leading, spacing: 12) {
+                      Text(section.displayName)
+                        .font(.title3)
+                        .bold()
+                        .foregroundStyle(.secondary)
+                        .padding(.leading, 4)
+
+                      // Inner Grid: Cards within the device section
+                      LazyVGrid(columns: [GridItem(.adaptive(minimum: 280), spacing: 16)], spacing: 16) {
+                        ForEach(section.records) { record in
+                          NavigationLink(destination: RecordDetailView(record: record)) {
+                            RecordRowView(record: record)
+                              .padding()
+                              .background(Color(uiColor: .secondarySystemGroupedBackground))
+                              .clipShape(RoundedRectangle(cornerRadius: 12))
+                          }
+                          .buttonStyle(.plain)
+                          .contextMenu {
+                            Button(role: .destructive) {
+                              deleteRecords([record])
+                            } label: {
+                              Label(String(localized: "delete"), systemImage: "trash")
+                            }
+                          }
                         }
                       }
                     }
                   }
                 }
+                .padding(20)
               }
-              .padding()
             }
             .background(Color(uiColor: .systemGroupedBackground))
           } else {
