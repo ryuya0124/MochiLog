@@ -36,8 +36,8 @@ struct SampleDataAnalyticsContent: View {
   }
 
   var body: some View {
-    VStack(spacing: 0) {
-      // サンプルデータバナー
+    VStack(spacing: 20) {
+      // サンプルデータバナー（スクロールと一緒に動く）
       SampleDataBanner(
         onClose: {
           withAnimation {
@@ -47,49 +47,47 @@ struct SampleDataAnalyticsContent: View {
         onAddData: {}
       )
 
-      VStack(spacing: 20) {
-        // デバイス選択ピッカー
-        DevicePickerView(deviceNames: deviceNames, selectedDevice: $selectedDevice)
+      // デバイス選択ピッカー
+      DevicePickerView(deviceNames: deviceNames, selectedDevice: $selectedDevice)
 
-        // 期間計算（データの全期間）
-        let calendar = Calendar.current
-        let startDate = filteredRecords.min(by: { $0.logDate < $1.logDate })?.logDate ?? Date()
-        let endDate = filteredRecords.max(by: { $0.logDate < $1.logDate })?.logDate ?? Date()
+      // 期間計算（データの全期間）
+      let calendar = Calendar.current
+      let startDate = filteredRecords.min(by: { $0.logDate < $1.logDate })?.logDate ?? Date()
+      let endDate = filteredRecords.max(by: { $0.logDate < $1.logDate })?.logDate ?? Date()
 
-        let startDay = calendar.startOfDay(for: startDate)
-        let endDay = calendar.startOfDay(for: endDate)
+      let startDay = calendar.startOfDay(for: startDate)
+      let endDay = calendar.startOfDay(for: endDate)
 
-        // 自動でunit決定
-        let days = calendar.dateComponents([.day], from: startDay, to: endDay).day ?? 0
-        let unit: AppSettings.ChartUnit = days > 120 ? .month : (days > 14 ? .week : .day)
+      // 自動でunit決定
+      let days = calendar.dateComponents([.day], from: startDay, to: endDay).day ?? 0
+      let unit: AppSettings.ChartUnit = days > 120 ? .month : (days > 14 ? .week : .day)
 
-        // ヘルス推移グラフ
-        HealthTrendView(
-          visibleRecords: filteredRecords,
-          startDay: startDay,
-          endDay: endDay,
-          unit: unit,
-          selectedRange: $selectedRange,
-          canMoveNext: false,
-          canMovePrevious: false,
-          shiftWindow: { _ in },
-          animateChart: $animateChart
-        )
+      // ヘルス推移グラフ
+      HealthTrendView(
+        visibleRecords: filteredRecords,
+        startDay: startDay,
+        endDay: endDay,
+        unit: unit,
+        selectedRange: $selectedRange,
+        canMoveNext: false,
+        canMovePrevious: false,
+        shiftWindow: { _ in },
+        animateChart: $animateChart
+      )
 
-        // サイクル推移グラフ
-        CycleTrendView(
-          visibleRecords: filteredRecords,
-          startDay: startDay,
-          endDay: endDay,
-          unit: unit,
-          animateChart: $animateChart
-        )
+      // サイクル推移グラフ
+      CycleTrendView(
+        visibleRecords: filteredRecords,
+        startDay: startDay,
+        endDay: endDay,
+        unit: unit,
+        animateChart: $animateChart
+      )
 
-        // 統計情報
-        StatisticsView(filteredRecords: filteredRecords)
-      }
-      .padding()
+      // 統計情報
+      StatisticsView(filteredRecords: filteredRecords)
     }
+    .padding(.horizontal)
     .onAppear {
       // サンプルデータ表示時は自動で全期間に設定
       selectedRange = autoRange(for: filteredRecords)

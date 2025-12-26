@@ -13,7 +13,6 @@ struct AnalyticsView: View {
 
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @State private var animateChart: Bool = false
-  @State private var showingSampleData: Bool = false
 
   private var deviceNames: [String] {
     Array(Set(records.map { $0.deviceName })).sorted()
@@ -200,7 +199,7 @@ struct AnalyticsView: View {
   var body: some View {
     NavigationStack {
       GeometryReader { geometry in
-        if records.isEmpty && !showingSampleData {
+        if records.isEmpty && !appSettings.showingSampleData {
           // データなし + サンプルモードOFF → ボタン表示（縦中央配置）
           VStack {
             Spacer()
@@ -212,7 +211,7 @@ struct AnalyticsView: View {
               )
               Button {
                 withAnimation {
-                  showingSampleData = true
+                  appSettings.showingSampleData = true
                 }
               } label: {
                 Label(String(localized: "view_sample_data"), systemImage: "eye")
@@ -222,11 +221,11 @@ struct AnalyticsView: View {
             Spacer()
           }
           .frame(width: geometry.size.width, height: geometry.size.height)
-        } else if records.isEmpty && showingSampleData {
+        } else if records.isEmpty && appSettings.showingSampleData {
           // データなし + サンプルモードON → サンプルグラフ表示
           ScrollView {
             SampleDataAnalyticsContent(
-              showingSampleData: $showingSampleData,
+              showingSampleData: $appSettings.showingSampleData,
               animateChart: $animateChart,
               selectedRange: $selectedRange
             )

@@ -11,25 +11,27 @@ struct SampleDataHomeView: View {
   private let sampleRecords = SampleDataProvider.generateSampleRecords()
 
   var body: some View {
-    VStack(spacing: 0) {
-      // サンプルデータバナー
-      SampleDataBanner(
-        onClose: {
-          withAnimation {
-            showingSampleData = false
-          }
-        },
-        onAddData: openFilePicker
-      )
-
-      // サンプルデータリスト
-      List {
-        ForEach(deviceSections) { section in
-          Section(section.displayName) {
-            ForEach(section.records) { record in
-              RecordRowView(record: record)
-                .opacity(0.85)
+    // サンプルデータリスト（バナーもリスト内でスクロール）
+    List {
+      // サンプルデータバナー（リストの一部としてスクロール）
+      Section {
+        SampleDataBanner(
+          onClose: {
+            withAnimation {
+              showingSampleData = false
             }
+          },
+          onAddData: openFilePicker
+        )
+        .listRowInsets(EdgeInsets())
+        .listRowBackground(Color.clear)
+      }
+
+      ForEach(deviceSections) { section in
+        Section(section.displayName) {
+          ForEach(section.records) { record in
+            RecordRowView(record: record)
+              .opacity(0.85)
           }
         }
       }
@@ -95,7 +97,7 @@ struct SampleDataBanner: View {
     }
     .padding(.horizontal, 16)
     .padding(.vertical, 12)
-    .background(.ultraThinMaterial)
+    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
   }
 }
 

@@ -52,12 +52,11 @@ struct HomeView: View {
   @State private var watchNameToRegister = ""
   @State private var showingParseErrorSavedAlert = false
   @State private var showingDebugLogsSheet = false
-  @State private var showingSampleData = false
 
   var body: some View {
     NavigationStack {
       ZStack {
-        if records.isEmpty && !showingSampleData {
+        if records.isEmpty && !appSettings.showingSampleData {
           // データなし + サンプルモードOFF → 中央にボタン表示
           GeometryReader { geometry in
             VStack(spacing: 16) {
@@ -68,7 +67,7 @@ struct HomeView: View {
               )
               Button {
                 withAnimation {
-                  showingSampleData = true
+                  appSettings.showingSampleData = true
                 }
               } label: {
                 Label(String(localized: "view_sample_data"), systemImage: "eye")
@@ -77,10 +76,10 @@ struct HomeView: View {
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
           }
-        } else if records.isEmpty && showingSampleData {
+        } else if records.isEmpty && appSettings.showingSampleData {
           // データなし + サンプルモードON → サンプルリスト表示
           SampleDataHomeView(
-            showingSampleData: $showingSampleData,
+            showingSampleData: $appSettings.showingSampleData,
             openFilePicker: {
               showingFilePicker = true
             })

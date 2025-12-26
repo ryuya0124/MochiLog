@@ -138,6 +138,9 @@ final class AppSettings: ObservableObject {
   /// - 注意: 永続化しない。一度 true になるとアプリが再起動するまで上書きしない（ユーザーの選択を尊重するため）
   @Published var hasAutoInitializedChartRange: Bool = false
 
+  /// サンプルデータ表示モード（タブ間で共有、非永続化）
+  @Published var showingSampleData: Bool = false
+
   // MARK: - Initialization
 
   private init() {

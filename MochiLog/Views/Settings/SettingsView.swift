@@ -72,6 +72,13 @@ struct SettingsView: View {
             }
           }
           .pickerStyle(.menu)
+
+          // サンプルデータ表示
+          Button {
+            appSettings.showingSampleData = true
+          } label: {
+            Label(String(localized: "view_sample_data"), systemImage: "eye")
+          }
         }
 
         // MARK: - Apple Watch 設定
