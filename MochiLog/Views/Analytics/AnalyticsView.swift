@@ -325,7 +325,7 @@ struct AnalyticsView: View {
           initializeWindowEndIfNeeded()
         }
       }
-      .onChange(of: records) { _ in
+      .onChange(of: records) {
         // records 更新時に、まだセッション内で自動初期化が済んでいなければ適用
         if !appSettings.hasAutoInitializedChartRange {
           selectedRange = autoRange(for: filteredRecords)
@@ -339,7 +339,7 @@ struct AnalyticsView: View {
           }
         }
       }
-      .onChange(of: selectedDevice) { _ in
+      .onChange(of: selectedDevice) {
         // デバイス切替時もセッション内の初回のみ適用（既に初期化済みならユーザー選択を尊重）
         if !appSettings.hasAutoInitializedChartRange {
           selectedRange = autoRange(for: filteredRecords)
