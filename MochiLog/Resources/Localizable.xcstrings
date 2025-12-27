@@ -1832,10 +1832,36 @@
       }
     },
     "no_data_to_delete_message" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There is no data to delete."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "削除するデータがありません。"
+          }
+        }
+      }
     },
     "no_data_to_delete_title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Data"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データなし"
+          }
+        }
+      }
     },
     "no_error_logs" : {
       "localizations" : {
