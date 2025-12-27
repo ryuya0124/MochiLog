@@ -50,6 +50,7 @@
       }
     },
     "actions_hint" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -309,7 +310,6 @@
       }
     },
     "battery_health" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1032,22 +1032,6 @@
         }
       }
     },
-    "show_popup_on_load" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Show debug log after loading"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "読み込み後デバッグログを表示"
-          }
-        }
-      }
-    },
     "enable_icloud_sync" : {
       "localizations" : {
         "en" : {
@@ -1081,6 +1065,7 @@
       }
     },
     "export" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2125,6 +2110,7 @@
       }
     },
     "quick_actions" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2305,6 +2291,7 @@
       }
     },
     "real_health" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2738,6 +2725,22 @@
         }
       }
     },
+    "show_popup_on_load" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show debug log after loading"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "読み込み後デバッグログを表示"
+          }
+        }
+      }
+    },
     "soc" : {
       "localizations" : {
         "en" : {
@@ -2887,6 +2890,7 @@
       }
     },
     "summary" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
