@@ -215,7 +215,82 @@ struct AnalyticsView: View {
   var body: some View {
     NavigationStack {
       GeometryReader { geometry in
-        if records.isEmpty && !appSettings.showingSampleData {
+        if appSettings.showingSampleData {
+          // サンプルモードON → サンプルグラフ表示
+          ScrollView {
+            SampleDataAnalyticsContent(
+              showingSampleData: $appSettings.showingSampleData,
+              animateChart: $animateChart,
+              selectedRange: $selectedRange
+            )
+          }
+        } else if !records.isEmpty {
+          ScrollView {
+            VStack(spacing: 20) {
+              // デバイス選択ピッカー
+              DevicePickerView(deviceNames: deviceNames, selectedDevice: $selectedDevice)
+
+              // 共通の期間計算（ヘルス・サイクルで共用）
+              let end = windowEnd
+              let calendar = Calendar.current
+              let startDate: Date = {
+                switch selectedRange {
+                case .oneWeek:
+                  return calendar.date(byAdding: .day, value: -7, to: end) ?? end
+                case .oneMonth:
+                  return calendar.date(byAdding: .month, value: -1, to: end) ?? end
+                case .threeMonths:
+                  return calendar.date(byAdding: .month, value: -3, to: end) ?? end
+                case .sixMonths:
+                  return calendar.date(byAdding: .month, value: -6, to: end) ?? end
+                case .oneYear:
+                  return calendar.date(byAdding: .year, value: -1, to: end) ?? end
+                case .twoYears:
+                  return calendar.date(byAdding: .year, value: -2, to: end) ?? end
+                case .all:
+                  return (filteredRecords.min(by: { $0.logDate < $1.logDate })?.logDate) ?? end
+                }
+              }()
+
+              let startDay = calendar.startOfDay(for: startDate)
+              let endDay = calendar.startOfDay(for: end)
+              let visibleRecords = filteredRecords.filter {
+                let d = calendar.startOfDay(for: $0.logDate)
+                return d >= startDay && d <= endDay
+              }
+
+              let unit = autoUnit(for: visibleRecords, range: selectedRange)
+
+              // ヘルス推移グラフ
+              HealthTrendView(
+                visibleRecords: visibleRecords,
+                startDay: startDay,
+                endDay: endDay,
+                unit: unit,
+                selectedRange: $selectedRange,
+                canMoveNext: canMoveNext,
+                canMovePrevious: canMovePrevious,
+                shiftWindow: shiftWindow,
+                animateChart: $animateChart
+              )
+
+              // サイクル推移グラフ
+              CycleTrendView(
+                visibleRecords: visibleRecords,
+                startDay: startDay,
+                endDay: endDay,
+                unit: unit,
+                animateChart: $animateChart
+              )
+
+              // 統計情報
+              if !filteredRecords.isEmpty {
+                StatisticsView(filteredRecords: filteredRecords)
+              }
+            }
+            .padding()
+          }
+        } else {
           // データなし + サンプルモードOFF → ボタン表示（縦中央配置）
           VStack {
             Spacer()
@@ -237,16 +312,6 @@ struct AnalyticsView: View {
             Spacer()
           }
           .frame(width: geometry.size.width, height: geometry.size.height)
-        } else if records.isEmpty && appSettings.showingSampleData {
-          // データなし + サンプルモードON → サンプルグラフ表示
-          ScrollView {
-            SampleDataAnalyticsContent(
-              showingSampleData: $appSettings.showingSampleData,
-              animateChart: $animateChart,
-              selectedRange: $selectedRange
-            )
-          }
-        } else {
           ScrollView {
             VStack(spacing: 20) {
               // デバイス選択ピッカー

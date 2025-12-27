@@ -13,8 +13,16 @@ struct SampleDataHomeView: View {
   private let sampleRecords = SampleDataProvider.generateSampleRecords()
 
   var body: some View {
-    VStack(spacing: 0) {
-      // サンプルデータバナー（常に上部に固定）
+    // 共通のRecordListViewを使用
+    RecordListView(
+      records: sampleRecords,
+      onRecordTap: { record in
+        selectedRecord = record
+      },
+      onRecordDelete: nil,  // サンプルデータは削除不可
+      showContextMenu: false
+    ) {
+      // サンプルデータバナー（リストと一緒にスクロール）
       SampleDataBanner(
         onClose: {
           withAnimation {
@@ -22,34 +30,6 @@ struct SampleDataHomeView: View {
           }
         },
         onAddData: openFilePicker
-      )
-      .padding(.horizontal, 20)
-      .padding(.top, 12)
-      .padding(.bottom, 8)
-
-      // 共通のRecordListViewを使用
-      RecordListView(
-        records: sampleRecords,
-        onRecordTap: { record in
-          selectedRecord = record
-        },
-        onRecordDelete: nil,  // サンプルデータは削除不可
-        showContextMenu: false
-      )
-    }
-    .toolbar {
-      ToolbarItem(placement: .navigationBarTrailing) {
-        Button(action: { showingReorderSheet = true }) {
-          Image(systemName: "arrow.up.arrow.down")
-        }
-      }
-    }
-    .sheet(isPresented: $showingReorderSheet) {
-      DeviceReorderView(
-        items: SampleDataProvider.sampleDeviceNames,
-        onSave: { newOrder in
-          appSettings.deviceSortOrder = newOrder
-        }
       )
     }
   }

@@ -55,67 +55,13 @@ struct HomeView: View {
   var body: some View {
     NavigationStack {
       ZStack {
-        if records.isEmpty && !appSettings.showingSampleData {
-          // データなし + サンプルモードOFF → 中央にボタン表示
-          GeometryReader { geometry in
-            VStack(spacing: 16) {
-              ContentUnavailableView {
-                Label(String(localized: "no_data"), systemImage: "battery.0")
-              } description: {
-                Text(String(localized: "no_data_description"))
-              } actions: {
-                Button {
-                  withAnimation {
-                    appSettings.showingSampleData = true
-                  }
-                } label: {
-                  Label(String(localized: "view_sample_data"), systemImage: "eye")
-                }
-                .buttonStyle(.borderedProminent)
-              }
-            }
-            .frame(width: geometry.size.width, height: geometry.size.height)
-          }
-        } else if records.isEmpty && appSettings.showingSampleData {
-          // データなし + サンプルモードON → サンプルリスト表示
-          SampleDataHomeView(
-            showingSampleData: $appSettings.showingSampleData,
-            selectedRecord: $selectedRecord,
-            openFilePicker: {
-              showingFilePicker = true
-            })
-        } else {
-          // 共通のRecordListViewを使用
-          RecordListView(
-            records: records,
-            onRecordTap: { record in
-              selectedRecord = record
-            },
-            onRecordDelete: { record in
-              deleteRecords([record])
-            },
-            showContextMenu: true
-          )
-        }
-        if isProcessing {
-          Color.black.opacity(0.3)
-            .ignoresSafeArea()
-          VStack(spacing: 16) {
-            ProgressView()
-              .scaleEffect(1.5)
-              .tint(.white)
-            Text(String(localized: "parsing_log"))
-              .font(.headline)
-              .foregroundColor(.white)
-          }
-          .padding(32)
-          .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
-        }
+        homeContent
+        processingOverlay
       }
       .navigationTitle("MochiLog")
       .toolbar {
-        ToolbarItem(placement: .navigationBarTrailing) {
-          if !records.isEmpty {
+        if !records.isEmpty || appSettings.showingSampleData {
+          ToolbarItem(placement: .navigationBarTrailing) {
             Button(action: { showingReorderSheet = true }) {
               Image(systemName: "arrow.up.arrow.down")
             }
@@ -130,7 +76,9 @@ struct HomeView: View {
       }
       .sheet(isPresented: $showingReorderSheet) {
         DeviceReorderView(
-          items: Array(Set(records.map { $0.deviceName })).sorted(),
+          items: appSettings.showingSampleData
+            ? SampleDataProvider.sampleDeviceNames
+            : Array(Set(records.map { $0.deviceName })).sorted(),
           onSave: { newOrder in
             appSettings.deviceSortOrder = newOrder
           }
@@ -162,7 +110,8 @@ struct HomeView: View {
         RecordDetailView(record: record)
       }
       .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ProcessSharedLog")))
-      { notification in
+      {
+        notification in
         if let text = notification.userInfo?["text"] as? String {
           // Determine whether we should process silently (don't show UI)
           let silent = (notification.userInfo?["silent"] as? Bool) ?? false
@@ -184,7 +133,8 @@ struct HomeView: View {
         showingRegisterWatchAlert = false
       }
       .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ParseErrorSaved")))
-      { _ in
+      {
+        _ in
         showingParseErrorSavedAlert = true
       }
       .alert(String(localized: "log_saved"), isPresented: $showingParseErrorSavedAlert) {
@@ -276,6 +226,71 @@ struct HomeView: View {
           }
         }
       }
+    }
+  }
+
+  @ViewBuilder
+  private var homeContent: some View {
+    if appSettings.showingSampleData {
+      SampleDataHomeView(
+        showingSampleData: $appSettings.showingSampleData,
+        selectedRecord: $selectedRecord,
+        openFilePicker: {
+          showingFilePicker = true
+        })
+    } else if !records.isEmpty {
+      RecordListView(
+        records: records,
+        onRecordTap: { record in
+          selectedRecord = record
+        },
+        onRecordDelete: { record in
+          deleteRecords([record])
+        },
+        showContextMenu: true
+      )
+    } else {
+      noDataView
+    }
+  }
+
+  private var noDataView: some View {
+    GeometryReader { geometry in
+      VStack(spacing: 16) {
+        ContentUnavailableView {
+          Label(String(localized: "no_data"), systemImage: "battery.0")
+        } description: {
+          Text(String(localized: "no_data_description"))
+        } actions: {
+          Button {
+            withAnimation {
+              appSettings.showingSampleData = true
+            }
+          } label: {
+            Label(String(localized: "view_sample_data"), systemImage: "eye")
+          }
+          .buttonStyle(.borderedProminent)
+        }
+      }
+      .frame(width: geometry.size.width, height: geometry.size.height)
+    }
+  }
+
+  @ViewBuilder
+  private var processingOverlay: some View {
+    if isProcessing {
+      Color.black.opacity(0.3)
+        .ignoresSafeArea()
+      VStack(spacing: 16) {
+        ProgressView()
+          .scaleEffect(1.5)
+          .tint(.white)
+        Text(String(localized: "parsing_log"))
+          .font(.headline)
+          .foregroundColor(.white)
+      }
+      .padding(32)
+      .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
     }
   }
 
@@ -685,5 +700,4 @@ struct HomeView: View {
     }
     if needsSave { try? modelContext.save() }
   }
-
 }

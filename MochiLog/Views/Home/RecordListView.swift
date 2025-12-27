@@ -2,11 +2,12 @@ import SwiftUI
 
 /// 共通のレコードリストビュー
 /// サンプルデータと実データで同じレイアウトを使用するための共通コンポーネント
-struct RecordListView: View {
+struct RecordListView<Header: View>: View {
   let records: [BatteryRecord]
   let onRecordTap: ((BatteryRecord) -> Void)?
   let onRecordDelete: ((BatteryRecord) -> Void)?
   let showContextMenu: Bool
+  let header: Header
 
   @StateObject private var appSettings = AppSettings.shared
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -16,12 +17,14 @@ struct RecordListView: View {
     records: [BatteryRecord],
     onRecordTap: ((BatteryRecord) -> Void)? = nil,
     onRecordDelete: ((BatteryRecord) -> Void)? = nil,
-    showContextMenu: Bool = true
+    showContextMenu: Bool = true,
+    @ViewBuilder header: () -> Header = { EmptyView() }
   ) {
     self.records = records
     self.onRecordTap = onRecordTap
     self.onRecordDelete = onRecordDelete
     self.showContextMenu = showContextMenu
+    self.header = header()
   }
 
   var body: some View {
@@ -39,6 +42,8 @@ struct RecordListView: View {
   private var iPadLayout: some View {
     GeometryReader { geometry in
       ScrollView {
+        header
+
         let availableWidth = geometry.size.width
         let minSectionWidth: CGFloat = 340
         let maxColumns = max(1, Int(availableWidth / minSectionWidth))
@@ -108,6 +113,11 @@ struct RecordListView: View {
   // MARK: - iPhone レイアウト
   private var iPhoneLayout: some View {
     List {
+      header
+        .listRowInsets(EdgeInsets())
+        .listRowSeparator(.hidden)
+        .listRowBackground(Color.clear)
+
       ForEach(deviceSections) { section in
         Section {
           DisclosureGroup(
