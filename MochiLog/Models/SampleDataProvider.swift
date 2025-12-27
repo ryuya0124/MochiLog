@@ -79,6 +79,15 @@ enum SampleDataProvider {
         // 表示用ヘルス（設定画面での表示）は公称値をベースにするのが一般的
         let settingsDisplayPercent = Int(currentNominalHealth)
 
+        // 温度：先に最低・最高を生成してから平均を計算
+        let minTemp = Double.random(in: 1.0...25.0)
+        let maxTemp = Double.random(in: 33.0...50.0)
+        let avgTemp = (minTemp + maxTemp) / 2.0
+
+        // 電圧：リチウムイオンバッテリーの現実的な範囲 (mV)
+        let maxVoltage = Double.random(in: 4200...4350)
+        let minVoltage = Double.random(in: 3000...3200)
+
         let record = BatteryRecord(
           logDate: logDate,
           deviceName: device.name,
@@ -97,11 +106,11 @@ enum SampleDataProvider {
           settingsDisplayPercent: settingsDisplayPercent,
           diagnosticResult: currentNominalHealth >= 80
             ? String(localized: "diag_normal") : String(localized: "diag_slightly_degraded"),
-          avgTemp: Double.random(in: 25.0...32.0),
-          maxTemp: Double.random(in: 33.0...38.0),
-          minTemp: Double.random(in: 18.0...24.0),
-          maxVoltage: 4.2,
-          minVoltage: 3.5,
+          avgTemp: avgTemp,
+          maxTemp: maxTemp,
+          minTemp: minTemp,
+          maxVoltage: maxVoltage,
+          minVoltage: minVoltage,
           minSoC: Int.random(in: 15...30),
           maxSoC: Int.random(in: 90...100)
         )

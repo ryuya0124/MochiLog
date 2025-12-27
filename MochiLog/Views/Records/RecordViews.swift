@@ -246,8 +246,12 @@ struct RecordDetailView: View {
                   LabeledContent(String(localized: "raw_capacity")) {
                     HStack(spacing: 8) {
                       Text("\(record.rawCapacity) mAh")
+                      // 分析基準に応じたヘルス値で色付け
+                      let health =
+                        appSettings.analysisDataSource == .nominal
+                        ? record.nominalHealthPercent : record.healthPercent
                       Text("(\(String(format: "%.1f%%", record.healthPercent)))")
-                        .foregroundStyle(healthColorLocal(record.healthPercent))
+                        .foregroundStyle(healthColorLocal(health))
                     }
                   }
                   if let lowRate = record.lowRateCapacity {
@@ -404,8 +408,12 @@ struct RecordDetailView: View {
               LabeledContent(String(localized: "raw_capacity")) {
                 HStack(spacing: 8) {
                   Text("\(record.rawCapacity) mAh")
+                  // 分析基準に応じたヘルス値で色付け
+                  let health =
+                    appSettings.analysisDataSource == .nominal
+                    ? record.nominalHealthPercent : record.healthPercent
                   Text("(\(String(format: "%.1f%%", record.healthPercent)))")
-                    .foregroundStyle(healthColorLocal(record.healthPercent))
+                    .foregroundStyle(healthColorLocal(health))
                 }
               }
               if let lowRate = record.lowRateCapacity {
