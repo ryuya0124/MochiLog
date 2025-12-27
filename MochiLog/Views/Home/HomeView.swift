@@ -41,7 +41,6 @@ struct HomeView: View {
   @State var showingErrorAlert = false
   @State var errorMessage = ""
   @State var selectedRecord: BatteryRecord?
-  @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @State private var pendingParseResult: LogParser.ParseResult?
   @State private var showingWatchSelection = false
   @State var isProcessing = false
@@ -51,7 +50,6 @@ struct HomeView: View {
   @State private var watchNameToRegister = ""
   @State private var showingParseErrorSavedAlert = false
   @State private var showingDebugLogsSheet = false
-  @State private var collapsedSections: Set<String> = []
   @State private var showingReorderSheet = false
 
   var body: some View {
@@ -87,91 +85,17 @@ struct HomeView: View {
               showingFilePicker = true
             })
         } else {
-          if horizontalSizeClass == .regular {
-            GeometryReader { geometry in
-              ScrollView {
-                // Outer Grid: Divide space among devices
-                let availableWidth = geometry.size.width
-                let minSectionWidth: CGFloat = 340
-                let maxColumns = max(1, Int(availableWidth / minSectionWidth))
-                let columnsCount = min(deviceSections.count, maxColumns)
-                let outerColumns = Array(
-                  repeating: GridItem(.flexible(), spacing: 24, alignment: .top),
-                  count: max(1, columnsCount))
-
-                LazyVGrid(columns: outerColumns, alignment: .leading, spacing: 24) {
-                  ForEach(deviceSections) { section in
-                    VStack(alignment: .leading, spacing: 12) {
-                      Text(section.displayName)
-                        .font(.title3)
-                        .bold()
-                        .foregroundStyle(.secondary)
-                        .padding(.leading, 4)
-
-                      // Inner Grid: Cards within the device section
-                      LazyVGrid(
-                        columns: [GridItem(.adaptive(minimum: 280), spacing: 16)], spacing: 16
-                      ) {
-                        ForEach(section.records) { record in
-                          NavigationLink(destination: RecordDetailView(record: record)) {
-                            RecordRowView(record: record)
-                              .padding()
-                              .background(Color(uiColor: .secondarySystemGroupedBackground))
-                              .clipShape(RoundedRectangle(cornerRadius: 12))
-                          }
-                          .buttonStyle(.plain)
-                          .contextMenu {
-                            Button(role: .destructive) {
-                              deleteRecords([record])
-                            } label: {
-                              Label(String(localized: "delete"), systemImage: "trash")
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-                .padding(20)
-              }
-            }
-            .background(Color(uiColor: .systemGroupedBackground))
-          } else {
-            List {
-              ForEach(deviceSections) { section in
-                Section {
-                  DisclosureGroup(
-                    isExpanded: Binding(
-                      get: { !collapsedSections.contains(section.id) },
-                      set: { isExpanded in
-                        if isExpanded {
-                          collapsedSections.remove(section.id)
-                        } else {
-                          collapsedSections.insert(section.id)
-                        }
-                      }
-                    )
-                  ) {
-                    ForEach(section.records) { record in
-                      RecordRowView(record: record)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                          selectedRecord = record
-                        }
-                    }
-                    .onDelete { offsets in
-                      let items = offsets.map { section.records[$0] }
-                      deleteRecords(items)
-                    }
-                  } label: {
-                    Text(section.displayName)
-                      .font(.headline)
-                      .foregroundStyle(.primary)
-                  }
-                }
-              }
-            }
-          }
+          // 共通のRecordListViewを使用
+          RecordListView(
+            records: records,
+            onRecordTap: { record in
+              selectedRecord = record
+            },
+            onRecordDelete: { record in
+              deleteRecords([record])
+            },
+            showContextMenu: true
+          )
         }
         if isProcessing {
           Color.black.opacity(0.3)
@@ -206,7 +130,7 @@ struct HomeView: View {
       }
       .sheet(isPresented: $showingReorderSheet) {
         DeviceReorderView(
-          items: deviceSections.map { $0.id },
+          items: Array(Set(records.map { $0.deviceName })).sorted(),
           onSave: { newOrder in
             appSettings.deviceSortOrder = newOrder
           }
@@ -728,34 +652,4 @@ struct HomeView: View {
     if needsSave { try? modelContext.save() }
   }
 
-  private var deviceSections: [DeviceSection] {
-    var sections: [DeviceSection] = []
-    var indexForDevice: [String: Int] = [:]
-    for record in records {
-      let name = record.deviceName
-      if let index = indexForDevice[name] {
-        sections[index].records.append(record)
-      } else {
-        indexForDevice[name] = sections.count
-        sections.append(DeviceSection(id: name, displayName: name, records: [record]))
-      }
-    }
-
-    // Apply sort order
-    let sortOrder = appSettings.deviceSortOrder
-    if !sortOrder.isEmpty {
-      sections.sort { (a, b) -> Bool in
-        let indexA = sortOrder.firstIndex(of: a.id) ?? Int.max
-        let indexB = sortOrder.firstIndex(of: b.id) ?? Int.max
-        return indexA < indexB
-      }
-    }
-    return sections
-  }
-
-  private struct DeviceSection: Identifiable {
-    let id: String
-    let displayName: String
-    var records: [BatteryRecord]
-  }
 }
