@@ -29,6 +29,9 @@ final class AppSettings: ObservableObject {
 
     // 新規: 分析データの計算基準
     static let analysisDataSource = "analysisDataSource"
+
+    // 新規: 重複ログ記録を許可
+    static let allowDuplicateRecords = "allowDuplicateRecords"
   }
 
   /// 容量不一致時の挙動
@@ -172,6 +175,9 @@ final class AppSettings: ObservableObject {
   /// 分析データの計算基準
   @Published var analysisDataSource: AnalysisDataSource
 
+  /// 重複したログの記録を許可するかどうか
+  @Published var allowDuplicateRecords: Bool
+
   // MARK: - Initialization
 
   private init() {
@@ -253,6 +259,9 @@ final class AppSettings: ObservableObject {
     } else {
       self.analysisDataSource = .nominal
     }
+
+    // 重複ログ記録許可の初期化（デフォルトは false）
+    self.allowDuplicateRecords = UserDefaults.standard.bool(forKey: Keys.allowDuplicateRecords)
 
     // プロパティの変更を監視してUserDefaultsに保存
     setupObservers()
@@ -362,6 +371,13 @@ final class AppSettings: ObservableObject {
       .dropFirst()
       .sink { value in
         UserDefaults.standard.set(value.rawValue, forKey: Keys.analysisDataSource)
+      }
+      .store(in: &cancellables)
+
+    $allowDuplicateRecords
+      .dropFirst()
+      .sink { value in
+        UserDefaults.standard.set(value, forKey: Keys.allowDuplicateRecords)
       }
       .store(in: &cancellables)
   }

@@ -353,8 +353,9 @@ struct HomeView: View {
 
         if isWatchOS || looksLikeWatch {
           if let registeredWatch = AppSettings.shared.registeredWatchModel {
-            // Watchの場合は登録されたWatchモデル名で重複チェック
-            if let logDate = parseResult.logDate,
+            // Watchの場合は登録されたWatchモデル名で重複チェック（許可設定がオフの場合のみ）
+            if !AppSettings.shared.allowDuplicateRecords,
+              let logDate = parseResult.logDate,
               hasDuplicateRecord(on: logDate, deviceName: registeredWatch)
             {
               NotificationHelper.scheduleImportResultNotification(
@@ -397,8 +398,9 @@ struct HomeView: View {
           }
         }
 
-        // 通常デバイス（iPhone/iPad）の重複チェック
-        if let logDate = parseResult.logDate,
+        // 通常デバイス（iPhone/iPad）の重複チェック（許可設定がオフの場合のみ）
+        if !AppSettings.shared.allowDuplicateRecords,
+          let logDate = parseResult.logDate,
           hasDuplicateRecord(on: logDate, deviceName: deviceName)
         {
           NotificationHelper.scheduleImportResultNotification(
@@ -476,8 +478,10 @@ struct HomeView: View {
 
     if isWatchOS || looksLikeWatch {
       if let registeredWatch = appSettings.registeredWatchModel {
-        // Watchの場合は登録されたWatchモデル名で重複チェック
-        if hasDuplicateRecord(on: logDate, deviceName: registeredWatch) {
+        // Watchの場合は登録されたWatchモデル名で重複チェック（許可設定がオフの場合のみ）
+        if !appSettings.allowDuplicateRecords
+          && hasDuplicateRecord(on: logDate, deviceName: registeredWatch)
+        {
           errorMessage = String(localized: "duplicate_record")
           showingErrorAlert = true
           return nil
@@ -500,8 +504,9 @@ struct HomeView: View {
       return nil
     }
 
-    // 通常デバイス（iPhone/iPad）の重複チェック
-    if hasDuplicateRecord(on: logDate, deviceName: deviceName) {
+    // 通常デバイス（iPhone/iPad）の重複チェック（許可設定がオフの場合のみ）
+    if !appSettings.allowDuplicateRecords && hasDuplicateRecord(on: logDate, deviceName: deviceName)
+    {
       errorMessage = String(localized: "duplicate_record")
       showingErrorAlert = true
       return nil

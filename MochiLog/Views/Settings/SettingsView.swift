@@ -217,6 +217,21 @@ struct SettingsView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.bottom, 8)
 
+              Divider()
+
+              // 重複したログの記録を許可
+              Toggle(
+                String(localized: "allow_duplicate_records"),
+                isOn: $appSettings.allowDuplicateRecords
+              )
+              .padding(.top, 8)
+
+              Text(String(localized: "allow_duplicate_records_description"))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.bottom, 8)
+
               VStack(alignment: .leading, spacing: 8) {
                 HStack {
                   Text(String(localized: "icloud_storage_threshold"))

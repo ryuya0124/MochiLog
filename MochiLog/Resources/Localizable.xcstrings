@@ -162,6 +162,38 @@
         }
       }
     },
+    "allow_duplicate_records" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allow Duplicate Records"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重複したログの記録を許可"
+          }
+        }
+      }
+    },
+    "allow_duplicate_records_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When enabled, multiple logs for the same date and device can be recorded."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効にすると、同じ日付・同じデバイスのログを複数記録できます。"
+          }
+        }
+      }
+    },
     "analytics" : {
       "localizations" : {
         "en" : {
