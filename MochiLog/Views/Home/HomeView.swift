@@ -348,23 +348,22 @@ struct HomeView: View {
           }
         }
 
-        // Duplicate check (after device name is resolved)
-        if let logDate = parseResult.logDate,
-          hasDuplicateRecord(on: logDate, deviceName: deviceName)
-        {
-          NotificationHelper.scheduleImportResultNotification(
-            title: String(localized: "import_silent_failure"),
-            body: String(localized: "duplicate_record")
-          )
-          self.redirectToSettingsAfterSilentImport()
-          return
-        }
-
         let isWatchOS = parseResult.osVersion?.lowercased().contains("watch") ?? false
         let looksLikeWatch = deviceName.contains("Apple Watch")
 
         if isWatchOS || looksLikeWatch {
           if let registeredWatch = AppSettings.shared.registeredWatchModel {
+            // Watchの場合は登録されたWatchモデル名で重複チェック
+            if let logDate = parseResult.logDate,
+              hasDuplicateRecord(on: logDate, deviceName: registeredWatch)
+            {
+              NotificationHelper.scheduleImportResultNotification(
+                title: String(localized: "import_silent_failure"),
+                body: String(localized: "duplicate_record")
+              )
+              self.redirectToSettingsAfterSilentImport()
+              return
+            }
             // Use registered watch
             let registeredModelCode =
               DeviceLibrary.getIdentifierForDeviceName(registeredWatch) ?? deviceModelCodeToUse
@@ -396,6 +395,18 @@ struct HomeView: View {
             self.redirectToSettingsAfterSilentImport()
             return
           }
+        }
+
+        // 通常デバイス（iPhone/iPad）の重複チェック
+        if let logDate = parseResult.logDate,
+          hasDuplicateRecord(on: logDate, deviceName: deviceName)
+        {
+          NotificationHelper.scheduleImportResultNotification(
+            title: String(localized: "import_silent_failure"),
+            body: String(localized: "duplicate_record")
+          )
+          self.redirectToSettingsAfterSilentImport()
+          return
         }
 
         // Normal-device flow
@@ -460,18 +471,17 @@ struct HomeView: View {
       }
     }
 
-    // Duplicate check (after device name is resolved)
-    if hasDuplicateRecord(on: logDate, deviceName: deviceName) {
-      errorMessage = String(localized: "duplicate_record")
-      showingErrorAlert = true
-      return nil
-    }
-
     let isWatchOS = result.osVersion?.lowercased().contains("watch") ?? false
     let looksLikeWatch = deviceName.contains("Apple Watch")
 
     if isWatchOS || looksLikeWatch {
       if let registeredWatch = appSettings.registeredWatchModel {
+        // Watchの場合は登録されたWatchモデル名で重複チェック
+        if hasDuplicateRecord(on: logDate, deviceName: registeredWatch) {
+          errorMessage = String(localized: "duplicate_record")
+          showingErrorAlert = true
+          return nil
+        }
         let registeredModelCode =
           DeviceLibrary.getIdentifierForDeviceName(registeredWatch) ?? deviceModelCodeToUse
         let registeredDesignCap = DeviceLibrary.getCapacity(for: registeredWatch)
@@ -487,6 +497,13 @@ struct HomeView: View {
       }
       pendingParseResult = result
       showingWatchSelection = true
+      return nil
+    }
+
+    // 通常デバイス（iPhone/iPad）の重複チェック
+    if hasDuplicateRecord(on: logDate, deviceName: deviceName) {
+      errorMessage = String(localized: "duplicate_record")
+      showingErrorAlert = true
       return nil
     }
 
