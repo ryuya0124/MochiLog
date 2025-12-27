@@ -10,7 +10,7 @@ struct DebugLogsView: View {
   private func reload() {
     Task {
       await MainActor.run { isLoading = true }
-      let results = await Task.detached { ErrorLogStore.shared.listLogs() }.value
+      let results = await Task.detached { await ErrorLogStore.shared.listLogs() }.value
       await MainActor.run {
         logs = results
         isLoading = false
@@ -97,6 +97,7 @@ struct DebugLogDetailView: View {
   @Environment(\.dismiss) private var dismiss
   @State private var rawText: String? = nil
   @State private var loadingRaw = false
+  @State private var shareFileURL: URL? = nil
 
   var body: some View {
     NavigationStack {
@@ -117,8 +118,11 @@ struct DebugLogDetailView: View {
         .padding()
         .task {
           loadingRaw = true
-          rawText = await Task.detached { ErrorLogStore.shared.readRawText(id: entry.id) }.value
+          rawText = await Task.detached {
+            await ErrorLogStore.shared.readRawText(id: self.entry.id)
+          }.value
           loadingRaw = false
+          prepareShareFile()
         }
       }
       .navigationTitle(String(localized: "log_details"))
@@ -127,58 +131,35 @@ struct DebugLogDetailView: View {
           Button(String(localized: "close")) { dismiss() }
         }
         ToolbarItem(placement: .navigationBarTrailing) {
-          Button(action: { share() }) { Text(String(localized: "export_log")) }
+          if let url = shareFileURL {
+            ShareLink(item: url) {
+              Text(String(localized: "export_log"))
+            }
+          } else {
+            Button(action: {}) {
+              Text(String(localized: "export_log"))
+            }
+            .disabled(true)
+          }
         }
       }
     }
   }
 
-  private func share() {
-    var items: [Any] = []
-
+  private func prepareShareFile() {
     // Prefer the raw .txt if available
     if let url = ErrorLogStore.shared.rawFileURL(id: entry.id) {
-      items = [url]
+      shareFileURL = url
     } else if let txt = rawText ?? ErrorLogStore.shared.readRawText(id: entry.id) {
       // write a temporary .txt file to share
       let tmp = FileManager.default.temporaryDirectory.appendingPathComponent("\(entry.id).txt")
       try? txt.write(to: tmp, atomically: true, encoding: .utf8)
-      items = [tmp]
+      shareFileURL = tmp
     } else if let data = try? JSONEncoder().encode(entry) {
       // fallback to JSON representation
       let tmp = FileManager.default.temporaryDirectory.appendingPathComponent("\(entry.id).json")
       try? data.write(to: tmp)
-      items = [tmp]
-    } else {
-      // last resort: share the message text
-      items = [entry.message]
-    }
-
-    let activityVC = UIActivityViewController(activityItems: items, applicationActivities: nil)
-
-    // iPad popover safe defaults
-    if let pop = activityVC.popoverPresentationController {
-      if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-        let root = windowScene.windows.first(where: { $0.isKeyWindow })?.rootViewController
-      {
-        pop.sourceView = root.view
-        pop.sourceRect = CGRect(
-          x: root.view.bounds.midX, y: root.view.bounds.midY, width: 0, height: 0)
-      } else if let root = UIApplication.shared.windows.first?.rootViewController {
-        pop.sourceView = root.view
-        pop.sourceRect = CGRect(
-          x: root.view.bounds.midX, y: root.view.bounds.midY, width: 0, height: 0)
-      }
-    }
-
-    DispatchQueue.main.async {
-      if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-        let root = windowScene.windows.first(where: { $0.isKeyWindow })?.rootViewController
-      {
-        root.present(activityVC, animated: true, completion: nil)
-      } else if let root = UIApplication.shared.windows.first?.rootViewController {
-        root.present(activityVC, animated: true, completion: nil)
-      }
+      shareFileURL = tmp
     }
   }
 }

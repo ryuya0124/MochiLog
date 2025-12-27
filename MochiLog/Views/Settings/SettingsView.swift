@@ -148,7 +148,7 @@ struct SettingsView: View {
 
         // MARK: - デバッグ
         Section(String(localized: "debug")) {
-          Toggle(String(localized: "enable_debug_logging"), isOn: $appSettings.enableDebugLogging)
+          Toggle(String(localized: "show_popup_on_load"), isOn: $appSettings.showPopupOnLoad)
 
           NavigationLink(destination: DebugLogsView()) {
             Label(String(localized: "view_error_logs"), systemImage: "exclamationmark.triangle")

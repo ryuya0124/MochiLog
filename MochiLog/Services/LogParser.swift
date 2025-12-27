@@ -145,11 +145,9 @@ struct LogParser {
     else {
 
       let msg = "バッテリーデータが見つかりませんでした"
-      // デバッグログが有効なら詳細を保存
-      if AppSettings.shared.enableDebugLogging {
-        ErrorLogStore.shared.saveLog(message: msg, rawText: text)
-        NotificationCenter.default.post(name: NSNotification.Name("ParseErrorSaved"), object: nil)
-      }
+      // デバッグログは常に保存
+      ErrorLogStore.shared.saveLog(message: msg, rawText: text)
+      NotificationCenter.default.post(name: NSNotification.Name("ParseErrorSaved"), object: nil)
       return result
     }
 
@@ -247,7 +245,7 @@ struct LogParser {
       missingFields.append("nominalCapacity")
     }
     if result.rawCapacity == nil || result.rawCapacity == 0 { missingFields.append("rawCapacity") }
-    if !missingFields.isEmpty && AppSettings.shared.enableDebugLogging {
+    if !missingFields.isEmpty {
       let message = "Parse missing fields: \(missingFields.joined(separator: ", "))"
       ErrorLogStore.shared.saveLog(message: message, rawText: text)
       NotificationCenter.default.post(name: NSNotification.Name("ParseErrorSaved"), object: nil)

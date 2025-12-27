@@ -19,7 +19,7 @@ final class AppSettings: ObservableObject {
     static let iCloudSyncEnabled = "iCloudSyncEnabled"
     static let iCloudStorageThresholdMB = "iCloudStorageThresholdMB"
     static let accentColor = "accentColor"
-    static let enableDebugLogging = "enableDebugLogging"
+    static let showPopupOnLoad = "showPopupOnLoad"
 
     // 新規: 共有インポート時にアプリを開くかどうか
     static let openAppAfterShareImport = "openAppAfterShareImport"
@@ -146,8 +146,8 @@ final class AppSettings: ObservableObject {
   /// iCloud 同期がブロックされた際の説明（ユーザ表示用）
   @Published var iCloudSyncBlockedReason: String?
 
-  /// デバッグログを有効にするか（パース失敗時に詳細を保存）
-  @Published var enableDebugLogging: Bool
+  /// 読み込み後すぐにポップアップを表示するか
+  @Published var showPopupOnLoad: Bool
 
   /// 共有インポート時にアプリを開くかどうか（true = 開く、false = 開かない）
   @Published var openAppAfterShareImport: Bool
@@ -215,11 +215,11 @@ final class AppSettings: ObservableObject {
     let storageThreshold = UserDefaults.standard.double(forKey: Keys.iCloudStorageThresholdMB)
     self.iCloudStorageThresholdMB = storageThreshold == 0 ? 100.0 : storageThreshold
 
-    // デバッグログ: デフォルトは false
-    if UserDefaults.standard.object(forKey: Keys.enableDebugLogging) == nil {
-      self.enableDebugLogging = false
+    // 読み込み後すぐにポップアップを表示するか: デフォルトは false
+    if UserDefaults.standard.object(forKey: Keys.showPopupOnLoad) == nil {
+      self.showPopupOnLoad = false
     } else {
-      self.enableDebugLogging = UserDefaults.standard.bool(forKey: Keys.enableDebugLogging)
+      self.showPopupOnLoad = UserDefaults.standard.bool(forKey: Keys.showPopupOnLoad)
     }
 
     // 共有インポート時にアプリを開くかどうか: デフォルトは true
@@ -327,11 +327,11 @@ final class AppSettings: ObservableObject {
       }
       .store(in: &cancellables)
 
-    // Persist debug logging setting
-    $enableDebugLogging
+    // Persist show popup on load setting
+    $showPopupOnLoad
       .dropFirst()
       .sink { value in
-        UserDefaults.standard.set(value, forKey: Keys.enableDebugLogging)
+        UserDefaults.standard.set(value, forKey: Keys.showPopupOnLoad)
       }
       .store(in: &cancellables)
 

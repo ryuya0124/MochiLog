@@ -1032,18 +1032,18 @@
         }
       }
     },
-    "enable_debug_logging" : {
+    "show_popup_on_load" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enable debug logging"
+            "value" : "Show debug log after loading"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "デバッグログを有効にする"
+            "value" : "読み込み後デバッグログを表示"
           }
         }
       }
