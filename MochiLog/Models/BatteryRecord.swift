@@ -148,6 +148,25 @@ final class BatteryRecord {
     return realHealthPercent
   }
 
+  // 分析基準に応じた動的な診断結果を返す
+  // AppSettings.analysisDataSource の設定に基づいて公称/実測のどちらで計算するか切り替える
+  var dynamicDiagnosticResult: String {
+    let health: Double
+    if AppSettings.shared.analysisDataSource == .nominal {
+      health = nominalHealthPercent
+    } else {
+      health = healthPercent
+    }
+
+    if health < 80.0 {
+      return String(localized: "diag_replace_recommended")
+    } else if health < 90.0 {
+      return String(localized: "diag_slightly_degraded")
+    } else {
+      return String(localized: "diag_normal")
+    }
+  }
+
   // ContentView 等から使われている簡易イニシャライザに合わせた利便性イニシャライザ
   convenience init(
     date: Date,

@@ -2695,13 +2695,29 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Settings display is %d%% — battery health is good."
+            "value" : "Settings display is %d%% — battery is showing signs of wear."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "設定上の表示は %d%% です。バッテリーの状態は良好です。"
+            "value" : "設定上の表示は %d%% です。バッテリーに劣化の傾向が見られます。"
+          }
+        }
+      }
+    },
+    "settings_display_diagnostic_slight" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings display is %d%% — battery is slightly degraded but still usable."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定上の表示は %d%% です。やや劣化していますが、まだ使用可能です。"
           }
         }
       }
