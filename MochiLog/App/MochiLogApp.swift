@@ -45,9 +45,29 @@ struct MochiLogApp: App {
     }
   }
 
+  // 重複URL処理防止
+  private static var lastProcessedURL: URL?
+  private static var lastProcessedURLTime: Date?
+  // 重複コンテンツ処理防止（iPadでの異なるURLパスによる多重起動対策）
+  private static var lastProcessedContentHash: Int?
+  private static var lastProcessedContentTime: Date?
+
   // 開かれたURLを確認して処理（Document Types経由）
   private func handleOpenURL(_ url: URL) {
     print("Opened via URL: \(url)")
+
+    // 5秒以内の同じURL処理をスキップ
+    let now = Date()
+    if let lastURL = MochiLogApp.lastProcessedURL,
+      let lastTime = MochiLogApp.lastProcessedURLTime,
+      lastURL == url,
+      now.timeIntervalSince(lastTime) < 5.0
+    {
+      print("[MochiLogApp] Skipping duplicate URL (within 5 seconds)")
+      return
+    }
+    MochiLogApp.lastProcessedURL = url
+    MochiLogApp.lastProcessedURLTime = now
 
     guard url.isFileURL else { return }
 
@@ -77,20 +97,42 @@ struct MochiLogApp: App {
     if text == nil, let s = try? String(contentsOf: url) { text = s }
 
     if let text = text {
+      let contentHash = text.hashValue
+      let now = Date()
+      // iPad共有メニューのファントム起動（0.x秒差で複数回呼ばれる）を防ぐ
+      // ユーザーが手動で繰り返すケースも含めて、少し長めにブロックして多重登録を防ぐ
+      if let lastHash = MochiLogApp.lastProcessedContentHash,
+        let lastTime = MochiLogApp.lastProcessedContentTime,
+        lastHash == contentHash,
+        now.timeIntervalSince(lastTime) < 3.0
+      {
+        print("[MochiLogApp] Skipping duplicate content (phantom share within 3.0s)")
+        return
+      }
+      MochiLogApp.lastProcessedContentHash = contentHash
+      MochiLogApp.lastProcessedContentTime = now
+
       DispatchQueue.main.async {
-        // Persist first as a fallback in case the HomeView hasn't registered yet.
-        // Write before posting to avoid a race where the observer removes the pending
-        // key before it has been set (which could cause double-processing).
         let silent = !AppSettings.shared.openAppAfterShareImport
+
+        // UserDefaultsに保存（HomeViewで処理される）
         UserDefaults.standard.set(text, forKey: "PendingSharedLogText")
         UserDefaults.standard.set(silent, forKey: "PendingSharedLogSilent")
+        UserDefaults.standard.synchronize()
 
-        NotificationCenter.default.post(
-          name: NSNotification.Name("ProcessSharedLog"),
-          object: nil,
-          userInfo: ["text": text, "silent": silent]
-        )
+        // iPadではHomeViewのonReceiveが設定される前に通知が発生することがあるため、
+        // 少し遅延させて確実にHomeViewが準備できた後に処理されるようにする
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+          // Notificationを送信（HomeViewが既に表示されている場合に即座に処理）
+          NotificationCenter.default.post(
+            name: NSNotification.Name("ProcessSharedLog"),
+            object: nil,
+            userInfo: ["text": text, "silent": silent]
+          )
+        }
+        // 注意: UserDefaultsはHomeView側で処理開始時にクリアされる
       }
+
     } else {
       print("ファイルの読み込み失敗（対応する文字エンコーディングが見つかりません）: \(url)")
       DispatchQueue.main.async {

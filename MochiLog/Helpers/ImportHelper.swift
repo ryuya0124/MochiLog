@@ -101,7 +101,7 @@ extension HomeView {
       await MainActor.run {
         for result in uniqueResults {
           if let newRecord = addRecordFromParseResult(result) {
-            selectedRecord = newRecord
+            showRecordDetail(newRecord)
             addedAny = true
           } else {
             addErrors.append(String(localized: "parse_error"))
@@ -116,10 +116,11 @@ extension HomeView {
           showingErrorAlert = true
         }
       }
-      // 追加成功してひとつも選択されていなかったら最初の追加を選択
       if !addedAny, let first = uniqueResults.first {
         await MainActor.run {
-          selectedRecord = addRecordFromParseResult(first)
+          if let newRecord = addRecordFromParseResult(first) {
+            showRecordDetail(newRecord)
+          }
         }
       }
     case .failure(let error):

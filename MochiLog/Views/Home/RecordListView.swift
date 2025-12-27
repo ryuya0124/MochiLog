@@ -30,7 +30,7 @@ struct RecordListView<Header: View>: View {
   var body: some View {
     Group {
       if horizontalSizeClass == .regular {
-        iPadLayout
+        iPadGridLayout
       } else {
         iPhoneLayout
       }
@@ -38,8 +38,8 @@ struct RecordListView<Header: View>: View {
     .animation(.snappy, value: records)
   }
 
-  // MARK: - iPad レイアウト
-  private var iPadLayout: some View {
+  // MARK: - iPad レイアウト（複数列表示）
+  private var iPadGridLayout: some View {
     GeometryReader { geometry in
       ScrollView {
         header
@@ -85,9 +85,15 @@ struct RecordListView<Header: View>: View {
                         Button(role: .destructive) {
                           onDelete(record)
                         } label: {
-                          Label(String(localized: "delete"), systemImage: "trash")
+                          Label(String(localized: "delete"), systemImage: "trash.fill")
+                            .font(.title2)
                         }
                       }
+                    } preview: {
+                      // プレビューでレコード情報を表示
+                      RecordRowView(record: record)
+                        .padding()
+                        .frame(width: 300)
                     }
                   }
                 }

@@ -5,7 +5,8 @@ import SwiftUI
 /// 共通のRecordListViewを使用してコード重複を排除
 struct SampleDataHomeView: View {
   @Binding var showingSampleData: Bool
-  @Binding var selectedRecord: BatteryRecord?
+  /// レコードタップ時のコールバック
+  let onRecordTap: (BatteryRecord) -> Void
   let openFilePicker: () -> Void
   @StateObject private var appSettings = AppSettings.shared
   @State private var showingReorderSheet = false
@@ -17,7 +18,7 @@ struct SampleDataHomeView: View {
     RecordListView(
       records: sampleRecords,
       onRecordTap: { record in
-        selectedRecord = record
+        onRecordTap(record)
       },
       onRecordDelete: nil,  // サンプルデータは削除不可
       showContextMenu: false
@@ -78,5 +79,5 @@ struct SampleDataBanner: View {
 
 #Preview {
   SampleDataHomeView(
-    showingSampleData: .constant(true), selectedRecord: .constant(nil), openFilePicker: {})
+    showingSampleData: .constant(true), onRecordTap: { _ in }, openFilePicker: {})
 }

@@ -34,6 +34,7 @@ struct MainTabView: View {
 // MARK: - ホームビュー本体
 struct HomeView: View {
   @Environment(\.modelContext) private var modelContext
+  @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @Query(sort: \BatteryRecord.logDate, order: .reverse) private var records: [BatteryRecord]
   @StateObject private var appSettings = AppSettings.shared
 
@@ -41,6 +42,8 @@ struct HomeView: View {
   @State var showingErrorAlert = false
   @State var errorMessage = ""
   @State var selectedRecord: BatteryRecord?
+  /// iPadでナビゲーションによる詳細表示に使用する
+  @State private var navigatingRecord: BatteryRecord?
   @State private var pendingParseResult: LogParser.ParseResult?
   @State private var showingWatchSelection = false
   @State var isProcessing = false
@@ -51,6 +54,15 @@ struct HomeView: View {
   @State private var showingParseErrorSavedAlert = false
   @State private var showingDebugLogsSheet = false
   @State private var showingReorderSheet = false
+
+  /// 処理済みのログハッシュとタイムスタンプ（複数インスタンスで共有）
+
+  private static var lastProcessedLogHash: Int?
+  private static var lastProcessedTime: Date?
+
+  /// 直近に追加されたログのキャッシュ（ログ日時: 追加時刻）。
+  /// SwiftDataの反映ラグによる多重追加を防ぐために使用。
+  private static var recentlyAddedLogs: [String: Date] = [:]
 
   var body: some View {
     NavigationStack {
@@ -106,20 +118,35 @@ struct HomeView: View {
       } message: {
         Text(errorMessage)
       }
-      .sheet(item: $selectedRecord) { record in
+      .sheet(
+        item: Binding(
+          get: { horizontalSizeClass == .compact ? selectedRecord : nil },
+          set: { selectedRecord = $0 }
+        )
+      ) { record in
+        RecordDetailView(record: record)
+      }
+      .navigationDestination(item: $navigatingRecord) { record in
         RecordDetailView(record: record)
       }
       .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ProcessSharedLog")))
       {
         notification in
-        if let text = notification.userInfo?["text"] as? String {
-          // Determine whether we should process silently (don't show UI)
-          let silent = (notification.userInfo?["silent"] as? Bool) ?? false
-          // Remove persisted fallback and process
-          UserDefaults.standard.removeObject(forKey: "PendingSharedLogText")
-          UserDefaults.standard.removeObject(forKey: "PendingSharedLogSilent")
-          processLogTextAsync(text, silent: silent)
+        // 通知のuserInfoから直接テキストを取得
+        guard let text = notification.userInfo?["text"] as? String, !text.isEmpty else {
+          print("[HomeView] Skipping notification (no text)")
+          return
         }
+
+        // UserDefaultsをクリア（onAppearでの重複処理を防止）
+        UserDefaults.standard.removeObject(forKey: "PendingSharedLogText")
+        UserDefaults.standard.removeObject(forKey: "PendingSharedLogSilent")
+        UserDefaults.standard.synchronize()
+
+        // Determine whether we should process silently (don't show UI)
+        let silent = (notification.userInfo?["silent"] as? Bool) ?? false
+        print("[HomeView] Processing shared log, silent=\(silent)")
+        processLogTextAsync(text, silent: silent)
       }
       .onReceive(
         NotificationCenter.default.publisher(for: NSNotification.Name("DeleteAllDataPerformed"))
@@ -132,8 +159,9 @@ struct HomeView: View {
         showingManualDevicePicker = false
         showingRegisterWatchAlert = false
       }
-      .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ParseErrorSaved")))
-      {
+      .onReceive(
+        NotificationCenter.default.publisher(for: NSNotification.Name("ParseErrorSaved"))
+      ) {
         _ in
         showingParseErrorSavedAlert = true
       }
@@ -152,10 +180,17 @@ struct HomeView: View {
         reconcileUnknownDeviceNames()
         reconcileMissingDesignCapacities()
         // If a shared log was persisted before HomeView appeared, process it now
+        // This is a fallback when the Notification observer wasn't ready
         if let pending = UserDefaults.standard.string(forKey: "PendingSharedLogText") {
+          // UserDefaultsのクリアのみ行う（重複判定はMochiLogAppに任せる）
+          // ただし念の為、前の処理から極端に短い場合はスキップしても良いが、
+          // ここではシンプルに処理を通す
           let silent = UserDefaults.standard.bool(forKey: "PendingSharedLogSilent")
           UserDefaults.standard.removeObject(forKey: "PendingSharedLogText")
           UserDefaults.standard.removeObject(forKey: "PendingSharedLogSilent")
+          UserDefaults.standard.synchronize()
+
+          print("[HomeView] onAppear: Processing pending log, silent=\(silent)")
           processLogTextAsync(pending, silent: silent)
         }
       }
@@ -234,7 +269,9 @@ struct HomeView: View {
     if appSettings.showingSampleData {
       SampleDataHomeView(
         showingSampleData: $appSettings.showingSampleData,
-        selectedRecord: $selectedRecord,
+        onRecordTap: { record in
+          showRecordDetail(record)
+        },
         openFilePicker: {
           showingFilePicker = true
         })
@@ -242,7 +279,7 @@ struct HomeView: View {
       RecordListView(
         records: records,
         onRecordTap: { record in
-          selectedRecord = record
+          showRecordDetail(record)
         },
         onRecordDelete: { record in
           deleteRecords([record])
@@ -315,115 +352,81 @@ struct HomeView: View {
       DispatchQueue.main.async {
         isProcessing = false
 
-        if !silent {
-          // Normal interactive flow: existing behavior
-          if let newRecord = addRecordFromParseResult(parseResult) {
-            selectedRecord = newRecord
-          }
-          return
-        }
-
-        // Silent mode flow: do not present UI; just insert if possible and notify result
-        // Check basic parse validity
-        let canCreate =
-          (parseResult.logDate != nil) && (parseResult.cycleCount != nil)
-          && (parseResult.nominalCapacity != nil) && (parseResult.rawCapacity != nil)
-
-        if !canCreate {
-          NotificationHelper.scheduleImportResultNotification(
-            title: String(localized: "import_silent_failure"),
-            body: String(localized: "parse_error")
-          )
-          self.redirectToSettingsAfterSilentImport()
-          return
-        }
-
-        // Capacity mismatch handling
-        if parseResult.isCapacityMismatch && AppSettings.shared.mismatchBehavior == .error {
-          NotificationHelper.scheduleImportResultNotification(
-            title: String(localized: "import_silent_failure"),
-            body: String(localized: "capacity_mismatch_error")
-          )
-          self.redirectToSettingsAfterSilentImport()
-          return
-        }
-
-        // Device resolution (moved before duplicate check)
-        var deviceName = "Unknown"
-        var deviceModelCodeToUse: String? =
-          parseResult.detectedIdentifier ?? parseResult.deviceModelCode
-        if let id = deviceModelCodeToUse,
-          let resolved = DeviceLibrary.getDeviceName(for: id)
-        {
-          deviceName = resolved
-        }
-
-        if deviceName == "Unknown" {
-          if let localId = DeviceLibrary.localModelIdentifier(),
-            let resolved = DeviceLibrary.getDeviceName(for: localId)
-          {
-            deviceName = resolved
-            deviceModelCodeToUse = localId
-          }
-        }
-
-        let isWatchOS = parseResult.osVersion?.lowercased().contains("watch") ?? false
-        let looksLikeWatch = deviceName.contains("Apple Watch")
-
-        if isWatchOS || looksLikeWatch {
-          if let registeredWatch = AppSettings.shared.registeredWatchModel {
-            // Watchの場合は登録されたWatchモデル名で重複チェック（許可設定がオフの場合のみ）
-            if !AppSettings.shared.allowDuplicateRecords,
-              let logDate = parseResult.logDate,
-              hasDuplicateRecord(on: logDate, deviceName: registeredWatch)
-            {
-              NotificationHelper.scheduleImportResultNotification(
-                title: String(localized: "import_silent_failure"),
-                body: String(localized: "duplicate_record")
-              )
-              self.redirectToSettingsAfterSilentImport()
-              return
+        // UI更新（アラート表示や画面遷移）のために少し遅延させる
+        // iPadではOverlayが消えるのと遷移が競合すると詳細画面が開かないことがあるため
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+          if !silent {
+            // Normal interactive flow: existing behavior
+            if let newRecord = self.addRecordFromParseResult(parseResult) {
+              self.showRecordDetail(newRecord)
             }
-            // Use registered watch
-            let registeredModelCode =
-              DeviceLibrary.getIdentifierForDeviceName(registeredWatch) ?? deviceModelCodeToUse
-            let registeredDesignCap = DeviceLibrary.getCapacity(for: registeredWatch)
-            let record = createRecord(
-              from: parseResult,
-              deviceName: registeredWatch,
-              deviceModelCodeOverride: registeredModelCode,
-              designCapacityOverride: registeredDesignCap
-            )
-            withAnimation(.snappy) {
-              modelContext.insert(record)
-              try? modelContext.save()
-            }
-
-            // Notify success
-            let body = String(
-              format: String(localized: "import_silent_success_body"), registeredWatch,
-              DateFormatter.localizedString(
-                from: record.logDate, dateStyle: .medium, timeStyle: .short))
-            NotificationHelper.scheduleImportResultNotification(
-              title: String(localized: "import_silent_success"), body: body)
-            self.redirectToSettingsAfterSilentImport()
-            return
-          } else {
-            // Requires manual selection -> notify failure requiring user action
-            NotificationHelper.scheduleImportResultNotification(
-              title: String(localized: "import_silent_failure"),
-              body: String(localized: "watch_selection_required")
-            )
-            self.redirectToSettingsAfterSilentImport()
             return
           }
-        }
 
-        // 通常デバイス（iPhone/iPad）の重複チェック（許可設定がオフの場合のみ）
-        if !AppSettings.shared.allowDuplicateRecords,
-          let logDate = parseResult.logDate,
-          hasDuplicateRecord(on: logDate, deviceName: deviceName)
+          // Silent mode flow
+          self.handleSilentImport(parseResult)
+        }
+      }
+    }
+  }
+
+  private func handleSilentImport(_ parseResult: LogParser.ParseResult) {
+    // Silent mode flow: do not present UI; just insert if possible and notify result
+    // Check basic parse validity
+    let canCreate =
+      (parseResult.logDate != nil) && (parseResult.cycleCount != nil)
+      && (parseResult.nominalCapacity != nil) && (parseResult.rawCapacity != nil)
+
+    if !canCreate {
+      NotificationHelper.scheduleImportResultNotification(
+        title: String(localized: "import_silent_failure"),
+        body: String(localized: "parse_error")
+      )
+      self.redirectToSettingsAfterSilentImport()
+      return
+    }
+
+    // Capacity mismatch handling
+    if parseResult.isCapacityMismatch && AppSettings.shared.mismatchBehavior == .error {
+      NotificationHelper.scheduleImportResultNotification(
+        title: String(localized: "import_silent_failure"),
+        body: String(localized: "capacity_mismatch_error")
+      )
+      self.redirectToSettingsAfterSilentImport()
+      return
+    }
+
+    // Device resolution (moved before duplicate check)
+    var deviceName = "Unknown"
+    var deviceModelCodeToUse: String? =
+      parseResult.detectedIdentifier ?? parseResult.deviceModelCode
+    if let id = deviceModelCodeToUse,
+      let resolved = DeviceLibrary.getDeviceName(for: id)
+    {
+      deviceName = resolved
+    }
+
+    if deviceName == "Unknown" {
+      if let localId = DeviceLibrary.localModelIdentifier(),
+        let resolved = DeviceLibrary.getDeviceName(for: localId)
+      {
+        deviceName = resolved
+        deviceModelCodeToUse = localId
+      }
+    }
+
+    let isWatchOS = parseResult.osVersion?.lowercased().contains("watch") ?? false
+    let looksLikeWatch = deviceName.contains("Apple Watch")
+
+    if isWatchOS || looksLikeWatch {
+      if let registeredWatch = AppSettings.shared.registeredWatchModel {
+        // iPad共有シートバグによるファントム重複チェック（設定無視）
+        if let logDate = parseResult.logDate,
+          isPhantomDuplicate(on: logDate, deviceName: registeredWatch)
         {
+          // 重複通知は出さずにサイレント成功扱い（または無視）して終了
+          // ただしユーザーのリクエストにより、重複通知を出す必要がある場合はここも変更検討
+          // 共有シートからのサイレントインポートの場合、UIが出ないので通知で知らせる
           NotificationHelper.scheduleImportResultNotification(
             title: String(localized: "import_silent_failure"),
             body: String(localized: "duplicate_record")
@@ -432,28 +435,105 @@ struct HomeView: View {
           return
         }
 
-        // Normal-device flow
-        let designCap = DeviceLibrary.getCapacity(for: deviceName)
+        // Watchの場合は登録されたWatchモデル名で重複チェック（許可設定がオフの場合のみ）
+        if !AppSettings.shared.allowDuplicateRecords,
+          let logDate = parseResult.logDate,
+          hasDuplicateRecord(on: logDate, deviceName: registeredWatch)
+        {
+          NotificationHelper.scheduleImportResultNotification(
+            title: String(localized: "import_silent_failure"),
+            body: String(localized: "duplicate_record")
+          )
+          self.redirectToSettingsAfterSilentImport()
+          return
+        }
+        // Use registered watch
+        let registeredModelCode =
+          DeviceLibrary.getIdentifierForDeviceName(registeredWatch) ?? deviceModelCodeToUse
+        let registeredDesignCap = DeviceLibrary.getCapacity(for: registeredWatch)
         let record = createRecord(
           from: parseResult,
-          deviceName: deviceName,
-          deviceModelCodeOverride: deviceModelCodeToUse,
-          designCapacityOverride: designCap
+          deviceName: registeredWatch,
+          deviceModelCodeOverride: registeredModelCode,
+          designCapacityOverride: registeredDesignCap
         )
         withAnimation(.snappy) {
           modelContext.insert(record)
           try? modelContext.save()
+          // キャッシュに追加
+          let key = "\(record.logDate.timeIntervalSince1970)_\(registeredWatch)"
+          HomeView.recentlyAddedLogs[key] = Date()
         }
 
+        // Notify success
         let body = String(
-          format: String(localized: "import_silent_success_body"), deviceName,
-          DateFormatter.localizedString(from: record.logDate, dateStyle: .medium, timeStyle: .short)
-        )
+          format: String(localized: "import_silent_success_body"), registeredWatch,
+          DateFormatter.localizedString(
+            from: record.logDate, dateStyle: .medium, timeStyle: .short))
         NotificationHelper.scheduleImportResultNotification(
           title: String(localized: "import_silent_success"), body: body)
         self.redirectToSettingsAfterSilentImport()
+        return
+      } else {
+        // Requires manual selection -> notify failure requiring user action
+        NotificationHelper.scheduleImportResultNotification(
+          title: String(localized: "import_silent_failure"),
+          body: String(localized: "watch_selection_required")
+        )
+        self.redirectToSettingsAfterSilentImport()
+        return
       }
     }
+
+    // iPad共有シートバグによるファントム重複チェック（設定無視）
+    // Watch以外のデバイスの場合も同様にチェック
+    if let logDate = parseResult.logDate,
+      isPhantomDuplicate(on: logDate, deviceName: deviceName)
+    {
+      NotificationHelper.scheduleImportResultNotification(
+        title: String(localized: "import_silent_failure"),
+        body: String(localized: "duplicate_record")
+      )
+      self.redirectToSettingsAfterSilentImport()
+      return
+    }
+
+    // 通常デバイス（iPhone/iPad）の重複チェック（許可設定がオフの場合のみ）
+    if !AppSettings.shared.allowDuplicateRecords,
+      let logDate = parseResult.logDate,
+      hasDuplicateRecord(on: logDate, deviceName: deviceName)
+    {
+      NotificationHelper.scheduleImportResultNotification(
+        title: String(localized: "import_silent_failure"),
+        body: String(localized: "duplicate_record")
+      )
+      self.redirectToSettingsAfterSilentImport()
+      return
+    }
+
+    // Normal-device flow
+    let designCap = DeviceLibrary.getCapacity(for: deviceName)
+    let record = createRecord(
+      from: parseResult,
+      deviceName: deviceName,
+      deviceModelCodeOverride: deviceModelCodeToUse,
+      designCapacityOverride: designCap
+    )
+    withAnimation(.snappy) {
+      modelContext.insert(record)
+      try? modelContext.save()
+      // キャッシュに追加
+      let key = "\(record.logDate.timeIntervalSince1970)_\(deviceName)"
+      HomeView.recentlyAddedLogs[key] = Date()
+    }
+
+    let body = String(
+      format: String(localized: "import_silent_success_body"), deviceName,
+      DateFormatter.localizedString(from: record.logDate, dateStyle: .medium, timeStyle: .short)
+    )
+    NotificationHelper.scheduleImportResultNotification(
+      title: String(localized: "import_silent_success"), body: body)
+    self.redirectToSettingsAfterSilentImport()
   }
 
   func addRecordFromParseResult(_ result: LogParser.ParseResult) -> BatteryRecord? {
@@ -521,6 +601,9 @@ struct HomeView: View {
         withAnimation(.snappy) {
           modelContext.insert(newRecord)
           try? modelContext.save()
+          // キャッシュに追加して直後の重複を弾く
+          let key = "\(newRecord.logDate.timeIntervalSince1970)_\(registeredWatch)"
+          HomeView.recentlyAddedLogs[key] = Date()
         }
         return newRecord
       }
@@ -529,7 +612,29 @@ struct HomeView: View {
       return nil
     }
 
-    // 通常デバイス（iPhone/iPad）の重複チェック（許可設定がオフの場合のみ）
+    // iPadの共有シートバグによる多重登録を防ぐための厳密な重複チェック
+    // 設定に関わらず、完全に同一の日付・デバイスのレコードが既に存在する場合は弾く
+    // または、直近（数秒以内）に同じデバイスで同じ日付のログが追加されている場合も弾く
+    if isPhantomDuplicate(on: logDate, deviceName: deviceName) {
+      print("[HomeView] Phantom duplicate detected for \(deviceName) on \(logDate)")
+
+      // システムバグ（3秒以内のファントム連打）か、ユーザーによる手動重複かを判定
+      let isRecentPhantom = isRecentDuplicate(on: logDate, deviceName: deviceName, threshold: 3.0)
+
+      if isRecentPhantom {
+        // ファントム（直近の自動連打）の場合は、サイレントに無視する（成功したフリをして何もしない）
+        // これにより、1回目の正規リクエストの詳細画面遷移を阻害しない
+        print("[HomeView] Silently ignoring phantom duplicate within 3.0s")
+        return nil
+      } else {
+        // 時間が経ってからの重複は、ユーザーが間違って追加した可能性が高いので警告を出す
+        errorMessage = String(localized: "duplicate_record")
+        showingErrorAlert = true
+        return nil
+      }
+    }
+
+    // 通常デバイス（iPhone/iPad）の重複チェック（ユーザー設定に基づく）
     if !appSettings.allowDuplicateRecords && hasDuplicateRecord(on: logDate, deviceName: deviceName)
     {
       errorMessage = String(localized: "duplicate_record")
@@ -547,6 +652,9 @@ struct HomeView: View {
     withAnimation(.snappy) {
       modelContext.insert(newRecord)
       try? modelContext.save()
+      // キャッシュに追加して直後の重複を弾く
+      let key = "\(newRecord.logDate.timeIntervalSince1970)_\(deviceName)"
+      HomeView.recentlyAddedLogs[key] = Date()
     }
     return newRecord
   }
@@ -615,6 +723,15 @@ struct HomeView: View {
     }
   }
 
+  /// 詳細画面を表示する（iPadではナビゲーション、iPhoneではシート）
+  func showRecordDetail(_ record: BatteryRecord) {
+    if horizontalSizeClass == .regular {
+      navigatingRecord = record
+    } else {
+      selectedRecord = record
+    }
+  }
+
   /// silentインポート完了後に設定アプリにリダイレクトする
   /// 「アプリを開く」がオフの場合、ユーザーはアプリを見たくないので即座に元の画面に戻す
   private func redirectToSettingsAfterSilentImport() {
@@ -633,6 +750,50 @@ struct HomeView: View {
 
       // デバイス名（機種名）で比較
       return existing.deviceName == deviceName
+    }
+  }
+
+  /// iPadの共有シートバグによる瞬間的な多重登録を検知する
+  private func isPhantomDuplicate(on date: Date, deviceName: String) -> Bool {
+    // 1. 直近のキャッシュを確認 (SwiftData反映待ちのレコード)
+    let key = "\(date.timeIntervalSince1970)_\(deviceName)"
+    if let addedTime = HomeView.recentlyAddedLogs[key],
+      Date().timeIntervalSince(addedTime) < 5.0
+    {
+      return true
+    }
+
+    // 2. 既存のレコードを確認
+    return records.contains { existing in
+      // 完全に同一の時刻、または極めて近い時刻（バグによる連打）をチェック
+      let sameDevice = existing.deviceName == deviceName
+      guard sameDevice else { return false }
+
+      // ログの日付が「秒」まで完全に一致するか確認
+      // LogParserは通常秒単位まで解析するため、同一ログファイルなら一致するはず
+      let exactMatch = abs(existing.logDate.timeIntervalSince(date)) < 1.0
+
+      return exactMatch
+    }
+  }
+
+  /// 直近の重複かどうかをキャッシュから判定する
+  private func isRecentDuplicate(on date: Date, deviceName: String, threshold: TimeInterval) -> Bool
+  {
+    let key = "\(date.timeIntervalSince1970)_\(deviceName)"
+    if let addedTime = HomeView.recentlyAddedLogs[key],
+      Date().timeIntervalSince(addedTime) < threshold
+    {
+      return true
+    }
+    return false
+  }
+
+  private func findExistingRecord(on date: Date, deviceName: String) -> BatteryRecord? {
+    records.first { existing in
+      let sameDevice = existing.deviceName == deviceName
+      guard sameDevice else { return false }
+      return abs(existing.logDate.timeIntervalSince(date)) < 1.0
     }
   }
 
