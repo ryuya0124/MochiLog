@@ -38,12 +38,11 @@ struct MochiLogApp: App {
 
   var body: some Scene {
     WindowGroup {
-      MainTabView()
+      MochiLogRootView()
         .onOpenURL { url in
           handleOpenURL(url)
         }
     }
-    .modelContainer(for: BatteryRecord.self)
   }
 
   // 開かれたURLを確認して処理（Document Types経由）
@@ -113,6 +112,61 @@ struct MochiLogApp: App {
     // Inboxフォルダ内のファイルかどうかをチェック
     if url.path.contains("/Inbox/") {
       try? FileManager.default.removeItem(at: url)
+    }
+  }
+}
+
+/// アプリのルートビュー。iCloud設定に応じてModelContainerを動的に切り替える責務を持つ。
+struct MochiLogRootView: View {
+  @ObservedObject private var appSettings = AppSettings.shared
+  @State private var container: ModelContainer?
+  @State private var viewID = UUID()
+
+  var body: some View {
+    Group {
+      if let container = container {
+        MainTabView()
+          .modelContainer(container)
+          .id(viewID)  // IDを変更することでView階層全体を強制的に再構築
+      } else {
+        ProgressView()
+      }
+    }
+    .onAppear {
+      reloadContainer()
+    }
+    .onChange(of: appSettings.iCloudSyncEnabled) { _, _ in
+      print("iCloud設定変更検知 - RootView再構築開始")
+      reloadContainer()
+    }
+  }
+
+  private func reloadContainer() {
+    let isEnabled = appSettings.iCloudSyncEnabled
+    print("コンテナ再生成開始: iCloud \(isEnabled ? "有効" : "無効")")
+
+    let schema = Schema([BatteryRecord.self])
+    let modelConfiguration: ModelConfiguration
+
+    if isEnabled {
+      modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+    } else {
+      modelConfiguration = ModelConfiguration(
+        schema: schema,
+        isStoredInMemoryOnly: false,
+        cloudKitDatabase: .none
+      )
+    }
+
+    do {
+      let newContainer = try ModelContainer(for: schema, configurations: [modelConfiguration])
+      // 少し遅延させることでViewの破棄->生成をより確実にする（オプショナル）
+      // ここでは即座に更新するが、IDを一新する
+      self.container = newContainer
+      self.viewID = UUID()
+      print("コンテナ再生成完了: ID \(self.viewID)")
+    } catch {
+      fatalError("ModelContainerの作成に失敗しました: \(error)")
     }
   }
 }

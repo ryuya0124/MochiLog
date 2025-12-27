@@ -2509,6 +2509,54 @@
         }
       }
     },
+    "restart_and_apply" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restart & Apply"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再起動して適用"
+          }
+        }
+      }
+    },
+    "restart_required_message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Changing iCloud sync settings requires an app restart to take effect. The app will close. Please reopen it manually."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud同期の設定変更を反映するにはアプリの再起動が必要です。アプリが終了しますので、手動で再度開いてください。"
+          }
+        }
+      }
+    },
+    "restart_required_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restart Required"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再起動が必要です"
+          }
+        }
+      }
+    },
     "sample_data_hint" : {
       "localizations" : {
         "en" : {
