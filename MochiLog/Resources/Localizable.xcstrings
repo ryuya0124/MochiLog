@@ -243,6 +243,22 @@
         }
       }
     },
+    "applying_settings" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Applying settings..."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定を適用中..."
+          }
+        }
+      }
+    },
     "appearance" : {
       "extractionState" : "stale",
       "localizations" : {

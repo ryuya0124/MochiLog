@@ -121,30 +121,98 @@ struct MochiLogRootView: View {
   @ObservedObject private var appSettings = AppSettings.shared
   @State private var container: ModelContainer?
   @State private var viewID = UUID()
+  @State private var isReloading = false
 
-  var body: some View {
-    Group {
-      if let container = container {
-        MainTabView()
-          .modelContainer(container)
-          .id(viewID)  // IDを変更することでView階層全体を強制的に再構築
-      } else {
-        ProgressView()
-      }
-    }
-    .onAppear {
-      reloadContainer()
-    }
-    .onChange(of: appSettings.iCloudSyncEnabled) { _, _ in
-      print("iCloud設定変更検知 - RootView再構築開始")
-      reloadContainer()
+  init() {
+    do {
+      let initialContainer = try MochiLogRootView.createModelContainer(
+        isEnabled: AppSettings.shared.iCloudSyncEnabled)
+      _container = State(initialValue: initialContainer)
+    } catch {
+      fatalError("ModelContainerの作成に失敗しました: \(error)")
     }
   }
 
-  private func reloadContainer() {
-    let isEnabled = appSettings.iCloudSyncEnabled
-    print("コンテナ再生成開始: iCloud \(isEnabled ? "有効" : "無効")")
+  var body: some View {
+    ZStack {
+      // メインコンテンツ
+      if let container = container {
+        MainTabView()
+          .modelContainer(container)
+          .id(viewID)
+          .allowsHitTesting(!isReloading)  // リロード中は操作無効（見た目は変えない）
+          .blur(radius: isReloading ? 1.5 : 0)  // 少しぼかす
+          .animation(.easeInOut(duration: 0.5), value: isReloading)  // ぼかしのアニメーション
+      }
 
+      // ローディングオーバーレイ
+      // 初回起動時(container != nil)は出ない。再読込時のみ出る。
+      if isReloading {
+        ZStack {
+          // 背景が消えても違和感がないように、ベースカラーを敷く
+          Color(uiColor: .systemGroupedBackground)
+            .ignoresSafeArea()
+
+          // すりガラス効果
+          Rectangle()
+            .fill(.ultraThinMaterial)
+            .ignoresSafeArea()
+
+          VStack(spacing: 24) {
+            ProgressView()
+              .controlSize(.large)
+              .scaleEffect(1.2)
+
+            Text(String(localized: "applying_settings"))
+              .font(.headline)
+              .foregroundStyle(.secondary)
+          }
+        }
+        .transition(.opacity.animation(.easeInOut(duration: 0.5)))
+      }
+    }
+    .onChange(of: appSettings.iCloudSyncEnabled) { _, _ in
+      print("iCloud設定変更検知 - RootView再構築開始")
+      withAnimation(.easeInOut(duration: 0.2)) {
+        isReloading = true
+      }
+      reloadContainer(delay: 0.1)  // アニメーションとほぼ同時に開始
+    }
+  }
+
+  private func reloadContainer(delay: Double = 0.1) {
+    // 遅延実行
+    DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+
+      // 1. まずコンテナを破棄
+      self.container = nil
+
+      // 2. ある程度待機してから新しいコンテナを作成・適用（早すぎるとちらつきに見えるため）
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+        let isEnabled = appSettings.iCloudSyncEnabled
+        print("コンテナ再生成開始: iCloud \(isEnabled ? "有効" : "無効")")
+
+        do {
+          let newContainer = try MochiLogRootView.createModelContainer(isEnabled: isEnabled)
+          self.container = newContainer
+          self.viewID = UUID()
+          print("コンテナ再生成完了: ID \(self.viewID)")
+
+          // 3. 完了したら、文字が読める程度の時間を確保してから消す
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            withAnimation(.easeInOut(duration: 0.5)) {
+              self.isReloading = false
+            }
+          }
+        } catch {
+          fatalError("ModelContainerの作成に失敗しました: \(error)")
+        }
+      }
+    }
+  }
+
+  // コンテナ作成ロジック（共通化）
+  private static func createModelContainer(isEnabled: Bool) throws -> ModelContainer {
     let schema = Schema([BatteryRecord.self])
     let modelConfiguration: ModelConfiguration
 
@@ -157,16 +225,6 @@ struct MochiLogRootView: View {
         cloudKitDatabase: .none
       )
     }
-
-    do {
-      let newContainer = try ModelContainer(for: schema, configurations: [modelConfiguration])
-      // 少し遅延させることでViewの破棄->生成をより確実にする（オプショナル）
-      // ここでは即座に更新するが、IDを一新する
-      self.container = newContainer
-      self.viewID = UUID()
-      print("コンテナ再生成完了: ID \(self.viewID)")
-    } catch {
-      fatalError("ModelContainerの作成に失敗しました: \(error)")
-    }
+    return try ModelContainer(for: schema, configurations: [modelConfiguration])
   }
 }
