@@ -219,8 +219,10 @@ struct HomeView: View {
             deviceModelCodeOverride: identifier,
             designCapacityOverride: DeviceLibrary.getCapacity(for: name)
           )
-          modelContext.insert(record)
-          try? modelContext.save()
+          withAnimation(.snappy) {
+            modelContext.insert(record)
+            try? modelContext.save()
+          }
           selectedRecord = nil
           pendingParseResult = nil
 
@@ -259,8 +261,10 @@ struct HomeView: View {
             deviceModelCodeOverride: identifier,
             designCapacityOverride: DeviceLibrary.getCapacity(for: name)
           )
-          modelContext.insert(record)
-          try? modelContext.save()
+          withAnimation(.snappy) {
+            modelContext.insert(record)
+            try? modelContext.save()
+          }
           selectedRecord = nil
           pendingParseResult = nil
 
@@ -375,8 +379,10 @@ struct HomeView: View {
               deviceModelCodeOverride: registeredModelCode,
               designCapacityOverride: registeredDesignCap
             )
-            modelContext.insert(record)
-            try? modelContext.save()
+            withAnimation(.snappy) {
+              modelContext.insert(record)
+              try? modelContext.save()
+            }
 
             // Notify success
             let body = String(
@@ -419,8 +425,10 @@ struct HomeView: View {
           deviceModelCodeOverride: deviceModelCodeToUse,
           designCapacityOverride: designCap
         )
-        modelContext.insert(record)
-        try? modelContext.save()
+        withAnimation(.snappy) {
+          modelContext.insert(record)
+          try? modelContext.save()
+        }
 
         let body = String(
           format: String(localized: "import_silent_success_body"), deviceName,
@@ -495,8 +503,10 @@ struct HomeView: View {
           deviceModelCodeOverride: registeredModelCode,
           designCapacityOverride: registeredDesignCap
         )
-        modelContext.insert(newRecord)
-        try? modelContext.save()
+        withAnimation(.snappy) {
+          modelContext.insert(newRecord)
+          try? modelContext.save()
+        }
         return newRecord
       }
       pendingParseResult = result
@@ -519,8 +529,10 @@ struct HomeView: View {
       deviceModelCodeOverride: deviceModelCodeToUse,
       designCapacityOverride: designCap
     )
-    modelContext.insert(newRecord)
-    try? modelContext.save()
+    withAnimation(.snappy) {
+      modelContext.insert(newRecord)
+      try? modelContext.save()
+    }
     return newRecord
   }
 
@@ -575,7 +587,7 @@ struct HomeView: View {
   }
 
   private func deleteRecords(_ items: [BatteryRecord]) {
-    withAnimation {
+    withAnimation(.snappy) {
       for item in items {
         // 選択中のレコードが削除対象なら先に選択を解除
         if let selected = selectedRecord, selected === item {

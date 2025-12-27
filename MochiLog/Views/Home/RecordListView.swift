@@ -25,11 +25,14 @@ struct RecordListView: View {
   }
 
   var body: some View {
-    if horizontalSizeClass == .regular {
-      iPadLayout
-    } else {
-      iPhoneLayout
+    Group {
+      if horizontalSizeClass == .regular {
+        iPadLayout
+      } else {
+        iPhoneLayout
+      }
     }
+    .animation(.snappy, value: records)
   }
 
   // MARK: - iPad レイアウト
