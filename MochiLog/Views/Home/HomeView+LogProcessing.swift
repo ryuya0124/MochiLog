@@ -271,7 +271,7 @@ extension HomeView {
         title: String(localized: "import_silent_failure"),
         body: String(localized: "parse_error")
       )
-      redirectToSettingsAfterSilentImport()
+      SettingsRedirectHelper.redirectToPrivacyAnalytics()
       return
     }
 
@@ -281,7 +281,7 @@ extension HomeView {
         title: String(localized: "import_silent_failure"),
         body: String(localized: "capacity_mismatch_error")
       )
-      redirectToSettingsAfterSilentImport()
+      SettingsRedirectHelper.redirectToPrivacyAnalytics()
       return
     }
 
@@ -299,7 +299,7 @@ extension HomeView {
         silent: true
       )
       if shouldReturn {
-        redirectToSettingsAfterSilentImport()
+        SettingsRedirectHelper.redirectToPrivacyAnalytics()
       }
       return
     }
@@ -312,7 +312,7 @@ extension HomeView {
       logDate: logDate,
       silent: true
     )
-    redirectToSettingsAfterSilentImport()
+    SettingsRedirectHelper.redirectToPrivacyAnalytics()
   }
 
   /// 解析結果からレコードを追加する（対話的なフロー用）

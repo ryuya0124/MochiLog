@@ -16,6 +16,7 @@ struct SettingsView: View {
   @State private var showingDonation = false
   @State private var showingPrivacyPolicy = false
   @State private var showingTermsOfUse = false
+  @State private var showingLicenses = false
   @State private var isAdvancedExpanded = false
 
   // iCloud トグル用ローカル状態とエラー表示
@@ -143,6 +144,10 @@ struct SettingsView: View {
 
           Button(action: { showingTermsOfUse = true }) {
             Label(String(localized: "terms_of_use"), systemImage: "doc.plaintext")
+          }
+
+          Button(action: { showingLicenses = true }) {
+            Label(String(localized: "licenses"), systemImage: "doc.text")
           }
         }
 
@@ -287,6 +292,9 @@ struct SettingsView: View {
       }
       .sheet(isPresented: $showingTermsOfUse) {
         TermsOfUseView()
+      }
+      .sheet(isPresented: $showingLicenses) {
+        LicenseView()
       }
       .alert(String(localized: "delete_all_data"), isPresented: $showingDeleteConfirmation) {
         Button(String(localized: "cancel"), role: .cancel) {}

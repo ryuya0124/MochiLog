@@ -180,18 +180,7 @@ struct TutorialView: View {
 
   /// 設定アプリの解析データ画面を開く
   private func openAnalyticsSettings() {
-    let settingsURLString = "prefs:root=Privacy&path=PROBLEM_REPORTING/DIAGNOSTIC_USAGE_DATA"
-
-    if let url = URL(string: settingsURLString) {
-      UIApplication.shared.open(url) { success in
-        if !success {
-          // フォールバック: 通常の設定アプリを開く
-          if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
-            UIApplication.shared.open(settingsURL)
-          }
-        }
-      }
-    }
+    SettingsRedirectHelper.redirectToPrivacyAnalytics()
   }
 }
 

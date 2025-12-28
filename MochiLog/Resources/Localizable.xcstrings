@@ -1535,6 +1535,22 @@
         }
       }
     },
+    "licenses" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Licenses"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ライセンス"
+          }
+        }
+      }
+    },
     "log_date" : {
       "localizations" : {
         "en" : {

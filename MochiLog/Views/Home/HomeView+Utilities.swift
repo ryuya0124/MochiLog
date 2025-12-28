@@ -104,15 +104,6 @@ extension HomeView {
     }
   }
 
-  /// silentインポート完了後に設定アプリにリダイレクトする
-  /// 「アプリを開く」がオフの場合、ユーザーはアプリを見たくないので即座に元の画面に戻す
-  func redirectToSettingsAfterSilentImport() {
-    // prefs: URLスキームで設定アプリの特定の画面に遷移
-    // これによりアプリがバックグラウンドに移動し、ユーザーにとってはアプリが開かなかったように見える
-    if let url = URL(string: "prefs:root=Privacy&path=PROBLEM_REPORTING/DIAGNOSTIC_USAGE_DATA") {
-      UIApplication.shared.open(url)
-    }
-  }
 }
 
 // MARK: - 重複チェック

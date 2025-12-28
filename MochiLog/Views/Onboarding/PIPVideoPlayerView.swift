@@ -480,17 +480,7 @@ class PIPTutorialController: NSObject, AVPictureInPictureControllerDelegate {
 
   /// 設定を開く
   private func openSettings() {
-    let settingsURLString = "prefs:root=Privacy&path=PROBLEM_REPORTING/DIAGNOSTIC_USAGE_DATA"
-
-    if let url = URL(string: settingsURLString) {
-      UIApplication.shared.open(url) { success in
-        if !success {
-          if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
-            UIApplication.shared.open(settingsURL)
-          }
-        }
-      }
-    }
+    SettingsRedirectHelper.redirectToPrivacyAnalytics()
   }
 
   /// PIPを停止
