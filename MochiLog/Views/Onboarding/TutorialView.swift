@@ -250,16 +250,21 @@ struct TutorialPageView: View {
       // テキスト
       VStack(spacing: 16) {
         Text(String(localized: String.LocalizationValue(page.titleKey)))
-          .font(.title)
+          .font(.title2)
           .fontWeight(.bold)
           .multilineTextAlignment(.center)
+          .lineLimit(nil)
+          .fixedSize(horizontal: false, vertical: true)
 
         Text(String(localized: String.LocalizationValue(page.descriptionKey)))
           .font(.body)
           .foregroundStyle(.secondary)
           .multilineTextAlignment(.center)
-          .padding(.horizontal, 24)
+          .lineLimit(nil)
+          .fixedSize(horizontal: false, vertical: true)
+          .padding(.horizontal, 16)
       }
+      .padding(.horizontal, 16)
 
       // ボタンエリア - 常に同じ構造を維持してアニメーションを阻害しないようにする
       VStack(spacing: 12) {
