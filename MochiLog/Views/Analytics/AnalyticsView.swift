@@ -15,6 +15,7 @@ struct AnalyticsView: View {
   @State private var animateChart: Bool = false
 
   @State private var viewportHeight: CGFloat = 0
+  @State private var showingTutorial = false
 
   private var deviceNames: [String] {
     Array(Set(records.map { $0.deviceName })).sorted()
@@ -301,12 +302,21 @@ struct AnalyticsView: View {
               } description: {
                 Text(String(localized: "no_data_description"))
               } actions: {
-                Button {
-                  withAnimation { appSettings.showingSampleData = true }
-                } label: {
-                  Label(String(localized: "view_sample_data"), systemImage: "eye")
+                VStack(spacing: 12) {
+                  Button {
+                    showingTutorial = true
+                  } label: {
+                    Label(String(localized: "view_tutorial"), systemImage: "play.circle")
+                  }
+                  .buttonStyle(.bordered)
+
+                  Button {
+                    withAnimation { appSettings.showingSampleData = true }
+                  } label: {
+                    Label(String(localized: "view_sample_data"), systemImage: "eye")
+                  }
+                  .buttonStyle(.borderedProminent)
                 }
-                .buttonStyle(.borderedProminent)
               }
               .frame(maxWidth: .infinity)
               // 「実スクロール」を作らないため、viewportより 1pt 小さくする
@@ -365,6 +375,9 @@ struct AnalyticsView: View {
       }
       .navigationTitle(String(localized: "analytics"))
       .background(Color(.systemGroupedBackground))
+      .sheet(isPresented: $showingTutorial) {
+        TutorialView()
+      }
     }
   }
 

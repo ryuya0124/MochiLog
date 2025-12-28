@@ -64,6 +64,7 @@ struct HomeView: View {
   @State private var showingParseErrorSavedAlert = false
   @State private var showingDebugLogsSheet = false
   @State private var showingReorderSheet = false
+  @State private var showingTutorial = false
 
   @State private var viewportHeight: CGFloat = 0
 
@@ -250,6 +251,9 @@ struct HomeView: View {
       .sheet(isPresented: $showingDebugLogsSheet) {
         DebugLogsView()
       }
+      .sheet(isPresented: $showingTutorial) {
+        TutorialView()
+      }
       .onAppear {
         reconcileUnknownDeviceNames()
         reconcileMissingDesignCapacities()
@@ -370,12 +374,21 @@ struct HomeView: View {
         } description: {
           Text(String(localized: "no_data_description"))
         } actions: {
-          Button {
-            withAnimation { appSettings.showingSampleData = true }
-          } label: {
-            Label(String(localized: "view_sample_data"), systemImage: "eye")
+          VStack(spacing: 12) {
+            Button {
+              showingTutorial = true
+            } label: {
+              Label(String(localized: "view_tutorial"), systemImage: "play.circle")
+            }
+            .buttonStyle(.bordered)
+
+            Button {
+              withAnimation { appSettings.showingSampleData = true }
+            } label: {
+              Label(String(localized: "view_sample_data"), systemImage: "eye")
+            }
+            .buttonStyle(.borderedProminent)
           }
-          .buttonStyle(.borderedProminent)
         }
         .frame(maxWidth: .infinity)
         // 「実スクロール」を作らないため、viewportより 1pt 小さくする
