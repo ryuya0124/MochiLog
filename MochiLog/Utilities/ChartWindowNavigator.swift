@@ -85,6 +85,20 @@ struct ChartWindowNavigator {
     records: [BatteryRecord]
   ) -> Date? {
     guard let comp = periodComponent(for: range) else { return nil }
+
+    // 最新のデータ日付を取得
+    guard let latestRecord = records.max(by: { $0.logDate < $1.logDate })?.logDate else {
+      return nil
+    }
+
+    // 現在のウィンドウがすでに最新のデータを含んでいる場合は移動不可
+    let cal = Calendar.current
+    let latestDay = cal.startOfDay(for: latestRecord)
+    let currentEndDay = cal.startOfDay(for: currentEnd)
+    if latestDay <= currentEndDay {
+      return nil
+    }
+
     var candidateEnd = currentEnd
     let now = Date()
 
