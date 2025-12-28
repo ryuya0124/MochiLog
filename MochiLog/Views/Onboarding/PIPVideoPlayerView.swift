@@ -228,46 +228,96 @@ struct PIPTutorialContentView: View {
 }
 
 // MARK: - 無音オーディオプレーヤー
-/// バックグラウンド動作を維持するための無音再生プレーヤー
+/// バックグラウンド動作を維持するための無音再生プレーヤー（AVPlayer版）
 class SilentAudioPlayer {
-  private var audioEngine: AVAudioEngine?
-  private var playerNode: AVAudioPlayerNode?
+  private var player: AVPlayer?
+  private var playerItem: AVPlayerItem?
 
   func play() {
-    let engine = AVAudioEngine()
-    let player = AVAudioPlayerNode()
+    let fileName = "silent_audio.wav"
+    let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
 
-    engine.attach(player)
-
-    guard let format = AVAudioFormat(standardFormatWithSampleRate: 44100, channels: 1) else {
-      return
+    // 無音ファイルが存在しない場合は作成
+    if !FileManager.default.fileExists(atPath: fileURL.path) {
+      createSilentWav(at: fileURL)
     }
 
-    // メインミキサーに接続
-    engine.connect(player, to: engine.mainMixerNode, format: format)
+    let item = AVPlayerItem(url: fileURL)
+    playerItem = item
+    player = AVPlayer(playerItem: item)
 
-    // 無音バッファを作成（1秒分）
-    guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 44100) else { return }
-    buffer.frameLength = 44100
+    // 外部出力（ミラーリング・AirPlay等）を無効化
+    // これにより、画面録画中やHDMI接続中でもPIPが正常に動作しやすくなる
+    player?.allowsExternalPlayback = false
 
-    do {
-      try engine.start()
-      player.play()
-      // ループ再生をスケジュール（これが重要）
-      player.scheduleBuffer(buffer, at: nil, options: .loops, completionHandler: nil)
+    // 音量は確保するが無音ファイルなので音は出ない
+    // ※ミュートにするとバックグラウンド再生が停止される可能性があるためミュートしない
+    player?.isMuted = false
 
-      self.audioEngine = engine
-      self.playerNode = player
-    } catch {
-      print("無音再生エラー: \(error)")
-    }
+    // ループ再生の設定
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(playerItemDidReachEnd(notification:)),
+      name: .AVPlayerItemDidPlayToEndTime,
+      object: item
+    )
+
+    player?.play()
   }
 
   func stop() {
-    playerNode?.stop()
-    audioEngine?.stop()
-    playerNode = nil
-    audioEngine = nil
+    player?.pause()
+    if let item = playerItem {
+      NotificationCenter.default.removeObserver(
+        self, name: .AVPlayerItemDidPlayToEndTime, object: item)
+    }
+    player = nil
+    playerItem = nil
+  }
+
+  @objc private func playerItemDidReachEnd(notification: Notification) {
+    player?.seek(to: .zero)
+    player?.play()
+  }
+
+  /// 1秒間の無音WAVファイルを生成する
+  private func createSilentWav(at url: URL) {
+    let sampleRate: Int32 = 44100
+    let duration: Int32 = 1  // seconds
+    let channels: Int16 = 1
+    let bitsPerSample: Int16 = 16
+    let byteRate = sampleRate * Int32(channels) * Int32(bitsPerSample) / 8
+    let blockAlign = channels * bitsPerSample / 8
+    let dataSize = sampleRate * duration * Int32(blockAlign)
+    let chunkSize = 36 + dataSize
+
+    var data = Data()
+
+    // RIFF Chunk
+    data.append("RIFF".data(using: .ascii)!)
+    data.append(withUnsafeBytes(of: chunkSize) { Data($0) })
+    data.append("WAVE".data(using: .ascii)!)
+
+    // fmt Chunk
+    data.append("fmt ".data(using: .ascii)!)
+    let fmtChunkSize: Int32 = 16
+    data.append(withUnsafeBytes(of: fmtChunkSize) { Data($0) })
+    let audioFormat: Int16 = 1  // PCM
+    data.append(withUnsafeBytes(of: audioFormat) { Data($0) })
+    data.append(withUnsafeBytes(of: channels) { Data($0) })
+    data.append(withUnsafeBytes(of: sampleRate) { Data($0) })
+    data.append(withUnsafeBytes(of: byteRate) { Data($0) })
+    data.append(withUnsafeBytes(of: blockAlign) { Data($0) })
+    data.append(withUnsafeBytes(of: bitsPerSample) { Data($0) })
+
+    // data Chunk
+    data.append("data".data(using: .ascii)!)
+    data.append(withUnsafeBytes(of: dataSize) { Data($0) })
+
+    // Silence payload
+    data.append(Data(count: Int(dataSize)))
+
+    try? data.write(to: url)
   }
 }
 
@@ -465,7 +515,7 @@ class PIPTutorialController: NSObject, AVPictureInPictureControllerDelegate {
     _ pictureInPictureController: AVPictureInPictureController,
     failedToStartPictureInPictureWithError error: Error
   ) {
-    print("PIP開始エラー: \(error)")
+    print("[PIP] Failed to start PIP: \(error.localizedDescription) (Error: \(error))")
     cleanupAndOpenSettings()
   }
 }
