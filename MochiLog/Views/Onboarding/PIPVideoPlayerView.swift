@@ -125,20 +125,21 @@ struct PIPTutorialContentView: View {
 
   var body: some View {
     ZStack {
-      Color.black.edgesIgnoringSafeArea(.all)
+      // 背景色：システム背景色（ライト/ダークモード対応）
+      Color(uiColor: .systemBackground).edgesIgnoringSafeArea(.all)
 
       TabView(selection: $currentPage) {
         // ステップ1: 設定 > プライバシーとセキュリティ
         VStack(spacing: 8) {
           Image(systemName: "hand.raised.fill")
             .font(.system(size: 40))
-            .foregroundStyle(.white)
-          Text("プライバシーとセキュリティ")
+            .foregroundStyle(.primary)
+          Text(String(localized: "pip_step_privacy_security"))
             .font(.headline)
-            .foregroundStyle(.white)
-          Text("設定アプリから選択")
+            .foregroundStyle(.primary)
+          Text(String(localized: "pip_step_settings_app"))
             .font(.caption)
-            .foregroundStyle(.gray)
+            .foregroundStyle(.secondary)
         }
         .tag(0)
 
@@ -146,13 +147,13 @@ struct PIPTutorialContentView: View {
         VStack(spacing: 8) {
           Image(systemName: "chart.bar.xaxis")
             .font(.system(size: 40))
-            .foregroundStyle(.white)
-          Text("解析と改善")
+            .foregroundStyle(.primary)
+          Text(String(localized: "pip_step_analytics_improvements"))
             .font(.headline)
-            .foregroundStyle(.white)
-          Text("メニューから選択")
+            .foregroundStyle(.primary)
+          Text(String(localized: "pip_step_menu_select"))
             .font(.caption)
-            .foregroundStyle(.gray)
+            .foregroundStyle(.secondary)
         }
         .tag(1)
 
@@ -161,12 +162,12 @@ struct PIPTutorialContentView: View {
           Image(systemName: "switch.2")
             .font(.system(size: 40))
             .foregroundStyle(.green)
-          Text("解析を共有: ON")
+          Text(String(localized: "pip_step_share_on"))
             .font(.headline)
-            .foregroundStyle(.white)
-          Text("「iPhone/iPad解析を共有」をオン")
+            .foregroundStyle(.primary)
+          Text(String(localized: "pip_step_share_analytics"))
             .font(.caption)
-            .foregroundStyle(.white)
+            .foregroundStyle(.primary)
         }
         .tag(2)
 
@@ -174,11 +175,11 @@ struct PIPTutorialContentView: View {
         VStack(spacing: 8) {
           Image(systemName: "doc.text.magnifyingglass")
             .font(.system(size: 40))
-            .foregroundStyle(.white)
-          Text("解析データ")
+            .foregroundStyle(.primary)
+          Text(String(localized: "pip_step_analytics_data"))
             .font(.headline)
-            .foregroundStyle(.white)
-          Text("Analytics-202x...を選択")
+            .foregroundStyle(.primary)
+          Text(String(localized: "pip_step_select_log"))
             .font(.subheadline)
             .foregroundStyle(.yellow)
         }
@@ -188,10 +189,10 @@ struct PIPTutorialContentView: View {
         VStack(spacing: 8) {
           Image(systemName: "square.and.arrow.up")
             .font(.system(size: 40))
-            .foregroundStyle(.white)
-          Text("右上の共有ボタン")
+            .foregroundStyle(.primary)
+          Text(String(localized: "pip_step_share_button"))
             .font(.headline)
-            .foregroundStyle(.white)
+            .foregroundStyle(.primary)
         }
         .tag(4)
 
@@ -206,14 +207,14 @@ struct PIPTutorialContentView: View {
           } else {
             Image(systemName: "checkmark.circle.fill")
               .font(.system(size: 40))
-              .foregroundStyle(.white)
+              .foregroundStyle(.green)
           }
-          Text("MochiLogを選択")
+          Text(String(localized: "pip_step_select_mochilog"))
             .font(.headline)
-            .foregroundStyle(.white)
-          Text("リストにない場合は「その他」から")
+            .foregroundStyle(.primary)
+          Text(String(localized: "pip_step_if_not_listed"))
             .font(.caption)
-            .foregroundStyle(.gray)
+            .foregroundStyle(.secondary)
         }
         .tag(5)
       }

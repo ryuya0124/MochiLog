@@ -2933,6 +2933,12 @@
     "try_with_video" : {
       "extractionState" : "manual",
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try with Video"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2944,6 +2950,12 @@
     "tutorial_complete_description" : {
       "extractionState" : "manual",
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You're all set!\nTrack your battery health with MochiLog."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2955,6 +2967,12 @@
     "tutorial_complete_title" : {
       "extractionState" : "manual",
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done!"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2966,6 +2984,12 @@
     "tutorial_enable_analytics_description" : {
       "extractionState" : "manual",
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Settings > Privacy & Security > Analytics & Improvements"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2977,6 +3001,12 @@
     "tutorial_enable_analytics_title" : {
       "extractionState" : "manual",
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Settings"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2988,6 +3018,12 @@
     "tutorial_find_log_description" : {
       "extractionState" : "manual",
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In Analytics Data, find the latest file starting with\n'Analytics-yyyy-mm-dd'"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2999,6 +3035,12 @@
     "tutorial_find_log_title" : {
       "extractionState" : "manual",
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Find the Log File"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3010,6 +3052,12 @@
     "tutorial_share_description" : {
       "extractionState" : "manual",
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap the Share button at the top right, and select 'MochiLog' from the menu."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3021,6 +3069,12 @@
     "tutorial_share_on_description" : {
       "extractionState" : "manual",
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turn on\n'Share iPhone/iPad Analytics'"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3032,10 +3086,192 @@
     "tutorial_share_on_title" : {
       "extractionState" : "manual",
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share Analytics: ON"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "解析を共有: ON"
+          }
+        }
+      }
+    },
+    "pip_step_privacy_security" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy & Security"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プライバシーとセキュリティ"
+          }
+        }
+      }
+    },
+    "pip_step_menu_select" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select from menu"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "メニューから選択"
+          }
+        }
+      }
+    },
+    "pip_step_share_on" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share Analytics: ON"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析を共有: ON"
+          }
+        }
+      }
+    },
+    "pip_step_if_not_listed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If not listed, check 'More'"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リストにない場合は「その他」から"
+          }
+        }
+      }
+    },
+    "pip_step_analytics_improvements" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analytics & Improvements"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析と改善"
+          }
+        }
+      }
+    },
+    "pip_step_share_analytics" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share iPhone/iPad Analytics"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iPhone/iPad解析を共有"
+          }
+        }
+      }
+    },
+    "pip_step_analytics_data" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analytics Data"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析データ"
+          }
+        }
+      }
+    },
+    "pip_step_select_log" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select Analytics-202x..."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analytics-202x...を選択"
+          }
+        }
+      }
+    },
+    "pip_step_share_button" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap Share Button"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共有ボタンをタップ"
+          }
+        }
+      }
+    },
+    "pip_step_settings_app" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings App"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定アプリ"
+          }
+        }
+      }
+    },
+    "pip_step_select_mochilog" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select MochiLog"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MochiLogを選択"
           }
         }
       }
