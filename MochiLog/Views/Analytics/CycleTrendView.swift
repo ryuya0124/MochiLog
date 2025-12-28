@@ -49,48 +49,82 @@ struct CycleTrendView: View {
           }
         }
         .chartXAxis {
-          // 期間に応じてラベル間隔を調整
-          let strideCount: Int = {
-            switch unit {
-            case .hour, .day:
-              return 1
-            case .week:
-              return 1
-            case .month:
-              let months =
-                Calendar.current.dateComponents([.month], from: startDay, to: endDay).month ?? 0
-              return months > 36 ? 12 : (months > 24 ? 6 : (months > 12 ? 3 : (months > 6 ? 3 : 1)))
+          // 表示期間の日数に基づいてグリッド線の間隔を計算
+          let displayDays =
+            Calendar.current.dateComponents([.day], from: startDay, to: endDay).day ?? 0
+          let displayMonths =
+            Calendar.current.dateComponents([.month], from: startDay, to: endDay).month ?? 0
+
+          // 表示期間に応じて適切な単位とストライドを決定
+          let (strideComponent, strideCount): (Calendar.Component, Int) = {
+            if displayDays <= 14 {
+              // 2週間以下: 日単位、1日ごと
+              return (.day, 1)
+            } else if displayDays <= 60 {
+              // 2ヶ月以下: 週単位、1週間ごと
+              return (.weekOfYear, 1)
+            } else if displayMonths <= 3 {
+              // 3ヶ月以下: 週単位、2週間ごと
+              return (.weekOfYear, 2)
+            } else if displayMonths <= 6 {
+              // 6ヶ月以下: 月単位、1ヶ月ごと
+              return (.month, 1)
+            } else if displayMonths <= 12 {
+              // 1年以下: 月単位、3ヶ月ごと
+              return (.month, 3)
+            } else {
+              // 1年超: 月単位、6ヶ月ごと
+              return (.month, 6)
             }
           }()
 
-          AxisMarks(values: .stride(by: unit.calendarComponent, count: strideCount)) { value in
+          AxisMarks(values: .stride(by: strideComponent, count: strideCount)) { value in
             AxisGridLine()
               .foregroundStyle(.white.opacity(0.95))
 
             AxisValueLabel {
               if let date = value.as(Date.self) {
-                switch unit {
-                case .hour, .day:
+                if displayMonths > 6 {
+                  // 6ヶ月超: 月のみ表示（年は期間セレクターの横に表示）
+                  Text(date.formatted(.dateTime.month(.defaultDigits)))
+                } else {
+                  // 6ヶ月以下: 月/日形式
                   Text(date.formatted(.dateTime.month(.defaultDigits).day()))
-                case .week:
-                  Text(date.formatted(.dateTime.month(.defaultDigits).day()))
-                case .month:
-                  let months =
-                    Calendar.current.dateComponents([.month], from: startDay, to: endDay).month ?? 0
-                  if months > 12 {
-                    Text(date.formatted(.dateTime.year(.twoDigits).month(.abbreviated)))
-                      .font(.caption2)
-                  } else {
-                    Text(date.formatted(.dateTime.year(.twoDigits).month(.defaultDigits)))
-                  }
                 }
               }
             }
           }
         }
-        .chartXScale(domain: startDay...endDay)
+        // Y軸ドメインを設定（最大値に余白を追加してポイントが見切れないように）
+        .chartYScale(domain: 0...(Double(visibleRecords.map { $0.cycleCount }.max() ?? 10) * 1.15))
+        // X軸ドメインを設定（期間に応じて右側に余白を追加）
+        .chartXScale(
+          domain: {
+            let months =
+              Calendar.current.dateComponents([.month], from: startDay, to: endDay).month ?? 0
+            let years = months / 12
+            if years >= 1 {
+              // 年数に応じて余白を追加（1年=1ヶ月、2年=2ヶ月...）
+              return
+                startDay...(Calendar.current.date(byAdding: .month, value: years, to: endDay)
+                ?? endDay)
+            } else if months >= 6 {
+              // 6ヶ月: 14日の余白
+              return
+                startDay...(Calendar.current.date(byAdding: .day, value: 14, to: endDay) ?? endDay)
+            } else if months >= 3 {
+              // 3ヶ月: 7日の余白
+              return
+                startDay...(Calendar.current.date(byAdding: .day, value: 7, to: endDay) ?? endDay)
+            } else {
+              // 3ヶ月未満: 余白なし
+              return startDay...endDay
+            }
+          }()
+        )
         .chartPlotStyle { plotArea in
           plotArea
+            .padding(.trailing, 12)  // グラフ右端とY軸ラベルの間に余白
             .mask {
               GeometryReader { geo in
                 Rectangle()

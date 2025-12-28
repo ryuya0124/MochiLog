@@ -62,157 +62,38 @@ struct AnalyticsView: View {
     return .month
   }
 
-  // MARK: - ウィンドウ（前後移動）ヘルパー
-  private func periodComponent(for preset: RangePreset) -> DateComponents? {
-    switch preset {
-    case .oneWeek:
-      return DateComponents(day: 7)
-    case .oneMonth:
-      return DateComponents(month: 1)
-    case .threeMonths:
-      return DateComponents(month: 3)
-    case .sixMonths:
-      return DateComponents(month: 6)
-    case .oneYear:
-      return DateComponents(year: 1)
-    case .twoYears:
-      return DateComponents(year: 2)
-    case .all:
-      return nil
-    }
-  }
+  // MARK: - ウィンドウ（前後移動）ヘルパー - 共通ユーティリティを使用
 
   private func windowStart(for endDate: Date, range: RangePreset) -> Date {
-    let calendar = Calendar.current
-    switch range {
-    case .oneWeek:
-      return calendar.date(byAdding: .day, value: -7, to: endDate) ?? endDate
-    case .oneMonth:
-      return calendar.date(byAdding: .month, value: -1, to: endDate) ?? endDate
-    case .threeMonths:
-      return calendar.date(byAdding: .month, value: -3, to: endDate) ?? endDate
-    case .sixMonths:
-      return calendar.date(byAdding: .month, value: -6, to: endDate) ?? endDate
-    case .oneYear:
-      return calendar.date(byAdding: .year, value: -1, to: endDate) ?? endDate
-    case .twoYears:
-      return calendar.date(byAdding: .month, value: -24, to: endDate) ?? endDate
-    case .all:
-      return (filteredRecords.min(by: { $0.logDate < $1.logDate })?.logDate) ?? endDate
-    }
+    ChartWindowNavigator.windowStart(for: endDate, range: range, allRecords: filteredRecords)
   }
 
   private func windowContainsData(start: Date, end: Date, in records: [BatteryRecord]) -> Bool {
-    let cal = Calendar.current
-    let startDay = cal.startOfDay(for: start)
-    let endDay = cal.startOfDay(for: end)
-    return records.contains {
-      let d = cal.startOfDay(for: $0.logDate)
-      return d >= startDay && d <= endDay
-    }
+    ChartWindowNavigator.windowContainsData(start: start, end: end, in: records)
   }
 
   /// 初期化時・レンジ変更時に、現在時点や最終記録を考慮して表示ウィンドウの終了日時を決める
   private func initializeWindowEndIfNeeded() {
-    guard !filteredRecords.isEmpty else {
-      windowEnd = Date()
-      return
-    }
-
-    // all のときは最新記録までを表示
-    if selectedRange == .all {
-      windowEnd = filteredRecords.max(by: { $0.logDate < $1.logDate })?.logDate ?? Date()
-      return
-    }
-
-    // 通常は現在時刻を優先して、ウィンドウ内にデータが含まれるか確認
-    let now = Date()
-    let startNow = windowStart(for: now, range: selectedRange)
-    if windowContainsData(start: startNow, end: now, in: filteredRecords) {
-      windowEnd = now
-      return
-    }
-
-    // そうでなければ最後の記録日時をウィンドウ終了にする
-    if let last = filteredRecords.max(by: { $0.logDate < $1.logDate })?.logDate {
-      windowEnd = last
-    } else {
-      windowEnd = now
-    }
-  }
-
-  /// 前方に移動できるウィンドウ（endDate）を探す（返り値は新しい endDate）
-  private func findNextWindowEnd() -> Date? {
-    guard let comp = periodComponent(for: selectedRange) else { return nil }
-    var candidateEnd = windowEnd
-    let now = Date()
-
-    // 移動先は現在より未来にならないようにする
-    while true {
-      guard let nextEnd = Calendar.current.date(byAdding: comp, to: candidateEnd) else { break }
-      // 次のウィンドウが現在時刻を超える場合、終了日時は現在時刻に合わせる
-      let endLimited = min(nextEnd, now)
-      // すでに前と同じ位置なら進めない
-      if endLimited <= candidateEnd { break }
-
-      let start = windowStart(for: endLimited, range: selectedRange)
-      if windowContainsData(start: start, end: endLimited, in: filteredRecords) {
-        return endLimited
-      }
-      // 進めてもデータが見つからない場合は次へ
-      if endLimited >= now { break }
-      candidateEnd = endLimited
-    }
-    return nil
-  }
-
-  /// 後方に移動できるウィンドウ（endDate）を探す
-  private func findPreviousWindowEnd() -> Date? {
-    guard let comp = periodComponent(for: selectedRange) else { return nil }
-    var candidateEnd = windowEnd
-
-    while true {
-      // comp を負数で加算するヘルパーを使って後退
-      guard let prevEnd = dateByAdding(comp, multiplier: -1, to: candidateEnd) else { break }
-      let prevStart = windowStart(for: prevEnd, range: selectedRange)
-      if windowContainsData(start: prevStart, end: prevEnd, in: filteredRecords) {
-        return prevEnd
-      }
-      // 到達点: prevEnd が最古の記録より前なら打ち切り
-      if let earliest = filteredRecords.min(by: { $0.logDate < $1.logDate })?.logDate,
-        prevEnd <= earliest
-      {
-        break
-      }
-      candidateEnd = prevEnd
-    }
-    return nil
+    windowEnd = ChartWindowNavigator.initializeWindowEnd(for: filteredRecords, range: selectedRange)
   }
 
   private func shiftWindow(backward: Bool) {
-    if backward {
-      if let prev = findPreviousWindowEnd() {
-        windowEnd = prev
-      }
-    } else {
-      if let next = findNextWindowEnd() {
-        windowEnd = next
-      }
-    }
+    windowEnd = ChartWindowNavigator.shiftWindow(
+      currentEnd: windowEnd,
+      backward: backward,
+      range: selectedRange,
+      records: filteredRecords
+    )
   }
 
   // MARK: - 前後移動の可否
-  private var canMoveNext: Bool { selectedRange != .all && findNextWindowEnd() != nil }
-  private var canMovePrevious: Bool { selectedRange != .all && findPreviousWindowEnd() != nil }
-
-  /// comp を multiplier 倍して date に加算して返す（DateComponents を簡単に +/- で使えるようにする）
-  private func dateByAdding(_ comp: DateComponents, multiplier: Int, to date: Date) -> Date? {
-    var c = DateComponents()
-    if let d = comp.day { c.day = d * multiplier }
-    if let m = comp.month { c.month = m * multiplier }
-    if let y = comp.year { c.year = y * multiplier }
-    if let h = comp.hour { c.hour = h * multiplier }
-    return Calendar.current.date(byAdding: c, to: date)
+  private var canMoveNext: Bool {
+    ChartWindowNavigator.canMoveNext(
+      currentEnd: windowEnd, range: selectedRange, records: filteredRecords)
+  }
+  private var canMovePrevious: Bool {
+    ChartWindowNavigator.canMovePrevious(
+      currentEnd: windowEnd, range: selectedRange, records: filteredRecords)
   }
 
   var body: some View {
