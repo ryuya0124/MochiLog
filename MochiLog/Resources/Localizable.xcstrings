@@ -2055,6 +2055,22 @@
         }
       }
     },
+    "open_analytics_settings" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Analytics Settings"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析設定を開く"
+          }
+        }
+      }
+    },
     "os_display" : {
       "localizations" : {
         "en" : {
@@ -3272,6 +3288,134 @@
         }
       }
     },
+    "tutorial_complete_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You're all set! Track your battery health over time to monitor degradation."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "準備完了です！バッテリーの状態を継続的に追跡して、劣化をモニタリングしましょう。"
+          }
+        }
+      }
+    },
+    "tutorial_complete_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All Done!"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完了！"
+          }
+        }
+      }
+    },
+    "tutorial_enable_analytics_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Go to Settings > Privacy & Security > Analytics & Improvements and enable \"Share iPhone Analytics\"."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定 > プライバシーとセキュリティ > 解析と改善 で「iPhone解析を共有」を有効にしてください。"
+          }
+        }
+      }
+    },
+    "tutorial_enable_analytics_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enable Analytics"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析を有効にする"
+          }
+        }
+      }
+    },
+    "tutorial_find_log_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In Analytics Data, look for files starting with \"Analytics-\" followed by the date. On iOS 15, look for \"Analytics-Never-\" instead."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析データ内で「Analytics-yyyy-mm-dd」で始まるファイルを探してください。iOS 15では「Analytics-Never-yyyy-mm-dd」を探してください。"
+          }
+        }
+      }
+    },
+    "tutorial_find_log_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Find the Log File"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログファイルを探す"
+          }
+        }
+      }
+    },
+    "tutorial_share_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open the Analytics file, tap the Share button, and select MochiLog to complete the import."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analyticsファイルを開き、共有ボタンをタップしてMochiLogを選択すれば記録完了です。"
+          }
+        }
+      }
+    },
+    "tutorial_share_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share with MochiLog"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MochiLogに共有"
+          }
+        }
+      }
+    },
     "tutorial_step1_description" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -3374,8 +3518,23 @@
         }
       }
     },
+    "tutorial_video_unavailable" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tutorial video is not available"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "チュートリアル動画が利用できません"
+          }
+        }
+      }
+    },
     "tutorial_welcome" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3387,6 +3546,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "MochiLogへようこそ"
+          }
+        }
+      }
+    },
+    "tutorial_welcome_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MochiLog reads your device's analytics logs to show detailed battery health information. Let's get started!"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MochiLogは端末の解析ログを読み取って、バッテリーの詳細な状態を表示します。さっそく始めましょう！"
           }
         }
       }
@@ -3506,6 +3681,22 @@
         }
       }
     },
+    "video_tutorial" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Video Tutorial"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "動画チュートリアル"
+          }
+        }
+      }
+    },
     "voltage" : {
       "localizations" : {
         "en" : {
@@ -3550,6 +3741,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Apple Watchの登録が必要です。手動でデバイスを選択してください。"
+          }
+        }
+      }
+    },
+    "watch_video_tutorial" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Watch Video Tutorial"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "動画チュートリアルを見る"
+          }
+        }
+      }
+    },
+    "pip_instruction" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use Picture-in-Picture to keep watching"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ピクチャ・イン・ピクチャで視聴を続けられます"
+          }
+        }
+      }
+    },
+    "pip_instruction_detail" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap the PIP button in the video player, then open Settings. The video will continue playing in a floating window."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "動画プレーヤーのPIPボタンをタップしてから設定を開いてください。動画はフローティングウィンドウで再生され続けます。"
           }
         }
       }
