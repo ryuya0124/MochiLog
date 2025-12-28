@@ -77,9 +77,14 @@ extension HomeView {
 
   /// 詳細画面を表示する（iPadではナビゲーション、iPhoneではシート）
   func showRecordDetail(_ record: BatteryRecord) {
+    print(
+      "[HomeView] showRecordDetail called, horizontalSizeClass: \(String(describing: horizontalSizeClass))"
+    )
     if horizontalSizeClass == .regular {
+      print("[HomeView] Setting navigatingRecord (iPad)")
       navigatingRecord = record
     } else {
+      print("[HomeView] Setting selectedRecord (iPhone)")
       selectedRecord = record
     }
   }

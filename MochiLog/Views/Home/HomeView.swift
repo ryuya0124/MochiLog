@@ -57,6 +57,9 @@ struct HomeView: View {
 
   @State private var viewportHeight: CGFloat = 0
 
+  // デバッグ用：このHomeViewインスタンスを識別するID
+  private let instanceID = UUID()
+
   /// 処理済みのログハッシュとタイムスタンプ（複数インスタンスで共有）
 
   private static var lastProcessedLogHash: Int?
@@ -65,6 +68,10 @@ struct HomeView: View {
   /// 直近に追加されたログのキャッシュ（ログ日時: 追加時刻）。
   /// SwiftDataの反映ラグによる多重追加を防ぐために使用。
   static var recentlyAddedLogs: [String: Date] = [:]
+
+  /// 現在処理中のcontentHash（複数のHomeViewインスタンスでの重複処理を防ぐ）
+  static var processingContentHashes: Set<Int> = []
+  static var processingLock = NSLock()
 
   var body: some View {
     NavigationStack {
@@ -134,6 +141,7 @@ struct HomeView: View {
       .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ProcessSharedLog")))
       {
         notification in
+        print("[HomeView] Instance \(instanceID) received ProcessSharedLog notification")
         // 通知のuserInfoから直接テキストを取得
         guard let text = notification.userInfo?["text"] as? String, !text.isEmpty else {
           print("[HomeView] Skipping notification (no text)")
@@ -148,10 +156,62 @@ struct HomeView: View {
         // Determine whether we should process silently (don't show UI)
         let silent = (notification.userInfo?["silent"] as? Bool) ?? false
         let contentHash = notification.userInfo?["contentHash"] as? Int
+
+        // 複数のHomeViewインスタンスでの重複処理を防ぐ
+        if let hash = contentHash {
+          HomeView.processingLock.lock()
+          let isAlreadyProcessing = HomeView.processingContentHashes.contains(hash)
+          if !isAlreadyProcessing {
+            HomeView.processingContentHashes.insert(hash)
+          }
+          HomeView.processingLock.unlock()
+
+          if isAlreadyProcessing {
+            print(
+              "[HomeView] Instance \(instanceID) skipping duplicate processing for hash: \(hash)")
+            return
+          }
+
+          // 10秒後に自動的にクリーンアップ（処理が失敗した場合のフェイルセーフ）
+          DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+            HomeView.processingLock.lock()
+            HomeView.processingContentHashes.remove(hash)
+            HomeView.processingLock.unlock()
+          }
+        }
+
         print(
-          "[HomeView] Processing shared log, silent=\(silent), hash=\(String(describing: contentHash))"
+          "[HomeView] Instance \(instanceID) processing shared log, silent=\(silent), hash=\(String(describing: contentHash))"
         )
         processLogTextAsync(text, silent: silent, contentHash: contentHash)
+      }
+      .onReceive(
+        NotificationCenter.default.publisher(for: NSNotification.Name("ShowRecordDetail"))
+      ) { notification in
+        print("[HomeView] Instance \(instanceID) received ShowRecordDetail notification")
+        guard let logDate = notification.userInfo?["logDate"] as? Date,
+          let deviceName = notification.userInfo?["deviceName"] as? String
+        else {
+          return
+        }
+
+        // recordsから該当するレコードを検索
+        if let record = records.first(where: {
+          $0.deviceName == deviceName && abs($0.logDate.timeIntervalSince(logDate)) < 1.0
+        }) {
+          print("[HomeView] Instance \(instanceID) showing detail for \(deviceName)")
+          showRecordDetail(record)
+        } else {
+          print("[HomeView] Instance \(instanceID) record not found yet, waiting...")
+        }
+      }
+      .onReceive(
+        NotificationCenter.default.publisher(for: NSNotification.Name("ShowImportError"))
+      ) { notification in
+        if let error = notification.userInfo?["errorMessage"] as? String {
+          errorMessage = error
+          showingErrorAlert = true
+        }
       }
       .onReceive(
         NotificationCenter.default.publisher(for: NSNotification.Name("DeleteAllDataPerformed"))

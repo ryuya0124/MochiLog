@@ -78,8 +78,14 @@ extension HomeView {
           )
           return (nil, true)
         } else {
-          errorMessage = String(localized: "duplicate_record")
-          showingErrorAlert = true
+          // すべてのHomeViewインスタンスにエラーを通知
+          DispatchQueue.main.async {
+            NotificationCenter.default.post(
+              name: NSNotification.Name("ShowImportError"),
+              object: nil,
+              userInfo: ["errorMessage": String(localized: "duplicate_record")]
+            )
+          }
           return (nil, true)
         }
       }
@@ -150,8 +156,14 @@ extension HomeView {
         )
         return nil
       } else {
-        errorMessage = String(localized: "duplicate_record")
-        showingErrorAlert = true
+        // すべてのHomeViewインスタンスにエラーを通知
+        DispatchQueue.main.async {
+          NotificationCenter.default.post(
+            name: NSNotification.Name("ShowImportError"),
+            object: nil,
+            userInfo: ["errorMessage": String(localized: "duplicate_record")]
+          )
+        }
         return nil
       }
     }
@@ -212,6 +224,11 @@ extension HomeView {
             object: nil,
             userInfo: ["contentHash": hash]
           )
+
+          // HomeViewのprocessingContentHashesからも削除
+          HomeView.processingLock.lock()
+          HomeView.processingContentHashes.remove(hash)
+          HomeView.processingLock.unlock()
         }
 
         // UI更新（アラート表示や画面遷移）のために少し遅延させる
@@ -220,7 +237,17 @@ extension HomeView {
           if !silent {
             // Normal interactive flow: existing behavior
             if let newRecord = self.addRecordFromParseResult(parseResult) {
-              self.showRecordDetail(newRecord)
+              // 0.5秒遅延してから通知を送信（SwiftDataの更新を待つ）
+              DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                NotificationCenter.default.post(
+                  name: NSNotification.Name("ShowRecordDetail"),
+                  object: nil,
+                  userInfo: [
+                    "logDate": newRecord.logDate,
+                    "deviceName": newRecord.deviceName,
+                  ]
+                )
+              }
             }
             return
           }
@@ -296,16 +323,26 @@ extension HomeView {
       result.nominalCapacity != nil,
       result.rawCapacity != nil
     else {
-      errorMessage = String(localized: "parse_error")
-      showingErrorAlert = true
+      DispatchQueue.main.async {
+        NotificationCenter.default.post(
+          name: NSNotification.Name("ShowImportError"),
+          object: nil,
+          userInfo: ["errorMessage": String(localized: "parse_error")]
+        )
+      }
       return nil
     }
 
     // 容量不一致チェック
     if result.isCapacityMismatch {
       if appSettings.mismatchBehavior == .error {
-        errorMessage = String(localized: "capacity_mismatch_error")
-        showingErrorAlert = true
+        DispatchQueue.main.async {
+          NotificationCenter.default.post(
+            name: NSNotification.Name("ShowImportError"),
+            object: nil,
+            userInfo: ["errorMessage": String(localized: "capacity_mismatch_error")]
+          )
+        }
         return nil
       } else {
         pendingParseResult = result
@@ -330,12 +367,14 @@ extension HomeView {
     }
 
     // 通常デバイス処理
-    return handleNormalDeviceRecord(
+    let record = handleNormalDeviceRecord(
       from: result,
       deviceName: deviceName,
       modelCode: modelCode,
       logDate: logDate,
       silent: false
     )
+    print("[HomeView] addRecordFromParseResult returning record: \(record != nil)")
+    return record
   }
 }
