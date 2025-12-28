@@ -3892,13 +3892,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tap the PIP button in the video player, then open Settings. The video will continue playing in a floating window."
+            "value" : "The video will continue playing in a floating window.\n*Please ensure Picture in Picture is enabled in Settings > General > Picture in Picture."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "動画プレーヤーのPIPボタンをタップしてから設定を開いてください。動画はフローティングウィンドウで再生され続けます。"
+            "value" : "動画はフローティングウィンドウで再生され続けます。\n※iPhone/iPadの設定 > 一般 > ピクチャ・イン・ピクチャ をオンにしてください。"
           }
         }
       }
