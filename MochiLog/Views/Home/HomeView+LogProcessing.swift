@@ -367,14 +367,12 @@ extension HomeView {
     }
 
     // 通常デバイス処理
-    let record = handleNormalDeviceRecord(
+    return handleNormalDeviceRecord(
       from: result,
       deviceName: deviceName,
       modelCode: modelCode,
       logDate: logDate,
       silent: false
     )
-    print("[HomeView] addRecordFromParseResult returning record: \(record != nil)")
-    return record
   }
 }

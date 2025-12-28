@@ -141,7 +141,6 @@ struct HomeView: View {
       .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ProcessSharedLog")))
       {
         notification in
-        print("[HomeView] Instance \(instanceID) received ProcessSharedLog notification")
         // 通知のuserInfoから直接テキストを取得
         guard let text = notification.userInfo?["text"] as? String, !text.isEmpty else {
           print("[HomeView] Skipping notification (no text)")
