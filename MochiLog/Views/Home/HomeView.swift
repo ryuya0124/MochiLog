@@ -375,7 +375,7 @@ struct HomeView: View {
       .onAppear {
         viewportHeight = geo.size.height
       }
-      .onChange(of: geo.size.height) { newValue in
+      .onChange(of: geo.size.height) { oldValue, newValue in
         // 回転など「大きい変化」だけ追従。Large Title の伸縮由来の揺れは無視。
         if abs(newValue - viewportHeight) > 80 {
           viewportHeight = newValue
