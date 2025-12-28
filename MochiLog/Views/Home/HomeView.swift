@@ -8,6 +8,7 @@ import UniformTypeIdentifiers
 // MARK: - メインタブビュー
 struct MainTabView: View {
   @StateObject private var appSettings = AppSettings.shared
+  @State private var showingTutorial = false
 
   var body: some View {
     TabView(selection: $appSettings.selectedTabIndex) {
@@ -28,6 +29,15 @@ struct MainTabView: View {
         .tag(2)
     }
     .tint(appSettings.accentColor.color)
+    .onAppear {
+      // 初回起動時にチュートリアルを表示
+      if !appSettings.hasCompletedTutorial {
+        showingTutorial = true
+      }
+    }
+    .sheet(isPresented: $showingTutorial) {
+      TutorialView()
+    }
   }
 }
 
