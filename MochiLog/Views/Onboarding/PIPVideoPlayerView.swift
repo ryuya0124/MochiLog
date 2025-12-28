@@ -125,8 +125,12 @@ struct PIPTutorialContentView: View {
 
   var body: some View {
     ZStack {
-      // 背景色：システム背景色（ライト/ダークモード対応）
-      Color(uiColor: .systemBackground).edgesIgnoringSafeArea(.all)
+      // 背景色：ダークモードは真っ黒、ライトモードは白
+      Color(
+        uiColor: UIColor { traitCollection in
+          traitCollection.userInterfaceStyle == .dark ? .black : .white
+        }
+      ).edgesIgnoringSafeArea(.all)
 
       TabView(selection: $currentPage) {
         // ステップ1: 設定 > プライバシーとセキュリティ
@@ -369,6 +373,7 @@ class PIPTutorialController: NSObject, AVPictureInPictureControllerDelegate {
     if #available(iOS 15.0, *) {
       // iOS 15以上: AVPictureInPictureVideoCallViewControllerを使用
       let pipVideoCallVC = AVPictureInPictureVideoCallViewController()
+      // 21:9 アスペクト比を設定
       pipVideoCallVC.preferredContentSize = CGSize(width: 320, height: 180)
       self.pipVideoCallViewController = pipVideoCallVC
 
@@ -376,6 +381,7 @@ class PIPTutorialController: NSObject, AVPictureInPictureControllerDelegate {
       let contentView = PIPTutorialContentView()
       let hostingController = UIHostingController(rootView: contentView)
       hostingController.view.backgroundColor = .black
+      hostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
       self.pipContentViewController = hostingController
 
       // HostingControllerをVideoCallVCに追加
