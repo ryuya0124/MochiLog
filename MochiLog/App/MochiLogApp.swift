@@ -7,6 +7,27 @@ struct MochiLogApp: App {
 
   init() {
     prepareApplicationSupportDirectories()
+
+    // 処理完了通知を受け取ってフラグをリセットする
+    NotificationCenter.default.addObserver(
+      forName: NSNotification.Name("SharedLogProcessingCompleted"),
+      object: nil,
+      queue: .main
+    ) { notification in
+      let hash = notification.userInfo?["contentHash"] as? Int
+      print(
+        "[MochiLogApp] Processing completed, resetting flags. Hash: \(String(describing: hash))")
+
+      // 処理完了時刻を記録（直後のファントム再リクエスト対策）
+      if let hash = hash {
+        MochiLogApp.lastProcessedContentHash = hash
+        MochiLogApp.lastProcessedContentTime = Date()
+      }
+
+      // 処理中フラグをリセット
+      MochiLogApp.isProcessingSharedLog = false
+      MochiLogApp.processingContentHash = nil
+    }
   }
 
   private func prepareApplicationSupportDirectories() {
@@ -51,6 +72,11 @@ struct MochiLogApp: App {
   // 重複コンテンツ処理防止（iPadでの異なるURLパスによる多重起動対策）
   private static var lastProcessedContentHash: Int?
   private static var lastProcessedContentTime: Date?
+
+  /// 処理中フラグ（アトミックに多重処理を防歐）
+  private static var isProcessingSharedLog = false
+  /// 処理中のコンテンツハッシュ
+  private static var processingContentHash: Int?
 
   // 開かれたURLを確認して処理（Document Types経由）
   private func handleOpenURL(_ url: URL) {
@@ -99,38 +125,41 @@ struct MochiLogApp: App {
     if let text = text {
       let contentHash = text.hashValue
       let now = Date()
-      // iPad共有メニューのファントム起動（0.x秒差で複数回呼ばれる）を防ぐ
-      // ユーザーが手動で繰り返すケースも含めて、少し長めにブロックして多重登録を防ぐ
+
+      // 1. 現在処理中のコンテンツと同じなら即座に無視（アトミックガード）
+      if MochiLogApp.isProcessingSharedLog && MochiLogApp.processingContentHash == contentHash {
+        print("[MochiLogApp] Already processing this content, skipping")
+        return
+      }
+
+      // 2. 直近の重複コンテンツをブロック（完了後のファントム再リクエスト対策）
       if let lastHash = MochiLogApp.lastProcessedContentHash,
         let lastTime = MochiLogApp.lastProcessedContentTime,
         lastHash == contentHash,
-        now.timeIntervalSince(lastTime) < 3.0
+        now.timeIntervalSince(lastTime) < 5.0
       {
-        print("[MochiLogApp] Skipping duplicate content (phantom share within 3.0s)")
+        print("[MochiLogApp] Skipping duplicate content (within 5.0s of completion)")
         return
       }
-      MochiLogApp.lastProcessedContentHash = contentHash
-      MochiLogApp.lastProcessedContentTime = now
+
+      // 3. 処理開始をマーク
+      MochiLogApp.isProcessingSharedLog = true
+      MochiLogApp.processingContentHash = contentHash
 
       DispatchQueue.main.async {
         let silent = !AppSettings.shared.openAppAfterShareImport
 
-        // UserDefaultsに保存（HomeViewで処理される）
-        UserDefaults.standard.set(text, forKey: "PendingSharedLogText")
-        UserDefaults.standard.set(silent, forKey: "PendingSharedLogSilent")
-        UserDefaults.standard.synchronize()
-
-        // iPadではHomeViewのonReceiveが設定される前に通知が発生することがあるため、
-        // 少し遅延させて確実にHomeViewが準備できた後に処理されるようにする
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-          // Notificationを送信（HomeViewが既に表示されている場合に即座に処理）
-          NotificationCenter.default.post(
-            name: NSNotification.Name("ProcessSharedLog"),
-            object: nil,
-            userInfo: ["text": text, "silent": silent]
-          )
-        }
-        // 注意: UserDefaultsはHomeView側で処理開始時にクリアされる
+        // Notificationのみ送信（UserDefaultsフォールバックは廃止）
+        // HomeViewが処理完了時にフラグをリセットする
+        NotificationCenter.default.post(
+          name: NSNotification.Name("ProcessSharedLog"),
+          object: nil,
+          userInfo: [
+            "text": text,
+            "silent": silent,
+            "contentHash": contentHash,
+          ]
+        )
       }
 
     } else {

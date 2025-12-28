@@ -14,6 +14,8 @@ struct AnalyticsView: View {
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @State private var animateChart: Bool = false
 
+  @State private var viewportHeight: CGFloat = 0
+
   private var deviceNames: [String] {
     Array(Set(records.map { $0.deviceName })).sorted()
   }
@@ -291,91 +293,35 @@ struct AnalyticsView: View {
             .padding()
           }
         } else {
-          // データなし + サンプルモードOFF → ボタン表示（縦中央配置）
-          VStack {
-            Spacer()
-            ContentUnavailableView {
-              Label(String(localized: "no_data"), systemImage: "chart.line.uptrend.xyaxis")
-            } description: {
-              Text(String(localized: "no_data_description"))
-            } actions: {
-              Button {
-                withAnimation {
-                  appSettings.showingSampleData = true
+          // データなし + サンプルモードOFF → ボタン表示（中央配置）
+          GeometryReader { geo in
+            ScrollView {
+              ContentUnavailableView {
+                Label(String(localized: "no_data"), systemImage: "chart.line.uptrend.xyaxis")
+              } description: {
+                Text(String(localized: "no_data_description"))
+              } actions: {
+                Button {
+                  withAnimation { appSettings.showingSampleData = true }
+                } label: {
+                  Label(String(localized: "view_sample_data"), systemImage: "eye")
                 }
-              } label: {
-                Label(String(localized: "view_sample_data"), systemImage: "eye")
+                .buttonStyle(.borderedProminent)
               }
-              .buttonStyle(.borderedProminent)
+              .frame(maxWidth: .infinity)
+              // 「実スクロール」を作らないため、viewportより 1pt 小さくする
+              .frame(minHeight: max(0, viewportHeight - 1))
             }
-
-            Spacer()
-          }
-          .frame(width: geometry.size.width, height: geometry.size.height)
-          ScrollView {
-            VStack(spacing: 20) {
-              // デバイス選択ピッカー
-              DevicePickerView(deviceNames: deviceNames, selectedDevice: $selectedDevice)
-
-              // 共通の期間計算（ヘルス・サイクルで共用）
-              let end = windowEnd
-              let calendar = Calendar.current
-              let startDate: Date = {
-                switch selectedRange {
-                case .oneWeek:
-                  return calendar.date(byAdding: .day, value: -7, to: end) ?? end
-                case .oneMonth:
-                  return calendar.date(byAdding: .month, value: -1, to: end) ?? end
-                case .threeMonths:
-                  return calendar.date(byAdding: .month, value: -3, to: end) ?? end
-                case .sixMonths:
-                  return calendar.date(byAdding: .month, value: -6, to: end) ?? end
-                case .oneYear:
-                  return calendar.date(byAdding: .year, value: -1, to: end) ?? end
-                case .twoYears:
-                  return calendar.date(byAdding: .year, value: -2, to: end) ?? end
-                case .all:
-                  return (filteredRecords.min(by: { $0.logDate < $1.logDate })?.logDate) ?? end
-                }
-              }()
-
-              let startDay = calendar.startOfDay(for: startDate)
-              let endDay = calendar.startOfDay(for: end)
-              let visibleRecords = filteredRecords.filter {
-                let d = calendar.startOfDay(for: $0.logDate)
-                return d >= startDay && d <= endDay
-              }
-
-              let unit = autoUnit(for: visibleRecords, range: selectedRange)
-
-              // ヘルス推移グラフ
-              HealthTrendView(
-                visibleRecords: visibleRecords,
-                startDay: startDay,
-                endDay: endDay,
-                unit: unit,
-                selectedRange: $selectedRange,
-                canMoveNext: canMoveNext,
-                canMovePrevious: canMovePrevious,
-                shiftWindow: shiftWindow,
-                animateChart: $animateChart
-              )
-
-              // サイクル推移グラフ
-              CycleTrendView(
-                visibleRecords: visibleRecords,
-                startDay: startDay,
-                endDay: endDay,
-                unit: unit,
-                animateChart: $animateChart
-              )
-
-              // 統計情報
-              if !filteredRecords.isEmpty {
-                StatisticsView(filteredRecords: filteredRecords)
+            .scrollBounceBehavior(.always)  // バウンスは常に有効
+            .onAppear {
+              viewportHeight = geo.size.height
+            }
+            .onChange(of: geo.size.height) { newValue in
+              // 回転など「大きい変化」だけ追従。Large Title の伸縮由来の揺れは無視。
+              if abs(newValue - viewportHeight) > 80 {
+                viewportHeight = newValue
               }
             }
-            .padding()
           }
         }
       }

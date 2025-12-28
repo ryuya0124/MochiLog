@@ -114,6 +114,38 @@
         }
       }
     },
+    "allow_duplicate_records" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allow Duplicate Records"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重複したログの記録を許可"
+          }
+        }
+      }
+    },
+    "allow_duplicate_records_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When enabled, multiple logs for the same date and device can be recorded."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効にすると、同じ日付・同じデバイスのログを複数記録できます。"
+          }
+        }
+      }
+    },
     "analysis_source" : {
       "localizations" : {
         "en" : {
@@ -158,38 +190,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "公称値ベース"
-          }
-        }
-      }
-    },
-    "allow_duplicate_records" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Allow Duplicate Records"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "重複したログの記録を許可"
-          }
-        }
-      }
-    },
-    "allow_duplicate_records_description" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "When enabled, multiple logs for the same date and device can be recorded."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "有効にすると、同じ日付・同じデバイスのログを複数記録できます。"
           }
         }
       }
@@ -243,22 +243,6 @@
         }
       }
     },
-    "applying_settings" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Applying settings..."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "設定を適用中..."
-          }
-        }
-      }
-    },
     "appearance" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -288,6 +272,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Apple Watch設定"
+          }
+        }
+      }
+    },
+    "applying_settings" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Applying settings..."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定を適用中..."
           }
         }
       }
@@ -2526,6 +2526,7 @@
       }
     },
     "restart_and_apply" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2542,6 +2543,7 @@
       }
     },
     "restart_required_message" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2558,6 +2560,7 @@
       }
     },
     "restart_required_title" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
