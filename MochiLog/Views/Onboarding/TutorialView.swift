@@ -261,51 +261,50 @@ struct TutorialPageView: View {
           .padding(.horizontal, 24)
       }
 
-      // ボタンエリア
+      // ボタンエリア - 常に同じ構造を維持してアニメーションを阻害しないようにする
       VStack(spacing: 12) {
-        // 動画チュートリアルボタン (step 2でfalseになるので消える)
-        if page.showVideoButton {
-          Button(action: { onOpenVideo?() }) {
-            HStack {
-              Image(systemName: "play.rectangle.fill")
-              Text(String(localized: "watch_video_tutorial"))
-            }
-            .font(.subheadline)
-            .foregroundColor(.blue)
+        // 動画チュートリアルボタン
+        Button(action: { onOpenVideo?() }) {
+          HStack {
+            Image(systemName: "play.rectangle.fill")
+            Text(String(localized: "watch_video_tutorial"))
           }
+          .font(.subheadline)
+          .foregroundColor(.blue)
         }
+        .opacity(page.showVideoButton ? 1 : 0)
+        .allowsHitTesting(page.showVideoButton)
 
         // 設定（または動画を見ながら）ボタン
-        if page.showSettingsButton {
-          Button(action: { onOpenSettings?(settingsButtonView) }) {
-            HStack {
-              if page.actionType == .openSettings {
-                Image(systemName: "gear")
-              } else {
-                Image(systemName: "play.circle.fill")
-              }
+        Button(action: { onOpenSettings?(settingsButtonView) }) {
+          HStack {
+            if page.actionType == .openSettings {
+              Image(systemName: "gear")
+            } else {
+              Image(systemName: "play.circle.fill")
+            }
 
-              if let titleKey = page.customButtonTitleKey {
-                // ローカライズキーとして解決を試みる（キーがリテラルならそのまま表示される）
-                Text(String(localized: String.LocalizationValue(titleKey)))
-              } else {
-                Text(String(localized: "open_analytics_settings"))
-              }
+            if let titleKey = page.customButtonTitleKey {
+              Text(String(localized: String.LocalizationValue(titleKey)))
+            } else {
+              Text(String(localized: "open_analytics_settings"))
             }
-            .font(.headline)
-            .foregroundColor(.white)
-            .padding(.horizontal, 24)
-            .padding(.vertical, 12)
-            .background(Color.blue)
-            .cornerRadius(12)
           }
-          .background(
-            PIPSourceView { view in
-              settingsButtonView = view
-            }
-          )
-          .padding(.top, 8)
+          .font(.headline)
+          .foregroundColor(.white)
+          .padding(.horizontal, 24)
+          .padding(.vertical, 12)
+          .background(Color.blue)
+          .cornerRadius(12)
         }
+        .background(
+          PIPSourceView { view in
+            settingsButtonView = view
+          }
+        )
+        .padding(.top, 8)
+        .opacity(page.showSettingsButton ? 1 : 0)
+        .allowsHitTesting(page.showSettingsButton)
       }
 
       Spacer()
