@@ -3,10 +3,30 @@ import AVKit
 import Combine
 import SwiftUI
 
+// MARK: - PIPソースビュー（UIViewRepresentable）
+struct PIPSourceView: UIViewRepresentable {
+  let onSourceViewAvailable: (UIView) -> Void
+
+  func makeUIView(context: Context) -> UIView {
+    let view = UIView()
+    view.backgroundColor = .clear
+    view.isUserInteractionEnabled = false
+    return view
+  }
+
+  func updateUIView(_ uiView: UIView, context: Context) {
+    DispatchQueue.main.async {
+      onSourceViewAvailable(uiView)
+    }
+  }
+}
+
 // MARK: - PIP動画プレーヤービュー
 /// チュートリアルガイド（PIP対応）を表示するビュー
 struct PIPVideoPlayerView: View {
   @Environment(\.dismiss) private var dismiss
+  @State private var pipController: PIPTutorialController?
+  @State private var sourceView: UIView?
 
   var body: some View {
     NavigationStack {
@@ -14,9 +34,14 @@ struct PIPVideoPlayerView: View {
         // コンテンツプレビュー
         PIPTutorialContentView()
           .frame(maxWidth: .infinity)
-          .frame(height: 200)  // 比率的にこれくらい
+          .frame(height: 200)
           .cornerRadius(16)
           .shadow(radius: 5)
+          .background(
+            PIPSourceView { view in
+              self.sourceView = view
+            }
+          )
           .padding(.horizontal)
 
         // 説明テキスト
@@ -37,7 +62,7 @@ struct PIPVideoPlayerView: View {
         // アクションボタン
         VStack(spacing: 16) {
           // 設定を開くボタン
-          Button(action: openSettings) {
+          Button(action: startPIP) {
             HStack {
               Image(systemName: "gear")
               Text(String(localized: "open_analytics_settings"))
@@ -65,20 +90,17 @@ struct PIPVideoPlayerView: View {
     }
   }
 
-  /// 設定アプリの解析データ画面を開く
-  private func openSettings() {
-    let settingsURLString = "prefs:root=Privacy&path=PROBLEM_REPORTING/DIAGNOSTIC_USAGE_DATA"
-
-    if let url = URL(string: settingsURLString) {
-      UIApplication.shared.open(url) { success in
-        if !success {
-          if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
-            UIApplication.shared.open(settingsURL)
-          }
-        }
-      }
-    }
+  /// PIPを開始して設定アプリの解析データ画面を開く
+  private func startPIP() {
+    print("[PIPVideoPlayerView] startPIP called. SourceView available: \(sourceView != nil)")
+    pipController = PIPTutorialController()
+    pipController?.startPIPAndOpenSettings(sourceView: sourceView)
   }
+
+  // 古いopenSettingsは不要だが、PIPTutorialControllerクラス内で使われている可能性があるので
+  // PIPTutorialControllerクラス内のopenSettings定義とは別物。
+  // View内のこのopenSettingsは削除して良い。
+
 }
 
 // MARK: - 拡張版PIPビュー（削除しても良いが互換性のために残す）
@@ -98,7 +120,7 @@ struct PIPVideoPlayerFullView: View {
 /// PIPウィンドウ内に表示するSwiftUIビュー
 struct PIPTutorialContentView: View {
   @State private var currentPage = 0
-  private let totalPages = 5
+  private let totalPages = 6
   private let timer = Timer.publish(every: 6.0, on: .main, in: .common).autoconnect()
 
   var body: some View {
@@ -120,7 +142,7 @@ struct PIPTutorialContentView: View {
         }
         .tag(0)
 
-        // ステップ2: 解析と改善 > 共有ON
+        // ステップ2: 解析と改善
         VStack(spacing: 8) {
           Image(systemName: "chart.bar.xaxis")
             .font(.system(size: 40))
@@ -128,14 +150,27 @@ struct PIPTutorialContentView: View {
           Text("解析と改善")
             .font(.headline)
             .foregroundStyle(.white)
-          Text("iPhone/iPad解析を共有: ON")
-            .font(.subheadline)
-            .bold()
-            .foregroundStyle(.green)
+          Text("メニューから選択")
+            .font(.caption)
+            .foregroundStyle(.gray)
         }
         .tag(1)
 
-        // ステップ3: 解析データ
+        // ステップ3: 共有ON
+        VStack(spacing: 8) {
+          Image(systemName: "switch.2")
+            .font(.system(size: 40))
+            .foregroundStyle(.green)
+          Text("解析を共有: ON")
+            .font(.headline)
+            .foregroundStyle(.white)
+          Text("「iPhone/iPad解析を共有」をオン")
+            .font(.caption)
+            .foregroundStyle(.white)
+        }
+        .tag(2)
+
+        // ステップ4: 解析データ
         VStack(spacing: 8) {
           Image(systemName: "doc.text.magnifyingglass")
             .font(.system(size: 40))
@@ -147,9 +182,9 @@ struct PIPTutorialContentView: View {
             .font(.subheadline)
             .foregroundStyle(.yellow)
         }
-        .tag(2)
+        .tag(3)
 
-        // ステップ4: 共有ボタン
+        // ステップ5: 共有ボタン
         VStack(spacing: 8) {
           Image(systemName: "square.and.arrow.up")
             .font(.system(size: 40))
@@ -158,9 +193,9 @@ struct PIPTutorialContentView: View {
             .font(.headline)
             .foregroundStyle(.white)
         }
-        .tag(3)
+        .tag(4)
 
-        // ステップ5: MochiLogを選択
+        // ステップ6: MochiLogを選択
         VStack(spacing: 8) {
           if let icon = Bundle.main.icon {
             Image(uiImage: icon)
@@ -180,7 +215,7 @@ struct PIPTutorialContentView: View {
             .font(.caption)
             .foregroundStyle(.gray)
         }
-        .tag(4)
+        .tag(5)
       }
       .tabViewStyle(.page(indexDisplayMode: .always))
     }
@@ -189,20 +224,6 @@ struct PIPTutorialContentView: View {
         currentPage = (currentPage + 1) % totalPages
       }
     }
-  }
-}
-
-// MARK: - Bundle Extension
-extension Bundle {
-  var icon: UIImage? {
-    if let icons = infoDictionary?["CFBundleIcons"] as? [String: Any],
-      let primaryIcon = icons["CFBundlePrimaryIcon"] as? [String: Any],
-      let iconFiles = primaryIcon["CFBundleIconFiles"] as? [String],
-      let lastIcon = iconFiles.last
-    {
-      return UIImage(named: lastIcon)
-    }
-    return nil
   }
 }
 
@@ -218,16 +239,22 @@ class SilentAudioPlayer {
 
     engine.attach(player)
 
-    let format = AVAudioFormat(standardFormatWithSampleRate: 44100, channels: 1)
+    guard let format = AVAudioFormat(standardFormatWithSampleRate: 44100, channels: 1) else {
+      return
+    }
 
-    // メインミキサーに接続（音量は0ではなく極小にするか、コンテンツ自体を無音にする）
-    // iOSは音量0だとバックグラウンド再生とみなさない場合があるため注意
-    // しかしAVAudioEngineで再生していれば基本大丈夫
+    // メインミキサーに接続
     engine.connect(player, to: engine.mainMixerNode, format: format)
+
+    // 無音バッファを作成（1秒分）
+    guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 44100) else { return }
+    buffer.frameLength = 44100
 
     do {
       try engine.start()
       player.play()
+      // ループ再生をスケジュール（これが重要）
+      player.scheduleBuffer(buffer, at: nil, options: .loops, completionHandler: nil)
 
       self.audioEngine = engine
       self.playerNode = player
@@ -249,59 +276,42 @@ class SilentAudioPlayer {
 class PIPTutorialController: NSObject, AVPictureInPictureControllerDelegate {
   private var silentPlayer: SilentAudioPlayer?
   private var pipController: AVPictureInPictureController?
-  private var containerWindow: UIWindow?
-  private var containerView: UIView?
+  private weak var sourceView: UIView?  // 外部から渡されたUIView
   private var pipVideoCallViewController: Any?  // AVPictureInPictureVideoCallViewController
   private var pipContentViewController: UIViewController?  // UIHostingController
+  private var observation: NSKeyValueObservation?
 
   /// PIPを開始して設定を開く
-  /// - Parameter sourceFrame: アニメーション開始位置となるフレーム（nilの場合は画面右端中央）
-  func startPIPAndOpenSettings(sourceFrame: CGRect? = nil) {
-    // 動画ファイルチェックは不要になったので削除
+  /// - Parameter sourceView: PIPアニメーションの起点となるUIView
+  func startPIPAndOpenSettings(sourceView: UIView?) {
+    self.sourceView = sourceView
 
     // オーディオセッション設定
     do {
       try AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
       try AVAudioSession.sharedInstance().setActive(true)
     } catch {
-      print("オーディオセッション設定エラー: \(error)")
+      print("[PIP] AudioSession setup error: \(error)")
     }
 
     // 無音再生開始（バックグラウンド維持のため）
     silentPlayer = SilentAudioPlayer()
     silentPlayer?.play()
 
-    // 現在のウィンドウシーンを取得
-    guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-      let keyWindow = windowScene.windows.first(where: { $0.isKeyWindow })
-    else {
-      openSettings()
+    // PIPコントローラー作成準備
+    guard AVPictureInPictureController.isPictureInPictureSupported() else {
+      print("[PIP] PIP not supported")
+      cleanupAndOpenSettings()
       return
     }
 
-    // コンテナViewを作成（PIPアニメーションの起点）
-    let frame: CGRect
-    if let sourceFrame = sourceFrame {
-      frame = sourceFrame
-    } else {
-      let screenBounds = keyWindow.bounds
-      frame = CGRect(x: screenBounds.width - 1, y: screenBounds.height / 2, width: 1, height: 1)
-    }
-
-    containerView = UIView(frame: frame)
-    containerView?.alpha = 0.01  // 不可視にする
-    containerView?.backgroundColor = .clear
-
-    if let containerView = containerView {
-      // 最背面に配置
-      keyWindow.insertSubview(containerView, at: 0)
-    }
-
-    // PIPコントローラー作成
-    guard AVPictureInPictureController.isPictureInPictureSupported(),
-      let containerView = containerView
-    else {
-      self.cleanupAndOpenSettings()
+    // ソースビューのチェック
+    guard let sourceView = sourceView, sourceView.window != nil else {
+      print("[PIP] Source view nil or not in window. Fallback to settings.")
+      // ここでダミーのWindowベースPIPに切り替えることも可能だが、
+      // ユーザー要望の「正攻法」に従い純粋な実装とする。
+      // ただし全く起動しないのは困るので、設定だけ開く。
+      cleanupAndOpenSettings()
       return
     }
 
@@ -333,38 +343,80 @@ class PIPTutorialController: NSObject, AVPictureInPictureControllerDelegate {
 
       // ContentSourceを作成
       let contentSource = AVPictureInPictureController.ContentSource(
-        activeVideoCallSourceView: containerView,  // ここがアニメーション起点
+        activeVideoCallSourceView: sourceView,  // 実際のViewを使用
         contentViewController: pipVideoCallVC
       )
 
       pipController = AVPictureInPictureController(contentSource: contentSource)
     } else {
-      // iOS 14以下: サポート対象外（動画なしPIPはiOS 15以降）
-      self.cleanupAndOpenSettings()
+      // iOS 14以下: サポート対象外
+      print("[PIP] iOS version too low")
+      cleanupAndOpenSettings()
       return
     }
 
     pipController?.delegate = self
+    print(
+      "[PIP] Controller created. Initial possible: \(pipController?.isPictureInPicturePossible ?? false)"
+    )
 
-    // 少し待ってからPIPを開始
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+    // タイムアウト設定（2秒経ってもPIP開始できなければ設定へ）
+    let timeoutWork = DispatchWorkItem { [weak self] in
       guard let self = self else { return }
-
-      if self.pipController?.isPictureInPicturePossible == true {
-        self.pipController?.startPictureInPicture()
-
-        // 設定を開く
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-          self.openSettings()
-        }
-      } else {
+      if self.pipController?.isPictureInPictureActive == false {
+        print("[PIP] Startup timeout. Opening settings anyway.")
         self.cleanupAndOpenSettings()
       }
+    }
+    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: timeoutWork)
+
+    // KVOで監視して、準備ができ次第開始
+    observation = pipController?.observe(\.isPictureInPicturePossible, options: [.initial, .new]) {
+      [weak self] controller, change in
+      guard let self = self else { return }
+      print("[PIP] isPossible changed to: \(controller.isPictureInPicturePossible)")
+
+      if controller.isPictureInPicturePossible {
+        // 準備完了：監視を停止して開始
+        self.observation?.invalidate()
+        self.observation = nil
+
+        // 念のため少しだけ遅延させてUIレンダリングを確定させる
+        DispatchQueue.main.async {
+          controller.startPictureInPicture()
+          print("[PIP] startPictureInPicture called")
+
+          // アプリに戻ってきたらPIPを終了する監視を追加
+          NotificationCenter.default.addObserver(
+            self, selector: #selector(self.handleAppForeground),
+            name: UIApplication.willEnterForegroundNotification, object: nil)
+
+          // 少し待ってから設定を開く（PIPアニメーション開始時間を確保）
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            // ここで必ずしもタイムアウトをキャンセルする必要はないが、
+            // PIPが開始していればcleanupは呼ばれないようにする制御はstopPIP側では難しいので
+            // isPictureInPictureActive チェックでガードする
+            timeoutWork.cancel()
+            self.openSettings()
+          }
+        }
+      }
+    }
+  }
+
+  /// アプリがフォアグラウンドに戻った時の処理
+  @objc private func handleAppForeground() {
+    print("[PIP] App entered foreground. Stopping PIP.")
+    if pipController?.isPictureInPictureActive == true {
+      pipController?.stopPictureInPicture()
+    } else {
+      stopPIP()
     }
   }
 
   /// クリーンアップして設定を開く
   private func cleanupAndOpenSettings() {
+    NotificationCenter.default.removeObserver(self)
     silentPlayer?.stop()
     openSettings()
   }
@@ -384,24 +436,11 @@ class PIPTutorialController: NSObject, AVPictureInPictureControllerDelegate {
     }
   }
 
-  /// チュートリアル動画のURLを探す（互換性のために残すが使用しない）
-  static func findTutorialVideoURL() -> URL? {
-    // 常にnilを返すことで、UI側の条件分岐でもし動画が必要なら修正が必要だが、
-    // 今回はController側で動画不要にしたので、呼び出し元も修正する必要がある。
-    // ただし、TutorialView側でこのメソッドを使ってボタン表示制御をしているので、
-    // trueを返すように偽装するか、TutorialViewを修正するか。
-    // ユーザー要望的に「動画ファイル不要」なので、このメソッドは「動画機能有効」を意味するtrueを返したいがURLはnil。
-    // なのでシグネチャを変えるか、ダミーURLを返すか。
-    // ここではダミーURLを返して、呼び出し元の「nilじゃなければボタン出す」ロジックを通す。
-    return URL(string: "file:///dummy.mp4")
-  }
-
   /// PIPを停止
   func stopPIP() {
+    NotificationCenter.default.removeObserver(self)
     pipController?.stopPictureInPicture()
     silentPlayer?.stop()
-    containerView?.removeFromSuperview()
-    containerView = nil
     pipController = nil
     pipContentViewController = nil
     pipVideoCallViewController = nil

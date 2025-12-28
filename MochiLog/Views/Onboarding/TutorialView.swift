@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit  // for UIImage
 
 // MARK: - チュートリアルビュー
 struct TutorialView: View {
@@ -19,37 +20,50 @@ struct TutorialView: View {
       showSettingsButton: false,
       showVideoButton: false
     ),
-    // ステップ2: 解析を有効にする
+    // ステップ2: 設定を開く
     TutorialPage(
-      icon: "chart.bar.xaxis",
-      iconColor: .blue,
+      icon: "gear",
+      iconColor: .gray,
       titleKey: "tutorial_enable_analytics_title",
-      descriptionKey: "tutorial_enable_analytics_description",
+      descriptionKey: "tutorial_enable_analytics_description",  // 設定 > プライバシー...
       imageName: nil,
       showSettingsButton: true,
-      showVideoButton: true
+      showVideoButton: false,  // 動画ボタンは非表示
+      customButtonTitleKey: "try_with_video",  // 動画を見ながら実際にやる
+      actionType: .openSheet  // シートを開く
     ),
-    // ステップ3: ログファイルを探す
+    // ステップ3: 共有ON（新規）
+    TutorialPage(
+      icon: "switch.2",
+      iconColor: .green,
+      titleKey: "tutorial_share_on_title",
+      descriptionKey: "tutorial_share_on_description",  // iPhone/iPad解析を共有: ON
+      imageName: nil,
+      showSettingsButton: false,
+      showVideoButton: false
+    ),
+    // ステップ4: ログファイルを探す
     TutorialPage(
       icon: "doc.text.magnifyingglass",
       iconColor: .orange,
       titleKey: "tutorial_find_log_title",
-      descriptionKey: "tutorial_find_log_description",
+      descriptionKey: "tutorial_find_log_description",  // Analytics-202x...
       imageName: nil,
       showSettingsButton: false,
       showVideoButton: false
     ),
-    // ステップ4: MochiLogに共有
+    // ステップ5: MochiLogに共有
     TutorialPage(
-      icon: "square.and.arrow.up",
+      icon: "square.and.arrow.up",  // ここはアプリアイコンにしたいが、一旦SF Symbolで
       iconColor: .blue,
       titleKey: "tutorial_share_title",
-      descriptionKey: "tutorial_share_description",
+      descriptionKey: "tutorial_share_description",  // 共有ボタン > MochiLog
       imageName: nil,
       showSettingsButton: false,
-      showVideoButton: false
+      showVideoButton: false,
+      useAppIcon: true  // 新規フラグ
     ),
-    // ステップ5: 完了
+    // ステップ6: 完了
     TutorialPage(
       icon: "checkmark.circle.fill",
       iconColor: .green,
@@ -80,7 +94,13 @@ struct TutorialView: View {
           ForEach(0..<pages.count, id: \.self) { index in
             TutorialPageView(
               page: pages[index],
-              onOpenSettings: { frame in openSettingsWithPIP(sourceFrame: frame) },
+              onOpenSettings: { view in
+                if pages[index].actionType == .openSheet {
+                  showingVideoPlayer = true
+                } else {
+                  openSettingsWithPIP(sourceView: view)
+                }
+              },
               onOpenVideo: { showingVideoPlayer = true }
             )
             .tag(index)
@@ -152,15 +172,10 @@ struct TutorialView: View {
   // MARK: - Private Methods
 
   /// 設定アプリの解析データ画面を開く（PIP動画を自動起動）
-  private func openSettingsWithPIP(sourceFrame: CGRect? = nil) {
-    // 動画がある場合はPIPで自動再生（mp4とmovに対応）
-    if PIPTutorialController.findTutorialVideoURL() != nil {
-      pipController = PIPTutorialController()
-      pipController?.startPIPAndOpenSettings(sourceFrame: sourceFrame)
-    } else {
-      // 動画がない場合は設定のみ開く
-      openAnalyticsSettings()
-    }
+  private func openSettingsWithPIP(sourceView: UIView? = nil) {
+    // 動画ファイルの有無に関わらず、SwiftUI Viewを使ったPIPを開始
+    pipController = PIPTutorialController()
+    pipController?.startPIPAndOpenSettings(sourceView: sourceView)
   }
 
   /// 設定アプリの解析データ画面を開く
@@ -180,24 +195,33 @@ struct TutorialView: View {
   }
 }
 
+// MARK: - チュートリアルアクション型
+enum TutorialAction {
+  case openSettings
+  case openSheet
+}
+
 // MARK: - チュートリアルページデータ
 struct TutorialPage {
-  let icon: String
+  let icon: String  // SF Symbol name
   let iconColor: Color
   let titleKey: String
   let descriptionKey: String
   let imageName: String?
   let showSettingsButton: Bool
   let showVideoButton: Bool
+  var useAppIcon: Bool = false  // Default false
+  var customButtonTitleKey: String? = nil  // 新規
+  var actionType: TutorialAction = .openSettings  // 新規
 }
 
 // MARK: - チュートリアルページビュー
 struct TutorialPageView: View {
   let page: TutorialPage
-  var onOpenSettings: ((CGRect?) -> Void)?
+  var onOpenSettings: ((UIView?) -> Void)?
   var onOpenVideo: (() -> Void)?
 
-  @State private var settingsButtonFrame: CGRect?
+  @State private var settingsButtonView: UIView?
 
   var body: some View {
     VStack(spacing: 32) {
@@ -209,9 +233,18 @@ struct TutorialPageView: View {
           .fill(page.iconColor.opacity(0.15))
           .frame(width: 120, height: 120)
 
-        Image(systemName: page.icon)
-          .font(.system(size: 50))
-          .foregroundStyle(page.iconColor)
+        if page.useAppIcon, let icon = Bundle.main.icon {
+          Image(uiImage: icon)
+            .resizable()
+            .scaledToFit()
+            .frame(width: 80, height: 80)
+            .cornerRadius(18)
+            .shadow(radius: 4)
+        } else {
+          Image(systemName: page.icon)
+            .font(.system(size: 50))
+            .foregroundStyle(page.iconColor)
+        }
       }
 
       // テキスト
@@ -230,7 +263,7 @@ struct TutorialPageView: View {
 
       // ボタンエリア
       VStack(spacing: 12) {
-        // 動画チュートリアルボタン
+        // 動画チュートリアルボタン (step 2でfalseになるので消える)
         if page.showVideoButton {
           Button(action: { onOpenVideo?() }) {
             HStack {
@@ -242,12 +275,22 @@ struct TutorialPageView: View {
           }
         }
 
-        // 設定を開くボタン
+        // 設定（または動画を見ながら）ボタン
         if page.showSettingsButton {
-          Button(action: { onOpenSettings?(settingsButtonFrame) }) {
+          Button(action: { onOpenSettings?(settingsButtonView) }) {
             HStack {
-              Image(systemName: "gear")
-              Text(String(localized: "open_analytics_settings"))
+              if page.actionType == .openSettings {
+                Image(systemName: "gear")
+              } else {
+                Image(systemName: "play.circle.fill")
+              }
+
+              if let titleKey = page.customButtonTitleKey {
+                // ローカライズキーとして解決を試みる（キーがリテラルならそのまま表示される）
+                Text(String(localized: String.LocalizationValue(titleKey)))
+              } else {
+                Text(String(localized: "open_analytics_settings"))
+              }
             }
             .font(.headline)
             .foregroundColor(.white)
@@ -257,14 +300,8 @@ struct TutorialPageView: View {
             .cornerRadius(12)
           }
           .background(
-            GeometryReader { proxy in
-              Color.clear
-                .onAppear {
-                  settingsButtonFrame = proxy.frame(in: .global)
-                }
-                .onChange(of: proxy.frame(in: .global)) { newFrame in
-                  settingsButtonFrame = newFrame
-                }
+            PIPSourceView { view in
+              settingsButtonView = view
             }
           )
           .padding(.top, 8)

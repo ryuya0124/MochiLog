@@ -2930,6 +2930,116 @@
         }
       }
     },
+    "try_with_video" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "動画を見ながら実際にやる"
+          }
+        }
+      }
+    },
+    "tutorial_complete_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "準備完了です！\nMochiLogでバッテリーの状態を詳しく分析しましょう。"
+          }
+        }
+      }
+    },
+    "tutorial_complete_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完了！"
+          }
+        }
+      }
+    },
+    "tutorial_enable_analytics_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定 > プライバシーとセキュリティ > 解析と改善\nを開きます。"
+          }
+        }
+      }
+    },
+    "tutorial_enable_analytics_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定を開く"
+          }
+        }
+      }
+    },
+    "tutorial_find_log_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析データ内で\n「Analytics-yyyy-mm-dd」\nで始まる最新のファイルを探します。"
+          }
+        }
+      }
+    },
+    "tutorial_find_log_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログファイルを探す"
+          }
+        }
+      }
+    },
+    "tutorial_share_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右上の共有ボタンを押し、\n共有メニューから「MochiLog」を選択します。"
+          }
+        }
+      }
+    },
+    "tutorial_share_on_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「iPhone/iPad解析を共有」を\nオンにします。"
+          }
+        }
+      }
+    },
+    "tutorial_share_on_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析を共有: ON"
+          }
+        }
+      }
+    },
     "stat_average_actual" : {
       "extractionState" : "stale",
       "localizations" : {
