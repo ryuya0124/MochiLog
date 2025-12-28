@@ -124,7 +124,7 @@ struct CycleTrendView: View {
         )
         .chartPlotStyle { plotArea in
           plotArea
-            .padding(.trailing, 12)  // グラフ右端とY軸ラベルの間に余白
+            .padding(.trailing, 24)  // グラフ右端とY軸ラベルの間に余白
             .mask {
               GeometryReader { geo in
                 Rectangle()
