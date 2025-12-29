@@ -133,22 +133,19 @@ extension HomeView {
       let uniqueResults = dict.values.sorted { ($0.logDate ?? Date()) < ($1.logDate ?? Date()) }
       // 追加処理
       var addedAny = false
-      var addErrors: [String] = []
       await MainActor.run {
         for result in uniqueResults {
           if let newRecord = addRecordFromParseResult(result) {
             showRecordDetail(newRecord)
             addedAny = true
-          } else {
-            addErrors.append(String(localized: "parse_error", table: "Home"))
           }
+          // nilを返すケースは重複やWatch選択待ちなど正常な処理フローのためエラーとして扱わない
         }
       }
-      // エラーがあったらまとめて通知
-      if !errors.isEmpty || !addErrors.isEmpty {
-        let combinedErrors = (errors + addErrors).joined(separator: "\n")
+      // ファイル読み込みエラーがあったらまとめて通知
+      if !errors.isEmpty {
         await MainActor.run {
-          errorMessage = combinedErrors
+          errorMessage = errors.joined(separator: "\n")
           showingErrorAlert = true
         }
       }
@@ -161,7 +158,8 @@ extension HomeView {
       }
     case .failure(let error):
       await MainActor.run {
-        errorMessage = "\(String(localized: "file_select_error", table: "Home")): \(error.localizedDescription)"
+        errorMessage =
+          "\(String(localized: "file_select_error", table: "Home")): \(error.localizedDescription)"
         showingErrorAlert = true
       }
     }
