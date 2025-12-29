@@ -14,9 +14,6 @@ struct SettingsView: View {
   @State private var showingTutorial = false
   @State private var showingSupportForm = false
   @State private var showingDonation = false
-  @State private var showingPrivacyPolicy = false
-  @State private var showingTermsOfUse = false
-  @State private var showingLicenses = false
   @State private var isAdvancedExpanded = false
 
   // iCloud トグル用ローカル状態とエラー表示
@@ -28,12 +25,6 @@ struct SettingsView: View {
   @State private var showingDeviceDeletePicker = false
   @State private var showingDeviceDeleteConfirmation = false
   @State private var selectedDeviceToDelete: String?
-
-  private var appVersion: String {
-    let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
-    let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
-    return "\(version) (\(build))"
-  }
 
   var body: some View {
     NavigationStack {
@@ -164,18 +155,6 @@ struct SettingsView: View {
           Button(action: { showingDonation = true }) {
             Label(String(localized: "donation_title", table: "Settings"), systemImage: "heart.fill")
           }
-          Button(action: { showingPrivacyPolicy = true }) {
-            Label(
-              String(localized: "privacy_policy", table: "Legal"), systemImage: "hand.raised.fill")
-          }
-
-          Button(action: { showingTermsOfUse = true }) {
-            Label(String(localized: "terms_of_use", table: "Legal"), systemImage: "doc.plaintext")
-          }
-
-          Button(action: { showingLicenses = true }) {
-            Label(String(localized: "licenses", table: "Settings"), systemImage: "doc.text")
-          }
         }
 
         // MARK: - デバッグ
@@ -293,15 +272,10 @@ struct SettingsView: View {
           }
         }
 
-        // MARK: - アプリ情報
+        // MARK: - アプリについて
         Section {
-          LabeledContent(String(localized: "app_version", table: "Settings"), value: appVersion)
-        }
-
-        // MARK: - プロジェクト
-        Section {
-          Link(destination: URL(string: "https://github.com/ryuya0124/MochiLog")!) {
-            Label(String(localized: "view_on_github", table: "Support"), systemImage: "link")
+          NavigationLink(destination: AboutView()) {
+            Label(String(localized: "about_app", table: "Settings"), systemImage: "info.circle")
           }
         }
 
@@ -322,15 +296,6 @@ struct SettingsView: View {
       }
       .sheet(isPresented: $showingDonation) {
         DonationView()
-      }
-      .sheet(isPresented: $showingPrivacyPolicy) {
-        PrivacyPolicyView()
-      }
-      .sheet(isPresented: $showingTermsOfUse) {
-        TermsOfUseView()
-      }
-      .sheet(isPresented: $showingLicenses) {
-        LicenseView()
       }
       .alert(
         String(localized: "delete_all_data", table: "Settings"),
