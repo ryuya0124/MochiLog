@@ -17,12 +17,12 @@ struct StatisticsView: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
-      Text(String(localized: "statistics"))
+      Text(String(localized: "statistics", table: "Analytics"))
         .font(.headline)
 
       LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
         StatCard(
-          title: String(localized: "record_count"),
+          title: String(localized: "record_count", table: "Analytics"),
           value: "\(filteredRecords.count)",
           icon: "doc.text.fill",
           color: .blue
@@ -31,7 +31,8 @@ struct StatisticsView: View {
         StatCard(
           title: String(
             localized: appSettings.analysisDataSource == .nominal
-              ? "stat_average_nominal" : "stat_average_actual"),
+              ? "stat_average_nominal" : "stat_average_actual",
+            table: "Analytics"),
           value: String(format: "%.1f%%", averageHealth),
           icon: "heart.fill",
           color: healthColor(averageHealth)
@@ -39,7 +40,7 @@ struct StatisticsView: View {
 
         if let latest = filteredRecords.last {
           StatCard(
-            title: String(localized: "cycle_count"),
+            title: String(localized: "cycle_count", table: "Analytics"),
             value: "\(latest.cycleCount)",
             icon: "arrow.triangle.2.circlepath",
             color: .purple
@@ -48,7 +49,8 @@ struct StatisticsView: View {
           StatCard(
             title: String(
               localized: appSettings.analysisDataSource == .nominal
-                ? "stat_latest_nominal" : "stat_latest_actual"),
+                ? "stat_latest_nominal" : "stat_latest_actual",
+              table: "Analytics"),
             value: String(
               format: "%.1f%%",
               appSettings.analysisDataSource == .nominal

@@ -10,11 +10,11 @@ struct CycleTrendView: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
-      Text(String(localized: "cycle_trend"))
+      Text(String(localized: "cycle_trend", table: "Analytics"))
         .font(.headline)
 
       if visibleRecords.isEmpty {
-        Text(String(localized: "no_records_for_device"))
+        Text(String(localized: "no_records_for_device", table: "Analytics"))
           .foregroundStyle(.secondary)
           .frame(maxWidth: .infinity, alignment: .center)
           .padding()
@@ -26,22 +26,22 @@ struct CycleTrendView: View {
           ForEach(visibleRecords) { record in
             LineMark(
               x: .value(
-                String(localized: "date"), Calendar.current.startOfDay(for: record.logDate),
+                String(localized: "date", table: "Common"), Calendar.current.startOfDay(for: record.logDate),
                 unit: unit.calendarComponent),
-              y: .value(String(localized: "cycle_count"), record.cycleCount)
+              y: .value(String(localized: "cycle_count", table: "Analytics"), record.cycleCount)
             )
-            .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
+            .foregroundStyle(by: .value(String(localized: "device_name", table: "Common"), record.deviceName))
             .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
             .opacity(animateChart ? 1 : 0)
 
             if showPoints {
               PointMark(
                 x: .value(
-                  String(localized: "date"), Calendar.current.startOfDay(for: record.logDate),
+                  String(localized: "date", table: "Common"), Calendar.current.startOfDay(for: record.logDate),
                   unit: unit.calendarComponent),
-                y: .value(String(localized: "cycle_count"), record.cycleCount)
+                y: .value(String(localized: "cycle_count", table: "Analytics"), record.cycleCount)
               )
-              .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
+              .foregroundStyle(by: .value(String(localized: "device_name", table: "Common"), record.deviceName))
               .symbol(.circle)
               .symbolSize(40)
               .opacity(animateChart ? 1 : 0)

@@ -24,7 +24,7 @@ struct HierarchicalDevicePickerView: View {
     NavigationStack {
       List {
         if selectedCategory == nil {
-          Section(String(localized: "select_category")) {
+          Section(String(localized: "select_category", table: "Common")) {
             ForEach(DeviceLibrary.Category.allCases) { category in
               Button {
                 withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
@@ -50,7 +50,7 @@ struct HierarchicalDevicePickerView: View {
                   selectedCategory = nil
                 }
               } label: {
-                Label(String(localized: "back"), systemImage: "chevron.left")
+                Label(String(localized: "back", table: "Common"), systemImage: "chevron.left")
               }
             }
 
@@ -62,7 +62,7 @@ struct HierarchicalDevicePickerView: View {
                 }
               } label: {
                 HStack {
-                  Text(series == "Standard" ? String(localized: "standard_models") : series)
+                  Text(series == "Standard" ? String(localized: "standard_models", table: "Common") : series)
                   Spacer()
                   Image(systemName: "chevron.right")
                     .font(.caption)
@@ -81,7 +81,7 @@ struct HierarchicalDevicePickerView: View {
                 selectedSeries = nil
               }
             } label: {
-              Label(String(localized: "back"), systemImage: "chevron.left")
+              Label(String(localized: "back", table: "Common"), systemImage: "chevron.left")
             }
 
             let models = DeviceLibrary.getModels(for: selectedCategory!, series: selectedSeries!)
@@ -98,16 +98,16 @@ struct HierarchicalDevicePickerView: View {
             }
           } header: {
             Text(
-              "\(selectedCategory!.localizedName) > \(selectedSeries == "Standard" ? String(localized: "standard_models") : selectedSeries!)"
+              "\(selectedCategory!.localizedName) > \(selectedSeries == "Standard" ? String(localized: "standard_models", table: "Common") : selectedSeries!)"
             )
           }
         }
       }
-      .navigationTitle(String(localized: "select_device"))
+      .navigationTitle(String(localized: "select_device", table: "Common"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button(String(localized: "cancel")) {
+          Button(String(localized: "cancel", table: "Common")) {
             dismiss()
           }
         }

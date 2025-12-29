@@ -11,11 +11,11 @@ struct DevicePickerView: View {
     VStack(alignment: .leading, spacing: 8) {
       HStack(alignment: .center) {
         VStack(alignment: .leading, spacing: 4) {
-          Text(String(localized: "select_a_device"))
+          Text(String(localized: "select_a_device", table: "Analytics"))
             .font(.headline)
             .foregroundStyle(.secondary)
 
-          Text(String(localized: "select_a_device_description"))
+          Text(String(localized: "select_a_device_description", table: "Analytics"))
             .font(.caption)
             .foregroundStyle(.secondary)
             .lineLimit(2)
@@ -28,7 +28,7 @@ struct DevicePickerView: View {
           isShowingDevicePicker = true
         } label: {
           HStack(spacing: 8) {
-            Text(selectedDevice ?? String(localized: "all_devices"))
+            Text(selectedDevice ?? String(localized: "all_devices", table: "Common"))
               .foregroundStyle(.primary)
             Image(systemName: "chevron.down")
               .foregroundStyle(.secondary)
@@ -37,7 +37,7 @@ struct DevicePickerView: View {
           .padding(.horizontal, 12)
           .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
         }
-        .accessibilityLabel(Text(String(localized: "select_a_device")))
+        .accessibilityLabel(Text(String(localized: "select_a_device", table: "Analytics")))
         .frame(minWidth: 140)
         .sheet(isPresented: $isShowingDevicePicker) {
           NavigationStack {
@@ -47,7 +47,7 @@ struct DevicePickerView: View {
                 isShowingDevicePicker = false
               } label: {
                 HStack {
-                  Text(String(localized: "all_devices"))
+                  Text(String(localized: "all_devices", table: "Common"))
                     .foregroundStyle(.primary)
                   Spacer()
                   if selectedDevice == nil {
@@ -78,10 +78,12 @@ struct DevicePickerView: View {
               }
             }
             .searchable(text: $deviceSearchQuery)
-            .navigationTitle(Text(String(localized: "select_a_device")))
+            .navigationTitle(Text(String(localized: "select_a_device", table: "Analytics")))
             .toolbar {
               ToolbarItem(placement: .cancellationAction) {
-                Button(String(localized: "cancel")) { isShowingDevicePicker = false }
+                Button(String(localized: "cancel", table: "Common")) {
+                  isShowingDevicePicker = false
+                }
               }
             }
           }

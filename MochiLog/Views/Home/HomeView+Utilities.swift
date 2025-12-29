@@ -60,11 +60,11 @@ extension HomeView {
     if record.diagnosticResult == nil && designCapacityUsed > 0 && record.rawCapacity > 0 {
       let rawRatio = (Double(record.rawCapacity) / Double(designCapacityUsed)) * 100.0
       if rawRatio < 80.0 {
-        record.diagnosticResult = String(localized: "diag_replace_recommended")
+        record.diagnosticResult = String(localized: "diag_replace_recommended", table: "Records")
       } else if rawRatio < 90.0 {
-        record.diagnosticResult = String(localized: "diag_slightly_degraded")
+        record.diagnosticResult = String(localized: "diag_slightly_degraded", table: "Records")
       } else {
-        record.diagnosticResult = String(localized: "diag_normal")
+        record.diagnosticResult = String(localized: "diag_normal", table: "Records")
       }
     }
 
@@ -168,11 +168,11 @@ extension HomeView {
         if record.rawCapacity > 0 {
           let rawRatio = (Double(record.rawCapacity) / Double(cap)) * 100.0
           if rawRatio < 80.0 {
-            record.diagnosticResult = String(localized: "diag_replace_recommended")
+            record.diagnosticResult = String(localized: "diag_replace_recommended", table: "Records")
           } else if rawRatio < 90.0 {
-            record.diagnosticResult = String(localized: "diag_slightly_degraded")
+            record.diagnosticResult = String(localized: "diag_slightly_degraded", table: "Records")
           } else {
-            record.diagnosticResult = String(localized: "diag_normal")
+            record.diagnosticResult = String(localized: "diag_normal", table: "Records")
           }
         }
         needsSave = true
@@ -185,11 +185,11 @@ extension HomeView {
         if record.rawCapacity > 0 {
           let rawRatio = (Double(record.rawCapacity) / Double(cap)) * 100.0
           if rawRatio < 80.0 {
-            record.diagnosticResult = String(localized: "diag_replace_recommended")
+            record.diagnosticResult = String(localized: "diag_replace_recommended", table: "Records")
           } else if rawRatio < 90.0 {
-            record.diagnosticResult = String(localized: "diag_slightly_degraded")
+            record.diagnosticResult = String(localized: "diag_slightly_degraded", table: "Records")
           } else {
-            record.diagnosticResult = String(localized: "diag_normal")
+            record.diagnosticResult = String(localized: "diag_normal", table: "Records")
           }
         }
         needsSave = true

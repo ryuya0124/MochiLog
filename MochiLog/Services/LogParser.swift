@@ -229,11 +229,11 @@ struct LogParser {
     // 診断結果 (簡易ロジック) - ローカライズキーを使用
     if let health = result.rawRatio {
       if health < 80.0 {
-        result.diagnosticResult = String(localized: "diag_replace_recommended")
+        result.diagnosticResult = String(localized: "diag_replace_recommended", table: "Records")
       } else if health < 90.0 {
-        result.diagnosticResult = String(localized: "diag_slightly_degraded")
+        result.diagnosticResult = String(localized: "diag_slightly_degraded", table: "Records")
       } else {
-        result.diagnosticResult = String(localized: "diag_normal")
+        result.diagnosticResult = String(localized: "diag_normal", table: "Records")
       }
     }
 

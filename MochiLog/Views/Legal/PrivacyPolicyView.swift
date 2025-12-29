@@ -24,10 +24,10 @@ struct PrivacyPolicyView: View {
               .foregroundStyle(.secondary)
 
             VStack(alignment: .leading, spacing: 2) {
-              Text(headerTitle ?? String(localized: "privacy_policy_title"))
+              Text(headerTitle ?? String(localized: "privacy_policy_title", table: "Legal"))
                 .font(.title2)
                 .fontWeight(.semibold)
-              Text(String(localized: "privacy_policy_subtitle"))
+              Text(String(localized: "privacy_policy_subtitle", table: "Legal"))
                 .font(.caption)
                 .foregroundColor(.secondary)
             }
@@ -67,7 +67,7 @@ struct PrivacyPolicyView: View {
       .navigationTitle("")
       .toolbar {
         ToolbarItem(placement: .navigationBarTrailing) {
-          Button(String(localized: "close")) { dismiss() }
+          Button(String(localized: "close", table: "Common")) { dismiss() }
         }
       }
       .task {
@@ -81,13 +81,13 @@ struct PrivacyPolicyView: View {
     headerTitle = nil
     let resourceName = selectedResourceName()
     guard let url = Bundle.main.url(forResource: resourceName, withExtension: "md") else {
-      blocks = [.paragraph(AttributedString(String(localized: "privacy_policy_unavailable")))]
+      blocks = [.paragraph(AttributedString(String(localized: "privacy_policy_unavailable", table: "Legal")))]
       return
     }
 
     guard let data = try? Data(contentsOf: url), let raw = String(data: data, encoding: .utf8)
     else {
-      blocks = [.paragraph(AttributedString(String(localized: "privacy_policy_unavailable")))]
+      blocks = [.paragraph(AttributedString(String(localized: "privacy_policy_unavailable", table: "Legal")))]
       return
     }
 

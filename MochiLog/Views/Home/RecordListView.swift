@@ -88,7 +88,7 @@ struct RecordListView<Header: View>: View {
                         Button(role: .destructive) {
                           onDelete(record)
                         } label: {
-                          Label(String(localized: "delete"), systemImage: "trash.fill")
+                          Label(String(localized: "delete", table: "Common"), systemImage: "trash.fill")
                             .font(.title2)
                         }
                       }

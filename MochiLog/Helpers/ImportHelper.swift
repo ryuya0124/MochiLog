@@ -23,7 +23,7 @@ extension HomeView {
         let needsRelease = url.startAccessingSecurityScopedResource()
         if !needsRelease && !url.isFileURL {
           await MainActor.run {
-            errorMessage = String(localized: "file_access_denied")
+            errorMessage = String(localized: "file_access_denied", table: "Home")
             showingErrorAlert = true
           }
           continue
@@ -44,7 +44,7 @@ extension HomeView {
           } else {
             await MainActor.run {
               errorMessage =
-                "\(String(localized: "file_read_error")): \(url.lastPathComponent) \(String(localized: "zip_extract_failed"))"
+                "\(String(localized: "file_read_error", table: "Home")): \(url.lastPathComponent) \(String(localized: "zip_extract_failed", table: "Home"))"
               showingErrorAlert = true
             }
           }
@@ -75,7 +75,7 @@ extension HomeView {
 
       if allFileURLs.isEmpty {
         await MainActor.run {
-          errorMessage = String(localized: "no_supported_files")
+          errorMessage = String(localized: "no_supported_files", table: "Home")
           showingErrorAlert = true
         }
         return
@@ -140,7 +140,7 @@ extension HomeView {
             showRecordDetail(newRecord)
             addedAny = true
           } else {
-            addErrors.append(String(localized: "parse_error"))
+            addErrors.append(String(localized: "parse_error", table: "Home"))
           }
         }
       }
@@ -161,7 +161,7 @@ extension HomeView {
       }
     case .failure(let error):
       await MainActor.run {
-        errorMessage = "\(String(localized: "file_select_error")): \(error.localizedDescription)"
+        errorMessage = "\(String(localized: "file_select_error", table: "Home")): \(error.localizedDescription)"
         showingErrorAlert = true
       }
     }

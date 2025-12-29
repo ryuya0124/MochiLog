@@ -20,12 +20,13 @@ struct HealthTrendView: View {
       Text(
         String(
           localized: appSettings.analysisDataSource == .nominal
-            ? "health_trend_nominal" : "health_trend_actual")
+            ? "health_trend_nominal" : "health_trend_actual",
+          table: "Analytics")
       )
       .font(.headline)
 
       if visibleRecords.isEmpty {
-        Text(String(localized: "no_records_for_device"))
+        Text(String(localized: "no_records_for_device", table: "Analytics"))
           .foregroundStyle(.secondary)
           .frame(maxWidth: .infinity, alignment: .center)
           .padding()
@@ -34,7 +35,7 @@ struct HealthTrendView: View {
         if horizontalSizeClass == .compact {
           HStack(spacing: 8) {
             VStack(alignment: .leading, spacing: 4) {
-              Text(String(localized: "chart_range"))
+              Text(String(localized: "chart_range", table: "Analytics"))
                 .font(.caption)
                 .foregroundStyle(.secondary)
               HStack(spacing: 8) {
@@ -51,7 +52,7 @@ struct HealthTrendView: View {
                   }
                 }
                 .pickerStyle(.menu)
-                .accessibilityLabel(Text(String(localized: "chart_range")))
+                .accessibilityLabel(Text(String(localized: "chart_range", table: "Analytics")))
 
                 Button {
                   shiftWindow(false)
@@ -79,7 +80,7 @@ struct HealthTrendView: View {
         } else {
           HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 6) {
-              Text(String(localized: "chart_range"))
+              Text(String(localized: "chart_range", table: "Analytics"))
                 .font(.caption)
                 .foregroundStyle(.secondary)
               HStack(spacing: 12) {
@@ -96,7 +97,7 @@ struct HealthTrendView: View {
                   }
                 }
                 .pickerStyle(.segmented)
-                .accessibilityLabel(Text(String(localized: "chart_range")))
+                .accessibilityLabel(Text(String(localized: "chart_range", table: "Analytics")))
 
                 Button {
                   shiftWindow(false)
@@ -128,28 +129,34 @@ struct HealthTrendView: View {
           ForEach(visibleRecords) { record in
             LineMark(
               x: .value(
-                String(localized: "date"), Calendar.current.startOfDay(for: record.logDate),
+                String(localized: "date", table: "Common"),
+                Calendar.current.startOfDay(for: record.logDate),
                 unit: unit.calendarComponent),
               y: .value(
-                String(localized: "real_capacity"),
+                String(localized: "real_capacity", table: "Analytics"),
                 appSettings.analysisDataSource == .nominal
                   ? record.nominalHealthPercent : record.healthPercent)
             )
-            .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
+            .foregroundStyle(
+              by: .value(String(localized: "device_name", table: "Common"), record.deviceName)
+            )
             .interpolationMethod(.catmullRom)
             .opacity(animateChart ? 1 : 0)
 
             if showPoints {
               PointMark(
                 x: .value(
-                  String(localized: "date"), Calendar.current.startOfDay(for: record.logDate),
+                  String(localized: "date", table: "Common"),
+                  Calendar.current.startOfDay(for: record.logDate),
                   unit: unit.calendarComponent),
                 y: .value(
-                  String(localized: "real_capacity"),
+                  String(localized: "real_capacity", table: "Analytics"),
                   appSettings.analysisDataSource == .nominal
                     ? record.nominalHealthPercent : record.healthPercent)
               )
-              .foregroundStyle(by: .value(String(localized: "device_name"), record.deviceName))
+              .foregroundStyle(
+                by: .value(String(localized: "device_name", table: "Common"), record.deviceName)
+              )
               .symbol(.circle)
               .opacity(animateChart ? 1 : 0)
             }

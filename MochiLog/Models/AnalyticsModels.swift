@@ -17,19 +17,19 @@ enum RangePreset: String, CaseIterable, Identifiable {
   var localizedName: String {
     switch self {
     case .oneWeek:
-      return String(localized: "range_1w")
+      return String(localized: "range_1w", table: "Analytics")
     case .oneMonth:
-      return String(localized: "range_1m")
+      return String(localized: "range_1m", table: "Analytics")
     case .threeMonths:
-      return String(localized: "range_3m")
+      return String(localized: "range_3m", table: "Analytics")
     case .sixMonths:
-      return String(localized: "range_6m")
+      return String(localized: "range_6m", table: "Analytics")
     case .oneYear:
-      return String(localized: "range_1y")
+      return String(localized: "range_1y", table: "Analytics")
     case .twoYears:
-      return String(localized: "range_2y")
+      return String(localized: "range_2y", table: "Analytics")
     case .all:
-      return String(localized: "range_all")
+      return String(localized: "range_all", table: "Analytics")
     }
   }
 }

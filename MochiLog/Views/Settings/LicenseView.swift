@@ -99,11 +99,11 @@ struct LicenseView: View {
           }
         }
       }
-      .navigationTitle(String(localized: "licenses"))
+      .navigationTitle(String(localized: "licenses", table: "Settings"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .navigationBarTrailing) {
-          Button(String(localized: "close")) {
+          Button(String(localized: "close", table: "Common")) {
             dismiss()
           }
         }
@@ -147,7 +147,7 @@ struct LicenseDetailView: View {
           Button(action: { showingFullLicense = true }) {
             HStack {
               Image(systemName: "doc.text")
-              Text(String(localized: "view_full_license"))
+              Text(String(localized: "view_full_license", table: "Settings"))
             }
             .frame(maxWidth: .infinity)
             .padding()
@@ -200,7 +200,7 @@ struct FullLicenseView: View {
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .navigationBarTrailing) {
-          Button(String(localized: "close")) {
+          Button(String(localized: "close", table: "Common")) {
             dismiss()
           }
         }

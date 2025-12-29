@@ -91,7 +91,7 @@ struct DonationView: View {
               .foregroundColor(.red)
               .padding(.top)
 
-            Text(String(localized: "donation_description"))
+            Text(String(localized: "donation_description", table: "Settings"))
               .font(.body)
               .multilineTextAlignment(.center)
               .padding(.horizontal)
@@ -100,7 +100,7 @@ struct DonationView: View {
           .listRowBackground(Color.clear)
         }
 
-        Section(String(localized: "donation_options")) {
+        Section(String(localized: "donation_options", table: "Settings")) {
           if donationManager.products.isEmpty {
             ProgressView()
               .frame(maxWidth: .infinity)
@@ -133,11 +133,11 @@ struct DonationView: View {
           }
         }
       }
-      .navigationTitle(String(localized: "donation_title"))
+      .navigationTitle(String(localized: "donation_title", table: "Settings"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .navigationBarTrailing) {
-          Button(String(localized: "close")) {
+          Button(String(localized: "close", table: "Common")) {
             dismiss()
           }
         }
@@ -145,10 +145,10 @@ struct DonationView: View {
       .task {
         await donationManager.fetchProducts()
       }
-      .alert(String(localized: "error"), isPresented: $showingError) {
-        Button(String(localized: "ok"), role: .cancel) {}
+      .alert(String(localized: "error", table: "Common"), isPresented: $showingError) {
+        Button(String(localized: "ok", table: "Common"), role: .cancel) {}
       } message: {
-        Text(String(localized: "purchase_error_message"))
+        Text(String(localized: "purchase_error_message", table: "Settings"))
       }
       .overlay {
         if isPurchasing {

@@ -38,17 +38,17 @@ struct SupportFormView: View {
     NavigationStack {
       Form {
         Section {
-          TextField(String(localized: "your_name"), text: $name)
+          TextField(String(localized: "your_name", table: "Support"), text: $name)
             .textContentType(.name)
 
-          TextField(String(localized: "email_address"), text: $email)
+          TextField(String(localized: "email_address", table: "Support"), text: $email)
             .textContentType(.emailAddress)
             .keyboardType(.emailAddress)
             .autocapitalization(.none)
         }
 
-        Section(String(localized: "inquiry_type")) {
-          Picker(String(localized: "inquiry_type"), selection: $inquiryType) {
+        Section(String(localized: "inquiry_type", table: "Support")) {
+          Picker(String(localized: "inquiry_type", table: "Support"), selection: $inquiryType) {
             ForEach(InquiryType.allCases) { type in
               Text(type.localizedName).tag(type)
             }
@@ -60,34 +60,34 @@ struct SupportFormView: View {
           TextEditor(text: $message)
             .frame(minHeight: 150)
         } header: {
-          Text(String(localized: "message"))
+          Text(String(localized: "message", table: "Support"))
         } footer: {
-          Text(String(localized: "device_info_included"))
+          Text(String(localized: "device_info_included", table: "Common"))
             .foregroundStyle(.secondary)
         }
       }
-      .navigationTitle(String(localized: "contact_form"))
+      .navigationTitle(String(localized: "contact_form", table: "Support"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button(String(localized: "cancel")) { dismiss() }
+          Button(String(localized: "cancel", table: "Common")) { dismiss() }
         }
         ToolbarItem(placement: .confirmationAction) {
-          Button(String(localized: "send")) {
+          Button(String(localized: "send", table: "Common")) {
             sendEmail()
           }
           .disabled(!isFormValid)
         }
       }
-      .alert(String(localized: "mail_not_configured"), isPresented: $showingMailError) {
-        Button(String(localized: "ok"), role: .cancel) {}
+      .alert(String(localized: "mail_not_configured", table: "Support"), isPresented: $showingMailError) {
+        Button(String(localized: "ok", table: "Common"), role: .cancel) {}
       } message: {
-        Text(String(localized: "mail_not_configured_message"))
+        Text(String(localized: "mail_not_configured_message", table: "Support"))
       }
-      .alert(String(localized: "error"), isPresented: $showingValidationError) {
-        Button(String(localized: "ok"), role: .cancel) {}
+      .alert(String(localized: "error", table: "Common"), isPresented: $showingValidationError) {
+        Button(String(localized: "ok", table: "Common"), role: .cancel) {}
       } message: {
-        Text(String(localized: "required_fields_empty"))
+        Text(String(localized: "required_fields_empty", table: "Support"))
       }
       .sheet(isPresented: $isShowingMailCompose) {
         MailComposeView(

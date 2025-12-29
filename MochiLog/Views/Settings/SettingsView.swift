@@ -39,9 +39,9 @@ struct SettingsView: View {
     NavigationStack {
       List {
         // MARK: - 一般
-        Section(String(localized: "general")) {
+        Section(String(localized: "general", table: "Settings")) {
           Toggle(
-            String(localized: "enable_icloud_sync"),
+            String(localized: "enable_icloud_sync", table: "Settings"),
             isOn: Binding(
               get: {
                 localICloudToggle
@@ -55,7 +55,8 @@ struct SettingsView: View {
                 case .failure(let err):
                   localICloudToggle = appSettings.iCloudSyncEnabled
                   iCloudErrorMessage =
-                    err.errorDescription ?? String(localized: "icloud_sync_failed")
+                    err.errorDescription
+                    ?? String(localized: "icloud_sync_failed", table: "Settings")
                   showingICloudErrorAlert = true
                 }
               }))
@@ -66,7 +67,10 @@ struct SettingsView: View {
               .foregroundColor(.red)
           }
 
-          Picker(String(localized: "accent_color"), selection: $appSettings.accentColor) {
+          Picker(
+            String(localized: "accent_color", table: "Settings"),
+            selection: $appSettings.accentColor
+          ) {
             ForEach(AppSettings.ThemeColor.allCases) { theme in
               HStack(spacing: 12) {
                 RoundedRectangle(cornerRadius: 4)
@@ -84,41 +88,46 @@ struct SettingsView: View {
             appSettings.showingSampleData = true
             appSettings.selectedTabIndex = 1  // 分析ページへ遷移
           } label: {
-            Label(String(localized: "view_sample_data"), systemImage: "eye")
+            Label(String(localized: "view_sample_data", table: "Home"), systemImage: "eye")
           }
         }
 
         // MARK: - Apple Watch 設定
         Section {
           HStack {
-            Label(String(localized: "registered_watch"), systemImage: "applewatch")
+            Label(
+              String(localized: "registered_watch", table: "Settings"), systemImage: "applewatch")
             Spacer()
-            Text(appSettings.registeredWatchModel ?? String(localized: "not_registered"))
-              .foregroundStyle(.secondary)
+            Text(
+              appSettings.registeredWatchModel
+                ?? String(localized: "not_registered", table: "Settings")
+            )
+            .foregroundStyle(.secondary)
           }
 
           Button(action: { showingWatchPicker = true }) {
             Label(
               appSettings.registeredWatchModel == nil
-                ? String(localized: "register_watch")
-                : String(localized: "change_watch"),
+                ? String(localized: "register_watch", table: "Settings")
+                : String(localized: "change_watch", table: "Settings"),
               systemImage: "plus.circle"
             )
           }
 
           if appSettings.registeredWatchModel != nil {
             Button(role: .destructive, action: { showingRemoveWatchConfirmation = true }) {
-              Label(String(localized: "remove_watch"), systemImage: "minus.circle")
+              Label(
+                String(localized: "remove_watch", table: "Settings"), systemImage: "minus.circle")
             }
           }
         } header: {
-          Text(String(localized: "apple_watch_settings"))
+          Text(String(localized: "apple_watch_settings", table: "Settings"))
         } footer: {
-          Text(String(localized: "watch_selection_description"))
+          Text(String(localized: "watch_selection_description", table: "Settings"))
         }
 
         // MARK: - データ管理
-        Section(String(localized: "data_management")) {
+        Section(String(localized: "data_management", table: "Settings")) {
           Button(role: .destructive) {
             if records.isEmpty {
               showingNoDataToDeleteAlert = true
@@ -126,7 +135,8 @@ struct SettingsView: View {
               showingDeleteConfirmation = true
             }
           } label: {
-            Label(String(localized: "delete_all_data"), systemImage: "trash.fill")
+            Label(
+              String(localized: "delete_all_data", table: "Settings"), systemImage: "trash.fill")
           }
 
           Button(role: .destructive) {
@@ -136,52 +146,62 @@ struct SettingsView: View {
               showingDeviceDeletePicker = true
             }
           } label: {
-            Label(String(localized: "delete_device_data"), systemImage: "trash")
+            Label(String(localized: "delete_device_data", table: "Settings"), systemImage: "trash")
           }
         }
 
         // MARK: - サポート
-        Section(String(localized: "support")) {
+        Section(String(localized: "support", table: "Settings")) {
           Button(action: { showingTutorial = true }) {
-            Label(String(localized: "view_tutorial"), systemImage: "book.fill")
+            Label(String(localized: "view_tutorial", table: "Home"), systemImage: "book.fill")
           }
 
           Button(action: { showingSupportForm = true }) {
-            Label(String(localized: "contact_support"), systemImage: "envelope.fill")
+            Label(
+              String(localized: "contact_support", table: "Support"), systemImage: "envelope.fill")
           }
 
           Button(action: { showingDonation = true }) {
-            Label(String(localized: "donation_title"), systemImage: "heart.fill")
+            Label(String(localized: "donation_title", table: "Settings"), systemImage: "heart.fill")
           }
           Button(action: { showingPrivacyPolicy = true }) {
-            Label(String(localized: "privacy_policy"), systemImage: "hand.raised.fill")
+            Label(
+              String(localized: "privacy_policy", table: "Legal"), systemImage: "hand.raised.fill")
           }
 
           Button(action: { showingTermsOfUse = true }) {
-            Label(String(localized: "terms_of_use"), systemImage: "doc.plaintext")
+            Label(String(localized: "terms_of_use", table: "Legal"), systemImage: "doc.plaintext")
           }
 
           Button(action: { showingLicenses = true }) {
-            Label(String(localized: "licenses"), systemImage: "doc.text")
+            Label(String(localized: "licenses", table: "Settings"), systemImage: "doc.text")
           }
         }
 
         // MARK: - デバッグ
-        Section(String(localized: "debug")) {
-          Toggle(String(localized: "show_popup_on_load"), isOn: $appSettings.showPopupOnLoad)
+        Section(String(localized: "debug", table: "Support")) {
+          Toggle(
+            String(localized: "show_popup_on_load", table: "Support"),
+            isOn: $appSettings.showPopupOnLoad)
 
           NavigationLink(destination: DebugLogsView()) {
-            Label(String(localized: "view_error_logs"), systemImage: "exclamationmark.triangle")
+            Label(
+              String(localized: "view_error_logs", table: "Support"),
+              systemImage: "exclamationmark.triangle")
           }
         }
 
         // MARK: - 高度な設定
         Section {
-          DisclosureGroup(String(localized: "advanced_settings"), isExpanded: $isAdvancedExpanded) {
+          DisclosureGroup(
+            String(localized: "advanced_settings", table: "Settings"),
+            isExpanded: $isAdvancedExpanded
+          ) {
             VStack(spacing: 16) {
               // 分析データの計算基準
               Picker(
-                String(localized: "analysis_source"), selection: $appSettings.analysisDataSource
+                String(localized: "analysis_source", table: "Settings"),
+                selection: $appSettings.analysisDataSource
               ) {
                 ForEach(AppSettings.AnalysisDataSource.allCases) { source in
                   Text(source.localizedName).tag(source)
@@ -194,26 +214,26 @@ struct SettingsView: View {
 
               // 共有インポート時にアプリを開くかどうか
               Toggle(
-                String(localized: "open_app_after_share_import"),
+                String(localized: "open_app_after_share_import", table: "Settings"),
                 isOn: $appSettings.openAppAfterShareImport
               )
               .padding(.top, 8)
 
-              Text(String(localized: "open_app_after_share_import_description"))
+              Text(String(localized: "open_app_after_share_import_description", table: "Settings"))
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.bottom, 8)
 
               Toggle(
-                String(localized: "enable_capacity_validation"),
+                String(localized: "enable_capacity_validation", table: "Settings"),
                 isOn: $appSettings.enableCapacityValidation
               )
 
               if appSettings.enableCapacityValidation {
                 VStack(alignment: .leading, spacing: 8) {
                   HStack {
-                    Text(String(localized: "validation_threshold"))
+                    Text(String(localized: "validation_threshold", table: "Settings"))
                     Spacer()
                     Text(String(format: "%.1f x", appSettings.capacityValidationThreshold))
                       .monospacedDigit()
@@ -223,7 +243,8 @@ struct SettingsView: View {
                 }
 
                 Picker(
-                  String(localized: "mismatch_behavior"), selection: $appSettings.mismatchBehavior
+                  String(localized: "mismatch_behavior", table: "Settings"),
+                  selection: $appSettings.mismatchBehavior
                 ) {
                   ForEach(AppSettings.MismatchBehavior.allCases) { behavior in
                     Text(behavior.localizedName).tag(behavior)
@@ -231,7 +252,7 @@ struct SettingsView: View {
                 }
               }
 
-              Text(String(localized: "validation_threshold_description"))
+              Text(String(localized: "validation_threshold_description", table: "Settings"))
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -241,12 +262,12 @@ struct SettingsView: View {
 
               // 重複したログの記録を許可
               Toggle(
-                String(localized: "allow_duplicate_records"),
+                String(localized: "allow_duplicate_records", table: "Settings"),
                 isOn: $appSettings.allowDuplicateRecords
               )
               .padding(.top, 8)
 
-              Text(String(localized: "allow_duplicate_records_description"))
+              Text(String(localized: "allow_duplicate_records_description", table: "Settings"))
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -254,7 +275,7 @@ struct SettingsView: View {
 
               VStack(alignment: .leading, spacing: 8) {
                 HStack {
-                  Text(String(localized: "icloud_storage_threshold"))
+                  Text(String(localized: "icloud_storage_threshold", table: "Settings"))
                   Spacer()
                   Text(String(format: "%.0f MB", appSettings.iCloudStorageThresholdMB))
                     .foregroundStyle(.secondary)
@@ -274,18 +295,18 @@ struct SettingsView: View {
 
         // MARK: - アプリ情報
         Section {
-          LabeledContent(String(localized: "app_version"), value: appVersion)
+          LabeledContent(String(localized: "app_version", table: "Settings"), value: appVersion)
         }
 
         // MARK: - プロジェクト
         Section {
           Link(destination: URL(string: "https://github.com/ryuya0124/MochiLog")!) {
-            Label(String(localized: "view_on_github"), systemImage: "link")
+            Label(String(localized: "view_on_github", table: "Support"), systemImage: "link")
           }
         }
 
       }
-      .navigationTitle(String(localized: "settings"))
+      .navigationTitle(String(localized: "settings", table: "Settings"))
       .onAppear { localICloudToggle = appSettings.iCloudSyncEnabled }
       .sheet(isPresented: $showingWatchPicker) {
         HierarchicalDevicePickerView(initialCategory: .watch, lockCategory: true) {
@@ -311,30 +332,41 @@ struct SettingsView: View {
       .sheet(isPresented: $showingLicenses) {
         LicenseView()
       }
-      .alert(String(localized: "delete_all_data"), isPresented: $showingDeleteConfirmation) {
-        Button(String(localized: "cancel"), role: .cancel) {}
-        Button(String(localized: "delete"), role: .destructive) {
+      .alert(
+        String(localized: "delete_all_data", table: "Settings"),
+        isPresented: $showingDeleteConfirmation
+      ) {
+        Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
+        Button(String(localized: "delete", table: "Common"), role: .destructive) {
           deleteAllRecords()
         }
       } message: {
-        Text(String(localized: "delete_all_data_confirm"))
+        Text(String(localized: "delete_all_data_confirm", table: "Settings"))
       }
-      .alert(String(localized: "no_data_to_delete_title"), isPresented: $showingNoDataToDeleteAlert)
-      {
-        Button(String(localized: "ok"), role: .cancel) {}
+      .alert(
+        String(localized: "no_data_to_delete_title", table: "Settings"),
+        isPresented: $showingNoDataToDeleteAlert
+      ) {
+        Button(String(localized: "ok", table: "Common"), role: .cancel) {}
       } message: {
-        Text(String(localized: "no_data_to_delete_message"))
+        Text(String(localized: "no_data_to_delete_message", table: "Settings"))
       }
-      .alert(String(localized: "remove_watch"), isPresented: $showingRemoveWatchConfirmation) {
-        Button(String(localized: "cancel"), role: .cancel) {}
-        Button(String(localized: "remove_watch"), role: .destructive) {
+      .alert(
+        String(localized: "remove_watch", table: "Settings"),
+        isPresented: $showingRemoveWatchConfirmation
+      ) {
+        Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
+        Button(String(localized: "remove_watch", table: "Settings"), role: .destructive) {
           appSettings.unregisterWatch()
         }
       } message: {
-        Text(String(localized: "remove_watch_confirm"))
+        Text(String(localized: "remove_watch_confirm", table: "Settings"))
       }
-      .alert(String(localized: "icloud_sync_failed"), isPresented: $showingICloudErrorAlert) {
-        Button(String(localized: "ok"), role: .cancel) {}
+      .alert(
+        String(localized: "icloud_sync_failed", table: "Settings"),
+        isPresented: $showingICloudErrorAlert
+      ) {
+        Button(String(localized: "ok", table: "Common"), role: .cancel) {}
       } message: {
         Text(iCloudErrorMessage)
       }
@@ -345,18 +377,21 @@ struct SettingsView: View {
         }
       }
       .alert(
-        String(localized: "delete_device_data_title"),
+        String(localized: "delete_device_data_title", table: "Settings"),
         isPresented: $showingDeviceDeleteConfirmation
       ) {
-        Button(String(localized: "cancel"), role: .cancel) {}
-        Button(String(localized: "delete"), role: .destructive) {
+        Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
+        Button(String(localized: "delete", table: "Common"), role: .destructive) {
           if let deviceName = selectedDeviceToDelete {
             deleteRecordsForDevice(deviceName)
           }
         }
       } message: {
         if let deviceName = selectedDeviceToDelete {
-          Text(String(format: String(localized: "delete_device_data_confirm"), deviceName))
+          Text(
+            String(
+              format: String(localized: "delete_device_data_confirm", table: "Settings"), deviceName
+            ))
         }
       }
     }

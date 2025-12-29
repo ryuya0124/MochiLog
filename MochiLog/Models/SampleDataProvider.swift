@@ -105,7 +105,7 @@ enum SampleDataProvider {
           deflator: nil,
           settingsDisplayPercent: settingsDisplayPercent,
           diagnosticResult: currentNominalHealth >= 80
-            ? String(localized: "diag_normal") : String(localized: "diag_slightly_degraded"),
+            ? String(localized: "diag_normal", table: "Records") : String(localized: "diag_slightly_degraded", table: "Records"),
           avgTemp: avgTemp,
           maxTemp: maxTemp,
           minTemp: minTemp,

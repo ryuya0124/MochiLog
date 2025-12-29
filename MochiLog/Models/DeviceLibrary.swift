@@ -649,9 +649,9 @@ struct DeviceLibrary {
     var id: String { self.rawValue }
     var localizedName: String {
       switch self {
-      case .iphone: return String(localized: "category_iphone")
-      case .ipad: return String(localized: "category_ipad")
-      case .watch: return String(localized: "category_watch")
+      case .iphone: return String(localized: "category_iphone", table: "Common")
+      case .ipad: return String(localized: "category_ipad", table: "Common")
+      case .watch: return String(localized: "category_watch", table: "Common")
       case .ipod: return "iPod"
       }
     }

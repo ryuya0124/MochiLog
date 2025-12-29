@@ -25,7 +25,7 @@ struct DebugLogsView: View {
           ProgressView()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else if logs.isEmpty {
-          Text(String(localized: "no_error_logs"))
+          Text(String(localized: "no_error_logs", table: "Support"))
             .foregroundStyle(.secondary)
         } else {
           List {
@@ -55,35 +55,35 @@ struct DebugLogsView: View {
                   ErrorLogStore.shared.deleteLog(id: log.id)
                   reload()
                 } label: {
-                  Label(String(localized: "delete"), systemImage: "trash")
+                  Label(String(localized: "delete", table: "Common"), systemImage: "trash")
                 }
               }
             }
           }
         }
       }
-      .navigationTitle(String(localized: "view_error_logs"))
+      .navigationTitle(String(localized: "view_error_logs", table: "Support"))
       .toolbar {
         ToolbarItem(placement: .navigationBarTrailing) {
           if !logs.isEmpty {
             Button(role: .destructive) {
               showingDeleteAllConfirm = true
             } label: {
-              Text(String(localized: "clear_all_logs"))
+              Text(String(localized: "clear_all_logs", table: "Home"))
             }
           }
         }
       }
       .onAppear(perform: reload)
       .confirmationDialog(
-        String(localized: "delete_all_logs_confirm"), isPresented: $showingDeleteAllConfirm,
+        String(localized: "delete_all_logs_confirm", table: "Home"), isPresented: $showingDeleteAllConfirm,
         titleVisibility: .visible
       ) {
-        Button(String(localized: "delete"), role: .destructive) {
+        Button(String(localized: "delete", table: "Common"), role: .destructive) {
           ErrorLogStore.shared.clearAll()
           reload()
         }
-        Button(String(localized: "cancel"), role: .cancel) {}
+        Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
       }
       .sheet(item: $selectedLog) { log in
         DebugLogDetailView(entry: log)
@@ -111,7 +111,7 @@ struct DebugLogDetailView: View {
           } else if let txt = rawText {
             Text(txt).font(.body).textSelection(.enabled)
           } else {
-            Text(String(localized: "empty_log_preview"))
+            Text(String(localized: "empty_log_preview", table: "Records"))
               .foregroundStyle(.secondary)
           }
         }
@@ -125,19 +125,19 @@ struct DebugLogDetailView: View {
           prepareShareFile()
         }
       }
-      .navigationTitle(String(localized: "log_details"))
+      .navigationTitle(String(localized: "log_details", table: "Records"))
       .toolbar {
         ToolbarItem(placement: .navigationBarLeading) {
-          Button(String(localized: "close")) { dismiss() }
+          Button(String(localized: "close", table: "Common")) { dismiss() }
         }
         ToolbarItem(placement: .navigationBarTrailing) {
           if let url = shareFileURL {
             ShareLink(item: url) {
-              Text(String(localized: "export_log"))
+              Text(String(localized: "export_log", table: "Records"))
             }
           } else {
             Button(action: {}) {
-              Text(String(localized: "export_log"))
+              Text(String(localized: "export_log", table: "Records"))
             }
             .disabled(true)
           }

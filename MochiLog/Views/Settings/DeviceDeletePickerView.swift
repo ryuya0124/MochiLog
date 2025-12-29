@@ -37,13 +37,13 @@ struct DeviceDeletePickerView: View {
       .searchable(
         text: $searchText,
         placement: .navigationBarDrawer(displayMode: .always),
-        prompt: String(localized: "search_device")
+        prompt: String(localized: "search_device", table: "Common")
       )
-      .navigationTitle(String(localized: "select_device_to_delete"))
+      .navigationTitle(String(localized: "select_device_to_delete", table: "Settings"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button(String(localized: "cancel")) {
+          Button(String(localized: "cancel", table: "Common")) {
             dismiss()
           }
         }

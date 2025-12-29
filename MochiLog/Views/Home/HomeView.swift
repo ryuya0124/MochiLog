@@ -14,17 +14,19 @@ struct MainTabView: View {
     TabView(selection: $appSettings.selectedTabIndex) {
       HomeView()
         .tabItem {
-          Label(String(localized: "tab_home"), systemImage: "house.fill")
+          Label(String(localized: "tab_home", table: "Home"), systemImage: "house.fill")
         }
         .tag(0)
       AnalyticsView()
         .tabItem {
-          Label(String(localized: "tab_analytics"), systemImage: "chart.line.uptrend.xyaxis")
+          Label(
+            String(localized: "tab_analytics", table: "Analytics"),
+            systemImage: "chart.line.uptrend.xyaxis")
         }
         .tag(1)
       SettingsView()
         .tabItem {
-          Label(String(localized: "tab_settings"), systemImage: "gearshape.fill")
+          Label(String(localized: "tab_settings", table: "Settings"), systemImage: "gearshape.fill")
         }
         .tag(2)
     }
@@ -133,8 +135,8 @@ struct HomeView: View {
           await handleFileImport(result: result)
         }
       }
-      .alert(String(localized: "error"), isPresented: $showingErrorAlert) {
-        Button(String(localized: "ok"), role: .cancel) {}
+      .alert(String(localized: "error", table: "Common"), isPresented: $showingErrorAlert) {
+        Button(String(localized: "ok", table: "Common"), role: .cancel) {}
       } message: {
         Text(errorMessage)
       }
@@ -240,13 +242,15 @@ struct HomeView: View {
         _ in
         showingParseErrorSavedAlert = true
       }
-      .alert(String(localized: "log_saved"), isPresented: $showingParseErrorSavedAlert) {
-        Button(String(localized: "view_log")) {
+      .alert(
+        String(localized: "log_saved", table: "Home"), isPresented: $showingParseErrorSavedAlert
+      ) {
+        Button(String(localized: "view_log", table: "Records")) {
           showingDebugLogsSheet = true
         }
-        Button(String(localized: "ok"), role: .cancel) {}
+        Button(String(localized: "ok", table: "Common"), role: .cancel) {}
       } message: {
-        Text(String(localized: "log_saved_message"))
+        Text(String(localized: "log_saved_message", table: "Home"))
       }
       .sheet(isPresented: $showingDebugLogsSheet) {
         DebugLogsView()
@@ -289,23 +293,29 @@ struct HomeView: View {
           }
         }
       }
-      .alert(String(localized: "register_watch_title"), isPresented: $showingRegisterWatchAlert) {
-        Button(String(localized: "register")) {
+      .alert(
+        String(localized: "register_watch_title", table: "Settings"),
+        isPresented: $showingRegisterWatchAlert
+      ) {
+        Button(String(localized: "register", table: "Common")) {
           appSettings.registeredWatchModel = watchNameToRegister
         }
-        Button(String(localized: "cancel"), role: .cancel) {}
+        Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
       } message: {
-        Text(String(localized: "register_watch_message"))
+        Text(String(localized: "register_watch_message", table: "Settings"))
       }
-      .alert(String(localized: "mismatch_warning_title"), isPresented: $showingMismatchAlert) {
-        Button(String(localized: "select_manually")) {
+      .alert(
+        String(localized: "mismatch_warning_title", table: "Home"),
+        isPresented: $showingMismatchAlert
+      ) {
+        Button(String(localized: "select_manually", table: "Home")) {
           showingManualDevicePicker = true
         }
-        Button(String(localized: "cancel"), role: .cancel) {
+        Button(String(localized: "cancel", table: "Common"), role: .cancel) {
           pendingParseResult = nil
         }
       } message: {
-        Text(String(localized: "mismatch_warning_message"))
+        Text(String(localized: "mismatch_warning_message", table: "Home"))
       }
       .sheet(isPresented: $showingManualDevicePicker) {
         HierarchicalDevicePickerView { name, identifier in
@@ -370,22 +380,22 @@ struct HomeView: View {
     GeometryReader { geo in
       ScrollView {
         ContentUnavailableView {
-          Label(String(localized: "no_data"), systemImage: "battery.0")
+          Label(String(localized: "no_data", table: "Home"), systemImage: "battery.0")
         } description: {
-          Text(String(localized: "no_data_description"))
+          Text(String(localized: "no_data_description", table: "Home"))
         } actions: {
           VStack(spacing: 12) {
             Button {
               showingTutorial = true
             } label: {
-              Label(String(localized: "view_tutorial"), systemImage: "play.circle")
+              Label(String(localized: "view_tutorial", table: "Home"), systemImage: "play.circle")
             }
             .buttonStyle(.bordered)
 
             Button {
               withAnimation { appSettings.showingSampleData = true }
             } label: {
-              Label(String(localized: "view_sample_data"), systemImage: "eye")
+              Label(String(localized: "view_sample_data", table: "Home"), systemImage: "eye")
             }
             .buttonStyle(.borderedProminent)
           }
@@ -416,7 +426,7 @@ struct HomeView: View {
         ProgressView()
           .scaleEffect(1.5)
           .tint(.white)
-        Text(String(localized: "parsing_log"))
+        Text(String(localized: "parsing_log", table: "Home"))
           .font(.headline)
           .foregroundColor(.white)
       }

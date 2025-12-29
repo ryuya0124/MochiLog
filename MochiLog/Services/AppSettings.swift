@@ -43,8 +43,8 @@ final class AppSettings: ObservableObject {
 
     var localizedName: String {
       switch self {
-      case .manualSelection: return String(localized: "mismatch_behavior_manual")
-      case .error: return String(localized: "mismatch_behavior_error")
+      case .manualSelection: return String(localized: "mismatch_behavior_manual", table: "Settings")
+      case .error: return String(localized: "mismatch_behavior_error", table: "Settings")
       }
     }
   }
@@ -58,8 +58,8 @@ final class AppSettings: ObservableObject {
 
     var localizedName: String {
       switch self {
-      case .actual: return String(localized: "analysis_source_actual")
-      case .nominal: return String(localized: "analysis_source_nominal")
+      case .actual: return String(localized: "analysis_source_actual", table: "Settings")
+      case .nominal: return String(localized: "analysis_source_nominal", table: "Settings")
       }
     }
   }
@@ -75,10 +75,10 @@ final class AppSettings: ObservableObject {
 
     var localizedName: String {
       switch self {
-      case .hour: return String(localized: "chart_unit_hour")
-      case .day: return String(localized: "chart_unit_day")
-      case .week: return String(localized: "chart_unit_week")
-      case .month: return String(localized: "chart_unit_month")
+      case .hour: return String(localized: "chart_unit_hour", table: "Analytics")
+      case .day: return String(localized: "chart_unit_day", table: "Analytics")
+      case .week: return String(localized: "chart_unit_week", table: "Analytics")
+      case .month: return String(localized: "chart_unit_month", table: "Analytics")
       }
     }
 
@@ -103,10 +103,10 @@ final class AppSettings: ObservableObject {
 
     var localizedName: String {
       switch self {
-      case .green: return String(localized: "theme_color_green")
-      case .blue: return String(localized: "theme_color_blue")
-      case .orange: return String(localized: "theme_color_orange")
-      case .purple: return String(localized: "theme_color_purple")
+      case .green: return String(localized: "theme_color_green", table: "Settings")
+      case .blue: return String(localized: "theme_color_blue", table: "Settings")
+      case .orange: return String(localized: "theme_color_orange", table: "Settings")
+      case .purple: return String(localized: "theme_color_purple", table: "Settings")
       }
     }
 
@@ -450,9 +450,9 @@ final class AppSettings: ObservableObject {
     var errorDescription: String? {
       switch self {
       case .lowSpace(let requiredMB):
-        return String(format: String(localized: "icloud_sync_blocked_low_space"), requiredMB)
+        return String(format: String(localized: "icloud_sync_blocked_low_space", table: "Settings"), requiredMB)
       case .unknown:
-        return String(localized: "icloud_sync_failed")
+        return String(localized: "icloud_sync_failed", table: "Settings")
       }
     }
   }

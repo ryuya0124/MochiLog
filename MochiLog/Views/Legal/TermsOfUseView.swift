@@ -24,10 +24,10 @@ struct TermsOfUseView: View {
               .foregroundStyle(.secondary)
 
             VStack(alignment: .leading, spacing: 4) {
-              Text(headerTitle ?? String(localized: "terms_of_use_title"))
+              Text(headerTitle ?? String(localized: "terms_of_use_title", table: "Legal"))
                 .font(.title2)
                 .fontWeight(.semibold)
-              Text(String(localized: "terms_of_use_subtitle"))
+              Text(String(localized: "terms_of_use_subtitle", table: "Legal"))
                 .font(.caption)
                 .foregroundColor(.secondary)
             }
@@ -66,7 +66,7 @@ struct TermsOfUseView: View {
       .navigationTitle("")
       .toolbar {
         ToolbarItem(placement: .navigationBarTrailing) {
-          Button(String(localized: "close")) { dismiss() }
+          Button(String(localized: "close", table: "Common")) { dismiss() }
         }
       }
       .task {
@@ -80,13 +80,13 @@ struct TermsOfUseView: View {
     headerTitle = nil
     let resourceName = selectedResourceName()
     guard let url = Bundle.main.url(forResource: resourceName, withExtension: "md") else {
-      blocks = [.paragraph(AttributedString(String(localized: "terms_of_use_unavailable")))]
+      blocks = [.paragraph(AttributedString(String(localized: "terms_of_use_unavailable", table: "Legal")))]
       return
     }
 
     guard let data = try? Data(contentsOf: url), let str = String(data: data, encoding: .utf8)
     else {
-      blocks = [.paragraph(AttributedString(String(localized: "terms_of_use_unavailable")))]
+      blocks = [.paragraph(AttributedString(String(localized: "terms_of_use_unavailable", table: "Legal")))]
       return
     }
 

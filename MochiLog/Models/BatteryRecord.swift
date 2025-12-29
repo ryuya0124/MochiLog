@@ -159,11 +159,11 @@ final class BatteryRecord {
     }
 
     if health < 80.0 {
-      return String(localized: "diag_replace_recommended")
+      return String(localized: "diag_replace_recommended", table: "Records")
     } else if health < 90.0 {
-      return String(localized: "diag_slightly_degraded")
+      return String(localized: "diag_slightly_degraded", table: "Records")
     } else {
-      return String(localized: "diag_normal")
+      return String(localized: "diag_normal", table: "Records")
     }
   }
 

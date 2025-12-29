@@ -168,7 +168,7 @@ struct TutorialView: View {
                 currentPage += 1
               }
             }) {
-              Text(String(localized: "next"))
+              Text(String(localized: "next", table: "Common"))
                 .font(.headline)
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
@@ -184,7 +184,7 @@ struct TutorialView: View {
               appSettings.completeTutorial()
               dismiss()
             }) {
-              Text(String(localized: "got_it"))
+              Text(String(localized: "got_it", table: "Common"))
                 .font(.headline)
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
@@ -202,7 +202,7 @@ struct TutorialView: View {
               currentPage -= 1
             }
           }) {
-            Text(String(localized: "back"))
+            Text(String(localized: "back", table: "Common"))
               .font(.subheadline)
               .foregroundColor(.secondary)
           }
@@ -212,11 +212,11 @@ struct TutorialView: View {
         .padding(.horizontal, 24)
         .padding(.bottom, 40)
       }
-      .navigationTitle(String(localized: "tutorial"))
+      .navigationTitle(String(localized: "tutorial", table: "Onboarding"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button(String(localized: "close")) {
+          Button(String(localized: "close", table: "Common")) {
             dismiss()
           }
         }
@@ -296,14 +296,14 @@ struct TutorialPageView: View {
 
       // テキスト
       VStack(spacing: 16) {
-        Text(String(localized: String.LocalizationValue(page.titleKey)))
+        Text(String(localized: String.LocalizationValue(page.titleKey), table: "Onboarding"))
           .font(.title2)
           .fontWeight(.bold)
           .multilineTextAlignment(.center)
           .lineLimit(nil)
           .fixedSize(horizontal: false, vertical: true)
 
-        Text(String(localized: String.LocalizationValue(page.descriptionKey)))
+        Text(String(localized: String.LocalizationValue(page.descriptionKey), table: "Onboarding"))
           .font(.body)
           .foregroundStyle(.secondary)
           .multilineTextAlignment(.center)
@@ -319,7 +319,7 @@ struct TutorialPageView: View {
         Button(action: { onOpenVideo?() }) {
           HStack {
             Image(systemName: "play.rectangle.fill")
-            Text(String(localized: "watch_video_tutorial"))
+            Text(String(localized: "watch_video_tutorial", table: "Onboarding"))
           }
           .font(.subheadline)
           .foregroundColor(.blue)
@@ -343,10 +343,11 @@ struct TutorialPageView: View {
               Text(
                 String(
                   localized: String.LocalizationValue(
-                    page.customButtonTitleKey ?? "open_analytics_settings"))
+                    page.customButtonTitleKey ?? "open_analytics_settings"),
+                  table: "Onboarding")
               )
               .opacity(page.customButtonTitleKey != nil ? 1 : 0)
-              Text(String(localized: "open_analytics_settings"))
+              Text(String(localized: "open_analytics_settings", table: "Onboarding"))
                 .opacity(page.customButtonTitleKey == nil ? 1 : 0)
             }
           }

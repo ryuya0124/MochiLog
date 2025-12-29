@@ -13,17 +13,17 @@ struct DeviceReorderView: View {
         }
         .onMove(perform: move)
       }
-      .navigationTitle(String(localized: "sort_devices"))
+      .navigationTitle(String(localized: "sort_devices", table: "Home"))
       .navigationBarTitleDisplayMode(.inline)
       .environment(\.editMode, .constant(.active))
       .toolbar {
         ToolbarItem(placement: .navigationBarLeading) {
-          Button(String(localized: "cancel")) {
+          Button(String(localized: "cancel", table: "Common")) {
             dismiss()
           }
         }
         ToolbarItem(placement: .navigationBarTrailing) {
-          Button(String(localized: "save")) {
+          Button(String(localized: "save", table: "Common")) {
             onSave(items)
             dismiss()
           }

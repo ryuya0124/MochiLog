@@ -73,8 +73,8 @@ extension HomeView {
       {
         if silent {
           NotificationHelper.scheduleImportResultNotification(
-            title: String(localized: "import_silent_failure"),
-            body: String(localized: "duplicate_record")
+            title: String(localized: "import_silent_failure", table: "Home"),
+            body: String(localized: "duplicate_record", table: "Home")
           )
           return (nil, true)
         } else {
@@ -83,7 +83,7 @@ extension HomeView {
             NotificationCenter.default.post(
               name: NSNotification.Name("ShowImportError"),
               object: nil,
-              userInfo: ["errorMessage": String(localized: "duplicate_record")]
+              userInfo: ["errorMessage": String(localized: "duplicate_record", table: "Home")]
             )
           }
           return (nil, true)
@@ -107,13 +107,13 @@ extension HomeView {
       // サイレントモードの場合は通知
       if silent {
         let body = String(
-          format: String(localized: "import_silent_success_body"),
+          format: String(localized: "import_silent_success_body", table: "Home"),
           registeredWatch,
           DateFormatter.localizedString(
             from: newRecord.logDate, dateStyle: .medium, timeStyle: .short)
         )
         NotificationHelper.scheduleImportResultNotification(
-          title: String(localized: "import_silent_success"),
+          title: String(localized: "import_silent_success", table: "Home"),
           body: body
         )
       }
@@ -125,8 +125,8 @@ extension HomeView {
     if silent {
       // サイレントモードではエラー通知
       NotificationHelper.scheduleImportResultNotification(
-        title: String(localized: "import_silent_failure"),
-        body: String(localized: "watch_selection_required")
+        title: String(localized: "import_silent_failure", table: "Home"),
+        body: String(localized: "watch_selection_required", table: "Home")
       )
       return (nil, true)
     } else {
@@ -151,8 +151,8 @@ extension HomeView {
     {
       if silent {
         NotificationHelper.scheduleImportResultNotification(
-          title: String(localized: "import_silent_failure"),
-          body: String(localized: "duplicate_record")
+          title: String(localized: "import_silent_failure", table: "Home"),
+          body: String(localized: "duplicate_record", table: "Home")
         )
         return nil
       } else {
@@ -161,7 +161,7 @@ extension HomeView {
           NotificationCenter.default.post(
             name: NSNotification.Name("ShowImportError"),
             object: nil,
-            userInfo: ["errorMessage": String(localized: "duplicate_record")]
+            userInfo: ["errorMessage": String(localized: "duplicate_record", table: "Home")]
           )
         }
         return nil
@@ -183,13 +183,13 @@ extension HomeView {
     // サイレントモードの場合は通知
     if silent {
       let body = String(
-        format: String(localized: "import_silent_success_body"),
+        format: String(localized: "import_silent_success_body", table: "Home"),
         deviceName,
         DateFormatter.localizedString(
           from: newRecord.logDate, dateStyle: .medium, timeStyle: .short)
       )
       NotificationHelper.scheduleImportResultNotification(
-        title: String(localized: "import_silent_success"),
+        title: String(localized: "import_silent_success", table: "Home"),
         body: body
       )
     }
@@ -268,8 +268,8 @@ extension HomeView {
 
     if !canCreate {
       NotificationHelper.scheduleImportResultNotification(
-        title: String(localized: "import_silent_failure"),
-        body: String(localized: "parse_error")
+        title: String(localized: "import_silent_failure", table: "Home"),
+        body: String(localized: "parse_error", table: "Home")
       )
       SettingsRedirectHelper.redirectToPrivacyAnalytics()
       return
@@ -278,8 +278,8 @@ extension HomeView {
     // 容量不一致チェック
     if parseResult.isCapacityMismatch && AppSettings.shared.mismatchBehavior == .error {
       NotificationHelper.scheduleImportResultNotification(
-        title: String(localized: "import_silent_failure"),
-        body: String(localized: "capacity_mismatch_error")
+        title: String(localized: "import_silent_failure", table: "Home"),
+        body: String(localized: "capacity_mismatch_error", table: "Home")
       )
       SettingsRedirectHelper.redirectToPrivacyAnalytics()
       return
@@ -327,7 +327,7 @@ extension HomeView {
         NotificationCenter.default.post(
           name: NSNotification.Name("ShowImportError"),
           object: nil,
-          userInfo: ["errorMessage": String(localized: "parse_error")]
+          userInfo: ["errorMessage": String(localized: "parse_error", table: "Home")]
         )
       }
       return nil
@@ -340,7 +340,7 @@ extension HomeView {
           NotificationCenter.default.post(
             name: NSNotification.Name("ShowImportError"),
             object: nil,
-            userInfo: ["errorMessage": String(localized: "capacity_mismatch_error")]
+            userInfo: ["errorMessage": String(localized: "capacity_mismatch_error", table: "Home")]
           )
         }
         return nil

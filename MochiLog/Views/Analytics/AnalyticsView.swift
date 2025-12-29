@@ -179,22 +179,25 @@ struct AnalyticsView: View {
           GeometryReader { geo in
             ScrollView {
               ContentUnavailableView {
-                Label(String(localized: "no_data"), systemImage: "chart.line.uptrend.xyaxis")
+                Label(
+                  String(localized: "no_data", table: "Home"),
+                  systemImage: "chart.line.uptrend.xyaxis")
               } description: {
-                Text(String(localized: "no_data_description"))
+                Text(String(localized: "no_data_description", table: "Home"))
               } actions: {
                 VStack(spacing: 12) {
                   Button {
                     showingTutorial = true
                   } label: {
-                    Label(String(localized: "view_tutorial"), systemImage: "play.circle")
+                    Label(
+                      String(localized: "view_tutorial", table: "Home"), systemImage: "play.circle")
                   }
                   .buttonStyle(.bordered)
 
                   Button {
                     withAnimation { appSettings.showingSampleData = true }
                   } label: {
-                    Label(String(localized: "view_sample_data"), systemImage: "eye")
+                    Label(String(localized: "view_sample_data", table: "Home"), systemImage: "eye")
                   }
                   .buttonStyle(.borderedProminent)
                 }
@@ -254,7 +257,7 @@ struct AnalyticsView: View {
           }
         }
       }
-      .navigationTitle(String(localized: "analytics"))
+      .navigationTitle(String(localized: "analytics", table: "Analytics"))
       .background(Color(.systemGroupedBackground))
       .sheet(isPresented: $showingTutorial) {
         TutorialView()

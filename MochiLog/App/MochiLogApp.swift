@@ -234,7 +234,7 @@ struct MochiLogRootView: View {
               .controlSize(.large)
               .scaleEffect(1.2)
 
-            Text(String(localized: "applying_settings"))
+            Text(String(localized: "applying_settings", table: "Settings"))
               .font(.headline)
               .foregroundStyle(.secondary)
           }
