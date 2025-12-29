@@ -72,10 +72,6 @@ extension HomeView {
         hasDuplicateRecord(on: logDate, deviceName: registeredWatch)
       {
         if silent {
-          NotificationHelper.scheduleImportResultNotification(
-            title: String(localized: "import_silent_failure", table: "Home"),
-            body: String(localized: "duplicate_record", table: "Home")
-          )
           return (nil, true)
         } else {
           // すべてのHomeViewインスタンスにエラーを通知
@@ -104,30 +100,11 @@ extension HomeView {
       // レコード保存
       saveRecord(newRecord, deviceName: registeredWatch)
 
-      // サイレントモードの場合は通知
-      if silent {
-        let body = String(
-          format: String(localized: "import_silent_success_body", table: "Home"),
-          registeredWatch,
-          DateFormatter.localizedString(
-            from: newRecord.logDate, dateStyle: .medium, timeStyle: .short)
-        )
-        NotificationHelper.scheduleImportResultNotification(
-          title: String(localized: "import_silent_success", table: "Home"),
-          body: body
-        )
-      }
-
       return (newRecord, silent)
     }
 
     // 登録済みWatchモデルがない場合
     if silent {
-      // サイレントモードではエラー通知
-      NotificationHelper.scheduleImportResultNotification(
-        title: String(localized: "import_silent_failure", table: "Home"),
-        body: String(localized: "watch_selection_required", table: "Home")
-      )
       return (nil, true)
     } else {
       // 対話モードではWatch選択画面を表示
@@ -150,10 +127,6 @@ extension HomeView {
       hasDuplicateRecord(on: logDate, deviceName: deviceName)
     {
       if silent {
-        NotificationHelper.scheduleImportResultNotification(
-          title: String(localized: "import_silent_failure", table: "Home"),
-          body: String(localized: "duplicate_record", table: "Home")
-        )
         return nil
       } else {
         // すべてのHomeViewインスタンスにエラーを通知
@@ -179,20 +152,6 @@ extension HomeView {
 
     // レコード保存
     saveRecord(newRecord, deviceName: deviceName)
-
-    // サイレントモードの場合は通知
-    if silent {
-      let body = String(
-        format: String(localized: "import_silent_success_body", table: "Home"),
-        deviceName,
-        DateFormatter.localizedString(
-          from: newRecord.logDate, dateStyle: .medium, timeStyle: .short)
-      )
-      NotificationHelper.scheduleImportResultNotification(
-        title: String(localized: "import_silent_success", table: "Home"),
-        body: body
-      )
-    }
 
     return newRecord
   }
@@ -267,20 +226,12 @@ extension HomeView {
       && (parseResult.nominalCapacity != nil) && (parseResult.rawCapacity != nil)
 
     if !canCreate {
-      NotificationHelper.scheduleImportResultNotification(
-        title: String(localized: "import_silent_failure", table: "Home"),
-        body: String(localized: "parse_error", table: "Home")
-      )
       SettingsRedirectHelper.redirectToPrivacyAnalytics()
       return
     }
 
     // 容量不一致チェック
     if parseResult.isCapacityMismatch && AppSettings.shared.mismatchBehavior == .error {
-      NotificationHelper.scheduleImportResultNotification(
-        title: String(localized: "import_silent_failure", table: "Home"),
-        body: String(localized: "capacity_mismatch_error", table: "Home")
-      )
       SettingsRedirectHelper.redirectToPrivacyAnalytics()
       return
     }
