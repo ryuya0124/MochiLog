@@ -42,6 +42,26 @@ struct TutorialView: View {
       showSettingsButton: false,
       showVideoButton: false
     ),
+    // ステップ3.3: プライバシーとセキュリティ
+    TutorialPage(
+      icon: "hand.raised.fill",
+      iconColor: .blue,
+      titleKey: "tutorial_privacy_security_title",
+      descriptionKey: "tutorial_privacy_security_description",
+      imageName: nil,
+      showSettingsButton: false,
+      showVideoButton: false
+    ),
+    // ステップ3.5: 解析と改善
+    TutorialPage(
+      icon: "chart.bar.xaxis",
+      iconColor: .gray,
+      titleKey: "tutorial_analytics_improvements_title",
+      descriptionKey: "tutorial_analytics_improvements_description",
+      imageName: nil,
+      showSettingsButton: false,
+      showVideoButton: false
+    ),
     // ステップ4: 共有ON
     TutorialPage(
       icon: "switch.2",
@@ -52,12 +72,32 @@ struct TutorialView: View {
       showSettingsButton: false,
       showVideoButton: false
     ),
+    // ステップ4.5: ログ生成タイミングの注意
+    TutorialPage(
+      icon: "clock.fill",
+      iconColor: .orange,
+      titleKey: "tutorial_log_timing_title",
+      descriptionKey: "tutorial_log_timing_description",
+      imageName: nil,
+      showSettingsButton: false,
+      showVideoButton: false
+    ),
     // ステップ5: ログファイルを探す
     TutorialPage(
       icon: "doc.text.magnifyingglass",
       iconColor: .orange,
       titleKey: "tutorial_find_log_title",
       descriptionKey: "tutorial_find_log_description",  // Analytics-202x...
+      imageName: nil,
+      showSettingsButton: false,
+      showVideoButton: false
+    ),
+    // ステップ5.5: ログファイル選択の注意
+    TutorialPage(
+      icon: "exclamationmark.triangle.fill",
+      iconColor: .yellow,
+      titleKey: "tutorial_log_selection_title",
+      descriptionKey: "tutorial_log_selection_description",
       imageName: nil,
       showSettingsButton: false,
       showVideoButton: false

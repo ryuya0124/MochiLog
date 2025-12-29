@@ -127,7 +127,7 @@ struct PIPVideoPlayerFullView: View {
 /// PIPウィンドウ内に表示するSwiftUIビュー
 struct PIPTutorialContentView: View {
   @State private var currentPage = 0
-  private let totalPages = 7
+  private let totalPages = 9
   private let timer = Timer.publish(every: 6.0, on: .main, in: .common).autoconnect()
 
   var body: some View {
@@ -190,9 +190,9 @@ struct PIPTutorialContentView: View {
           Text(String(localized: "pip_step_analytics_improvements"))
             .font(.headline)
             .foregroundStyle(.primary)
-          Text(String(localized: "pip_step_menu_select"))
+          Text(String(localized: "pip_step_button_at_bottom"))
             .font(.caption)
-            .foregroundStyle(.secondary)
+            .foregroundStyle(.orange)
         }
         .tag(3)
 
@@ -210,6 +210,20 @@ struct PIPTutorialContentView: View {
         }
         .tag(4)
 
+        // ステップ5.5: ログ生成タイミングの注意
+        VStack(spacing: 8) {
+          Image(systemName: "clock.fill")
+            .font(.system(size: 40))
+            .foregroundStyle(.orange)
+          Text(String(localized: "pip_step_log_timing"))
+            .font(.headline)
+            .foregroundStyle(.primary)
+          Text(String(localized: "pip_step_wait_next_day"))
+            .font(.caption)
+            .foregroundStyle(.orange)
+        }
+        .tag(5)
+
         // ステップ6: 解析データ → ログファイル選択
         VStack(spacing: 8) {
           Image(systemName: "doc.text.magnifyingglass")
@@ -222,7 +236,21 @@ struct PIPTutorialContentView: View {
             .font(.subheadline)
             .foregroundStyle(.yellow)
         }
-        .tag(5)
+        .tag(6)
+
+        // ステップ6.5: ログファイル選択の注意
+        VStack(spacing: 8) {
+          Image(systemName: "exclamationmark.triangle.fill")
+            .font(.system(size: 40))
+            .foregroundStyle(.yellow)
+          Text(String(localized: "pip_step_log_selection"))
+            .font(.headline)
+            .foregroundStyle(.primary)
+          Text(String(localized: "pip_step_choose_larger_file"))
+            .font(.caption)
+            .foregroundStyle(.yellow)
+        }
+        .tag(7)
 
         // ステップ7: MochiLogに共有
         VStack(spacing: 8) {
@@ -244,7 +272,7 @@ struct PIPTutorialContentView: View {
             .font(.caption)
             .foregroundStyle(.secondary)
         }
-        .tag(6)
+        .tag(8)
       }
       .tabViewStyle(.page(indexDisplayMode: .always))
     }

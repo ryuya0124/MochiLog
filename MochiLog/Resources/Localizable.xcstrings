@@ -2276,6 +2276,23 @@
         }
       }
     },
+    "pip_step_button_at_bottom" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Button is at the bottom"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ボタンは下の方にあります"
+          }
+        }
+      }
+    },
     "pip_step_open_settings" : {
       "localizations" : {
         "en" : {
@@ -2417,6 +2434,74 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "左上の「戻る」をタップ"
+          }
+        }
+      }
+    },
+    "pip_step_log_timing" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Logs Generated at 9:00 AM"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログは毎日9:00に生成"
+          }
+        }
+      }
+    },
+    "pip_step_wait_next_day" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wait until the next day"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "次の日まで待ってください"
+          }
+        }
+      }
+    },
+    "pip_step_log_selection" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose the Right File"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正しいファイルを選択"
+          }
+        }
+      }
+    },
+    "pip_step_choose_larger_file" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Short files lack battery data"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "短いファイルには情報が入っていません"
           }
         }
       }
@@ -3591,6 +3676,40 @@
         }
       }
     },
+    "tutorial_analytics_improvements_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analytics & Improvements"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析と改善"
+          }
+        }
+      }
+    },
+    "tutorial_analytics_improvements_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select 'Analytics & Improvements' from the menu.\nThe button is located at the bottom of the screen."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "メニューから「解析と改善」を選択します。\nボタンは画面の下の方にあります。"
+          }
+        }
+      }
+    },
     "tutorial" : {
       "localizations" : {
         "en" : {
@@ -3603,6 +3722,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "チュートリアル"
+          }
+        }
+      }
+    },
+    "tutorial_privacy_security_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy & Security"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プライバシーとセキュリティ"
+          }
+        }
+      }
+    },
+    "tutorial_privacy_security_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select 'Privacy & Security' from the menu."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "メニューから「プライバシーとセキュリティ」を選択します。"
           }
         }
       }
@@ -3841,6 +3994,74 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "MochiLogに共有"
+          }
+        }
+      }
+    },
+    "tutorial_log_timing_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Important: Log Generation Timing"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重要: ログ生成のタイミング"
+          }
+        }
+      }
+    },
+    "tutorial_log_timing_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "After enabling analytics sharing, logs are generated daily at 9:00 AM.\nPlease wait until the next day to find the log file."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析を共有をONにしても、ログが生成されるのは毎日9:00です。\n次の日まで待ってからログファイルを探してください。"
+          }
+        }
+      }
+    },
+    "tutorial_log_selection_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Important: Choose the Right File"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重要: 正しいファイルを選択"
+          }
+        }
+      }
+    },
+    "tutorial_log_selection_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Short log files with only a few dozen lines do not contain battery information.\nPlease select a different, larger file."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "数十行の短いログデータにはバッテリー情報が含まれていません。\n他のより大きなファイルを選んでください。"
           }
         }
       }

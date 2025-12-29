@@ -36,6 +36,7 @@ struct RecordListView<Header: View>: View {
       }
     }
     .animation(.snappy, value: records)
+    .animation(.snappy, value: deviceSections.map { $0.id })
   }
 
   // MARK: - iPad レイアウト（複数列表示）
@@ -60,10 +61,12 @@ struct RecordListView<Header: View>: View {
                 isExpanded: Binding(
                   get: { !collapsedSections.contains(section.id) },
                   set: { isExpanded in
-                    if isExpanded {
-                      collapsedSections.remove(section.id)
-                    } else {
-                      collapsedSections.insert(section.id)
+                    withAnimation(.snappy) {
+                      if isExpanded {
+                        collapsedSections.remove(section.id)
+                      } else {
+                        collapsedSections.insert(section.id)
+                      }
                     }
                   }
                 )
@@ -95,6 +98,11 @@ struct RecordListView<Header: View>: View {
                         .padding()
                         .frame(width: 300)
                     }
+                    .transition(
+                      .asymmetric(
+                        insertion: .scale.combined(with: .opacity),
+                        removal: .scale.combined(with: .opacity)
+                      ))
                   }
                 }
                 .padding(.top, 8)
@@ -108,6 +116,11 @@ struct RecordListView<Header: View>: View {
               .background(Color(uiColor: .secondarySystemGroupedBackground))
               .clipShape(RoundedRectangle(cornerRadius: 16))
             }
+            .transition(
+              .asymmetric(
+                insertion: .move(edge: .top).combined(with: .opacity),
+                removal: .move(edge: .top).combined(with: .opacity)
+              ))
           }
         }
         .padding(20)
@@ -130,10 +143,12 @@ struct RecordListView<Header: View>: View {
             isExpanded: Binding(
               get: { !collapsedSections.contains(section.id) },
               set: { isExpanded in
-                if isExpanded {
-                  collapsedSections.remove(section.id)
-                } else {
-                  collapsedSections.insert(section.id)
+                withAnimation(.snappy) {
+                  if isExpanded {
+                    collapsedSections.remove(section.id)
+                  } else {
+                    collapsedSections.insert(section.id)
+                  }
                 }
               }
             )
@@ -144,6 +159,11 @@ struct RecordListView<Header: View>: View {
                 .onTapGesture {
                   onRecordTap?(record)
                 }
+                .transition(
+                  .asymmetric(
+                    insertion: .move(edge: .top).combined(with: .opacity),
+                    removal: .move(edge: .bottom).combined(with: .opacity)
+                  ))
             }
             .onDelete { offsets in
               if let onDelete = onRecordDelete {
@@ -157,6 +177,11 @@ struct RecordListView<Header: View>: View {
               .foregroundStyle(.primary)
           }
         }
+        .transition(
+          .asymmetric(
+            insertion: .move(edge: .top).combined(with: .opacity),
+            removal: .move(edge: .top).combined(with: .opacity)
+          ))
       }
     }
   }
