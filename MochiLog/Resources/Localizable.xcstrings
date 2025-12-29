@@ -4334,6 +4334,22 @@
         }
       }
     },
+    "view_full_license" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View Full License"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完全なライセンスを表示"
+          }
+        }
+      }
+    },
     "view_tutorial" : {
       "localizations" : {
         "en" : {

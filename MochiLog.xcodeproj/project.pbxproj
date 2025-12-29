@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4E0CF2BE2EFC23F300307800 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 4E0CF2BD2EFC23F300307800 /* ZIPFoundation */; };
+		4E15D8EB2F024BC000D6C3FE /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 4E15D8EA2F024BBF00D6C3FE /* LICENSE */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +26,7 @@
 
 /* Begin PBXFileReference section */
 		4E0CF13F2EF9542800307800 /* MochiLog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MochiLog.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4E15D8EA2F024BBF00D6C3FE /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -52,6 +54,7 @@
 			children = (
 				4E0CF1412EF9542800307800 /* MochiLog */,
 				4E0CF1402EF9542800307800 /* Products */,
+				4E15D8EA2F024BBF00D6C3FE /* LICENSE */,
 			);
 			sourceTree = "<group>";
 		};
@@ -133,6 +136,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4E15D8EB2F024BC000D6C3FE /* LICENSE in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
