@@ -160,7 +160,9 @@ struct TutorialView: View {
 
         // ボタン
         VStack(spacing: 16) {
-          if currentPage < pages.count - 1 {
+          // 次へ/完了ボタン - 常に同じ構造を維持
+          ZStack {
+            // 次へボタン
             Button(action: {
               withAnimation {
                 currentPage += 1
@@ -174,7 +176,10 @@ struct TutorialView: View {
                 .background(Color.green)
                 .cornerRadius(14)
             }
-          } else {
+            .opacity(currentPage < pages.count - 1 ? 1 : 0)
+            .allowsHitTesting(currentPage < pages.count - 1)
+
+            // 完了ボタン
             Button(action: {
               appSettings.completeTutorial()
               dismiss()
@@ -187,19 +192,22 @@ struct TutorialView: View {
                 .background(Color.green)
                 .cornerRadius(14)
             }
+            .opacity(currentPage >= pages.count - 1 ? 1 : 0)
+            .allowsHitTesting(currentPage >= pages.count - 1)
           }
 
-          if currentPage > 0 {
-            Button(action: {
-              withAnimation {
-                currentPage -= 1
-              }
-            }) {
-              Text(String(localized: "back"))
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+          // 戻るボタン - 常に存在させる
+          Button(action: {
+            withAnimation {
+              currentPage -= 1
             }
+          }) {
+            Text(String(localized: "back"))
+              .font(.subheadline)
+              .foregroundColor(.secondary)
           }
+          .opacity(currentPage > 0 ? 1 : 0)
+          .allowsHitTesting(currentPage > 0)
         }
         .padding(.horizontal, 24)
         .padding(.bottom, 40)
@@ -322,16 +330,24 @@ struct TutorialPageView: View {
         // 設定（または動画を見ながら）ボタン
         Button(action: { onOpenSettings?(settingsButtonView) }) {
           HStack {
-            if page.actionType == .openSettings {
+            // アイコン: 両方のアイコンを常に存在させ、opacityで切り替え
+            ZStack {
               Image(systemName: "gear")
-            } else {
+                .opacity(page.actionType == .openSettings ? 1 : 0)
               Image(systemName: "play.circle.fill")
+                .opacity(page.actionType == .openSheet ? 1 : 0)
             }
 
-            if let titleKey = page.customButtonTitleKey {
-              Text(String(localized: String.LocalizationValue(titleKey)))
-            } else {
+            // テキスト: 両方のテキストを常に存在させ、opacityで切り替え
+            ZStack {
+              Text(
+                String(
+                  localized: String.LocalizationValue(
+                    page.customButtonTitleKey ?? "open_analytics_settings"))
+              )
+              .opacity(page.customButtonTitleKey != nil ? 1 : 0)
               Text(String(localized: "open_analytics_settings"))
+                .opacity(page.customButtonTitleKey == nil ? 1 : 0)
             }
           }
           .font(.headline)
@@ -350,6 +366,7 @@ struct TutorialPageView: View {
         .opacity(page.showSettingsButton ? 1 : 0)
         .allowsHitTesting(page.showSettingsButton)
       }
+      .frame(minHeight: 100)
 
       Spacer()
       Spacer()
