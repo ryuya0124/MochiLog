@@ -11,7 +11,9 @@ struct SampleDataHomeView: View {
   @StateObject private var appSettings = AppSettings.shared
   @State private var showingReorderSheet = false
 
-  private let sampleRecords = SampleDataProvider.generateSampleRecords()
+  private let sampleRecords = SampleDataProvider.generateSampleRecords().sorted(by: {
+    $0.logDate > $1.logDate
+  })
 
   var body: some View {
     // 共通のRecordListViewを使用
