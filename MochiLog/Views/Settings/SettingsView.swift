@@ -24,6 +24,11 @@ struct SettingsView: View {
   @State private var showingICloudErrorAlert = false
   @State private var iCloudErrorMessage: String = ""
 
+  // デバイスごとの削除機能用の状態
+  @State private var showingDeviceDeletePicker = false
+  @State private var showingDeviceDeleteConfirmation = false
+  @State private var selectedDeviceToDelete: String?
+
   private var appVersion: String {
     let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
     let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
@@ -122,6 +127,16 @@ struct SettingsView: View {
             }
           } label: {
             Label(String(localized: "delete_all_data"), systemImage: "trash.fill")
+          }
+
+          Button(role: .destructive) {
+            if availableDevices.isEmpty {
+              showingNoDataToDeleteAlert = true
+            } else {
+              showingDeviceDeletePicker = true
+            }
+          } label: {
+            Label(String(localized: "delete_device_data"), systemImage: "trash")
           }
         }
 
@@ -323,7 +338,32 @@ struct SettingsView: View {
       } message: {
         Text(iCloudErrorMessage)
       }
+      .sheet(isPresented: $showingDeviceDeletePicker) {
+        DeviceDeletePickerView(availableDevices: availableDevices) { deviceName in
+          selectedDeviceToDelete = deviceName
+          showingDeviceDeleteConfirmation = true
+        }
+      }
+      .alert(
+        String(localized: "delete_device_data_title"),
+        isPresented: $showingDeviceDeleteConfirmation
+      ) {
+        Button(String(localized: "cancel"), role: .cancel) {}
+        Button(String(localized: "delete"), role: .destructive) {
+          if let deviceName = selectedDeviceToDelete {
+            deleteRecordsForDevice(deviceName)
+          }
+        }
+      } message: {
+        if let deviceName = selectedDeviceToDelete {
+          Text(String(format: String(localized: "delete_device_data_confirm"), deviceName))
+        }
+      }
     }
+  }
+
+  private var availableDevices: [String] {
+    Array(Set(records.map { $0.deviceName })).sorted()
   }
 
   private func deleteAllRecords() {
@@ -335,6 +375,18 @@ struct SettingsView: View {
     // Remove any persisted shared log fallback
     UserDefaults.standard.removeObject(forKey: "PendingSharedLogText")
     UserDefaults.standard.removeObject(forKey: "PendingSharedLogSilent")
+
+    // Notify other components (HomeView etc.) to clear transient UI state
+    NotificationCenter.default.post(
+      name: NSNotification.Name("DeleteAllDataPerformed"), object: nil)
+  }
+
+  private func deleteRecordsForDevice(_ deviceName: String) {
+    let recordsToDelete = records.filter { $0.deviceName == deviceName }
+    for record in recordsToDelete {
+      modelContext.delete(record)
+    }
+    try? modelContext.save()
 
     // Notify other components (HomeView etc.) to clear transient UI state
     NotificationCenter.default.post(
