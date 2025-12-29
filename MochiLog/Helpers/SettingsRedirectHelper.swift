@@ -11,7 +11,6 @@ enum SettingsRedirectHelper {
     // iOS 18以降ではprefs: URLスキームが制限されているため、複数のURLパターンを試す
     let urlStrings = [
       "App-prefs:Privacy&path=PROBLEM_REPORTING",
-      "prefs:root=Privacy&path=PROBLEM_REPORTING",
       "App-prefs:Privacy",
       "App-prefs:",
     ]

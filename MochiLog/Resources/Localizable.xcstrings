@@ -2057,13 +2057,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Open Analytics Settings"
+            "value" : "Open Settings App"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析設定を開く"
+            "value" : "設定アプリを開く"
           }
         }
       }
@@ -2180,6 +2180,22 @@
         }
       }
     },
+    "pip_note" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Note: Due to iOS limitations, PIP may occasionally fail to display. Restarting the app or device may resolve this issue."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "※iOSの不具合により、PIPが稀に表示されない場合があります。\nアプリや端末の再起動で直る場合があります。"
+          }
+        }
+      }
+    },
     "pip_step_analytics_data" : {
       "localizations" : {
         "en" : {
@@ -2212,6 +2228,22 @@
         }
       }
     },
+    "pip_step_go_to_settings_top" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Go to Settings Top"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定のトップに移動"
+          }
+        }
+      }
+    },
     "pip_step_if_not_listed" : {
       "localizations" : {
         "en" : {
@@ -2240,6 +2272,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "メニューから選択"
+          }
+        }
+      }
+    },
+    "pip_step_open_settings" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Settings"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定を開く"
           }
         }
       }
@@ -2325,6 +2373,7 @@
       }
     },
     "pip_step_share_button" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2352,6 +2401,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "解析を共有: ON"
+          }
+        }
+      }
+    },
+    "pip_step_tap_back_button" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap back button (top left)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左上の「戻る」をタップ"
           }
         }
       }
@@ -3515,13 +3580,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Try with Video"
+            "value" : "Follow Video Guide"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "動画を見ながら実際にやる"
+            "value" : "動画で確認しながら操作する"
           }
         }
       }
@@ -3640,6 +3705,74 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ログファイルを探す"
+          }
+        }
+      }
+    },
+    "tutorial_go_to_settings_top_description" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigate to the Settings top page."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定のトップページに移動してください。"
+          }
+        }
+      }
+    },
+    "tutorial_go_to_settings_top_title" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Go to Settings Top"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定のトップに移動"
+          }
+        }
+      }
+    },
+    "tutorial_open_settings_description" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open the Settings app on your device."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定アプリを開きます。"
+          }
+        }
+      }
+    },
+    "tutorial_open_settings_title" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Settings App"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定アプリを開く"
           }
         }
       }

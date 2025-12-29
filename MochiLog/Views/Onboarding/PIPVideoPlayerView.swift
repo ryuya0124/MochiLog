@@ -57,6 +57,13 @@ struct PIPVideoPlayerView: View {
         }
         .padding(.horizontal)
 
+        // 注意書き
+        Text(String(localized: "pip_note"))
+          .font(.caption)
+          .foregroundStyle(.secondary)
+          .multilineTextAlignment(.center)
+          .padding(.horizontal)
+
         Spacer()
 
         // アクションボタン
@@ -120,7 +127,7 @@ struct PIPVideoPlayerFullView: View {
 /// PIPウィンドウ内に表示するSwiftUIビュー
 struct PIPTutorialContentView: View {
   @State private var currentPage = 0
-  private let totalPages = 6
+  private let totalPages = 7
   private let timer = Timer.publish(every: 6.0, on: .main, in: .common).autoconnect()
 
   var body: some View {
@@ -133,12 +140,12 @@ struct PIPTutorialContentView: View {
       ).edgesIgnoringSafeArea(.all)
 
       TabView(selection: $currentPage) {
-        // ステップ1: 設定 > プライバシーとセキュリティ
+        // ステップ1: 設定アプリを開く
         VStack(spacing: 8) {
-          Image(systemName: "hand.raised.fill")
+          Image(systemName: "gear")
             .font(.system(size: 40))
             .foregroundStyle(.primary)
-          Text(String(localized: "pip_step_privacy_security"))
+          Text(String(localized: "pip_step_open_settings"))
             .font(.headline)
             .foregroundStyle(.primary)
           Text(String(localized: "pip_step_settings_app"))
@@ -147,7 +154,35 @@ struct PIPTutorialContentView: View {
         }
         .tag(0)
 
-        // ステップ2: 解析と改善
+        // ステップ2: 設定のトップに戻る
+        VStack(spacing: 8) {
+          Image(systemName: "chevron.left")
+            .font(.system(size: 40))
+            .foregroundStyle(.blue)
+          Text(String(localized: "pip_step_go_to_settings_top"))
+            .font(.headline)
+            .foregroundStyle(.primary)
+          Text(String(localized: "pip_step_tap_back_button"))
+            .font(.caption)
+            .foregroundStyle(.secondary)
+        }
+        .tag(1)
+
+        // ステップ3: プライバシーとセキュリティ
+        VStack(spacing: 8) {
+          Image(systemName: "hand.raised.fill")
+            .font(.system(size: 40))
+            .foregroundStyle(.primary)
+          Text(String(localized: "pip_step_privacy_security"))
+            .font(.headline)
+            .foregroundStyle(.primary)
+          Text(String(localized: "pip_step_menu_select"))
+            .font(.caption)
+            .foregroundStyle(.secondary)
+        }
+        .tag(2)
+
+        // ステップ4: 解析と改善
         VStack(spacing: 8) {
           Image(systemName: "chart.bar.xaxis")
             .font(.system(size: 40))
@@ -159,9 +194,9 @@ struct PIPTutorialContentView: View {
             .font(.caption)
             .foregroundStyle(.secondary)
         }
-        .tag(1)
+        .tag(3)
 
-        // ステップ3: 共有ON
+        // ステップ5: 共有ON
         VStack(spacing: 8) {
           Image(systemName: "switch.2")
             .font(.system(size: 40))
@@ -173,9 +208,9 @@ struct PIPTutorialContentView: View {
             .font(.caption)
             .foregroundStyle(.primary)
         }
-        .tag(2)
+        .tag(4)
 
-        // ステップ4: 解析データ
+        // ステップ6: 解析データ → ログファイル選択
         VStack(spacing: 8) {
           Image(systemName: "doc.text.magnifyingglass")
             .font(.system(size: 40))
@@ -187,20 +222,9 @@ struct PIPTutorialContentView: View {
             .font(.subheadline)
             .foregroundStyle(.yellow)
         }
-        .tag(3)
+        .tag(5)
 
-        // ステップ5: 共有ボタン
-        VStack(spacing: 8) {
-          Image(systemName: "square.and.arrow.up")
-            .font(.system(size: 40))
-            .foregroundStyle(.primary)
-          Text(String(localized: "pip_step_share_button"))
-            .font(.headline)
-            .foregroundStyle(.primary)
-        }
-        .tag(4)
-
-        // ステップ6: MochiLogを選択
+        // ステップ7: MochiLogに共有
         VStack(spacing: 8) {
           if let icon = Bundle.main.icon {
             Image(uiImage: icon)
@@ -220,7 +244,7 @@ struct PIPTutorialContentView: View {
             .font(.caption)
             .foregroundStyle(.secondary)
         }
-        .tag(5)
+        .tag(6)
       }
       .tabViewStyle(.page(indexDisplayMode: .always))
     }

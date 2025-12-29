@@ -20,19 +20,29 @@ struct TutorialView: View {
       showSettingsButton: false,
       showVideoButton: false
     ),
-    // ステップ2: 設定を開く
+    // ステップ2: 設定アプリを開く
     TutorialPage(
       icon: "gear",
       iconColor: .gray,
-      titleKey: "tutorial_enable_analytics_title",
-      descriptionKey: "tutorial_enable_analytics_description",  // 設定 > プライバシー...
+      titleKey: "tutorial_open_settings_title",
+      descriptionKey: "tutorial_open_settings_description",
       imageName: nil,
       showSettingsButton: true,
-      showVideoButton: false,  // 動画ボタンは非表示
+      showVideoButton: false,
       customButtonTitleKey: "try_with_video",  // 動画を見ながら実際にやる
       actionType: .openSheet  // シートを開く
     ),
-    // ステップ3: 共有ON（新規）
+    // ステップ3: 設定のトップに戻る
+    TutorialPage(
+      icon: "chevron.left",
+      iconColor: .blue,
+      titleKey: "tutorial_go_to_settings_top_title",
+      descriptionKey: "tutorial_go_to_settings_top_description",
+      imageName: nil,
+      showSettingsButton: false,
+      showVideoButton: false
+    ),
+    // ステップ4: 共有ON
     TutorialPage(
       icon: "switch.2",
       iconColor: .green,
@@ -42,7 +52,7 @@ struct TutorialView: View {
       showSettingsButton: false,
       showVideoButton: false
     ),
-    // ステップ4: ログファイルを探す
+    // ステップ5: ログファイルを探す
     TutorialPage(
       icon: "doc.text.magnifyingglass",
       iconColor: .orange,
@@ -52,7 +62,7 @@ struct TutorialView: View {
       showSettingsButton: false,
       showVideoButton: false
     ),
-    // ステップ5: MochiLogに共有
+    // ステップ6: MochiLogに共有
     TutorialPage(
       icon: "square.and.arrow.up",  // ここはアプリアイコンにしたいが、一旦SF Symbolで
       iconColor: .blue,
@@ -63,7 +73,7 @@ struct TutorialView: View {
       showVideoButton: false,
       useAppIcon: true  // 新規フラグ
     ),
-    // ステップ6: 完了
+    // ステップ7: 完了
     TutorialPage(
       icon: "checkmark.circle.fill",
       iconColor: .green,
