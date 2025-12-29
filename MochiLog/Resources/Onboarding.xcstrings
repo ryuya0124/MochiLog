@@ -629,6 +629,40 @@
         }
       }
     },
+    "tutorial_open_settings_description" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Settings > Privacy & Security > Analytics & Improvements"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定 > プライバシーとセキュリティ > 解析と改善\nを開きます。"
+          }
+        }
+      }
+    },
+    "tutorial_open_settings_title" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Settings"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定を開く"
+          }
+        }
+      }
+    },
     "tutorial_privacy_security_description" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -780,18 +814,6 @@
             "value" : "MochiLogは端末の解析ログを読み取って、バッテリーの詳細な状態を表示します。さっそく始めましょう！"
           }
         }
-      }
-    },
-    "tutorial_open_settings_title" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Open Settings" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "設定を開く" } }
-      }
-    },
-    "tutorial_open_settings_description" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Open Settings > Privacy & Security > Analytics & Improvements" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "設定 > プライバシーとセキュリティ > 解析と改善\nを開きます。" } }
       }
     },
     "video_tutorial" : {
