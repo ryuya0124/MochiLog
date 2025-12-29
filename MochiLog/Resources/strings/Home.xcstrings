@@ -130,6 +130,7 @@
       }
     },
     "import_silent_failure" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -146,6 +147,7 @@
       }
     },
     "import_silent_success" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -162,6 +164,7 @@
       }
     },
     "import_silent_success_body" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -434,6 +437,7 @@
       }
     },
     "watch_selection_required" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
