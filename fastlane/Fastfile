@@ -2,14 +2,44 @@ default_platform(:ios)
 
 platform :ios do
   # ============================================
+  # CI用キーチェーン設定
+  # ============================================
+  KEYCHAIN_NAME = "ci_keychain"
+  KEYCHAIN_PASSWORD = "ci_keychain_password"
+
+  # CI環境用の一時キーチェーンを作成
+  private_lane :setup_ci_keychain do
+    if is_ci
+      # 既存のキーチェーンを削除（存在する場合）
+      delete_keychain(name: KEYCHAIN_NAME) if File.exist?(File.expand_path("~/Library/Keychains/#{KEYCHAIN_NAME}-db"))
+      
+      # 新しいキーチェーンを作成
+      create_keychain(
+        name: KEYCHAIN_NAME,
+        password: KEYCHAIN_PASSWORD,
+        default_keychain: true,
+        unlock: true,
+        timeout: 3600,
+        lock_when_sleeps: false
+      )
+    end
+  end
+
+  # ============================================
   # 証明書同期
   # ============================================
   desc "match証明書を同期（読み取り専用）"
   lane :sync_certificates do
+    setup_ci_keychain
+    
+    keychain_path = is_ci ? "~/Library/Keychains/#{KEYCHAIN_NAME}-db" : nil
+    
     match(
       type: "appstore",
       readonly: true,
-      git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"]
+      git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"],
+      keychain_name: is_ci ? KEYCHAIN_NAME : nil,
+      keychain_password: is_ci ? KEYCHAIN_PASSWORD : nil
     )
   end
 
