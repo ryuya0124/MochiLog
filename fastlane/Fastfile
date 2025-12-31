@@ -50,6 +50,14 @@ platform :ios do
   lane :build_appstore do
     sync_certificates
     
+    # ビルド番号を設定（環境変数から取得）
+    if ENV["BUILD_NUMBER"]
+      increment_build_number(
+        build_number: ENV["BUILD_NUMBER"]
+      )
+      UI.success("ビルド番号を #{ENV['BUILD_NUMBER']} に設定しました")
+    end
+    
     gym(
       scheme: "MochiLog",
       configuration: "Release",
@@ -72,11 +80,31 @@ platform :ios do
       is_key_content_base64: true
     )
     
-    upload_to_testflight(
-      api_key: api_key,
-      ipa: "./build/MochiLog.ipa",
-      skip_waiting_for_build_processing: true
-    )
+    begin
+      upload_to_testflight(
+        api_key: api_key,
+        ipa: "./build/MochiLog.ipa",
+        skip_waiting_for_build_processing: true
+      )
+    rescue => ex
+      # ビルド番号重複エラーの場合は分かりやすいメッセージを表示
+      if ex.message.include?("bundle version must be higher") || ex.message.include?("DUPLICATE")
+        current_build = get_build_number
+        UI.error("❌ ビルド番号が重複しています")
+        UI.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        UI.error("📦 現在のビルド番号: #{current_build}")
+        UI.error("⚠️  このビルド番号は既にTestFlightにアップロード済みです")
+        UI.error("")
+        UI.error("✅ 対処方法:")
+        UI.error("   1. GitHub Actionsの「Run workflow」で新しいビルド番号を入力")
+        UI.error("   2. または、プロジェクト設定でビルド番号を手動で上げる")
+        UI.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        UI.user_error!("ビルド番号を #{current_build.to_i + 1} 以上に設定してください")
+      else
+        # その他のエラーはそのまま再発生
+        raise ex
+      end
+    end
   end
 
   # ============================================
