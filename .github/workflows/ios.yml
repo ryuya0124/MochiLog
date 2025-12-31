@@ -1,0 +1,98 @@
+name: iOS Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      upload_to_testflight:
+        description: 'TestFlightにアップロードするか'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  # ============================================
+  # 署名付きIPA（App Store提出用）
+  # ============================================
+  build-signed:
+    name: Build Signed IPA
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Install fastlane
+        run: |
+          gem install fastlane
+
+      - name: Build IPA
+        env:
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        run: |
+          fastlane build_appstore
+
+      - name: Upload to TestFlight
+        if: github.event_name == 'push' || github.event.inputs.upload_to_testflight == 'true'
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+        run: |
+          fastlane upload_testflight
+
+      - name: Upload Signed IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MochiLog-Signed
+          path: build/MochiLog.ipa
+
+  # ============================================
+  # 署名なしIPA（開発・配布用）
+  # ============================================
+  build-unsigned:
+    name: Build Unsigned IPA
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Build App (Archive without signing)
+        run: |
+          xcodebuild archive \
+            -project MochiLog.xcodeproj \
+            -scheme MochiLog \
+            -configuration Release \
+            -archivePath build/MochiLog.xcarchive \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            -sdk iphoneos \
+            -destination "generic/platform=iOS"
+
+      - name: Create Unsigned IPA
+        run: |
+          # .appをPayloadフォルダに入れてZIP化し、.ipaに改名
+          mkdir -p build/Payload
+          cp -r build/MochiLog.xcarchive/Products/Applications/MochiLog.app build/Payload/
+          cd build
+          zip -r MochiLog-Unsigned.ipa Payload
+          rm -rf Payload
+
+      - name: Upload Unsigned IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MochiLog-Unsigned
+          path: build/MochiLog-Unsigned.ipa

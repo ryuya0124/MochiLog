@@ -1,0 +1,59 @@
+default_platform(:ios)
+
+platform :ios do
+  # ============================================
+  # 証明書同期
+  # ============================================
+  desc "match証明書を同期（読み取り専用）"
+  lane :sync_certificates do
+    match(
+      type: "appstore",
+      readonly: true,
+      git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"]
+    )
+  end
+
+  # ============================================
+  # App Store提出用ビルド
+  # ============================================
+  desc "App Store提出用の署名付きIPAをビルド"
+  lane :build_appstore do
+    sync_certificates
+    
+    gym(
+      scheme: "MochiLog",
+      configuration: "Release",
+      export_method: "app-store",
+      output_directory: "./build",
+      output_name: "MochiLog.ipa",
+      clean: true
+    )
+  end
+
+  # ============================================
+  # TestFlightアップロード
+  # ============================================
+  desc "TestFlightにアップロード"
+  lane :upload_testflight do
+    api_key = app_store_connect_api_key(
+      key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
+      issuer_id: ENV["APP_STORE_CONNECT_API_ISSUER_ID"],
+      key_content: ENV["APP_STORE_CONNECT_API_KEY_CONTENT"],
+      is_key_content_base64: true
+    )
+    
+    upload_to_testflight(
+      api_key: api_key,
+      skip_waiting_for_build_processing: true
+    )
+  end
+
+  # ============================================
+  # ビルド＋アップロード（一括実行）
+  # ============================================
+  desc "App Store用にビルドしてTestFlightにアップロード"
+  lane :release do
+    build_appstore
+    upload_testflight
+  end
+end
