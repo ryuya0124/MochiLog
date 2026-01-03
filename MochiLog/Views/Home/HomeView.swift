@@ -8,29 +8,48 @@ import UniformTypeIdentifiers
 // MARK: - メインタブビュー
 struct MainTabView: View {
   @StateObject private var appSettings = AppSettings.shared
+  @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @State private var showingTutorial = false
+  @State private var selectedTab: AppTab = .home
+
+  /// タブの定義
+  enum AppTab: Int, CaseIterable, Identifiable {
+    case home = 0
+    case analytics = 1
+    case settings = 2
+
+    var id: Int { rawValue }
+
+    var title: String {
+      switch self {
+      case .home: return String(localized: "tab_home", table: "Home")
+      case .analytics: return String(localized: "tab_analytics", table: "Analytics")
+      case .settings: return String(localized: "tab_settings", table: "Settings")
+      }
+    }
+
+    var icon: String {
+      switch self {
+      case .home: return "house.fill"
+      case .analytics: return "chart.line.uptrend.xyaxis"
+      case .settings: return "gearshape.fill"
+      }
+    }
+  }
 
   var body: some View {
-    TabView(selection: $appSettings.selectedTabIndex) {
-      HomeView()
-        .tabItem {
-          Label(String(localized: "tab_home", table: "Home"), systemImage: "house.fill")
-        }
-        .tag(0)
-      AnalyticsView()
-        .tabItem {
-          Label(
-            String(localized: "tab_analytics", table: "Analytics"),
-            systemImage: "chart.line.uptrend.xyaxis")
-        }
-        .tag(1)
-      SettingsView()
-        .tabItem {
-          Label(String(localized: "tab_settings", table: "Settings"), systemImage: "gearshape.fill")
-        }
-        .tag(2)
+    Group {
+      if #available(iOS 18.0, *) {
+        // iOS 18+: sidebarAdaptable スタイル（サイドバーを閉じると上部にタブバー）
+        modernTabView
+      } else if horizontalSizeClass == .regular {
+        // iOS 17以下 + iPad: NavigationSplitView
+        legacySplitView
+      } else {
+        // iOS 17以下 + iPhone: 従来のTabView
+        legacyTabView
+      }
     }
-    .tint(appSettings.accentColor.color)
     .onAppear {
       // 初回起動時にチュートリアルを表示
       if !appSettings.hasCompletedTutorial {
@@ -40,6 +59,74 @@ struct MainTabView: View {
     .sheet(isPresented: $showingTutorial) {
       TutorialView()
     }
+  }
+
+  // MARK: - iOS 18+ sidebarAdaptable スタイル
+  @available(iOS 18.0, *)
+  private var modernTabView: some View {
+    TabView(selection: $selectedTab) {
+      Tab(AppTab.home.title, systemImage: AppTab.home.icon, value: .home) {
+        HomeView()
+      }
+      Tab(AppTab.analytics.title, systemImage: AppTab.analytics.icon, value: .analytics) {
+        AnalyticsView()
+      }
+      Tab(AppTab.settings.title, systemImage: AppTab.settings.icon, value: .settings) {
+        SettingsView()
+      }
+    }
+    .tabViewStyle(.sidebarAdaptable)
+    .tint(appSettings.accentColor.color)
+  }
+
+  // MARK: - iOS 17以下 iPad用 NavigationSplitView
+  private var legacySplitView: some View {
+    NavigationSplitView {
+      List(
+        AppTab.allCases,
+        selection: Binding(
+          get: { selectedTab },
+          set: { if let v = $0 { selectedTab = v } }
+        )
+      ) { tab in
+        Label(tab.title, systemImage: tab.icon)
+          .tag(tab as AppTab?)
+      }
+      .navigationTitle("MochiLog")
+      .listStyle(.sidebar)
+    } detail: {
+      switch selectedTab {
+      case .home:
+        HomeView()
+      case .analytics:
+        AnalyticsView()
+      case .settings:
+        SettingsView()
+      }
+    }
+    .tint(appSettings.accentColor.color)
+  }
+
+  // MARK: - iOS 17以下 iPhone用 TabView
+  private var legacyTabView: some View {
+    TabView(selection: $selectedTab) {
+      HomeView()
+        .tabItem {
+          Label(AppTab.home.title, systemImage: AppTab.home.icon)
+        }
+        .tag(AppTab.home)
+      AnalyticsView()
+        .tabItem {
+          Label(AppTab.analytics.title, systemImage: AppTab.analytics.icon)
+        }
+        .tag(AppTab.analytics)
+      SettingsView()
+        .tabItem {
+          Label(AppTab.settings.title, systemImage: AppTab.settings.icon)
+        }
+        .tag(AppTab.settings)
+    }
+    .tint(appSettings.accentColor.color)
   }
 }
 

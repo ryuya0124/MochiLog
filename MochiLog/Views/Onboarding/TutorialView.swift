@@ -212,6 +212,9 @@ struct TutorialView: View {
         .padding(.horizontal, 24)
         .padding(.bottom, 40)
       }
+      // iPad向け: コンテンツ幅を500ptに制限し中央配置
+      .frame(maxWidth: 500)
+      .frame(maxWidth: .infinity)
       .navigationTitle(String(localized: "tutorial", table: "Onboarding"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
