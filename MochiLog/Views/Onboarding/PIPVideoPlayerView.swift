@@ -2,6 +2,7 @@ import AVFoundation
 import AVKit
 import Combine
 import SwiftUI
+import UIKit
 
 // MARK: - PIPソースビュー（UIViewRepresentable）
 struct PIPSourceView: UIViewRepresentable {
