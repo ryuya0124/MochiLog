@@ -284,126 +284,17 @@ struct PIPTutorialContentView: View {
   }
 }
 
-// MARK: - 無音オーディオプレーヤー
-/// バックグラウンド動作を維持するための無音再生プレーヤー（AVPlayer版）
-class SilentAudioPlayer {
-  private var player: AVPlayer?
-  private var playerItem: AVPlayerItem?
-
-  func play() {
-    let fileName = "silent_audio.wav"
-    let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
-
-    // 無音ファイルが存在しない場合は作成
-    if !FileManager.default.fileExists(atPath: fileURL.path) {
-      createSilentWav(at: fileURL)
-    }
-
-    let item = AVPlayerItem(url: fileURL)
-    playerItem = item
-    player = AVPlayer(playerItem: item)
-
-    // 外部出力（ミラーリング・AirPlay等）を無効化
-    // これにより、画面録画中やHDMI接続中でもPIPが正常に動作しやすくなる
-    player?.allowsExternalPlayback = false
-
-    // 音量は確保するが無音ファイルなので音は出ない
-    // ※ミュートにするとバックグラウンド再生が停止される可能性があるためミュートしない
-    player?.isMuted = false
-
-    // ループ再生の設定
-    NotificationCenter.default.addObserver(
-      self,
-      selector: #selector(playerItemDidReachEnd(notification:)),
-      name: .AVPlayerItemDidPlayToEndTime,
-      object: item
-    )
-
-    player?.play()
-  }
-
-  func stop() {
-    player?.pause()
-    if let item = playerItem {
-      NotificationCenter.default.removeObserver(
-        self, name: .AVPlayerItemDidPlayToEndTime, object: item)
-    }
-    player = nil
-    playerItem = nil
-  }
-
-  @objc private func playerItemDidReachEnd(notification: Notification) {
-    player?.seek(to: .zero)
-    player?.play()
-  }
-
-  /// 1秒間の無音WAVファイルを生成する
-  private func createSilentWav(at url: URL) {
-    let sampleRate: Int32 = 44100
-    let duration: Int32 = 1  // seconds
-    let channels: Int16 = 1
-    let bitsPerSample: Int16 = 16
-    let byteRate = sampleRate * Int32(channels) * Int32(bitsPerSample) / 8
-    let blockAlign = channels * bitsPerSample / 8
-    let dataSize = sampleRate * duration * Int32(blockAlign)
-    let chunkSize = 36 + dataSize
-
-    var data = Data()
-
-    // RIFF Chunk
-    data.append("RIFF".data(using: .ascii)!)
-    data.append(withUnsafeBytes(of: chunkSize) { Data($0) })
-    data.append("WAVE".data(using: .ascii)!)
-
-    // fmt Chunk
-    data.append("fmt ".data(using: .ascii)!)
-    let fmtChunkSize: Int32 = 16
-    data.append(withUnsafeBytes(of: fmtChunkSize) { Data($0) })
-    let audioFormat: Int16 = 1  // PCM
-    data.append(withUnsafeBytes(of: audioFormat) { Data($0) })
-    data.append(withUnsafeBytes(of: channels) { Data($0) })
-    data.append(withUnsafeBytes(of: sampleRate) { Data($0) })
-    data.append(withUnsafeBytes(of: byteRate) { Data($0) })
-    data.append(withUnsafeBytes(of: blockAlign) { Data($0) })
-    data.append(withUnsafeBytes(of: bitsPerSample) { Data($0) })
-
-    // data Chunk
-    data.append("data".data(using: .ascii)!)
-    data.append(withUnsafeBytes(of: dataSize) { Data($0) })
-
-    // Silence payload
-    data.append(Data(count: Int(dataSize)))
-
-    try? data.write(to: url)
-  }
-}
-
 // MARK: - PIPチュートリアルコントローラー
 /// 設定を開くときにPIPを自動起動するコントローラー
 class PIPTutorialController: NSObject, AVPictureInPictureControllerDelegate {
-  private var silentPlayer: SilentAudioPlayer?
   private var pipController: AVPictureInPictureController?
   private weak var sourceView: UIView?  // 外部から渡されたUIView
   private var pipVideoCallViewController: Any?  // AVPictureInPictureVideoCallViewController
   private var pipContentViewController: UIViewController?  // UIHostingController
   private var observation: NSKeyValueObservation?
 
-  /// PIPを開始して設定を開く
-  /// - Parameter sourceView: PIPアニメーションの起点となるUIView
   func startPIPAndOpenSettings(sourceView: UIView?) {
     self.sourceView = sourceView
-
-    // オーディオセッション設定
-    do {
-      try AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
-      try AVAudioSession.sharedInstance().setActive(true)
-    } catch {
-      print("[PIP] AudioSession setup error: \(error)")
-    }
-
-    // 無音再生開始（バックグラウンド維持のため）
-    silentPlayer = SilentAudioPlayer()
-    silentPlayer?.play()
 
     // PIPコントローラー作成準備
     guard AVPictureInPictureController.isPictureInPictureSupported() else {
@@ -526,7 +417,6 @@ class PIPTutorialController: NSObject, AVPictureInPictureControllerDelegate {
   /// クリーンアップして設定を開く
   private func cleanupAndOpenSettings() {
     NotificationCenter.default.removeObserver(self)
-    silentPlayer?.stop()
     openSettings()
   }
 
@@ -539,7 +429,6 @@ class PIPTutorialController: NSObject, AVPictureInPictureControllerDelegate {
   func stopPIP() {
     NotificationCenter.default.removeObserver(self)
     pipController?.stopPictureInPicture()
-    silentPlayer?.stop()
     pipController = nil
     pipContentViewController = nil
     pipVideoCallViewController = nil
