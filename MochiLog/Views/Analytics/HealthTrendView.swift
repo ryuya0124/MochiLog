@@ -257,7 +257,7 @@ struct HealthTrendView: View {
               }
             }
         }
-        .frame(height: 220)
+        .frame(height: horizontalSizeClass == .regular ? 280 : 200)
         .onAppear {
           DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
             withAnimation(.easeOut(duration: 0.6)) { animateChart = true }
@@ -272,6 +272,7 @@ struct HealthTrendView: View {
 
       }
     }
+    .frame(height: horizontalSizeClass == .regular ? 480 : nil, alignment: .top)
     .padding()
     .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
   }

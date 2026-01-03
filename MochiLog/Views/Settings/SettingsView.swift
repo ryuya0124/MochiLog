@@ -117,12 +117,21 @@ struct SettingsView: View {
   @ViewBuilder
   private var settingsList: some View {
     if horizontalSizeClass == .regular {
-      // iPad: 横幅制限付きList
-      List {
-        settingsContent
+      // iPad: 横幅制限付きList（画面全体のタップ領域は維持）
+      GeometryReader { geometry in
+        ScrollView {
+          List {
+            settingsContent
+          }
+          .listStyle(.insetGrouped)
+          .scrollDisabled(true)  // 内側のListスクロールを無効化
+          .frame(width: min(600, geometry.size.width))
+          .frame(maxWidth: .infinity)
+          // Listの高さを内容に応じて自動調整
+          .frame(minHeight: geometry.size.height)
+        }
       }
-      .frame(maxWidth: 600)
-      .frame(maxWidth: .infinity)
+      .background(Color(.systemGroupedBackground))
     } else {
       // iPhone: 通常のList
       List {
