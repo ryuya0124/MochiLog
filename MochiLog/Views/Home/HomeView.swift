@@ -67,16 +67,20 @@ struct MainTabView: View {
     TabView(selection: $selectedTab) {
       Tab(AppTab.home.title, systemImage: AppTab.home.icon, value: .home) {
         HomeView()
+          .contentTransition(.opacity)
       }
       Tab(AppTab.analytics.title, systemImage: AppTab.analytics.icon, value: .analytics) {
         AnalyticsView()
+          .contentTransition(.opacity)
       }
       Tab(AppTab.settings.title, systemImage: AppTab.settings.icon, value: .settings) {
         SettingsView()
+          .contentTransition(.opacity)
       }
     }
     .tabViewStyle(.sidebarAdaptable)
     .tint(appSettings.accentColor.color)
+    .animation(.easeInOut(duration: 0.25), value: selectedTab)
   }
 
   // MARK: - iOS 17以下 iPad用 NavigationSplitView
@@ -86,7 +90,7 @@ struct MainTabView: View {
         AppTab.allCases,
         selection: Binding(
           get: { selectedTab },
-          set: { if let v = $0 { selectedTab = v } }
+          set: { if let v = $0 { withAnimation(.easeInOut(duration: 0.25)) { selectedTab = v } } }
         )
       ) { tab in
         Label(tab.title, systemImage: tab.icon)
@@ -95,14 +99,18 @@ struct MainTabView: View {
       .navigationTitle("MochiLog")
       .listStyle(.sidebar)
     } detail: {
-      switch selectedTab {
-      case .home:
-        HomeView()
-      case .analytics:
-        AnalyticsView()
-      case .settings:
-        SettingsView()
+      Group {
+        switch selectedTab {
+        case .home:
+          HomeView()
+        case .analytics:
+          AnalyticsView()
+        case .settings:
+          SettingsView()
+        }
       }
+      .transition(.opacity)
+      .animation(.easeInOut(duration: 0.25), value: selectedTab)
     }
     .tint(appSettings.accentColor.color)
   }

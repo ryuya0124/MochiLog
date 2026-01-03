@@ -8,6 +8,8 @@ struct CycleTrendView: View {
   let unit: AppSettings.ChartUnit
   @Binding var animateChart: Bool
 
+  @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
       Text(String(localized: "cycle_trend", table: "Analytics"))
@@ -26,22 +28,28 @@ struct CycleTrendView: View {
           ForEach(visibleRecords) { record in
             LineMark(
               x: .value(
-                String(localized: "date", table: "Common"), Calendar.current.startOfDay(for: record.logDate),
+                String(localized: "date", table: "Common"),
+                Calendar.current.startOfDay(for: record.logDate),
                 unit: unit.calendarComponent),
               y: .value(String(localized: "cycle_count", table: "Analytics"), record.cycleCount)
             )
-            .foregroundStyle(by: .value(String(localized: "device_name", table: "Common"), record.deviceName))
+            .foregroundStyle(
+              by: .value(String(localized: "device_name", table: "Common"), record.deviceName)
+            )
             .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
             .opacity(animateChart ? 1 : 0)
 
             if showPoints {
               PointMark(
                 x: .value(
-                  String(localized: "date", table: "Common"), Calendar.current.startOfDay(for: record.logDate),
+                  String(localized: "date", table: "Common"),
+                  Calendar.current.startOfDay(for: record.logDate),
                   unit: unit.calendarComponent),
                 y: .value(String(localized: "cycle_count", table: "Analytics"), record.cycleCount)
               )
-              .foregroundStyle(by: .value(String(localized: "device_name", table: "Common"), record.deviceName))
+              .foregroundStyle(
+                by: .value(String(localized: "device_name", table: "Common"), record.deviceName)
+              )
               .symbol(.circle)
               .symbolSize(40)
               .opacity(animateChart ? 1 : 0)
@@ -134,9 +142,10 @@ struct CycleTrendView: View {
               }
             }
         }
-        .frame(height: 180)
+        .frame(height: horizontalSizeClass == .regular ? 280 : 200)
       }
     }
+    .frame(height: horizontalSizeClass == .regular ? 480 : nil, alignment: .top)
     .padding()
     .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
   }
