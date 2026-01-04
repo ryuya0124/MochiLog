@@ -45,6 +45,8 @@ struct LogParser {
 
     // バリデーション
     var isCapacityMismatch: Bool = false
+    // エラーログが保存されたか
+    var hasErrorSaved: Bool = false
   }
 
   // JSONデコード用の構造体（ログの中身に合わせる）
@@ -148,6 +150,7 @@ struct LogParser {
       // デバッグログは常に保存
       ErrorLogStore.shared.saveLog(message: msg, rawText: text)
       NotificationCenter.default.post(name: NSNotification.Name("ParseErrorSaved"), object: nil)
+      result.hasErrorSaved = true
       return result
     }
 
@@ -249,6 +252,7 @@ struct LogParser {
       let message = "Parse missing fields: \(missingFields.joined(separator: ", "))"
       ErrorLogStore.shared.saveLog(message: message, rawText: text)
       NotificationCenter.default.post(name: NSNotification.Name("ParseErrorSaved"), object: nil)
+      result.hasErrorSaved = true
     }
 
     return result

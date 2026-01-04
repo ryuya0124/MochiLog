@@ -59,6 +59,18 @@ struct MainTabView: View {
     .sheet(isPresented: $showingTutorial) {
       TutorialView()
     }
+    // AppSettings.selectedTabIndexの変更を監視してselectedTabに反映
+    .onChange(of: appSettings.selectedTabIndex) { _, newValue in
+      if let newTab = AppTab(rawValue: newValue), newTab != selectedTab {
+        selectedTab = newTab
+      }
+    }
+    // selectedTabの変更をselectedTabIndexに反映
+    .onChange(of: selectedTab) { _, newValue in
+      if appSettings.selectedTabIndex != newValue.rawValue {
+        appSettings.selectedTabIndex = newValue.rawValue
+      }
+    }
   }
 
   // MARK: - iOS 18+ sidebarAdaptable スタイル
@@ -67,20 +79,16 @@ struct MainTabView: View {
     TabView(selection: $selectedTab) {
       Tab(AppTab.home.title, systemImage: AppTab.home.icon, value: .home) {
         HomeView()
-          .contentTransition(.opacity)
       }
       Tab(AppTab.analytics.title, systemImage: AppTab.analytics.icon, value: .analytics) {
         AnalyticsView()
-          .contentTransition(.opacity)
       }
       Tab(AppTab.settings.title, systemImage: AppTab.settings.icon, value: .settings) {
         SettingsView()
-          .contentTransition(.opacity)
       }
     }
     .tabViewStyle(.sidebarAdaptable)
     .tint(appSettings.accentColor.color)
-    .animation(.easeInOut(duration: 0.25), value: selectedTab)
   }
 
   // MARK: - iOS 17以下 iPad用 NavigationSplitView
@@ -90,7 +98,7 @@ struct MainTabView: View {
         AppTab.allCases,
         selection: Binding(
           get: { selectedTab },
-          set: { if let v = $0 { withAnimation(.easeInOut(duration: 0.25)) { selectedTab = v } } }
+          set: { if let v = $0 { selectedTab = v } }
         )
       ) { tab in
         Label(tab.title, systemImage: tab.icon)
@@ -99,18 +107,14 @@ struct MainTabView: View {
       .navigationTitle("MochiLog")
       .listStyle(.sidebar)
     } detail: {
-      Group {
-        switch selectedTab {
-        case .home:
-          HomeView()
-        case .analytics:
-          AnalyticsView()
-        case .settings:
-          SettingsView()
-        }
+      switch selectedTab {
+      case .home:
+        HomeView()
+      case .analytics:
+        AnalyticsView()
+      case .settings:
+        SettingsView()
       }
-      .transition(.opacity)
-      .animation(.easeInOut(duration: 0.25), value: selectedTab)
     }
     .tint(appSettings.accentColor.color)
   }
@@ -335,13 +339,19 @@ struct HomeView: View {
         NotificationCenter.default.publisher(for: NSNotification.Name("ParseErrorSaved"))
       ) {
         _ in
-        showingParseErrorSavedAlert = true
+        // デバッグログ表示設定がオンの場合のみアラートを表示
+        if appSettings.showPopupOnLoad {
+          showingParseErrorSavedAlert = true
+        }
       }
       .alert(
         String(localized: "log_saved", table: "Home"), isPresented: $showingParseErrorSavedAlert
       ) {
         Button(String(localized: "view_log", table: "Records")) {
-          showingDebugLogsSheet = true
+          // アラートが閉じた後にシートを開く
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            showingDebugLogsSheet = true
+          }
         }
         Button(String(localized: "ok", table: "Common"), role: .cancel) {}
       } message: {

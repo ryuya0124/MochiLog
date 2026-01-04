@@ -191,7 +191,7 @@ struct SettingsView: View {
       // サンプルデータ表示
       Button {
         appSettings.showingSampleData = true
-        appSettings.selectedTabIndex = 1  // 分析ページへ遷移
+        appSettings.selectedTabIndex = 0  // ホームページへ遷移
       } label: {
         Label(String(localized: "view_sample_data", table: "Home"), systemImage: "eye")
       }

@@ -268,6 +268,12 @@ extension HomeView {
 
   /// 解析結果からレコードを追加する（対話的なフロー用）
   func addRecordFromParseResult(_ result: LogParser.ParseResult) -> BatteryRecord? {
+    // エラーログが保存され、かつデバッグポップアップ設定がONの場合は、
+    // 既に「ログを保存しました」アラートが出ているため、解析エラーのアラートは出さない
+    if result.hasErrorSaved && AppSettings.shared.showPopupOnLoad {
+      return nil
+    }
+
     // バリデーション
     guard let logDate = result.logDate,
       result.cycleCount != nil,

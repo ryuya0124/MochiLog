@@ -8,6 +8,7 @@ struct SampleDataAnalyticsContent: View {
   @Binding var animateChart: Bool
   @Binding var selectedRange: RangePreset
   @StateObject private var appSettings = AppSettings.shared
+  @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
   @State private var selectedDevice: String?
   @State private var windowEnd: Date = Date()
@@ -74,27 +75,60 @@ struct SampleDataAnalyticsContent: View {
       let unit = ChartWindowNavigator.autoUnit(
         for: visibleRecords, startDay: startDay, endDay: endDay)
 
-      // ヘルス推移グラフ
-      HealthTrendView(
-        visibleRecords: visibleRecords,
-        startDay: startDay,
-        endDay: endDay,
-        unit: unit,
-        selectedRange: $selectedRange,
-        canMoveNext: canMoveNext,
-        canMovePrevious: canMovePrevious,
-        shiftWindow: shiftWindow,
-        animateChart: $animateChart
-      )
+      // iPad: 2列レイアウト、iPhone: 1列レイアウト
+      if horizontalSizeClass == .regular {
+        // iPad向け2列グリッド
+        LazyVGrid(
+          columns: [GridItem(.flexible()), GridItem(.flexible())],
+          spacing: 20
+        ) {
+          // ヘルス推移グラフ
+          HealthTrendView(
+            visibleRecords: visibleRecords,
+            startDay: startDay,
+            endDay: endDay,
+            unit: unit,
+            selectedRange: $selectedRange,
+            canMoveNext: canMoveNext,
+            canMovePrevious: canMovePrevious,
+            shiftWindow: shiftWindow,
+            animateChart: $animateChart
+          )
 
-      // サイクル推移グラフ
-      CycleTrendView(
-        visibleRecords: visibleRecords,
-        startDay: startDay,
-        endDay: endDay,
-        unit: unit,
-        animateChart: $animateChart
-      )
+          // サイクル推移グラフ
+          CycleTrendView(
+            visibleRecords: visibleRecords,
+            startDay: startDay,
+            endDay: endDay,
+            unit: unit,
+            animateChart: $animateChart
+          )
+        }
+        .frame(maxWidth: 1200)
+      } else {
+        // iPhone向け1列レイアウト
+        // ヘルス推移グラフ
+        HealthTrendView(
+          visibleRecords: visibleRecords,
+          startDay: startDay,
+          endDay: endDay,
+          unit: unit,
+          selectedRange: $selectedRange,
+          canMoveNext: canMoveNext,
+          canMovePrevious: canMovePrevious,
+          shiftWindow: shiftWindow,
+          animateChart: $animateChart
+        )
+
+        // サイクル推移グラフ
+        CycleTrendView(
+          visibleRecords: visibleRecords,
+          startDay: startDay,
+          endDay: endDay,
+          unit: unit,
+          animateChart: $animateChart
+        )
+      }
 
       // 統計情報
       StatisticsView(filteredRecords: visibleRecords)
