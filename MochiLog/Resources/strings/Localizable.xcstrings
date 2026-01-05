@@ -4,11 +4,18 @@
     "" : {
 
     },
-    "–" : {
-
-    },
     "(%@)" : {
 
+    },
+    "%@ – %@" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ – %2$@"
+          }
+        }
+      }
     },
     "%@ > %@" : {
       "comment" : "A title that shows the currently selected category and series in a hierarchical format.",

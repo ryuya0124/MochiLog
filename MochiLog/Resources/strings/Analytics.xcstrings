@@ -164,6 +164,7 @@
       }
     },
     "health" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

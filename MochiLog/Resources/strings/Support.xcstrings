@@ -1,22 +1,6 @@
 {
   "sourceLanguage" : "ja",
   "strings" : {
-    "contact_support" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Contact Support"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "サポートへ問い合わせ"
-          }
-        }
-      }
-    },
     "contact_form" : {
       "localizations" : {
         "en" : {
@@ -33,18 +17,34 @@
         }
       }
     },
-    "inquiry_type" : {
+    "contact_support" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inquiry Type"
+            "value" : "Contact Support"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "お問い合わせ種別"
+            "value" : "サポートへ問い合わせ"
+          }
+        }
+      }
+    },
+    "debug" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Debug"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバッグ"
           }
         }
       }
@@ -65,23 +65,107 @@
         }
       }
     },
-    "your_name" : {
+    "inquiry_bug" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Your Name"
+            "value" : "Bug Report"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "お名前"
+            "value" : "不具合報告"
           }
         }
       }
     },
-    "message" : {
+    "inquiry_feature" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Feature Request"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "機能リクエスト"
+          }
+        }
+      }
+    },
+    "inquiry_other" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Other"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "その他"
+          }
+        }
+      }
+    },
+    "inquiry_question" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Question"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ご質問"
+          }
+        }
+      }
+    },
+    "inquiry_type" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inquiry Type"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お問い合わせ種別"
+          }
+        }
+      }
+    },
+    "mail_body_email" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Email"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "メールアドレス"
+          }
+        }
+      }
+    },
+    "mail_body_message" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -92,7 +176,39 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "メッセージ"
+            "value" : "本文"
+          }
+        }
+      }
+    },
+    "mail_body_name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お名前"
+          }
+        }
+      }
+    },
+    "mail_body_type" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Type"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お問い合わせ種別"
           }
         }
       }
@@ -129,34 +245,18 @@
         }
       }
     },
-    "required_fields_empty" : {
+    "message" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Please fill in required fields"
+            "value" : "Message"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "必須項目を入力してください"
-          }
-        }
-      }
-    },
-    "view_error_logs" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "View Error Logs"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "エラーログを表示"
+            "value" : "メッセージ"
           }
         }
       }
@@ -177,18 +277,18 @@
         }
       }
     },
-    "debug" : {
+    "required_fields_empty" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Debug"
+            "value" : "Please fill in required fields"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "デバッグ"
+            "value" : "必須項目を入力してください"
           }
         }
       }
@@ -209,6 +309,22 @@
         }
       }
     },
+    "view_error_logs" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View Error Logs"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "エラーログを表示"
+          }
+        }
+      }
+    },
     "view_on_github" : {
       "localizations" : {
         "en" : {
@@ -225,130 +341,18 @@
         }
       }
     },
-    "inquiry_bug" : {
+    "your_name" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bug Report"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "不具合報告"
-          }
-        }
-      }
-    },
-    "inquiry_feature" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Feature Request"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "機能リクエスト"
-          }
-        }
-      }
-    },
-    "inquiry_question" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Question"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ご質問"
-          }
-        }
-      }
-    },
-    "inquiry_other" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Other"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "その他"
-          }
-        }
-      }
-    },
-    "mail_body_name" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Name"
+            "value" : "Your Name"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "お名前"
-          }
-        }
-      }
-    },
-    "mail_body_email" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Email"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "メールアドレス"
-          }
-        }
-      }
-    },
-    "mail_body_type" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Type"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "お問い合わせ種別"
-          }
-        }
-      }
-    },
-    "mail_body_message" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Message"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "本文"
           }
         }
       }
