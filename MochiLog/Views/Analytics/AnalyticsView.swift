@@ -12,8 +12,6 @@ struct AnalyticsView: View {
   @State private var windowEnd: Date = Date()
 
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-  @State private var animateChart: Bool = false
-
   @State private var viewportHeight: CGFloat = 0
   @State private var showingTutorial = false
 
@@ -104,7 +102,6 @@ struct AnalyticsView: View {
           ScrollView {
             SampleDataAnalyticsContent(
               showingSampleData: $appSettings.showingSampleData,
-              animateChart: $animateChart,
               selectedRange: $selectedRange
             )
           }
@@ -160,15 +157,14 @@ struct AnalyticsView: View {
                       selectedRange: $selectedRange,
                       canMoveNext: canMoveNext,
                       canMovePrevious: canMovePrevious,
-                      shiftWindow: shiftWindow,
-                      animateChart: $animateChart
+                      shiftWindow: shiftWindow
                     )
 
                     // サイクル推移グラフ
                     CycleTrendView(
                       allRecords: filteredRecords,
                       unit: unit,
-                      animateChart: $animateChart
+                      initialRange: selectedRange
                     )
                   }
 
@@ -189,15 +185,14 @@ struct AnalyticsView: View {
                   selectedRange: $selectedRange,
                   canMoveNext: canMoveNext,
                   canMovePrevious: canMovePrevious,
-                  shiftWindow: shiftWindow,
-                  animateChart: $animateChart
+                  shiftWindow: shiftWindow
                 )
 
                 // サイクル推移グラフ
                 CycleTrendView(
                   allRecords: filteredRecords,
                   unit: unit,
-                  animateChart: $animateChart
+                  initialRange: selectedRange
                 )
 
                 // 統計情報（iPhone）

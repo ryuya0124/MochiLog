@@ -10,20 +10,44 @@ struct HealthTrendView: View {
   let canMoveNext: Bool
   let canMovePrevious: Bool
   let shiftWindow: (Bool) -> Void
-  @Binding var animateChart: Bool
+  @State private var animateChart: Bool = false
 
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @StateObject private var appSettings = AppSettings.shared
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
-      Text(
-        String(
-          localized: appSettings.analysisDataSource == .nominal
-            ? "health_trend_nominal" : "health_trend_actual",
-          table: "Analytics")
-      )
-      .font(.headline)
+      HStack(alignment: .firstTextBaseline) {
+        Text(
+          String(
+            localized: appSettings.analysisDataSource == .nominal
+              ? "health_trend_nominal" : "health_trend_actual",
+            table: "Analytics")
+        )
+        .font(.headline)
+
+        if horizontalSizeClass == .regular {
+          Spacer()
+          // 年・期間を表示（右寄せ）
+          HStack(spacing: 12) {
+            // 年
+            let startYear = Calendar.current.component(.year, from: startDay)
+            let endYear = Calendar.current.component(.year, from: endDay)
+            if startYear != endYear {
+              Text("\(String(startYear))年 ~ \(String(endYear))年")
+            } else {
+              Text("\(String(endYear))年")
+            }
+
+            // 日付
+            Text(
+              "\(startDay.formatted(.dateTime.month().day())) – \(endDay.formatted(.dateTime.month().day()))"
+            )
+          }
+          .font(.headline)
+          .foregroundStyle(.secondary)
+        }
+      }
 
       if visibleRecords.isEmpty {
         Text(String(localized: "no_records_for_device", table: "Analytics"))
@@ -105,31 +129,6 @@ struct HealthTrendView: View {
                   Image(systemName: "chevron.right")
                 }
                 .disabled(!canMoveNext)
-
-                // 年を表示
-                let startYear = Calendar.current.component(.year, from: startDay)
-                let endYear = Calendar.current.component(.year, from: endDay)
-                if startYear != endYear {
-                  Text("\(String(startYear))年 ~ \(String(endYear))年")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                } else {
-                  Text("\(String(endYear))年")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                }
-              }
-
-              HStack {
-                Text(startDay.formatted(.dateTime.month().day()))
-                  .font(.caption2)
-                  .foregroundStyle(.secondary)
-                Text("–")
-                  .font(.caption2)
-                  .foregroundStyle(.secondary)
-                Text(endDay.formatted(.dateTime.month().day()))
-                  .font(.caption2)
-                  .foregroundStyle(.secondary)
               }
             }
           }
@@ -286,13 +285,22 @@ struct HealthTrendView: View {
             withAnimation(.easeOut(duration: 0.6)) { animateChart = true }
           }
         }
-        .onChange(of: selectedRange) {
+        .onAppear {
           animateChart = false
-          DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
-            withAnimation(.easeOut(duration: 0.5)) { animateChart = true }
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            withAnimation(.easeOut(duration: 0.6)) {
+              animateChart = true
+            }
           }
         }
-
+        .onChange(of: selectedRange) {
+          animateChart = false
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            withAnimation(.easeOut(duration: 0.6)) {
+              animateChart = true
+            }
+          }
+        }
       }
     }
     .frame(height: horizontalSizeClass == .regular ? 480 : nil, alignment: .top)
@@ -310,7 +318,6 @@ struct HealthTrendView: View {
     selectedRange: .constant(.oneMonth),
     canMoveNext: false,
     canMovePrevious: false,
-    shiftWindow: { _ in },
-    animateChart: .constant(true)
+    shiftWindow: { _ in }
   )
 }

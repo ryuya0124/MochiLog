@@ -5,7 +5,6 @@ import SwiftUI
 /// 共通のグラフ表示コンポーネントを使用してコード重複を排除
 struct SampleDataAnalyticsContent: View {
   @Binding var showingSampleData: Bool
-  @Binding var animateChart: Bool
   @Binding var selectedRange: RangePreset
   @StateObject private var appSettings = AppSettings.shared
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -89,15 +88,14 @@ struct SampleDataAnalyticsContent: View {
               selectedRange: $selectedRange,
               canMoveNext: canMoveNext,
               canMovePrevious: canMovePrevious,
-              shiftWindow: shiftWindow,
-              animateChart: $animateChart
+              shiftWindow: shiftWindow
             )
 
             // サイクル推移グラフ
             CycleTrendView(
               allRecords: filteredRecords,
               unit: unit,
-              animateChart: $animateChart
+              initialRange: selectedRange
             )
           }
 
@@ -116,15 +114,14 @@ struct SampleDataAnalyticsContent: View {
           selectedRange: $selectedRange,
           canMoveNext: canMoveNext,
           canMovePrevious: canMovePrevious,
-          shiftWindow: shiftWindow,
-          animateChart: $animateChart
+          shiftWindow: shiftWindow
         )
 
         // サイクル推移グラフ
         CycleTrendView(
           allRecords: filteredRecords,
           unit: unit,
-          animateChart: $animateChart
+          initialRange: selectedRange
         )
 
         // 統計情報（iPhone）
@@ -138,12 +135,6 @@ struct SampleDataAnalyticsContent: View {
         for: filteredRecords, range: selectedRange)
       // 自動でレンジを設定
       selectedRange = ChartWindowNavigator.autoRange(for: filteredRecords)
-
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-        withAnimation(.easeOut(duration: 0.6)) {
-          animateChart = true
-        }
-      }
     }
   }
 }
@@ -151,7 +142,6 @@ struct SampleDataAnalyticsContent: View {
 #Preview {
   SampleDataAnalyticsContent(
     showingSampleData: .constant(true),
-    animateChart: .constant(true),
     selectedRange: .constant(.all)
   )
 }

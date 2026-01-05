@@ -4,13 +4,14 @@ import SwiftUI
 struct CycleTrendView: View {
   let allRecords: [BatteryRecord]  // フィルタ前の全レコード（期間計算用）
   let unit: AppSettings.ChartUnit
-  @Binding var animateChart: Bool
+  @State private var animateChart: Bool = false
   var initialRange: RangePreset = .oneMonth  // 初期レンジ（サンプルモード用）
 
   // iPad用：独自の期間設定
   @State private var selectedRange: RangePreset = .oneMonth
   @State private var windowEnd: Date = Date()
   @State private var hasInitialized: Bool = false
+  @State private var isUserInteracted: Bool = false
 
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
@@ -60,8 +61,32 @@ struct CycleTrendView: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
-      Text(String(localized: "cycle_trend", table: "Analytics"))
-        .font(.headline)
+      HStack(alignment: .firstTextBaseline) {
+        Text(String(localized: "cycle_trend", table: "Analytics"))
+          .font(.headline)
+
+        if horizontalSizeClass == .regular {
+          Spacer()
+          // 年・期間を表示（右寄せ）
+          HStack(spacing: 12) {
+            // 年
+            let startYear = Calendar.current.component(.year, from: startDay)
+            let endYear = Calendar.current.component(.year, from: endDay)
+            if startYear != endYear {
+              Text("\(String(startYear))年 ~ \(String(endYear))年")
+            } else {
+              Text("\(String(endYear))年")
+            }
+
+            // 日付
+            Text(
+              "\(startDay.formatted(.dateTime.month().day())) – \(endDay.formatted(.dateTime.month().day()))"
+            )
+          }
+          .font(.headline)
+          .foregroundStyle(.secondary)
+        }
+      }
 
       if allRecords.isEmpty {
         Text(String(localized: "no_records_for_device", table: "Analytics"))
@@ -78,13 +103,23 @@ struct CycleTrendView: View {
                 .foregroundStyle(.secondary)
               HStack(spacing: 12) {
                 Button {
+                  isUserInteracted = true
                   shiftWindow(backward: true)
                 } label: {
                   Image(systemName: "chevron.left")
                 }
                 .disabled(selectedRange == .all || !canMovePrevious)
 
-                Picker("", selection: $selectedRange) {
+                Picker(
+                  "",
+                  selection: Binding(
+                    get: { selectedRange },
+                    set: {
+                      isUserInteracted = true
+                      selectedRange = $0
+                    }
+                  )
+                ) {
                   ForEach(RangePreset.allCases) { preset in
                     Text(preset.localizedName).tag(preset)
                   }
@@ -93,36 +128,12 @@ struct CycleTrendView: View {
                 .accessibilityLabel(Text(String(localized: "chart_range", table: "Analytics")))
 
                 Button {
+                  isUserInteracted = true
                   shiftWindow(backward: false)
                 } label: {
                   Image(systemName: "chevron.right")
                 }
                 .disabled(!canMoveNext)
-
-                // 年を表示（2年以上の場合はレンジ表示）
-                let startYear = Calendar.current.component(.year, from: startDay)
-                let endYear = Calendar.current.component(.year, from: endDay)
-                if startYear != endYear {
-                  Text("\(String(startYear))年 ~ \(String(endYear))年")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                } else {
-                  Text("\(String(endYear))年")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                }
-              }
-
-              HStack {
-                Text(startDay.formatted(.dateTime.month().day()))
-                  .font(.caption2)
-                  .foregroundStyle(.secondary)
-                Text("–")
-                  .font(.caption2)
-                  .foregroundStyle(.secondary)
-                Text(endDay.formatted(.dateTime.month().day()))
-                  .font(.caption2)
-                  .foregroundStyle(.secondary)
               }
             }
           }
@@ -269,11 +280,24 @@ struct CycleTrendView: View {
         windowEnd = ChartWindowNavigator.initializeWindowEnd(for: allRecords, range: initialRange)
         hasInitialized = true
       }
+      // アニメーション開始
+      animateChart = false
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        withAnimation(.easeOut(duration: 0.6)) {
+          animateChart = true
+        }
+      }
     }
     .onChange(of: selectedRange) {
       animateChart = false
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
         withAnimation(.easeOut(duration: 0.5)) { animateChart = true }
+      }
+    }
+    .onChange(of: initialRange) {
+      if !isUserInteracted {
+        selectedRange = initialRange
+        windowEnd = ChartWindowNavigator.initializeWindowEnd(for: allRecords, range: initialRange)
       }
     }
   }
@@ -282,7 +306,6 @@ struct CycleTrendView: View {
 #Preview {
   CycleTrendView(
     allRecords: [],
-    unit: .day,
-    animateChart: .constant(true)
+    unit: .day
   )
 }
