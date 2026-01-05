@@ -116,6 +116,8 @@ struct MainTabView: View {
         SettingsView()
       }
     }
+    // トランジションアニメーションを無効化
+    .animation(nil, value: selectedTab)
     .tint(appSettings.accentColor.color)
   }
 

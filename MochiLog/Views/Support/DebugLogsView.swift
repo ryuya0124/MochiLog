@@ -76,7 +76,8 @@ struct DebugLogsView: View {
       }
       .onAppear(perform: reload)
       .confirmationDialog(
-        String(localized: "delete_all_logs_confirm", table: "Home"), isPresented: $showingDeleteAllConfirm,
+        String(localized: "delete_all_logs_confirm", table: "Home"),
+        isPresented: $showingDeleteAllConfirm,
         titleVisibility: .visible
       ) {
         Button(String(localized: "delete", table: "Common"), role: .destructive) {
@@ -85,7 +86,7 @@ struct DebugLogsView: View {
         }
         Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
       }
-      .sheet(item: $selectedLog) { log in
+      .fullScreenCover(item: $selectedLog) { log in
         DebugLogDetailView(entry: log)
       }
     }

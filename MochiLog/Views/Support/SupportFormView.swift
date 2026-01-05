@@ -11,7 +11,7 @@ enum InquiryType: String, CaseIterable, Identifiable {
   var id: String { rawValue }
 
   var localizedName: String {
-    String(localized: String.LocalizationValue(rawValue))
+    String(localized: String.LocalizationValue(rawValue), table: "Support")
   }
 }
 
@@ -79,7 +79,9 @@ struct SupportFormView: View {
           .disabled(!isFormValid)
         }
       }
-      .alert(String(localized: "mail_not_configured", table: "Support"), isPresented: $showingMailError) {
+      .alert(
+        String(localized: "mail_not_configured", table: "Support"), isPresented: $showingMailError
+      ) {
         Button(String(localized: "ok", table: "Common"), role: .cancel) {}
       } message: {
         Text(String(localized: "mail_not_configured_message", table: "Support"))
@@ -135,11 +137,11 @@ struct SupportFormView: View {
 
   private func composeEmailBody() -> String {
     """
-    名前 / Name: \(name)
-    メール / Email: \(email)
-    種別 / Type: \(inquiryType.localizedName)
+    \(String(localized: "mail_body_name", table: "Support")): \(name)
+    \(String(localized: "mail_body_email", table: "Support")): \(email)
+    \(String(localized: "mail_body_type", table: "Support")): \(inquiryType.localizedName)
 
-    メッセージ / Message:
+    \(String(localized: "mail_body_message", table: "Support")):
     \(message)
 
     \(appSettings.getDeviceInfo())
