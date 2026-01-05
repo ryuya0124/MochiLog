@@ -78,31 +78,31 @@ struct SampleDataAnalyticsContent: View {
       // iPad: 2列レイアウト、iPhone: 1列レイアウト
       if horizontalSizeClass == .regular {
         // iPad向け2列グリッド
-        LazyVGrid(
-          columns: [GridItem(.flexible()), GridItem(.flexible())],
-          spacing: 20
-        ) {
-          // ヘルス推移グラフ
-          HealthTrendView(
-            visibleRecords: visibleRecords,
-            startDay: startDay,
-            endDay: endDay,
-            unit: unit,
-            selectedRange: $selectedRange,
-            canMoveNext: canMoveNext,
-            canMovePrevious: canMovePrevious,
-            shiftWindow: shiftWindow,
-            animateChart: $animateChart
-          )
+        VStack(spacing: 20) {
+          HStack(alignment: .top, spacing: 20) {
+            // ヘルス推移グラフ
+            HealthTrendView(
+              visibleRecords: visibleRecords,
+              startDay: startDay,
+              endDay: endDay,
+              unit: unit,
+              selectedRange: $selectedRange,
+              canMoveNext: canMoveNext,
+              canMovePrevious: canMovePrevious,
+              shiftWindow: shiftWindow,
+              animateChart: $animateChart
+            )
 
-          // サイクル推移グラフ
-          CycleTrendView(
-            visibleRecords: visibleRecords,
-            startDay: startDay,
-            endDay: endDay,
-            unit: unit,
-            animateChart: $animateChart
-          )
+            // サイクル推移グラフ
+            CycleTrendView(
+              allRecords: filteredRecords,
+              unit: unit,
+              animateChart: $animateChart
+            )
+          }
+
+          // 統計情報（iPad）
+          StatisticsView(filteredRecords: visibleRecords)
         }
         .frame(maxWidth: 1200)
       } else {
@@ -122,16 +122,14 @@ struct SampleDataAnalyticsContent: View {
 
         // サイクル推移グラフ
         CycleTrendView(
-          visibleRecords: visibleRecords,
-          startDay: startDay,
-          endDay: endDay,
+          allRecords: filteredRecords,
           unit: unit,
           animateChart: $animateChart
         )
-      }
 
-      // 統計情報
-      StatisticsView(filteredRecords: visibleRecords)
+        // 統計情報（iPhone）
+        StatisticsView(filteredRecords: visibleRecords)
+      }
     }
     .padding(.horizontal)
     .onAppear {

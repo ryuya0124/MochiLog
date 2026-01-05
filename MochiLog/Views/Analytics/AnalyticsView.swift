@@ -147,32 +147,35 @@ struct AnalyticsView: View {
 
               // iPad: 2列レイアウト、iPhone: 1列レイアウト
               if horizontalSizeClass == .regular {
-                // iPad向け2列グリッド
-                LazyVGrid(
-                  columns: [GridItem(.flexible()), GridItem(.flexible())],
-                  spacing: 20
-                ) {
-                  // ヘルス推移グラフ
-                  HealthTrendView(
-                    visibleRecords: visibleRecords,
-                    startDay: startDay,
-                    endDay: endDay,
-                    unit: unit,
-                    selectedRange: $selectedRange,
-                    canMoveNext: canMoveNext,
-                    canMovePrevious: canMovePrevious,
-                    shiftWindow: shiftWindow,
-                    animateChart: $animateChart
-                  )
+                // iPad向け：グラフと統計を同じ幅にまとめる
+                VStack(spacing: 20) {
+                  // iPad向け2列グリッド
+                  HStack(alignment: .top, spacing: 20) {
+                    // ヘルス推移グラフ
+                    HealthTrendView(
+                      visibleRecords: visibleRecords,
+                      startDay: startDay,
+                      endDay: endDay,
+                      unit: unit,
+                      selectedRange: $selectedRange,
+                      canMoveNext: canMoveNext,
+                      canMovePrevious: canMovePrevious,
+                      shiftWindow: shiftWindow,
+                      animateChart: $animateChart
+                    )
 
-                  // サイクル推移グラフ
-                  CycleTrendView(
-                    visibleRecords: visibleRecords,
-                    startDay: startDay,
-                    endDay: endDay,
-                    unit: unit,
-                    animateChart: $animateChart
-                  )
+                    // サイクル推移グラフ
+                    CycleTrendView(
+                      allRecords: filteredRecords,
+                      unit: unit,
+                      animateChart: $animateChart
+                    )
+                  }
+
+                  // 統計情報（iPad）
+                  if !filteredRecords.isEmpty {
+                    StatisticsView(filteredRecords: filteredRecords)
+                  }
                 }
                 .frame(maxWidth: 1200)
               } else {
@@ -192,17 +195,15 @@ struct AnalyticsView: View {
 
                 // サイクル推移グラフ
                 CycleTrendView(
-                  visibleRecords: visibleRecords,
-                  startDay: startDay,
-                  endDay: endDay,
+                  allRecords: filteredRecords,
                   unit: unit,
                   animateChart: $animateChart
                 )
-              }
 
-              // 統計情報
-              if !filteredRecords.isEmpty {
-                StatisticsView(filteredRecords: filteredRecords)
+                // 統計情報（iPhone）
+                if !filteredRecords.isEmpty {
+                  StatisticsView(filteredRecords: filteredRecords)
+                }
               }
             }
             .padding()

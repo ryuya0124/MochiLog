@@ -105,6 +105,19 @@ struct HealthTrendView: View {
                   Image(systemName: "chevron.right")
                 }
                 .disabled(!canMoveNext)
+
+                // 年を表示
+                let startYear = Calendar.current.component(.year, from: startDay)
+                let endYear = Calendar.current.component(.year, from: endDay)
+                if startYear != endYear {
+                  Text("\(String(startYear))年 ~ \(String(endYear))年")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                } else {
+                  Text("\(String(endYear))年")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                }
               }
 
               HStack {
@@ -173,7 +186,10 @@ struct HealthTrendView: View {
 
           // 表示期間に応じて適切な単位とストライドを決定
           let (strideComponent, strideCount): (Calendar.Component, Int) = {
-            if displayDays <= 14 {
+            if displayDays <= 7 {
+              // 1週間以下: 日単位、1日ごと
+              return (.day, 1)
+            } else if displayDays <= 14 {
               // 2週間以下: 日単位、1日ごと
               return (.day, 1)
             } else if displayDays <= 60 {
@@ -214,6 +230,13 @@ struct HealthTrendView: View {
         // X軸ドメインを設定（期間に応じて右側に余白を追加）
         .chartXScale(
           domain: {
+            let days = Calendar.current.dateComponents([.day], from: startDay, to: endDay).day ?? 0
+            if days < 7 {
+              // 最低1週間分の幅を確保
+              return
+                startDay...(Calendar.current.date(byAdding: .day, value: 7, to: startDay) ?? endDay)
+            }
+
             let months =
               Calendar.current.dateComponents([.month], from: startDay, to: endDay).month ?? 0
             let years = months / 12
