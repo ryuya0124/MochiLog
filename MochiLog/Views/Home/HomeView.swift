@@ -10,7 +10,13 @@ struct MainTabView: View {
   @StateObject private var appSettings = AppSettings.shared
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @State private var showingTutorial = false
-  @State private var selectedTab: AppTab = .home
+  @State private var selectedTab: AppTab
+
+  init() {
+    // AppSettings.selectedTabIndexから初期値を取得
+    let savedIndex = AppSettings.shared.selectedTabIndex
+    _selectedTab = State(initialValue: AppTab(rawValue: savedIndex) ?? .home)
+  }
 
   /// タブの定義
   enum AppTab: Int, CaseIterable, Identifiable {

@@ -244,14 +244,16 @@ struct MochiLogRootView: View {
     }
     .onChange(of: appSettings.iCloudSyncEnabled) { _, _ in
       print("iCloud設定変更検知 - RootView再構築開始")
+      // タブインデックスを保存してリロード後に復元
+      let currentTabIndex = appSettings.selectedTabIndex
       withAnimation(.easeInOut(duration: 0.2)) {
         isReloading = true
       }
-      reloadContainer(delay: 0.1)  // アニメーションとほぼ同時に開始
+      reloadContainer(delay: 0.1, preserveTabIndex: currentTabIndex)
     }
   }
 
-  private func reloadContainer(delay: Double = 0.1) {
+  private func reloadContainer(delay: Double = 0.1, preserveTabIndex: Int? = nil) {
     // 遅延実行
     DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
 
@@ -268,6 +270,11 @@ struct MochiLogRootView: View {
           self.container = newContainer
           self.viewID = UUID()
           print("コンテナ再生成完了: ID \(self.viewID)")
+
+          // タブインデックスを復元
+          if let tabIndex = preserveTabIndex {
+            appSettings.selectedTabIndex = tabIndex
+          }
 
           // 3. 完了したら、文字が読める程度の時間を確保してから消す
           DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
