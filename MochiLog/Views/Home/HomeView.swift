@@ -94,15 +94,16 @@ struct MainTabView: View {
   // MARK: - iOS 17以下 iPad用 NavigationSplitView
   private var legacySplitView: some View {
     NavigationSplitView {
-      List(
-        AppTab.allCases,
-        selection: Binding(
-          get: { selectedTab },
-          set: { if let v = $0 { selectedTab = v } }
-        )
-      ) { tab in
-        Label(tab.title, systemImage: tab.icon)
-          .tag(tab as AppTab?)
+      List {
+        ForEach(AppTab.allCases) { tab in
+          Label(tab.title, systemImage: tab.icon)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
+            .onTapGesture {
+              selectedTab = tab
+            }
+            .listRowBackground(selectedTab == tab ? Color.accentColor.opacity(0.2) : Color.clear)
+        }
       }
       .navigationTitle("MochiLog")
       .listStyle(.sidebar)
