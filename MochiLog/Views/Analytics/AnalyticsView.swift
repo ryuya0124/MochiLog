@@ -15,14 +15,11 @@ struct AnalyticsView: View {
   @State private var viewportHeight: CGFloat = 0
   @State private var showingTutorial = false
 
-  private var deviceNames: [String] {
-    Array(Set(records.map { $0.deviceName })).sorted()
-  }
+  // MARK: - 初期化処理用の状態
+  @State private var isInitializing = true
+  @State private var cachedDeviceNames: [String] = []
 
-  private var filteredRecords: [BatteryRecord] {
-    guard let device = selectedDevice else { return records }
-    return records.filter { $0.deviceName == device }
-  }
+  // MARK: - computed properties を削除し、キャッシュを使用
 
   /// データの分布に基づいて初期レンジを決定する（短い期間しかなければ小さいレンジを選ぶ）
   private func autoRange(for records: [BatteryRecord]) -> RangePreset {
@@ -60,236 +57,241 @@ struct AnalyticsView: View {
     return .month
   }
 
-  // MARK: - ウィンドウ（前後移動）ヘルパー - 共通ユーティリティを使用
-
-  private func windowStart(for endDate: Date, range: RangePreset) -> Date {
-    ChartWindowNavigator.windowStart(for: endDate, range: range, allRecords: filteredRecords)
-  }
-
-  private func windowContainsData(start: Date, end: Date, in records: [BatteryRecord]) -> Bool {
-    ChartWindowNavigator.windowContainsData(start: start, end: end, in: records)
-  }
-
-  /// 初期化時・レンジ変更時に、現在時点や最終記録を考慮して表示ウィンドウの終了日時を決める
-  private func initializeWindowEndIfNeeded() {
-    windowEnd = ChartWindowNavigator.initializeWindowEnd(for: filteredRecords, range: selectedRange)
-  }
-
-  private func shiftWindow(backward: Bool) {
-    windowEnd = ChartWindowNavigator.shiftWindow(
-      currentEnd: windowEnd,
-      backward: backward,
-      range: selectedRange,
-      records: filteredRecords
-    )
-  }
-
-  // MARK: - 前後移動の可否
-  private var canMoveNext: Bool {
-    ChartWindowNavigator.canMoveNext(
-      currentEnd: windowEnd, range: selectedRange, records: filteredRecords)
-  }
-  private var canMovePrevious: Bool {
-    ChartWindowNavigator.canMovePrevious(
-      currentEnd: windowEnd, range: selectedRange, records: filteredRecords)
-  }
-
   var body: some View {
     NavigationStack {
-      GeometryReader { geometry in
-        if appSettings.showingSampleData {
-          // サンプルモードON → サンプルグラフ表示
-          ScrollView {
-            SampleDataAnalyticsContent(
-              showingSampleData: $appSettings.showingSampleData,
-              selectedRange: $selectedRange
-            )
+      ZStack {
+        if isInitializing && !appSettings.showingSampleData {
+          // 初期化中のローディング表示
+          VStack(spacing: 16) {
+            ProgressView()
+              .scaleEffect(1.2)
+            Text(String(localized: "preparing_data", table: "Home"))
+              .font(.subheadline)
+              .foregroundStyle(.secondary)
           }
-        } else if !records.isEmpty {
-          ScrollView {
-            VStack(spacing: 20) {
-              // デバイス選択ピッカー
-              DevicePickerView(deviceNames: deviceNames, selectedDevice: $selectedDevice)
-
-              // 共通の期間計算（ヘルス・サイクルで共用）
-              let end = windowEnd
-              let calendar = Calendar.current
-              let startDate: Date = {
-                switch selectedRange {
-                case .oneWeek:
-                  return calendar.date(byAdding: .day, value: -7, to: end) ?? end
-                case .oneMonth:
-                  return calendar.date(byAdding: .month, value: -1, to: end) ?? end
-                case .threeMonths:
-                  return calendar.date(byAdding: .month, value: -3, to: end) ?? end
-                case .sixMonths:
-                  return calendar.date(byAdding: .month, value: -6, to: end) ?? end
-                case .oneYear:
-                  return calendar.date(byAdding: .year, value: -1, to: end) ?? end
-                case .twoYears:
-                  return calendar.date(byAdding: .year, value: -2, to: end) ?? end
-                case .all:
-                  return (filteredRecords.min(by: { $0.logDate < $1.logDate })?.logDate) ?? end
-                }
-              }()
-
-              let startDay = calendar.startOfDay(for: startDate)
-              let endDay = calendar.startOfDay(for: end)
-              let visibleRecords = filteredRecords.filter {
-                let d = calendar.startOfDay(for: $0.logDate)
-                return d >= startDay && d <= endDay
-              }
-
-              let unit = autoUnit(for: visibleRecords, range: selectedRange)
-
-              // iPad: 2列レイアウト、iPhone: 1列レイアウト
-              if horizontalSizeClass == .regular {
-                // iPad向け：グラフと統計を同じ幅にまとめる
-                VStack(spacing: 20) {
-                  // iPad向け2列グリッド
-                  HStack(alignment: .top, spacing: 20) {
-                    // ヘルス推移グラフ
-                    HealthTrendView(
-                      visibleRecords: visibleRecords,
-                      startDay: startDay,
-                      endDay: endDay,
-                      unit: unit,
-                      selectedRange: $selectedRange,
-                      canMoveNext: canMoveNext,
-                      canMovePrevious: canMovePrevious,
-                      shiftWindow: shiftWindow
-                    )
-
-                    // サイクル推移グラフ
-                    CycleTrendView(
-                      allRecords: filteredRecords,
-                      unit: unit,
-                      initialRange: selectedRange
-                    )
-                  }
-
-                  // 統計情報（iPad）
-                  if !filteredRecords.isEmpty {
-                    StatisticsView(filteredRecords: filteredRecords)
-                  }
-                }
-                .frame(maxWidth: 1200)
-              } else {
-                // iPhone向け1列レイアウト
-                // ヘルス推移グラフ
-                HealthTrendView(
-                  visibleRecords: visibleRecords,
-                  startDay: startDay,
-                  endDay: endDay,
-                  unit: unit,
-                  selectedRange: $selectedRange,
-                  canMoveNext: canMoveNext,
-                  canMovePrevious: canMovePrevious,
-                  shiftWindow: shiftWindow
-                )
-
-                // サイクル推移グラフ
-                CycleTrendView(
-                  allRecords: filteredRecords,
-                  unit: unit,
-                  initialRange: selectedRange
-                )
-
-                // 統計情報（iPhone）
-                if !filteredRecords.isEmpty {
-                  StatisticsView(filteredRecords: filteredRecords)
-                }
-              }
-            }
-            .padding()
-          }
+          .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
-          // データなし + サンプルモードOFF → ボタン表示（中央配置）
-          GeometryReader { geo in
-            ScrollView {
-              ContentUnavailableView {
-                Label(
-                  String(localized: "no_data", table: "Home"),
-                  systemImage: "chart.line.uptrend.xyaxis")
-              } description: {
-                Text(String(localized: "no_data_description", table: "Home"))
-              } actions: {
-                VStack(spacing: 12) {
-                  Button {
-                    showingTutorial = true
-                  } label: {
-                    Label(
-                      String(localized: "view_tutorial", table: "Home"), systemImage: "play.circle")
-                  }
-                  .buttonStyle(.bordered)
-
-                  Button {
-                    withAnimation { appSettings.showingSampleData = true }
-                  } label: {
-                    Label(String(localized: "view_sample_data", table: "Home"), systemImage: "eye")
-                  }
-                  .buttonStyle(.borderedProminent)
-                }
-              }
-              .frame(maxWidth: .infinity)
-              // 「実スクロール」を作らないため、viewportより 1pt 小さくする
-              .frame(minHeight: max(0, viewportHeight - 1))
-            }
-            .scrollBounceBehavior(.always)  // バウンスは常に有効
-            .onAppear {
-              viewportHeight = geo.size.height
-            }
-            .onChange(of: geo.size.height) { oldValue, newValue in
-              // 回転など「大きい変化」だけ追従。Large Title の伸縮由来の揺れは無視。
-              if abs(newValue - viewportHeight) > 80 {
-                viewportHeight = newValue
-              }
-            }
-          }
+          analyticsContent
         }
       }
       .onAppear {
-        // 起動セッション内で一度だけ、現在の（フィルタ済み）データに合わせてレンジを自動設定（ユーザー選択は上書きしない）
-        if !appSettings.hasAutoInitializedChartRange {
-          selectedRange = autoRange(for: filteredRecords)
-          initializeWindowEndIfNeeded()
-          appSettings.hasAutoInitializedChartRange = true
-        } else {
-          // 既にセッション内で初期化済みなら、現在のウィンドウがデータを含むか確認し、必要なら調整
-          initializeWindowEndIfNeeded()
-        }
+        initializeViewIfNeeded()
       }
       .onChange(of: records) {
-        // records 更新時に、まだセッション内で自動初期化が済んでいなければ適用
-        if !appSettings.hasAutoInitializedChartRange {
-          selectedRange = autoRange(for: filteredRecords)
-          initializeWindowEndIfNeeded()
-          appSettings.hasAutoInitializedChartRange = true
-        } else {
-          // 変更により現在ウィンドウにデータがなくなった場合はウィンドウを調整
-          let start = windowStart(for: windowEnd, range: selectedRange)
-          if !windowContainsData(start: start, end: windowEnd, in: filteredRecords) {
-            initializeWindowEndIfNeeded()
-          }
-        }
+        handleRecordsChange()
       }
       .onChange(of: selectedDevice) {
-        // デバイス切替時もセッション内の初回のみ適用（既に初期化済みならユーザー選択を尊重）
-        if !appSettings.hasAutoInitializedChartRange {
-          selectedRange = autoRange(for: filteredRecords)
-          initializeWindowEndIfNeeded()
-          appSettings.hasAutoInitializedChartRange = true
-        } else {
-          let start = windowStart(for: windowEnd, range: selectedRange)
-          if !windowContainsData(start: start, end: windowEnd, in: filteredRecords) {
-            initializeWindowEndIfNeeded()
-          }
-        }
+        handleDeviceChange()
       }
       .navigationTitle(String(localized: "analytics", table: "Analytics"))
       .background(Color(.systemGroupedBackground))
       .sheet(isPresented: $showingTutorial) {
         TutorialView()
+      }
+    }
+  }
+
+  // MARK: - メインコンテンツ
+  @ViewBuilder
+  private var analyticsContent: some View {
+    GeometryReader { geometry in
+      if appSettings.showingSampleData {
+        // サンプルモードON → サンプルグラフ表示
+        ScrollView {
+          SampleDataAnalyticsContent(
+            showingSampleData: $appSettings.showingSampleData,
+            selectedRange: $selectedRange
+          )
+        }
+      } else if !records.isEmpty {
+        VStack(spacing: 0) {
+          // デバイス選択ピッカー（キャッシュされたデバイス名を使用）
+          DevicePickerView(deviceNames: cachedDeviceNames, selectedDevice: $selectedDevice)
+            .padding(.horizontal)
+            .padding(.top, 8)
+
+          // コンテンツビュー（バックグラウンドでデータ計算）
+          AnalyticsContentView(
+            records: records,
+            selectedDevice: selectedDevice,
+            selectedRange: $selectedRange,
+            windowEnd: $windowEnd
+          )
+        }
+      } else {
+        // データなし + サンプルモードOFF → ボタン表示（中央配置）
+        noDataView(geometry: geometry)
+      }
+    }
+  }
+
+  // MARK: - データなしビュー
+  @ViewBuilder
+  private func noDataView(geometry: GeometryProxy) -> some View {
+    GeometryReader { geo in
+      ScrollView {
+        ContentUnavailableView {
+          Label(
+            String(localized: "no_data", table: "Home"),
+            systemImage: "chart.line.uptrend.xyaxis")
+        } description: {
+          Text(String(localized: "no_data_description", table: "Home"))
+        } actions: {
+          VStack(spacing: 12) {
+            Button {
+              showingTutorial = true
+            } label: {
+              Label(
+                String(localized: "view_tutorial", table: "Home"), systemImage: "play.circle")
+            }
+            .buttonStyle(.bordered)
+
+            Button {
+              withAnimation { appSettings.showingSampleData = true }
+            } label: {
+              Label(String(localized: "view_sample_data", table: "Home"), systemImage: "eye")
+            }
+            .buttonStyle(.borderedProminent)
+          }
+        }
+        .frame(maxWidth: .infinity)
+        // 「実スクロール」を作らないため、viewportより 1pt 小さくする
+        .frame(minHeight: max(0, viewportHeight - 1))
+      }
+      .scrollBounceBehavior(.always)  // バウンスは常に有効
+      .onAppear {
+        viewportHeight = geo.size.height
+      }
+      .onChange(of: geo.size.height) { oldValue, newValue in
+        // 回転など「大きい変化」だけ追従。Large Title の伸縮由来の揺れは無視。
+        if abs(newValue - viewportHeight) > 80 {
+          viewportHeight = newValue
+        }
+      }
+    }
+  }
+
+  // MARK: - 初期化処理（バックグラウンドで実行）
+  private func initializeViewIfNeeded() {
+    // サンプルモードなら即座に表示
+    if appSettings.showingSampleData {
+      isInitializing = false
+      return
+    }
+
+    // データがなければ即座に表示
+    if records.isEmpty {
+      isInitializing = false
+      return
+    }
+
+    // バックグラウンドで初期化処理を実行
+    let currentRecords = records
+    let shouldAutoInitFlag = !appSettings.hasAutoInitializedChartRange
+
+    Task.detached(priority: .userInitiated) {
+      // デバイス名リストを計算
+      let deviceNames = Array(Set(currentRecords.map { $0.deviceName })).sorted()
+
+      // 初期レンジを計算（必要に応じて）
+      let calculatedRange: RangePreset? =
+        shouldAutoInitFlag ? calculateAutoRange(for: currentRecords) : nil
+
+      await MainActor.run {
+        cachedDeviceNames = deviceNames
+
+        if let range = calculatedRange {
+          selectedRange = range
+          windowEnd = ChartWindowNavigator.initializeWindowEnd(for: currentRecords, range: range)
+          appSettings.hasAutoInitializedChartRange = true
+        } else {
+          // 既存のウィンドウが有効か確認
+          let start = ChartWindowNavigator.windowStart(
+            for: windowEnd, range: selectedRange, allRecords: currentRecords)
+          if !ChartWindowNavigator.windowContainsData(
+            start: start, end: windowEnd, in: currentRecords)
+          {
+            windowEnd = ChartWindowNavigator.initializeWindowEnd(
+              for: currentRecords, range: selectedRange)
+          }
+        }
+
+        isInitializing = false
+      }
+    }
+  }
+
+  /// バックグラウンドスレッドで安全に呼べるautoRange計算
+  nonisolated private func calculateAutoRange(for records: [BatteryRecord]) -> RangePreset {
+    guard let first = records.min(by: { $0.logDate < $1.logDate })?.logDate,
+      let last = records.max(by: { $0.logDate < $1.logDate })?.logDate
+    else { return .oneMonth }
+
+    let days = Calendar.current.dateComponents([.day], from: first, to: last).day ?? 0
+
+    if days <= 7 { return .oneWeek }
+    if days <= 30 { return .oneMonth }
+    if days <= 90 { return .threeMonths }
+    if days <= 180 { return .sixMonths }
+    if days <= 365 { return .oneYear }
+    if days <= 730 { return .twoYears }
+    return .all
+  }
+
+  // MARK: - records変更時の処理
+  private func handleRecordsChange() {
+    // デバイス名リストを更新
+    let currentRecords = records
+    Task.detached(priority: .userInitiated) {
+      let deviceNames = Array(Set(currentRecords.map { $0.deviceName })).sorted()
+
+      await MainActor.run {
+        cachedDeviceNames = deviceNames
+
+        if !appSettings.hasAutoInitializedChartRange {
+          selectedRange = calculateAutoRange(for: currentRecords)
+          windowEnd = ChartWindowNavigator.initializeWindowEnd(
+            for: currentRecords, range: selectedRange)
+          appSettings.hasAutoInitializedChartRange = true
+        } else {
+          let filteredRecords =
+            selectedDevice.map { device in currentRecords.filter { $0.deviceName == device } }
+            ?? currentRecords
+          let start = ChartWindowNavigator.windowStart(
+            for: windowEnd, range: selectedRange, allRecords: filteredRecords)
+          if !ChartWindowNavigator.windowContainsData(
+            start: start, end: windowEnd, in: filteredRecords)
+          {
+            windowEnd = ChartWindowNavigator.initializeWindowEnd(
+              for: filteredRecords, range: selectedRange)
+          }
+        }
+      }
+    }
+  }
+
+  // MARK: - デバイス変更時の処理
+  private func handleDeviceChange() {
+    Task.detached(priority: .userInitiated) {
+      await MainActor.run {
+        let filteredRecords =
+          selectedDevice.map { device in records.filter { $0.deviceName == device } } ?? records
+
+        if !appSettings.hasAutoInitializedChartRange {
+          selectedRange = calculateAutoRange(for: filteredRecords)
+          windowEnd = ChartWindowNavigator.initializeWindowEnd(
+            for: filteredRecords, range: selectedRange)
+          appSettings.hasAutoInitializedChartRange = true
+        } else {
+          let start = ChartWindowNavigator.windowStart(
+            for: windowEnd, range: selectedRange, allRecords: filteredRecords)
+          if !ChartWindowNavigator.windowContainsData(
+            start: start, end: windowEnd, in: filteredRecords)
+          {
+            windowEnd = ChartWindowNavigator.initializeWindowEnd(
+              for: filteredRecords, range: selectedRange)
+          }
+        }
       }
     }
   }

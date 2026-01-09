@@ -324,6 +324,22 @@
         }
       }
     },
+    "preparing_data" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preparing data..."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データを準備中..."
+          }
+        }
+      }
+    },
     "sample_data_hint" : {
       "localizations" : {
         "en" : {

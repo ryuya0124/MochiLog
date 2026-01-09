@@ -13,6 +13,12 @@ struct RecordListView<Header: View>: View {
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @State private var collapsedSections: Set<String> = []
 
+  // MARK: - バックグラウンド計算用の状態
+  @State private var isLoading = true
+  @State private var cachedSections: [DeviceSection] = []
+  @State private var lastRecordsHash: Int?
+  @State private var lastSortOrderHash: Int?
+
   init(
     records: [BatteryRecord],
     onRecordTap: ((BatteryRecord) -> Void)? = nil,
@@ -28,15 +34,126 @@ struct RecordListView<Header: View>: View {
   }
 
   var body: some View {
-    Group {
-      if horizontalSizeClass == .regular {
-        iPadGridLayout
+    ZStack {
+      if isLoading && cachedSections.isEmpty {
+        // 初回ローディング中
+        VStack(spacing: 16) {
+          ProgressView()
+            .scaleEffect(1.2)
+          Text(String(localized: "preparing_data", table: "Home"))
+            .font(.subheadline)
+            .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
       } else {
-        iPhoneLayout
+        // コンテンツ表示
+        Group {
+          if horizontalSizeClass == .regular {
+            iPadGridLayout
+          } else {
+            iPhoneLayout
+          }
+        }
+        .animation(.snappy, value: cachedSections.map { $0.id })
       }
     }
-    .animation(.snappy, value: records)
-    .animation(.snappy, value: deviceSections.map { $0.id })
+    .onAppear {
+      prepareDeviceSectionsIfNeeded()
+    }
+    .onChange(of: records) {
+      prepareDeviceSectionsIfNeeded()
+    }
+    .onChange(of: appSettings.deviceSortOrder) {
+      prepareDeviceSectionsIfNeeded(force: true)
+    }
+  }
+
+  // MARK: - バックグラウンドでセクションを準備
+  private func prepareDeviceSectionsIfNeeded(force: Bool = false) {
+    // レコードの内容からハッシュを計算
+    var hasher = Hasher()
+    for record in records {
+      hasher.combine(record.logDate)
+      hasher.combine(record.deviceName)
+    }
+    let recordsHash = hasher.finalize()
+    let sortOrderHash = appSettings.deviceSortOrder.hashValue
+
+    // 変更がなければスキップ（ただしforceが指定されている場合は再計算）
+    if !force && recordsHash == lastRecordsHash && sortOrderHash == lastSortOrderHash {
+      return
+    }
+
+    isLoading = true
+
+    // レコード情報を抽出（Sendable対応）- logDateの文字列表現をIDとして使用
+    let dateFormatter = ISO8601DateFormatter()
+    let recordInfos = records.map { record in
+      let recordID = "\(record.deviceName)_\(dateFormatter.string(from: record.logDate))"
+      return (id: recordID, deviceName: record.deviceName)
+    }
+    let sortOrder = appSettings.deviceSortOrder
+
+    Task.detached(priority: .userInitiated) {
+      // バックグラウンドでセクション計算
+      let sections = Self.computeDeviceSections(recordInfos: recordInfos, sortOrder: sortOrder)
+
+      await MainActor.run {
+        withAnimation(.snappy) {
+          cachedSections = sections
+        }
+        lastRecordsHash = recordsHash
+        lastSortOrderHash = sortOrderHash
+        isLoading = false
+      }
+    }
+  }
+
+  /// デバイスセクションを計算する（バックグラウンドスレッドで実行）
+  nonisolated private static func computeDeviceSections(
+    recordInfos: [(id: String, deviceName: String)],
+    sortOrder: [String]
+  ) -> [DeviceSection] {
+    var sections: [DeviceSection] = []
+    var indexForDevice: [String: Int] = [:]
+    var recordIDsForDevice: [String: [String]] = [:]
+
+    for info in recordInfos {
+      let name = info.deviceName
+      if recordIDsForDevice[name] != nil {
+        recordIDsForDevice[name]?.append(info.id)
+      } else {
+        recordIDsForDevice[name] = [info.id]
+        indexForDevice[name] = sections.count
+        sections.append(DeviceSection(id: name, displayName: name, recordIDs: []))
+      }
+    }
+
+    // recordIDsを設定
+    sections = sections.map { section in
+      DeviceSection(
+        id: section.id,
+        displayName: section.displayName,
+        recordIDs: recordIDsForDevice[section.id] ?? []
+      )
+    }
+
+    // ソート順を適用
+    if !sortOrder.isEmpty {
+      sections.sort { a, b in
+        let indexA = sortOrder.firstIndex(of: a.id) ?? Int.max
+        let indexB = sortOrder.firstIndex(of: b.id) ?? Int.max
+        return indexA < indexB
+      }
+    }
+
+    return sections
+  }
+
+  /// セクションIDからレコードを取得するヘルパー
+  private func recordsForSection(_ section: DeviceSection) -> [BatteryRecord] {
+    // デバイス名でフィルタリング（セクションIDはデバイス名）
+    return records.filter { $0.deviceName == section.id }
   }
 
   // MARK: - iPad レイアウト（複数列表示）
@@ -48,13 +165,14 @@ struct RecordListView<Header: View>: View {
         let availableWidth = geometry.size.width
         let minSectionWidth: CGFloat = 340
         let maxColumns = max(1, Int(availableWidth / minSectionWidth))
-        let columnsCount = min(deviceSections.count, maxColumns)
+        let columnsCount = min(cachedSections.count, maxColumns)
         let outerColumns = Array(
           repeating: GridItem(.flexible(), spacing: 24, alignment: .top),
           count: max(1, columnsCount))
 
         LazyVGrid(columns: outerColumns, alignment: .leading, spacing: 24) {
-          ForEach(deviceSections) { section in
+          ForEach(cachedSections) { section in
+            let sectionRecords = recordsForSection(section)
             VStack(alignment: .leading, spacing: 12) {
               // DisclosureGroupで折りたたみ可能に
               DisclosureGroup(
@@ -75,7 +193,7 @@ struct RecordListView<Header: View>: View {
                 LazyVGrid(
                   columns: [GridItem(.adaptive(minimum: 280), spacing: 16)], spacing: 16
                 ) {
-                  ForEach(section.records) { record in
+                  ForEach(sectionRecords) { record in
                     NavigationLink(destination: RecordDetailView(record: record)) {
                       RecordRowView(record: record)
                         .padding()
@@ -88,8 +206,10 @@ struct RecordListView<Header: View>: View {
                         Button(role: .destructive) {
                           onDelete(record)
                         } label: {
-                          Label(String(localized: "delete", table: "Common"), systemImage: "trash.fill")
-                            .font(.title2)
+                          Label(
+                            String(localized: "delete", table: "Common"), systemImage: "trash.fill"
+                          )
+                          .font(.title2)
                         }
                       }
                     } preview: {
@@ -137,7 +257,8 @@ struct RecordListView<Header: View>: View {
         .listRowSeparator(.hidden)
         .listRowBackground(Color.clear)
 
-      ForEach(deviceSections) { section in
+      ForEach(cachedSections) { section in
+        let sectionRecords = recordsForSection(section)
         Section {
           DisclosureGroup(
             isExpanded: Binding(
@@ -153,7 +274,7 @@ struct RecordListView<Header: View>: View {
               }
             )
           ) {
-            ForEach(section.records) { record in
+            ForEach(sectionRecords) { record in
               RecordRowView(record: record)
                 .contentShape(Rectangle())
                 .onTapGesture {
@@ -167,7 +288,7 @@ struct RecordListView<Header: View>: View {
             }
             .onDelete { offsets in
               if let onDelete = onRecordDelete {
-                let items = offsets.map { section.records[$0] }
+                let items = offsets.map { sectionRecords[$0] }
                 items.forEach { onDelete($0) }
               }
             }
@@ -186,35 +307,14 @@ struct RecordListView<Header: View>: View {
     }
   }
 
-  // MARK: - デバイスセクション
-  private var deviceSections: [DeviceSection] {
-    var sections: [DeviceSection] = []
-    var indexForDevice: [String: Int] = [:]
-    for record in records {
-      let name = record.deviceName
-      if let index = indexForDevice[name] {
-        sections[index].records.append(record)
-      } else {
-        indexForDevice[name] = sections.count
-        sections.append(DeviceSection(id: name, displayName: name, records: [record]))
-      }
-    }
-
-    // Apply sort order
-    let sortOrder = appSettings.deviceSortOrder
-    if !sortOrder.isEmpty {
-      sections.sort { (a, b) -> Bool in
-        let indexA = sortOrder.firstIndex(of: a.id) ?? Int.max
-        let indexB = sortOrder.firstIndex(of: b.id) ?? Int.max
-        return indexA < indexB
-      }
-    }
-    return sections
-  }
-
-  private struct DeviceSection: Identifiable {
+  // MARK: - デバイスセクション構造体
+  private struct DeviceSection: Identifiable, Equatable {
     let id: String
     let displayName: String
-    var records: [BatteryRecord]
+    let recordIDs: [String]
+
+    static func == (lhs: DeviceSection, rhs: DeviceSection) -> Bool {
+      lhs.id == rhs.id && lhs.recordIDs == rhs.recordIDs
+    }
   }
 }
