@@ -1,3 +1,4 @@
+import CloudKit
 import Combine
 import Foundation
 import SwiftUI
@@ -445,15 +446,50 @@ final class AppSettings: ObservableObject {
   /// iCloud 有効化時の失敗理由
   enum ICloudError: LocalizedError {
     case lowSpace(requiredMB: Int)
+    case accountNotSignedIn
+    case accountRestricted
+    case accountTemporarilyUnavailable
     case unknown
 
     var errorDescription: String? {
       switch self {
       case .lowSpace(let requiredMB):
-        return String(format: String(localized: "icloud_sync_blocked_low_space", table: "Settings"), requiredMB)
+        return String(
+          format: String(localized: "icloud_sync_blocked_low_space", table: "Settings"), requiredMB)
+      case .accountNotSignedIn:
+        return String(localized: "icloud_account_not_signed_in", table: "Settings")
+      case .accountRestricted:
+        return String(localized: "icloud_account_restricted", table: "Settings")
+      case .accountTemporarilyUnavailable:
+        return String(localized: "icloud_account_temporarily_unavailable", table: "Settings")
       case .unknown:
         return String(localized: "icloud_sync_failed", table: "Settings")
       }
+    }
+  }
+
+  /// iCloud アカウントの状態を非同期でチェック
+  private func checkICloudAccountStatus() async -> Result<Void, ICloudError> {
+    let container = CKContainer.default()
+
+    do {
+      let status = try await container.accountStatus()
+      switch status {
+      case .available:
+        return .success(())
+      case .noAccount:
+        return .failure(.accountNotSignedIn)
+      case .restricted:
+        return .failure(.accountRestricted)
+      case .temporarilyUnavailable:
+        return .failure(.accountTemporarilyUnavailable)
+      case .couldNotDetermine:
+        return .failure(.unknown)
+      @unknown default:
+        return .failure(.unknown)
+      }
+    } catch {
+      return .failure(.unknown)
     }
   }
 
@@ -471,7 +507,51 @@ final class AppSettings: ObservableObject {
     _ = attemptSetICloudSync(true)
   }
 
+  /// ユーザーが iCloud 同期を切り替えようとしたときに呼ぶ（非同期版）
+  func attemptSetICloudSyncAsync(_ enabled: Bool) async -> Result<Void, ICloudError> {
+    // 既に同じ状態なら何もしない
+    if iCloudSyncEnabled == enabled { return .success(()) }
+
+    if enabled {
+      // 1. アカウント状態をチェック
+      let accountResult = await checkICloudAccountStatus()
+      if case .failure(let err) = accountResult {
+        await MainActor.run {
+          iCloudSyncBlockedReason = err.errorDescription
+          iCloudSyncEnabled = false
+        }
+        return .failure(err)
+      }
+
+      // 2. 空き容量をチェック
+      switch canEnableICloudSync() {
+      case .success:
+        await MainActor.run {
+          iCloudSyncEnabled = true
+          iCloudSyncBlockedReason = nil
+        }
+        // TODO: 実際の iCloud / CloudKit 同期処理の開始
+        return .success(())
+      case .failure(let err):
+        await MainActor.run {
+          iCloudSyncBlockedReason = err.errorDescription
+          iCloudSyncEnabled = false
+        }
+        return .failure(err)
+      }
+    } else {
+      // 無効化
+      await MainActor.run {
+        iCloudSyncEnabled = false
+        iCloudSyncBlockedReason = nil
+      }
+      // TODO: 停止処理
+      return .success(())
+    }
+  }
+
   /// ユーザーが iCloud 同期を切り替えようとしたときに呼ぶ。失敗時はエラーを返す（UI側でアラート等を表示する）
+  /// - Note: 互換性のための同期版。新しいコードではattemptSetICloudSyncAsyncを使用してください。
   func attemptSetICloudSync(_ enabled: Bool) -> Result<Void, ICloudError> {
     // Short-circuit if state is already the desired one to avoid unnecessary sinks and re-entry
     if iCloudSyncEnabled == enabled { return .success(()) }
@@ -482,6 +562,7 @@ final class AppSettings: ObservableObject {
         iCloudSyncEnabled = true
         iCloudSyncBlockedReason = nil
         // TODO: 実際の iCloud / CloudKit 同期処理の開始
+        // 注意: アカウント状態チェックは非同期が必要なのでこのメソッドでは実行できません
         return .success(())
       case .failure(let err):
         // do not enable and record reason

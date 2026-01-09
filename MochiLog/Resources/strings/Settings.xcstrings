@@ -897,6 +897,54 @@
           }
         }
       }
+    },
+    "icloud_account_not_signed_in" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You are not signed in to iCloud. Please sign in to iCloud in Settings."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloudにサインインしていません。設定アプリからiCloudにサインインしてください。"
+          }
+        }
+      }
+    },
+    "icloud_account_restricted" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud account is restricted. Please check your device settings."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloudアカウントが制限されています。デバイスの設定を確認してください。"
+          }
+        }
+      }
+    },
+    "icloud_account_temporarily_unavailable" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud is temporarily unavailable. Please try again later."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloudが一時的に利用できません。しばらくしてからもう一度お試しください。"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"

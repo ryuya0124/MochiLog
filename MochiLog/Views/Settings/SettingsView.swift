@@ -153,16 +153,20 @@ struct SettingsView: View {
           },
           set: { newValue in
             localICloudToggle = newValue
-            let result = appSettings.attemptSetICloudSync(newValue)
-            switch result {
-            case .success:
-              break
-            case .failure(let err):
-              localICloudToggle = appSettings.iCloudSyncEnabled
-              iCloudErrorMessage =
-                err.errorDescription
-                ?? String(localized: "icloud_sync_failed", table: "Settings")
-              showingICloudErrorAlert = true
+            Task {
+              let result = await appSettings.attemptSetICloudSyncAsync(newValue)
+              await MainActor.run {
+                switch result {
+                case .success:
+                  break
+                case .failure(let err):
+                  localICloudToggle = appSettings.iCloudSyncEnabled
+                  iCloudErrorMessage =
+                    err.errorDescription
+                    ?? String(localized: "icloud_sync_failed", table: "Settings")
+                  showingICloudErrorAlert = true
+                }
+              }
             }
           }))
 
