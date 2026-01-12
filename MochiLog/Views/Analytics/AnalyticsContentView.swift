@@ -215,9 +215,18 @@ struct AnalyticsContentView: View {
     let startDate: Date = {
       switch selectedRange {
       case .auto:
-        // 自動：全データの最も古い日付を開始日とする
-        if let oldest = recordInfos.min(by: { $0.logDate < $1.logDate })?.logDate {
-          return calendar.startOfDay(for: oldest)
+        // 自動：現在時刻以前のデータの最も古い日付を開始日とする
+        // ただし最大で3年前までとする
+        let now = Date()
+        let threeYearsAgo = calendar.date(byAdding: .year, value: -3, to: end) ?? end
+
+        // AnalyticsContentViewではrecordInfosはタプルの配列なのでフィルタリング
+        let pastInfos = recordInfos.filter { $0.logDate <= now }
+
+        if let oldest = pastInfos.min(by: { $0.logDate < $1.logDate })?.logDate {
+          let oldestStart = calendar.startOfDay(for: oldest)
+          // データ開始日と3年前の新しい方を採用
+          return max(oldestStart, threeYearsAgo)
         }
         return calendar.date(byAdding: .month, value: -1, to: end) ?? end
       case .oneWeek:
