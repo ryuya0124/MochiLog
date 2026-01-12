@@ -377,19 +377,18 @@
         }
       }
     },
-    "range_all" : {
-      "comment" : "All range label",
+    "range_3y" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "All"
+            "value" : "3 Years"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "全期間"
+            "value" : "3年"
           }
         }
       }

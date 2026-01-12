@@ -35,7 +35,7 @@ struct AnalyticsView: View {
     if days <= 180 { return .sixMonths }
     if days <= 365 { return .oneYear }
     if days <= 730 { return .twoYears }
-    return .all
+    return .threeYears
   }
 
   /// レコードに応じて表示単位（Hour/Day/Week/Month）を自動決定する
@@ -235,7 +235,7 @@ struct AnalyticsView: View {
     if days <= 180 { return .sixMonths }
     if days <= 365 { return .oneYear }
     if days <= 730 { return .twoYears }
-    return .all
+    return .threeYears
   }
 
   // MARK: - records変更時の処理

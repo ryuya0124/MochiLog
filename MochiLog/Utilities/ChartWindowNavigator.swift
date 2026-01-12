@@ -21,8 +21,8 @@ struct ChartWindowNavigator {
       return DateComponents(year: 1)
     case .twoYears:
       return DateComponents(year: 2)
-    case .all:
-      return nil
+    case .threeYears:
+      return DateComponents(year: 3)
     }
   }
 
@@ -46,8 +46,8 @@ struct ChartWindowNavigator {
       return calendar.date(byAdding: .year, value: -1, to: endDate) ?? endDate
     case .twoYears:
       return calendar.date(byAdding: .month, value: -24, to: endDate) ?? endDate
-    case .all:
-      return allRecords.min(by: { $0.logDate < $1.logDate })?.logDate ?? endDate
+    case .threeYears:
+      return calendar.date(byAdding: .year, value: -3, to: endDate) ?? endDate
     }
   }
 
@@ -79,69 +79,86 @@ struct ChartWindowNavigator {
   // MARK: - 次のウィンドウ検索
 
   /// 次の（未来方向の）ウィンドウ終了日を検索
+  /// 空白期間がある場合は、次のデータがある場所に直接ジャンプする
   static func findNextWindowEnd(
     currentEnd: Date,
     range: RangePreset,
     records: [BatteryRecord]
   ) -> Date? {
+    let cal = Calendar.current
+    let currentEndDay = cal.startOfDay(for: currentEnd)
+
+    // 現在のウィンドウより先にあるデータを探す
+    let futureRecords = records.filter { cal.startOfDay(for: $0.logDate) > currentEndDay }
+    guard let nextDataDate = futureRecords.min(by: { $0.logDate < $1.logDate })?.logDate else {
+      // 現在のウィンドウより先にデータがない
+      return nil
+    }
+
     guard let comp = periodComponent(for: range) else { return nil }
 
-    // 最新のデータ日付を取得
-    guard let latestRecord = records.max(by: { $0.logDate < $1.logDate })?.logDate else {
-      return nil
+    // 次のデータを含むウィンドウの終了日を決定
+    // データの日付 + 選択されたレンジの期間をウィンドウの終了日とする
+    var newEnd: Date
+    if let endFromNextData = cal.date(byAdding: comp, to: cal.startOfDay(for: nextDataDate)) {
+      newEnd = endFromNextData
+    } else {
+      newEnd = nextDataDate
     }
 
-    // 現在のウィンドウがすでに最新のデータを含んでいる場合は移動不可
-    let cal = Calendar.current
-    let latestDay = cal.startOfDay(for: latestRecord)
-    let currentEndDay = cal.startOfDay(for: currentEnd)
-    if latestDay <= currentEndDay {
-      return nil
+    // ウィンドウにデータが含まれることを確認
+    let start = windowStart(for: newEnd, range: range, allRecords: records)
+    if windowContainsData(start: start, end: newEnd, in: records) {
+      return newEnd
     }
 
-    var candidateEnd = currentEnd
-    let now = Date()
-
-    while true {
-      guard let nextEnd = Calendar.current.date(byAdding: comp, to: candidateEnd) else { break }
-      let endLimited = min(nextEnd, now)
-      if endLimited <= candidateEnd { break }
-
-      let start = windowStart(for: endLimited, range: range, allRecords: records)
-      if windowContainsData(start: start, end: endLimited, in: records) {
-        return endLimited
-      }
-      if endLimited >= now { break }
-      candidateEnd = endLimited
-    }
-    return nil
+    // もしウィンドウにデータがなければ、次のデータの日付をウィンドウの終了日として使用
+    return nextDataDate
   }
 
   // MARK: - 前のウィンドウ検索
 
   /// 前の（過去方向の）ウィンドウ終了日を検索
+  /// 空白期間がある場合は、前のデータがある場所に直接ジャンプする
   static func findPreviousWindowEnd(
     currentEnd: Date,
     range: RangePreset,
     records: [BatteryRecord]
   ) -> Date? {
-    guard let comp = periodComponent(for: range) else { return nil }
-    var candidateEnd = currentEnd
+    let cal = Calendar.current
 
-    while true {
-      guard let prevEnd = dateByAdding(comp, multiplier: -1, to: candidateEnd) else { break }
-      let prevStart = windowStart(for: prevEnd, range: range, allRecords: records)
-      if windowContainsData(start: prevStart, end: prevEnd, in: records) {
-        return prevEnd
-      }
-      if let earliest = records.min(by: { $0.logDate < $1.logDate })?.logDate,
-        prevEnd <= earliest
-      {
-        break
-      }
-      candidateEnd = prevEnd
+    // 現在のウィンドウの開始日を取得
+    let currentStart = windowStart(for: currentEnd, range: range, allRecords: records)
+    let currentStartDay = cal.startOfDay(for: currentStart)
+
+    // 現在のウィンドウより前にあるデータを探す
+    let pastRecords = records.filter { cal.startOfDay(for: $0.logDate) < currentStartDay }
+    guard let prevDataDate = pastRecords.max(by: { $0.logDate < $1.logDate })?.logDate else {
+      // 現在のウィンドウより前にデータがない
+      return nil
     }
-    return nil
+
+    // 前のデータを含むウィンドウの終了日を計算
+    // 前のデータの日付をウィンドウに含むようにする
+    guard let comp = periodComponent(for: range) else { return nil }
+
+    // 前のデータを含むウィンドウの終了日を決定
+    // データの日付 + 選択されたレンジの期間をウィンドウの終了日とする
+    var newEnd: Date
+    if let endFromPrevData = cal.date(byAdding: comp, to: cal.startOfDay(for: prevDataDate)) {
+      newEnd = endFromPrevData
+    } else {
+      newEnd = prevDataDate
+    }
+
+    // ウィンドウにデータが含まれることを確認
+    let start = windowStart(for: newEnd, range: range, allRecords: records)
+    if windowContainsData(start: start, end: newEnd, in: records) {
+      return newEnd
+    }
+
+    // もしウィンドウにデータがなければ、前のデータの日付をウィンドウの終了日として使用
+    return prevDataDate
   }
 
   // MARK: - ウィンドウ移動
@@ -165,16 +182,14 @@ struct ChartWindowNavigator {
 
   /// 次へ移動可能かどうか
   static func canMoveNext(currentEnd: Date, range: RangePreset, records: [BatteryRecord]) -> Bool {
-    range != .all
-      && findNextWindowEnd(currentEnd: currentEnd, range: range, records: records) != nil
+    findNextWindowEnd(currentEnd: currentEnd, range: range, records: records) != nil
   }
 
   /// 前へ移動可能かどうか
   static func canMovePrevious(currentEnd: Date, range: RangePreset, records: [BatteryRecord])
     -> Bool
   {
-    range != .all
-      && findPreviousWindowEnd(currentEnd: currentEnd, range: range, records: records) != nil
+    findPreviousWindowEnd(currentEnd: currentEnd, range: range, records: records) != nil
   }
 
   // MARK: - 自動レンジ決定
@@ -193,7 +208,7 @@ struct ChartWindowNavigator {
     if days <= 180 { return .sixMonths }
     if days <= 365 { return .oneYear }
     if days <= 730 { return .twoYears }
-    return .all
+    return .threeYears
   }
 
   // MARK: - 自動単位決定
@@ -218,7 +233,7 @@ struct ChartWindowNavigator {
   static func initializeWindowEnd(for records: [BatteryRecord], range: RangePreset) -> Date {
     guard !records.isEmpty else { return Date() }
 
-    if range == .all {
+    if range == .threeYears {
       return records.max(by: { $0.logDate < $1.logDate })?.logDate ?? Date()
     }
 

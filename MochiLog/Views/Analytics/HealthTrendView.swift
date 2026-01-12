@@ -113,7 +113,7 @@ struct HealthTrendView: View {
                 } label: {
                   Image(systemName: "chevron.left")
                 }
-                .disabled(selectedRange == .all || !canMovePrevious)
+                .disabled(!canMovePrevious)
 
                 Picker("", selection: $selectedRange) {
                   ForEach(RangePreset.allCases) { preset in

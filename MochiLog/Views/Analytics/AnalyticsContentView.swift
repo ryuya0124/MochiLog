@@ -217,8 +217,8 @@ struct AnalyticsContentView: View {
         return calendar.date(byAdding: .year, value: -1, to: end) ?? end
       case .twoYears:
         return calendar.date(byAdding: .year, value: -2, to: end) ?? end
-      case .all:
-        return recordInfos.min(by: { $0.logDate < $1.logDate })?.logDate ?? end
+      case .threeYears:
+        return calendar.date(byAdding: .year, value: -3, to: end) ?? end
       }
     }()
 

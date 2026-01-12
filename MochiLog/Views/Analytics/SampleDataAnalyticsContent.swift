@@ -142,6 +142,6 @@ struct SampleDataAnalyticsContent: View {
 #Preview {
   SampleDataAnalyticsContent(
     showingSampleData: .constant(true),
-    selectedRange: .constant(.all)
+    selectedRange: .constant(.threeYears)
   )
 }

@@ -9,7 +9,7 @@ enum RangePreset: String, CaseIterable, Identifiable {
   case sixMonths = "6m"
   case oneYear = "1y"
   case twoYears = "2y"
-  case all = "all"
+  case threeYears = "3y"
 
   var id: String { self.rawValue }
 
@@ -28,8 +28,8 @@ enum RangePreset: String, CaseIterable, Identifiable {
       return String(localized: "range_1y", table: "Analytics")
     case .twoYears:
       return String(localized: "range_2y", table: "Analytics")
-    case .all:
-      return String(localized: "range_all", table: "Analytics")
+    case .threeYears:
+      return String(localized: "range_3y", table: "Analytics")
     }
   }
 }
