@@ -7,13 +7,29 @@ struct CycleTrendView: View {
   @State private var animateChart: Bool = false
   var initialRange: RangePreset = .oneMonth  // 初期レンジ（サンプルモード用）
 
+  // iPhone用：親から渡される期間情報（Bindingがある場合は親と同期）
+  var sharedSelectedRange: Binding<RangePreset>?
+  var sharedWindowEnd: Binding<Date>?
+  var sharedCanMoveNext: Bool?
+  var sharedCanMovePrevious: Bool?
+  var sharedShiftWindow: ((Bool) -> Void)?
+
   // iPad用：独自の期間設定
-  @State private var selectedRange: RangePreset = .oneMonth
-  @State private var windowEnd: Date = Date()
+  @State private var localSelectedRange: RangePreset = .oneMonth
+  @State private var localWindowEnd: Date = Date()
   @State private var hasInitialized: Bool = false
   @State private var isUserInteracted: Bool = false
 
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
+  // 使用する期間設定（親から渡されていれば親の値、なければローカル）
+  private var selectedRange: RangePreset {
+    sharedSelectedRange?.wrappedValue ?? localSelectedRange
+  }
+
+  private var windowEnd: Date {
+    sharedWindowEnd?.wrappedValue ?? localWindowEnd
+  }
 
   // 現在のウィンドウに含まれるレコードを計算
   private var visibleRecords: [BatteryRecord] {
@@ -41,22 +57,28 @@ struct CycleTrendView: View {
   }
 
   private var canMoveNext: Bool {
-    ChartWindowNavigator.canMoveNext(
-      currentEnd: windowEnd, range: selectedRange, records: allRecords)
+    sharedCanMoveNext
+      ?? ChartWindowNavigator.canMoveNext(
+        currentEnd: localWindowEnd, range: localSelectedRange, records: allRecords)
   }
 
   private var canMovePrevious: Bool {
-    ChartWindowNavigator.canMovePrevious(
-      currentEnd: windowEnd, range: selectedRange, records: allRecords)
+    sharedCanMovePrevious
+      ?? ChartWindowNavigator.canMovePrevious(
+        currentEnd: localWindowEnd, range: localSelectedRange, records: allRecords)
   }
 
   private func shiftWindow(backward: Bool) {
-    windowEnd = ChartWindowNavigator.shiftWindow(
-      currentEnd: windowEnd,
-      backward: backward,
-      range: selectedRange,
-      records: allRecords
-    )
+    if let sharedShift = sharedShiftWindow {
+      sharedShift(backward)
+    } else {
+      localWindowEnd = ChartWindowNavigator.shiftWindow(
+        currentEnd: localWindowEnd,
+        backward: backward,
+        range: localSelectedRange,
+        records: allRecords
+      )
+    }
   }
 
   var body: some View {
@@ -108,15 +130,15 @@ struct CycleTrendView: View {
                 } label: {
                   Image(systemName: "chevron.left")
                 }
-                .disabled(!canMovePrevious)
+                .disabled(!canMovePrevious || localSelectedRange == .auto)
 
                 Picker(
                   "",
                   selection: Binding(
-                    get: { selectedRange },
+                    get: { localSelectedRange },
                     set: {
                       isUserInteracted = true
-                      selectedRange = $0
+                      localSelectedRange = $0
                     }
                   )
                 ) {
@@ -133,7 +155,7 @@ struct CycleTrendView: View {
                 } label: {
                   Image(systemName: "chevron.right")
                 }
-                .disabled(!canMoveNext)
+                .disabled(!canMoveNext || localSelectedRange == .auto)
               }
             }
           }
@@ -223,7 +245,7 @@ struct CycleTrendView: View {
         }
         // Y軸ドメインを設定（最大値に余白を追加してポイントが見切れないように）
         .chartYScale(domain: 0...(Double(visibleRecords.map { $0.cycleCount }.max() ?? 10) * 1.15))
-        // X軸ドメインを設定（期間に応じて右側に余白を追加）
+        // X軸ドメインを設定（データ範囲ぴったりに表示）
         .chartXScale(
           domain: {
             let days = Calendar.current.dateComponents([.day], from: startDay, to: endDay).day ?? 0
@@ -232,32 +254,14 @@ struct CycleTrendView: View {
               return
                 startDay...(Calendar.current.date(byAdding: .day, value: 7, to: startDay) ?? endDay)
             }
-
-            let months =
-              Calendar.current.dateComponents([.month], from: startDay, to: endDay).month ?? 0
-            let years = months / 12
-            if years >= 1 {
-              // 年数に応じて余白を追加（1年=1ヶ月、2年=2ヶ月...）
-              return
-                startDay...(Calendar.current.date(byAdding: .month, value: years, to: endDay)
-                ?? endDay)
-            } else if months >= 6 {
-              // 6ヶ月: 14日の余白
-              return
-                startDay...(Calendar.current.date(byAdding: .day, value: 14, to: endDay) ?? endDay)
-            } else if months >= 3 {
-              // 3ヶ月: 7日の余白
-              return
-                startDay...(Calendar.current.date(byAdding: .day, value: 7, to: endDay) ?? endDay)
-            } else {
-              // 3ヶ月未満: 余白なし
-              return startDay...endDay
-            }
+            // カレンダー境界に合わせて表示
+            return startDay...endDay
           }()
         )
         .chartPlotStyle { plotArea in
           plotArea
-            .padding(.trailing, 24)  // グラフ右端とY軸ラベルの間に余白
+            .clipped()  // まずプロット領域の境界でクリップ
+            .padding(.trailing, 24)  // その後パディングを追加
             .mask {
               GeometryReader { geo in
                 Rectangle()
@@ -274,10 +278,11 @@ struct CycleTrendView: View {
     .padding()
     .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
     .onAppear {
-      // 初期レンジを設定（一度だけ）
-      if !hasInitialized {
-        selectedRange = initialRange
-        windowEnd = ChartWindowNavigator.initializeWindowEnd(for: allRecords, range: initialRange)
+      // 初期レンジを設定（一度だけ、親から渡されていない場合のみ）
+      if !hasInitialized && sharedSelectedRange == nil {
+        localSelectedRange = initialRange
+        localWindowEnd = ChartWindowNavigator.initializeWindowEnd(
+          for: allRecords, range: initialRange)
         hasInitialized = true
       }
       // アニメーション開始
@@ -295,9 +300,10 @@ struct CycleTrendView: View {
       }
     }
     .onChange(of: initialRange) {
-      if !isUserInteracted {
-        selectedRange = initialRange
-        windowEnd = ChartWindowNavigator.initializeWindowEnd(for: allRecords, range: initialRange)
+      if !isUserInteracted && sharedSelectedRange == nil {
+        localSelectedRange = initialRange
+        localWindowEnd = ChartWindowNavigator.initializeWindowEnd(
+          for: allRecords, range: initialRange)
       }
     }
   }

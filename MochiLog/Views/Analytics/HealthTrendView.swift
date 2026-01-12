@@ -113,7 +113,7 @@ struct HealthTrendView: View {
                 } label: {
                   Image(systemName: "chevron.left")
                 }
-                .disabled(!canMovePrevious)
+                .disabled(!canMovePrevious || selectedRange == .auto)
 
                 Picker("", selection: $selectedRange) {
                   ForEach(RangePreset.allCases) { preset in
@@ -128,7 +128,7 @@ struct HealthTrendView: View {
                 } label: {
                   Image(systemName: "chevron.right")
                 }
-                .disabled(!canMoveNext)
+                .disabled(!canMoveNext || selectedRange == .auto)
               }
             }
           }
@@ -226,7 +226,7 @@ struct HealthTrendView: View {
             }
           }
         }
-        // X軸ドメインを設定（期間に応じて右側に余白を追加）
+        // X軸ドメインを設定（データ範囲ぴったりに表示）
         .chartXScale(
           domain: {
             let days = Calendar.current.dateComponents([.day], from: startDay, to: endDay).day ?? 0
@@ -235,27 +235,8 @@ struct HealthTrendView: View {
               return
                 startDay...(Calendar.current.date(byAdding: .day, value: 7, to: startDay) ?? endDay)
             }
-
-            let months =
-              Calendar.current.dateComponents([.month], from: startDay, to: endDay).month ?? 0
-            let years = months / 12
-            if years >= 1 {
-              // 年数に応じて余白を追加（1年=1ヶ月、2年=2ヶ月...）
-              return
-                startDay...(Calendar.current.date(byAdding: .month, value: years, to: endDay)
-                ?? endDay)
-            } else if months >= 6 {
-              // 6ヶ月: 14日の余白
-              return
-                startDay...(Calendar.current.date(byAdding: .day, value: 14, to: endDay) ?? endDay)
-            } else if months >= 3 {
-              // 3ヶ月: 7日の余白
-              return
-                startDay...(Calendar.current.date(byAdding: .day, value: 7, to: endDay) ?? endDay)
-            } else {
-              // 3ヶ月未満: 余白なし
-              return startDay...endDay
-            }
+            // カレンダー境界に合わせて表示
+            return startDay...endDay
           }()
         )
         .chartYAxis {
@@ -270,7 +251,8 @@ struct HealthTrendView: View {
         }
         .chartPlotStyle { plotArea in
           plotArea
-            .padding(.trailing, 24)  // グラフ右端とY軸ラベルの間に余白
+            .clipped()  // まずプロット領域の境界でクリップ
+            .padding(.trailing, 24)  // その後パディングを追加
             .mask {
               GeometryReader { geo in
                 Rectangle()

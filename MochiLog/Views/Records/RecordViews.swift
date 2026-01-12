@@ -529,6 +529,11 @@ struct RecordDetailView: View {
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         if horizontalSizeClass != .regular {
+          ToolbarItem(placement: .cancellationAction) {
+            ShareLink(item: generateShareText()) {
+              Image(systemName: "square.and.arrow.up")
+            }
+          }
           ToolbarItem(placement: .confirmationAction) {
             Button(String(localized: "close", table: "Common")) { dismiss() }
           }

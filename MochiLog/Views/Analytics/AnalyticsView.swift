@@ -83,6 +83,10 @@ struct AnalyticsView: View {
       .onChange(of: selectedDevice) {
         handleDeviceChange()
       }
+      .onChange(of: selectedRange) { _, newValue in
+        // レンジ変更時にAppSettingsに保存（再起動後も保持）
+        appSettings.selectedChartRange = newValue.rawValue
+      }
       .navigationTitle(String(localized: "analytics", table: "Analytics"))
       .background(Color(.systemGroupedBackground))
       .sheet(isPresented: $showingTutorial) {
@@ -104,20 +108,14 @@ struct AnalyticsView: View {
           )
         }
       } else if !records.isEmpty {
-        VStack(spacing: 0) {
-          // デバイス選択ピッカー（キャッシュされたデバイス名を使用）
-          DevicePickerView(deviceNames: cachedDeviceNames, selectedDevice: $selectedDevice)
-            .padding(.horizontal)
-            .padding(.top, 8)
-
-          // コンテンツビュー（バックグラウンドでデータ計算）
-          AnalyticsContentView(
-            records: records,
-            selectedDevice: selectedDevice,
-            selectedRange: $selectedRange,
-            windowEnd: $windowEnd
-          )
-        }
+        // コンテンツビュー（バックグラウンドでデータ計算）
+        AnalyticsContentView(
+          records: records,
+          selectedDevice: $selectedDevice,
+          cachedDeviceNames: cachedDeviceNames,
+          selectedRange: $selectedRange,
+          windowEnd: $windowEnd
+        )
       } else {
         // データなし + サンプルモードOFF → ボタン表示（中央配置）
         noDataView(geometry: geometry)
@@ -193,38 +191,41 @@ struct AnalyticsView: View {
       // デバイス名リストを計算
       let deviceNames = Array(Set(currentRecords.map { $0.deviceName })).sorted()
 
-      // 初期レンジを計算（必要に応じて）
-      let calculatedRange: RangePreset? =
-        shouldAutoInitFlag ? calculateAutoRange(for: currentRecords) : nil
+      // 保存されたレンジがあればそれを使用、なければ自動選択
+      let savedRangeString = await MainActor.run { AppSettings.shared.selectedChartRange }
+      let savedRange = savedRangeString.flatMap { RangePreset(rawValue: $0) }
+
+      let finalRange: RangePreset
+      if let saved = savedRange {
+        // 保存されたレンジを使用
+        finalRange = saved
+      } else if shouldAutoInitFlag {
+        // 自動選択
+        finalRange = calculateAutoRange(for: currentRecords)
+      } else {
+        // 既定値
+        finalRange = .oneMonth
+      }
 
       await MainActor.run {
         cachedDeviceNames = deviceNames
-
-        if let range = calculatedRange {
-          selectedRange = range
-          windowEnd = ChartWindowNavigator.initializeWindowEnd(for: currentRecords, range: range)
-          appSettings.hasAutoInitializedChartRange = true
-        } else {
-          // 既存のウィンドウが有効か確認
-          let start = ChartWindowNavigator.windowStart(
-            for: windowEnd, range: selectedRange, allRecords: currentRecords)
-          if !ChartWindowNavigator.windowContainsData(
-            start: start, end: windowEnd, in: currentRecords)
-          {
-            windowEnd = ChartWindowNavigator.initializeWindowEnd(
-              for: currentRecords, range: selectedRange)
-          }
-        }
-
+        selectedRange = finalRange
+        windowEnd = ChartWindowNavigator.initializeWindowEnd(for: currentRecords, range: finalRange)
+        appSettings.hasAutoInitializedChartRange = true
         isInitializing = false
       }
     }
   }
 
   /// バックグラウンドスレッドで安全に呼べるautoRange計算
+  /// 未来のデータは無視して現在日時以前のデータのみを考慮
   nonisolated private func calculateAutoRange(for records: [BatteryRecord]) -> RangePreset {
-    guard let first = records.min(by: { $0.logDate < $1.logDate })?.logDate,
-      let last = records.max(by: { $0.logDate < $1.logDate })?.logDate
+    let now = Date()
+    // 未来のデータを除外
+    let pastRecords = records.filter { $0.logDate <= now }
+
+    guard let first = pastRecords.min(by: { $0.logDate < $1.logDate })?.logDate,
+      let last = pastRecords.max(by: { $0.logDate < $1.logDate })?.logDate
     else { return .oneMonth }
 
     let days = Calendar.current.dateComponents([.day], from: first, to: last).day ?? 0

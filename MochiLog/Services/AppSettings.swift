@@ -33,6 +33,9 @@ final class AppSettings: ObservableObject {
 
     // 新規: 重複ログ記録を許可
     static let allowDuplicateRecords = "allowDuplicateRecords"
+
+    // 新規: 選択されたチャートレンジ
+    static let selectedChartRange = "selectedChartRange"
   }
 
   /// 容量不一致時の挙動
@@ -179,6 +182,9 @@ final class AppSettings: ObservableObject {
   /// 重複したログの記録を許可するかどうか
   @Published var allowDuplicateRecords: Bool
 
+  /// 選択されたチャートレンジ（nil = 自動選択）
+  @Published var selectedChartRange: String?
+
   // MARK: - Initialization
 
   private init() {
@@ -263,6 +269,9 @@ final class AppSettings: ObservableObject {
 
     // 重複ログ記録許可の初期化（デフォルトは false）
     self.allowDuplicateRecords = UserDefaults.standard.bool(forKey: Keys.allowDuplicateRecords)
+
+    // チャートレンジの初期化（nil = 自動選択）
+    self.selectedChartRange = UserDefaults.standard.string(forKey: Keys.selectedChartRange)
 
     // プロパティの変更を監視してUserDefaultsに保存
     setupObservers()
@@ -379,6 +388,13 @@ final class AppSettings: ObservableObject {
       .dropFirst()
       .sink { value in
         UserDefaults.standard.set(value, forKey: Keys.allowDuplicateRecords)
+      }
+      .store(in: &cancellables)
+
+    $selectedChartRange
+      .dropFirst()
+      .sink { value in
+        UserDefaults.standard.set(value, forKey: Keys.selectedChartRange)
       }
       .store(in: &cancellables)
   }

@@ -4,7 +4,8 @@ import SwiftUI
 /// AnalyticsViewから使用される実データ表示用のコンポーネント
 struct AnalyticsContentView: View {
   let records: [BatteryRecord]
-  let selectedDevice: String?
+  @Binding var selectedDevice: String?
+  let cachedDeviceNames: [String]
   @Binding var selectedRange: RangePreset
   @Binding var windowEnd: Date
 
@@ -60,6 +61,9 @@ struct AnalyticsContentView: View {
         // コンテンツ表示
         ScrollView {
           VStack(spacing: 20) {
+            // デバイス選択ピッカー（スクロールと一緒に動く）
+            DevicePickerView(deviceNames: cachedDeviceNames, selectedDevice: $selectedDevice)
+
             // iPad: 2列レイアウト、iPhone: 1列レイアウト
             if horizontalSizeClass == .regular {
               // iPad向け：グラフと統計を同じ幅にまとめる
@@ -106,11 +110,16 @@ struct AnalyticsContentView: View {
                 shiftWindow: shiftWindow
               )
 
-              // サイクル推移グラフ
+              // サイクル推移グラフ（iPhoneでは親と期間を共有）
               CycleTrendView(
                 allRecords: filteredRecords,
                 unit: cachedUnit,
-                initialRange: selectedRange
+                initialRange: selectedRange,
+                sharedSelectedRange: $selectedRange,
+                sharedWindowEnd: $windowEnd,
+                sharedCanMoveNext: canMoveNext,
+                sharedCanMovePrevious: canMovePrevious,
+                sharedShiftWindow: shiftWindow
               )
 
               // 統計情報（iPhone）
@@ -205,20 +214,50 @@ struct AnalyticsContentView: View {
     // 開始日を計算
     let startDate: Date = {
       switch selectedRange {
+      case .auto:
+        // 自動：全データの最も古い日付を開始日とする
+        if let oldest = recordInfos.min(by: { $0.logDate < $1.logDate })?.logDate {
+          return calendar.startOfDay(for: oldest)
+        }
+        return calendar.date(byAdding: .month, value: -1, to: end) ?? end
       case .oneWeek:
         return calendar.date(byAdding: .day, value: -7, to: end) ?? end
       case .oneMonth:
-        return calendar.date(byAdding: .month, value: -1, to: end) ?? end
+        // カレンダー月に固定：終了日の月の1日を開始日とする
+        let components = calendar.dateComponents([.year, .month], from: end)
+        return calendar.date(from: components) ?? end
       case .threeMonths:
-        return calendar.date(byAdding: .month, value: -3, to: end) ?? end
+        // 四半期境界に固定：Q1(1-3月), Q2(4-6月), Q3(7-9月), Q4(10-12月)
+        let month = calendar.component(.month, from: end)
+        let year = calendar.component(.year, from: end)
+        let quarterStartMonth = ((month - 1) / 3) * 3 + 1  // 1, 4, 7, 10
+        var components = DateComponents()
+        components.year = year
+        components.month = quarterStartMonth
+        components.day = 1
+        return calendar.date(from: components) ?? end
       case .sixMonths:
         return calendar.date(byAdding: .month, value: -6, to: end) ?? end
       case .oneYear:
-        return calendar.date(byAdding: .year, value: -1, to: end) ?? end
+        // カレンダー年に固定：終了日の年の1月1日を開始日とする
+        let components = calendar.dateComponents([.year], from: end)
+        return calendar.date(from: components) ?? end
       case .twoYears:
-        return calendar.date(byAdding: .year, value: -2, to: end) ?? end
+        // 2年前の1月1日を開始日とする
+        let year = calendar.component(.year, from: end)
+        var components = DateComponents()
+        components.year = year - 1
+        components.month = 1
+        components.day = 1
+        return calendar.date(from: components) ?? end
       case .threeYears:
-        return calendar.date(byAdding: .year, value: -3, to: end) ?? end
+        // 2年前の1月1日を開始日とする（3年分表示）
+        let year = calendar.component(.year, from: end)
+        var components = DateComponents()
+        components.year = year - 2
+        components.month = 1
+        components.day = 1
+        return calendar.date(from: components) ?? end
       }
     }()
 

@@ -3,6 +3,7 @@ import SwiftUI
 
 // チャートのレンジプリセット（AnalyticsView とサブビューで共有）
 enum RangePreset: String, CaseIterable, Identifiable {
+  case auto = "auto"
   case oneWeek = "1w"
   case oneMonth = "1m"
   case threeMonths = "3m"
@@ -16,6 +17,8 @@ enum RangePreset: String, CaseIterable, Identifiable {
   /// ローカライズされた表示名
   var localizedName: String {
     switch self {
+    case .auto:
+      return String(localized: "range_auto", table: "Analytics")
     case .oneWeek:
       return String(localized: "range_1w", table: "Analytics")
     case .oneMonth:

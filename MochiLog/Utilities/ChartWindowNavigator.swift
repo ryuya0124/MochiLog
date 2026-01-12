@@ -9,6 +9,8 @@ struct ChartWindowNavigator {
   /// 選択されたレンジに対応するDateComponentsを返す
   static func periodComponent(for preset: RangePreset) -> DateComponents? {
     switch preset {
+    case .auto:
+      return nil
     case .oneWeek:
       return DateComponents(day: 7)
     case .oneMonth:
@@ -34,20 +36,50 @@ struct ChartWindowNavigator {
   {
     let calendar = Calendar.current
     switch range {
+    case .auto:
+      // 自動：全データの最も古い日付を開始日とする
+      if let oldest = allRecords.min(by: { $0.logDate < $1.logDate })?.logDate {
+        return calendar.startOfDay(for: oldest)
+      }
+      return calendar.date(byAdding: .month, value: -1, to: endDate) ?? endDate
     case .oneWeek:
       return calendar.date(byAdding: .day, value: -7, to: endDate) ?? endDate
     case .oneMonth:
-      return calendar.date(byAdding: .month, value: -1, to: endDate) ?? endDate
+      // カレンダー月に固定：終了日の月の1日を開始日とする
+      let components = calendar.dateComponents([.year, .month], from: endDate)
+      return calendar.date(from: components) ?? endDate
     case .threeMonths:
-      return calendar.date(byAdding: .month, value: -3, to: endDate) ?? endDate
+      // 四半期境界に固定：Q1(1-3月), Q2(4-6月), Q3(7-9月), Q4(10-12月)
+      let month = calendar.component(.month, from: endDate)
+      let year = calendar.component(.year, from: endDate)
+      let quarterStartMonth = ((month - 1) / 3) * 3 + 1  // 1, 4, 7, 10
+      var components = DateComponents()
+      components.year = year
+      components.month = quarterStartMonth
+      components.day = 1
+      return calendar.date(from: components) ?? endDate
     case .sixMonths:
       return calendar.date(byAdding: .month, value: -6, to: endDate) ?? endDate
     case .oneYear:
-      return calendar.date(byAdding: .year, value: -1, to: endDate) ?? endDate
+      // カレンダー年に固定：終了日の年の1月1日を開始日とする
+      let components = calendar.dateComponents([.year], from: endDate)
+      return calendar.date(from: components) ?? endDate
     case .twoYears:
-      return calendar.date(byAdding: .month, value: -24, to: endDate) ?? endDate
+      // 2年前の1月1日を開始日とする
+      let year = calendar.component(.year, from: endDate)
+      var components = DateComponents()
+      components.year = year - 1
+      components.month = 1
+      components.day = 1
+      return calendar.date(from: components) ?? endDate
     case .threeYears:
-      return calendar.date(byAdding: .year, value: -3, to: endDate) ?? endDate
+      // 2年前の1月1日を開始日とする（3年分表示）
+      let year = calendar.component(.year, from: endDate)
+      var components = DateComponents()
+      components.year = year - 2
+      components.month = 1
+      components.day = 1
+      return calendar.date(from: components) ?? endDate
     }
   }
 
@@ -76,6 +108,50 @@ struct ChartWindowNavigator {
     return Calendar.current.date(byAdding: c, to: date)
   }
 
+  /// 指定した日付が含まれる月の末日を取得
+  static func endOfMonth(for date: Date) -> Date {
+    let calendar = Calendar.current
+    // 月の1日を取得
+    let components = calendar.dateComponents([.year, .month], from: date)
+    guard let firstOfMonth = calendar.date(from: components) else { return date }
+    // 翌月の1日から1日引いて末日を取得
+    guard let nextMonth = calendar.date(byAdding: .month, value: 1, to: firstOfMonth),
+      let endOfMonth = calendar.date(byAdding: .day, value: -1, to: nextMonth)
+    else {
+      return date
+    }
+    return endOfMonth
+  }
+
+  /// 指定した日付が含まれる年の末日（12月31日）を取得
+  static func endOfYear(for date: Date) -> Date {
+    let calendar = Calendar.current
+    // 年の1月1日を取得
+    var components = calendar.dateComponents([.year], from: date)
+    components.month = 12
+    components.day = 31
+    return calendar.date(from: components) ?? date
+  }
+
+  /// 指定した日付が含まれる四半期の末日を取得
+  static func endOfQuarter(for date: Date) -> Date {
+    let calendar = Calendar.current
+    let month = calendar.component(.month, from: date)
+    let year = calendar.component(.year, from: date)
+    // 四半期の最終月を計算（3, 6, 9, 12）
+    let quarterEndMonth = ((month - 1) / 3 + 1) * 3
+    var components = DateComponents()
+    components.year = year
+    components.month = quarterEndMonth + 1  // 翌月の1日
+    components.day = 1
+    guard let firstOfNextMonth = calendar.date(from: components),
+      let endOfQuarter = calendar.date(byAdding: .day, value: -1, to: firstOfNextMonth)
+    else {
+      return date
+    }
+    return endOfQuarter
+  }
+
   // MARK: - 次のウィンドウ検索
 
   /// 次の（未来方向の）ウィンドウ終了日を検索
@@ -93,6 +169,21 @@ struct ChartWindowNavigator {
     guard let nextDataDate = futureRecords.min(by: { $0.logDate < $1.logDate })?.logDate else {
       // 現在のウィンドウより先にデータがない
       return nil
+    }
+
+    // 1ヶ月表示の場合はカレンダー月単位でナビゲート
+    if range == .oneMonth {
+      return endOfMonth(for: nextDataDate)
+    }
+
+    // 3ヶ月表示の場合は四半期単位でナビゲート
+    if range == .threeMonths {
+      return endOfQuarter(for: nextDataDate)
+    }
+
+    // 1年/2年/3年表示の場合はカレンダー年単位でナビゲート
+    if range == .oneYear || range == .twoYears || range == .threeYears {
+      return endOfYear(for: nextDataDate)
     }
 
     guard let comp = periodComponent(for: range) else { return nil }
@@ -136,6 +227,21 @@ struct ChartWindowNavigator {
     guard let prevDataDate = pastRecords.max(by: { $0.logDate < $1.logDate })?.logDate else {
       // 現在のウィンドウより前にデータがない
       return nil
+    }
+
+    // 1ヶ月表示の場合はカレンダー月単位でナビゲート
+    if range == .oneMonth {
+      return endOfMonth(for: prevDataDate)
+    }
+
+    // 3ヶ月表示の場合は四半期単位でナビゲート
+    if range == .threeMonths {
+      return endOfQuarter(for: prevDataDate)
+    }
+
+    // 1年/2年/3年表示の場合はカレンダー年単位でナビゲート
+    if range == .oneYear || range == .twoYears || range == .threeYears {
+      return endOfYear(for: prevDataDate)
     }
 
     // 前のデータを含むウィンドウの終了日を計算
