@@ -599,13 +599,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n📱 Managed with MochiLog\n#MochiLog"
+            "value" : "\n#MochiLog"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n📱 MochiLog で管理中\n#MochiLog"
+            "value" : "\n#MochiLog"
           }
         }
       }

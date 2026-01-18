@@ -171,7 +171,7 @@ struct RecordListView<Header: View>: View {
           count: max(1, columnsCount))
 
         LazyVGrid(columns: outerColumns, alignment: .leading, spacing: 24) {
-          ForEach(cachedSections) { section in
+          ForEach(cachedSections, id: \.id) { section in
             let sectionRecords = recordsForSection(section)
             VStack(alignment: .leading, spacing: 12) {
               // DisclosureGroupで折りたたみ可能に
@@ -193,7 +193,7 @@ struct RecordListView<Header: View>: View {
                 LazyVGrid(
                   columns: [GridItem(.adaptive(minimum: 280), spacing: 16)], spacing: 16
                 ) {
-                  ForEach(sectionRecords) { record in
+                  ForEach(sectionRecords, id: \.logDate) { record in
                     NavigationLink(destination: RecordDetailView(record: record)) {
                       RecordRowView(record: record)
                         .padding()
@@ -257,7 +257,7 @@ struct RecordListView<Header: View>: View {
         .listRowSeparator(.hidden)
         .listRowBackground(Color.clear)
 
-      ForEach(cachedSections) { section in
+      ForEach(cachedSections, id: \.id) { section in
         let sectionRecords = recordsForSection(section)
         Section {
           DisclosureGroup(
@@ -274,7 +274,7 @@ struct RecordListView<Header: View>: View {
               }
             )
           ) {
-            ForEach(sectionRecords) { record in
+            ForEach(sectionRecords, id: \.logDate) { record in
               RecordRowView(record: record)
                 .contentShape(Rectangle())
                 .onTapGesture {

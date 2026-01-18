@@ -202,4 +202,35 @@ final class BatteryRecord {
       maxSoC: nil
     )
   }
+  // MARK: - Formatted Helpers
+  var formattedStorage: String? {
+    guard let raw = storage?.trimmingCharacters(in: .whitespacesAndNewlines), !raw.isEmpty else {
+      return nil
+    }
+    let s = raw.replacingOccurrences(of: " ", with: "")
+    let lower = s.lowercased()
+    if lower.contains("tb") { return s.replacingOccurrences(of: " ", with: " ") }
+
+    // Remove "gb" and parse
+    let numberPart = lower.replacingOccurrences(of: "gb", with: "")
+    if let doubleValue = Double(numberPart), doubleValue >= 1024 {
+      let tbValue = doubleValue / 1024.0
+      // If it's effectively an integer (e.g. 1.0), print as integer, else 1.5
+      let isInteger = tbValue.truncatingRemainder(dividingBy: 1) == 0
+      return String(format: isInteger ? "%.0f TB" : "%.1f TB", tbValue)
+    }
+    return s.replacingOccurrences(of: "gb", with: " GB", options: .caseInsensitive)
+  }
+
+  var formattedRAM: String? {
+    guard let raw = ram?.trimmingCharacters(in: .whitespacesAndNewlines), !raw.isEmpty else {
+      return nil
+    }
+    let s = raw.replacingOccurrences(of: " ", with: "")
+    // e.g. "6GB" -> "6 GB"
+    return s.replacingOccurrences(of: "gb", with: " GB", options: .caseInsensitive)
+  }
+  var cachedDiagnostic: String {
+    dynamicDiagnosticResult
+  }
 }
