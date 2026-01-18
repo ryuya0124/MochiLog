@@ -135,7 +135,7 @@ struct HealthTrendView: View {
         }
 
         // データ点が多い場合はPointMarkを非表示（すっきり見せる）
-        let showPoints = ChartWindowNavigator.shouldShowDataPoints(
+        let showPoints = ChartAxisHelper.shouldShowDataPoints(
           recordCount: visibleRecords.count, startDay: startDay, endDay: endDay)
 
         Chart {
@@ -178,49 +178,10 @@ struct HealthTrendView: View {
         }
         .chartYScale(domain: 68...107)  // 上下に余白を確保
         .chartXAxis {
-          // 表示期間の日数と月数を計算
-          let displayDays =
-            Calendar.current.dateComponents([.day], from: startDay, to: endDay).day ?? 0
-          let displayMonths =
-            Calendar.current.dateComponents([.month], from: startDay, to: endDay).month ?? 0
-
-          // コンパクト画面（iPhone）かレギュラー画面（iPad）かで間引きを調整
-          let isCompact = horizontalSizeClass == .compact
-
-          // 表示期間に応じて適切な単位とストライドを決定
-          let (strideComponent, strideCount): (Calendar.Component, Int) = {
-            if displayDays <= 7 {
-              // 1週間以下: 日単位、1日ごと
-              return (.day, 1)
-            } else if displayDays <= 14 {
-              // 2週間以下: 日単位、コンパクトなら2日ごと、レギュラーなら1日ごと
-              return (.day, isCompact ? 2 : 1)
-            } else if displayDays <= 30 {
-              // 1ヶ月以下: 日単位、コンパクトなら3日ごと、レギュラーなら2日ごと
-              return (.day, isCompact ? 3 : 2)
-            } else if displayDays <= 60 {
-              // 2ヶ月以下: 週単位、1週間ごと
-              return (.weekOfYear, 1)
-            } else if displayMonths <= 3 {
-              // 3ヶ月以下: 週単位、2週間ごと
-              return (.weekOfYear, 2)
-            } else if displayMonths <= 6 {
-              // 6ヶ月以下: 月単位、1ヶ月ごと
-              return (.month, 1)
-            } else if displayMonths <= 12 {
-              // 1年以下: 月単位、コンパクトなら3ヶ月ごと、レギュラーなら2ヶ月ごと
-              return (.month, isCompact ? 3 : 2)
-            } else if displayMonths <= 24 {
-              // 2年以下: 月単位、コンパクトなら6ヶ月ごと、レギュラーなら4ヶ月ごと
-              return (.month, isCompact ? 6 : 4)
-            } else if displayMonths <= 36 {
-              // 3年以下: 年単位、1年ごと
-              return (.year, 1)
-            } else {
-              // 3年超: 年単位、1年ごと
-              return (.year, 1)
-            }
-          }()
+          // 共通の横軸ラベル間引き関数を使用
+          let (strideComponent, strideCount, labelFormat) =
+            ChartAxisHelper.calculateXAxisStride(
+              startDay: startDay, endDay: endDay, isCompact: horizontalSizeClass == .compact)
 
           AxisMarks(values: .stride(by: strideComponent, count: strideCount)) { value in
             AxisGridLine()
@@ -228,15 +189,13 @@ struct HealthTrendView: View {
 
             AxisValueLabel {
               if let date = value.as(Date.self) {
-                if displayMonths > 24 {
-                  // 2年超: 年のみ表示
-                  Text(date.formatted(.dateTime.year()))
-                } else if displayMonths > 6 {
-                  // 6ヶ月超〜2年: 月のみ表示
-                  Text(date.formatted(.dateTime.month(.defaultDigits)))
-                } else {
-                  // 6ヶ月以下: 月/日形式
+                switch labelFormat {
+                case .monthDay:
                   Text(date.formatted(.dateTime.month(.defaultDigits).day()))
+                case .monthOnly:
+                  Text(date.formatted(.dateTime.month(.defaultDigits)))
+                case .yearOnly:
+                  Text(date.formatted(.dateTime.year()))
                 }
               }
             }

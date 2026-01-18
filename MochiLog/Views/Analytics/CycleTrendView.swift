@@ -162,7 +162,7 @@ struct CycleTrendView: View {
         }
 
         // データ点が多い場合はPointMarkを非表示
-        let showPoints = ChartWindowNavigator.shouldShowDataPoints(
+        let showPoints = ChartAxisHelper.shouldShowDataPoints(
           recordCount: visibleRecords.count, startDay: startDay, endDay: endDay)
 
         Chart {
@@ -198,34 +198,10 @@ struct CycleTrendView: View {
           }
         }
         .chartXAxis {
-          // 表示期間の日数に基づいてグリッド線の間隔を計算
-          let displayDays =
-            Calendar.current.dateComponents([.day], from: startDay, to: endDay).day ?? 0
-          let displayMonths =
-            Calendar.current.dateComponents([.month], from: startDay, to: endDay).month ?? 0
-
-          // 表示期間に応じて適切な単位とストライドを決定
-          let (strideComponent, strideCount): (Calendar.Component, Int) = {
-            if displayDays <= 14 {
-              // 2週間以下: 日単位、1日ごと
-              return (.day, 1)
-            } else if displayDays <= 60 {
-              // 2ヶ月以下: 週単位、1週間ごと
-              return (.weekOfYear, 1)
-            } else if displayMonths <= 3 {
-              // 3ヶ月以下: 週単位、2週間ごと
-              return (.weekOfYear, 2)
-            } else if displayMonths <= 6 {
-              // 6ヶ月以下: 月単位、1ヶ月ごと
-              return (.month, 1)
-            } else if displayMonths <= 12 {
-              // 1年以下: 月単位、3ヶ月ごと
-              return (.month, 3)
-            } else {
-              // 1年超: 月単位、6ヶ月ごと
-              return (.month, 6)
-            }
-          }()
+          // 共通の横軸ラベル間引き関数を使用
+          let (strideComponent, strideCount, labelFormat) =
+            ChartAxisHelper.calculateXAxisStride(
+              startDay: startDay, endDay: endDay, isCompact: horizontalSizeClass == .compact)
 
           AxisMarks(values: .stride(by: strideComponent, count: strideCount)) { value in
             AxisGridLine()
@@ -233,12 +209,13 @@ struct CycleTrendView: View {
 
             AxisValueLabel {
               if let date = value.as(Date.self) {
-                if displayMonths > 6 {
-                  // 6ヶ月超: 月のみ表示（年は期間セレクターの横に表示）
-                  Text(date.formatted(.dateTime.month(.defaultDigits)))
-                } else {
-                  // 6ヶ月以下: 月/日形式
+                switch labelFormat {
+                case .monthDay:
                   Text(date.formatted(.dateTime.month(.defaultDigits).day()))
+                case .monthOnly:
+                  Text(date.formatted(.dateTime.month(.defaultDigits)))
+                case .yearOnly:
+                  Text(date.formatted(.dateTime.year()))
                 }
               }
             }

@@ -13,6 +13,8 @@ struct ChartWindowNavigator {
       return nil
     case .oneWeek:
       return DateComponents(day: 7)
+    case .twoWeeks:
+      return DateComponents(day: 14)
     case .oneMonth:
       return DateComponents(month: 1)
     case .threeMonths:
@@ -366,21 +368,6 @@ struct ChartWindowNavigator {
     if days <= 14 { return .day }
     if days <= 120 { return .week }
     return .month
-  }
-
-  // MARK: - データポイント表示判定
-
-  /// チャートにデータポイント（ドット）を表示するかどうかを判定
-  /// - Parameters:
-  ///   - recordCount: 表示するレコード数
-  ///   - startDay: 表示開始日
-  ///   - endDay: 表示終了日
-  /// - Returns: データポイントを表示する場合はtrue
-  static func shouldShowDataPoints(recordCount: Int, startDay: Date, endDay: Date) -> Bool {
-    let calendar = Calendar.current
-    let displayDays = calendar.dateComponents([.day], from: startDay, to: endDay).day ?? 0
-    // 表示期間が60日未満、かつレコード数が15個以下の場合のみポイントを表示
-    return recordCount <= 15 && displayDays < 60
   }
 
   // MARK: - ウィンドウ終了日初期化
