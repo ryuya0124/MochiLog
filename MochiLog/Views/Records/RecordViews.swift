@@ -117,7 +117,11 @@ struct DetailCard<Content: View>: View {
     }
     .padding()
     .frame(minHeight: 120, maxHeight: .infinity, alignment: .top)
-    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 18))
+    .padding()
+    .frame(minHeight: 120, maxHeight: .infinity, alignment: .top)
+    .background(
+      Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 18)
+    )
     .overlay(RoundedRectangle(cornerRadius: 18).stroke(Color(uiColor: .separator).opacity(0.08)))
     .shadow(color: Color.black.opacity(0.02), radius: 2, x: 0, y: 1)  // Reduced shadow
   }
@@ -179,8 +183,9 @@ struct RecordDetailView: View {
                   }
                 }
                 .padding(10)  // Prevent stroke clipping
-                .drawingGroup()
+                .drawingGroup(opaque: true, colorMode: .linear)
               }
+              .background(Color(uiColor: .secondarySystemGroupedBackground))  // Ensure background matches for opaque drawing
               .frame(width: 120, height: 120)
 
               VStack(alignment: .leading, spacing: 6) {
@@ -221,7 +226,10 @@ struct RecordDetailView: View {
               .buttonStyle(.borderedProminent)
             }
             .padding()
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20))
+
+            .background(
+              Color(uiColor: .secondarySystemGroupedBackground),
+              in: RoundedRectangle(cornerRadius: 20))
 
             // Device info spans full width on iPad
             DetailCard(
@@ -237,10 +245,10 @@ struct RecordDetailView: View {
                   LabeledContent(
                     String(localized: "model_code", table: "Records"), value: modelCode)
                 }
-                if let storage = record.storage, let formatted = record.formattedStorage {
+                if record.storage != nil, let formatted = record.formattedStorage {
                   LabeledContent(String(localized: "storage", table: "Records"), value: formatted)
                 }
-                if let ram = record.ram, let formattedRam = record.formattedRAM {
+                if record.ram != nil, let formattedRam = record.formattedRAM {
                   LabeledContent(String(localized: "ram", table: "Records"), value: formattedRam)
                 }
                 LabeledContent(
@@ -424,10 +432,10 @@ struct RecordDetailView: View {
             if let modelCode = record.deviceModelCode {
               LabeledContent(String(localized: "model_code", table: "Records"), value: modelCode)
             }
-            if let storage = record.storage, let formatted = record.formattedStorage {
+            if record.storage != nil, let formatted = record.formattedStorage {
               LabeledContent(String(localized: "storage", table: "Records"), value: formatted)
             }
-            if let ram = record.ram, let formattedRam = record.formattedRAM {
+            if record.ram != nil, let formattedRam = record.formattedRAM {
               LabeledContent(String(localized: "ram", table: "Records"), value: formattedRam)
             }
             LabeledContent(
@@ -726,8 +734,8 @@ struct RecordDetailView: View {
     }
 
     // 表示単位を決定するために日数を計算
-    let days = calendar.dateComponents([.day], from: startDay, to: endDay).day ?? 0
-    let unit: AppSettings.ChartUnit = days <= 14 ? .day : (days <= 120 ? .week : .month)
+    let _ = calendar.dateComponents([.day], from: startDay, to: endDay).day ?? 0
+    // let unit: AppSettings.ChartUnit = days <= 14 ? .day : (days <= 120 ? .week : .month)
 
     // グラフチャート部分のみをレンダリング（ヘッダーやコントロールなし）
     let chartView = Chart {

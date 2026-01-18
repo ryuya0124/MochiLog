@@ -56,7 +56,10 @@ struct RecordListView<Header: View>: View {
             iPhoneLayout
           }
         }
-        .animation(.snappy, value: cachedSections.map { $0.id })
+        // スクロール中の不要なアニメーションを抑制
+        .transaction { transaction in
+          transaction.animation = nil
+        }
       }
     }
     .onAppear {
@@ -205,36 +208,16 @@ struct RecordListView<Header: View>: View {
                 ) {
                   ForEach(sectionRecords, id: \.logDate) { record in
                     NavigationLink(destination: RecordDetailView(record: record)) {
-                      RecordRowView(record: record)
-                        .padding()
-                        .background(Color(uiColor: .secondarySystemGroupedBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                    }
-                    .buttonStyle(.plain)
-                    .contextMenu {
-                      if showContextMenu, let onDelete = onRecordDelete {
-                        Button(role: .destructive) {
-                          onDelete(record)
-                        } label: {
-                          Label(
-                            String(localized: "delete", table: "Common"), systemImage: "trash.fill"
-                          )
-                          .font(.title2)
-                        }
+                      CachedView(id: record.logDate.timeIntervalSinceReferenceDate) {
+                        RecordRowView(record: record)
+                          .padding()
+                          .background(Color(uiColor: .secondarySystemGroupedBackground))
+                          .clipShape(RoundedRectangle(cornerRadius: 12))
                       }
-                    } preview: {
-                      // プレビューでレコード情報を表示
-                      RecordRowView(record: record)
-                        .padding()
-                        .frame(width: 300)
                     }
-                    .transition(
-                      .asymmetric(
-                        insertion: .scale.combined(with: .opacity),
-                        removal: .scale.combined(with: .opacity)
-                      ))
                   }
                 }
+                .drawingGroup()  // Optimize grid rendering
                 .padding(.top, 8)
               } label: {
                 Text(section.displayName)
