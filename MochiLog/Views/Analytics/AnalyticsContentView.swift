@@ -231,6 +231,8 @@ struct AnalyticsContentView: View {
         return calendar.date(byAdding: .month, value: -1, to: end) ?? end
       case .oneWeek:
         return calendar.date(byAdding: .day, value: -7, to: end) ?? end
+      case .twoWeeks:
+        return calendar.date(byAdding: .day, value: -14, to: end) ?? end
       case .oneMonth:
         // カレンダー月に固定：終了日の月の1日を開始日とする
         let components = calendar.dateComponents([.year, .month], from: end)

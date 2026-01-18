@@ -5,6 +5,7 @@ import SwiftUI
 enum RangePreset: String, CaseIterable, Identifiable {
   case auto = "auto"
   case oneWeek = "1w"
+  case twoWeeks = "2w"  // 自動レンジ判定専用（手動選択には表示しない）
   case oneMonth = "1m"
   case threeMonths = "3m"
   case sixMonths = "6m"
@@ -14,6 +15,11 @@ enum RangePreset: String, CaseIterable, Identifiable {
 
   var id: String { self.rawValue }
 
+  /// 手動選択用のケースリスト（2週間を除外）
+  static var manualCases: [RangePreset] {
+    [.auto, .oneWeek, .oneMonth, .threeMonths, .sixMonths, .oneYear, .twoYears, .threeYears]
+  }
+
   /// ローカライズされた表示名
   var localizedName: String {
     switch self {
@@ -21,6 +27,8 @@ enum RangePreset: String, CaseIterable, Identifiable {
       return String(localized: "range_auto", table: "Analytics")
     case .oneWeek:
       return String(localized: "range_1w", table: "Analytics")
+    case .twoWeeks:
+      return String(localized: "range_2w", table: "Analytics")
     case .oneMonth:
       return String(localized: "range_1m", table: "Analytics")
     case .threeMonths:

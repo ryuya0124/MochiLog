@@ -71,7 +71,7 @@ struct HealthTrendView: View {
                 .disabled(!canMovePrevious)
 
                 Picker("", selection: $selectedRange) {
-                  ForEach(RangePreset.allCases) { preset in
+                  ForEach(RangePreset.manualCases) { preset in
                     Text(preset.localizedName).tag(preset)
                   }
                 }
@@ -116,7 +116,7 @@ struct HealthTrendView: View {
                 .disabled(!canMovePrevious || selectedRange == .auto)
 
                 Picker("", selection: $selectedRange) {
-                  ForEach(RangePreset.allCases) { preset in
+                  ForEach(RangePreset.manualCases) { preset in
                     Text(preset.localizedName).tag(preset)
                   }
                 }

@@ -44,6 +44,8 @@ struct ChartWindowNavigator {
       return calendar.date(byAdding: .month, value: -1, to: endDate) ?? endDate
     case .oneWeek:
       return calendar.date(byAdding: .day, value: -7, to: endDate) ?? endDate
+    case .twoWeeks:
+      return calendar.date(byAdding: .day, value: -14, to: endDate) ?? endDate
     case .oneMonth:
       // カレンダー月に固定：終了日の月の1日を開始日とする
       let components = calendar.dateComponents([.year, .month], from: endDate)
@@ -341,6 +343,7 @@ struct ChartWindowNavigator {
     let days = Calendar.current.dateComponents([.day], from: first, to: last).day ?? 0
 
     if days <= 7 { return .oneWeek }
+    if days <= 14 { return .twoWeeks }
     if days <= 30 { return .oneMonth }
     if days <= 90 { return .threeMonths }
     if days <= 180 { return .sixMonths }

@@ -142,7 +142,7 @@ struct CycleTrendView: View {
                     }
                   )
                 ) {
-                  ForEach(RangePreset.allCases) { preset in
+                  ForEach(RangePreset.manualCases) { preset in
                     Text(preset.localizedName).tag(preset)
                   }
                 }
