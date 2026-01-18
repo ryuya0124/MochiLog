@@ -1,4 +1,5 @@
 import Foundation
+import SwiftData
 // RecordViews.swift
 // 一覧行ビューと詳細ビュー
 import SwiftUI
@@ -549,22 +550,75 @@ struct RecordDetailView: View {
       ? record.nominalHealthPercent : record.healthPercent
     let dateFormatter = DateFormatter()
     dateFormatter.dateStyle = .medium
+    dateFormatter.locale = Locale.current
 
-    var text = """
-      📱 \(record.deviceName)
-      📅 \(dateFormatter.string(from: record.logDate))
+    // タイトル
+    var text = String(localized: "share_title", table: "Records")
+    text += "\n\n"
 
-      🔋 \(String(localized: "battery_health", table: "Records")): \(String(format: "%.1f", health))%
-      🔄 \(String(localized: "cycle_count", table: "Analytics")): \(record.cycleCount)
-      ⚡ \(String(localized: "nominal_capacity", table: "Analytics")): \(record.nominalCapacity) mAh
-      """
+    // デバイス名（モデルコードは表示しない）
+    text += "\(record.deviceName)\n"
 
-    if record.designCapacity > 0 {
-      text +=
-        "\n📦 \(String(localized: "design_capacity", table: "Analytics")): \(record.designCapacity) mAh"
+    // 記録日付
+    text += "\(dateFormatter.string(from: record.logDate))\n\n"
+
+    // バッテリー最大容量
+    text +=
+      "\(String(localized: "battery_health", table: "Records")): \(String(format: "%.1f", health))%\n"
+    text += "\(record.dynamicDiagnosticResult)\n\n"
+
+    // 使用期間（初使用日がある場合）
+    if let firstUse = record.firstUseDate {
+      let calendar = Calendar.current
+      let components = calendar.dateComponents([.day], from: firstUse, to: record.logDate)
+      if let days = components.day {
+        text += "\(String(localized: "share_usage_period", table: "Records")): "
+
+        if days >= 365 {
+          let years = days / 365
+          let remainingDays = days % 365
+          text += String(
+            format: String(localized: "share_years_days", table: "Records"),
+            years, remainingDays
+          )
+        } else {
+          text += String(
+            format: String(localized: "share_days", table: "Records"),
+            days
+          )
+        }
+        text += "\n"
+      }
     }
 
-    text += "\n\n— MochiLog"
+    // サイクルカウント
+    text += String(
+      format:
+        "\(String(localized: "cycle_count", table: "Analytics")): \(String(localized: "cycle_count_format", table: "Analytics"))",
+      record.cycleCount
+    )
+    text += "\n"
+
+    // 実測容量
+    text +=
+      "\(String(localized: "raw_capacity", table: "Analytics")): \(record.rawCapacity) mAh"
+    text += "\n"
+
+    // 公称容量
+    text +=
+      "\(String(localized: "nominal_capacity", table: "Analytics")): \(record.nominalCapacity) mAh"
+    text += "\n"
+
+    // 設計容量（ある場合）
+    if record.designCapacity > 0 {
+      text +=
+        "\(String(localized: "design_capacity", table: "Analytics")): \(record.designCapacity) mAh"
+      text += "\n"
+    }
+
+    // フッター（アプリ名とハッシュタグ）
+    text += String(localized: "share_footer", table: "Records")
+
     return text
   }
 
