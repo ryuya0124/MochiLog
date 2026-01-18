@@ -87,25 +87,28 @@ struct DetailCard<Content: View>: View {
     VStack(alignment: .leading, spacing: 12) {
       HStack(alignment: .center, spacing: 12) {
         if let sys = systemImage {
-          ZStack {
-            Circle()
-              .fill(
-                LinearGradient(
-                  gradient: Gradient(colors: [
-                    AppSettings.shared.accentColor.color.opacity(0.16),
-                    Color(uiColor: .systemBackground).opacity(0.06),
-                  ]),
-                  startPoint: .topLeading,
-                  endPoint: .bottomTrailing
+          CachedView(id: sys + title) {
+            ZStack {
+              Circle()
+                .fill(
+                  LinearGradient(
+                    gradient: Gradient(colors: [
+                      AppSettings.shared.accentColor.color.opacity(0.16),
+                      Color(uiColor: .systemBackground).opacity(0.06),
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                  )
                 )
-              )
-              .frame(width: 44, height: 44)
-              .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)  // Reduced shadow
-            Image(systemName: sys)
-              .foregroundStyle(AppSettings.shared.accentColor.color)
-              .font(.system(size: 18, weight: .semibold))
+                .frame(width: 44, height: 44)
+                .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)  // Reduced shadow
+              Image(systemName: sys)
+                .foregroundStyle(AppSettings.shared.accentColor.color)
+                .font(.system(size: 18, weight: .semibold))
+            }
+            .drawingGroup()  // Offload shadow/gradient rendering to GPU
           }
-          .drawingGroup()  // Offload shadow/gradient rendering to GPU
+          .frame(width: 44, height: 44)
         }
         Text(title).font(.headline)
         Spacer()
@@ -142,38 +145,43 @@ struct RecordDetailView: View {
           VStack(spacing: 18) {
             // Header with large circular health ring and summary info
             HStack(alignment: .center, spacing: 20) {
-              ZStack {
-                Circle()
-                  .stroke(Color(uiColor: .systemGray5), lineWidth: 12)
-                  .frame(width: 120, height: 120)
-                Circle()
-                  .trim(
-                    from: 0,
-                    to: CGFloat(
-                      min(
-                        max(
-                          appSettings.analysisDataSource == .nominal
-                            ? record.nominalHealthPercent : record.healthPercent, 0), 100))
-                      / 100.0
-                  )
-                  .stroke(
-                    AngularGradient(
-                      gradient: Gradient(colors: [
-                        AppSettings.shared.accentColor.color, Color.green,
-                      ]), center: .center),
-                    style: StrokeStyle(lineWidth: 12, lineCap: .round)
-                  )
-                  .rotationEffect(.degrees(-90))
-                  .frame(width: 120, height: 120)
-                VStack {
-                  let health =
-                    appSettings.analysisDataSource == .nominal
-                    ? record.nominalHealthPercent : record.healthPercent
-                  Text("\(String(format: "%.0f", health))%")
-                    .font(.title)
-                    .bold()
+              CachedView(id: record.logDate.timeIntervalSinceReferenceDate) {
+                ZStack {
+                  Circle()
+                    .stroke(Color(uiColor: .systemGray5), lineWidth: 12)
+                    .frame(width: 120, height: 120)
+                  Circle()
+                    .trim(
+                      from: 0,
+                      to: CGFloat(
+                        min(
+                          max(
+                            appSettings.analysisDataSource == .nominal
+                              ? record.nominalHealthPercent : record.healthPercent, 0), 100))
+                        / 100.0
+                    )
+                    .stroke(
+                      AngularGradient(
+                        gradient: Gradient(colors: [
+                          AppSettings.shared.accentColor.color, Color.green,
+                        ]), center: .center),
+                      style: StrokeStyle(lineWidth: 12, lineCap: .round)
+                    )
+                    .rotationEffect(.degrees(-90))
+                    .frame(width: 120, height: 120)
+                  VStack {
+                    let health =
+                      appSettings.analysisDataSource == .nominal
+                      ? record.nominalHealthPercent : record.healthPercent
+                    Text("\(String(format: "%.0f", health))%")
+                      .font(.title)
+                      .bold()
+                  }
                 }
+                .padding(10)  // Prevent stroke clipping
+                .drawingGroup()
               }
+              .frame(width: 120, height: 120)
 
               VStack(alignment: .leading, spacing: 6) {
                 Text(record.deviceName).font(.title2).bold()
@@ -200,15 +208,11 @@ struct RecordDetailView: View {
               Spacer()
 
               Button {
-                // The generateChartImage function is not present in the provided code.
-                // Assuming it would be defined elsewhere or is a placeholder.
-                // The instruction to change ForEach(visibleRecords) to ForEach(visibleRecords, id: \.logDate)
-                // cannot be applied without the function's body.
-                // if let image = generateChartImage() {
-                //   shareContent(text: generateShareText(), image: image)
-                // } else {
-                //   shareContent(text: generateShareText(), image: nil)
-                // }
+                if let image = generateChartImage() {
+                  shareContent(text: generateShareText(), image: image)
+                } else {
+                  shareContent(text: generateShareText(), image: nil)
+                }
               } label: {
                 Label(
                   String(localized: "share", table: "Common"),

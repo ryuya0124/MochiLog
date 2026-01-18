@@ -13,6 +13,8 @@ struct RecordListView<Header: View>: View {
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @State private var collapsedSections: Set<String> = []
 
+  @State private var groupedRecords: [String: [BatteryRecord]] = [:]
+
   // MARK: - バックグラウンド計算用の状態
   @State private var isLoading = true
   @State private var cachedSections: [DeviceSection] = []
@@ -58,14 +60,22 @@ struct RecordListView<Header: View>: View {
       }
     }
     .onAppear {
+      updateGroupedRecords()
       prepareDeviceSectionsIfNeeded()
     }
     .onChange(of: records) {
+      updateGroupedRecords()
       prepareDeviceSectionsIfNeeded()
     }
     .onChange(of: appSettings.deviceSortOrder) {
       prepareDeviceSectionsIfNeeded(force: true)
     }
+  }
+
+  // MARK: - データ準備
+  private func updateGroupedRecords() {
+    // デバイス名でグルーピング (Main thread, O(N))
+    groupedRecords = Dictionary(grouping: records, by: { $0.deviceName })
   }
 
   // MARK: - バックグラウンドでセクションを準備
@@ -152,8 +162,8 @@ struct RecordListView<Header: View>: View {
 
   /// セクションIDからレコードを取得するヘルパー
   private func recordsForSection(_ section: DeviceSection) -> [BatteryRecord] {
-    // デバイス名でフィルタリング（セクションIDはデバイス名）
-    return records.filter { $0.deviceName == section.id }
+    // 辞書から高速検索 (O(1))
+    return groupedRecords[section.id] ?? []
   }
 
   // MARK: - iPad レイアウト（複数列表示）
