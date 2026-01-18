@@ -246,7 +246,14 @@ struct AnalyticsContentView: View {
         components.day = 1
         return calendar.date(from: components) ?? end
       case .sixMonths:
-        return calendar.date(byAdding: .month, value: -6, to: end) ?? end
+        // 半年基準：前半（1-6月）か後半（7-12月）の開始月を返す
+        let month = calendar.component(.month, from: end)
+        let year = calendar.component(.year, from: end)
+        var components = DateComponents()
+        components.year = year
+        components.month = month <= 6 ? 1 : 7  // 前半なら1月、後半なら7月
+        components.day = 1
+        return calendar.date(from: components) ?? end
       case .oneYear:
         // カレンダー年に固定：終了日の年の1月1日を開始日とする
         let components = calendar.dateComponents([.year], from: end)

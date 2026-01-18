@@ -59,7 +59,14 @@ struct ChartWindowNavigator {
       components.day = 1
       return calendar.date(from: components) ?? endDate
     case .sixMonths:
-      return calendar.date(byAdding: .month, value: -6, to: endDate) ?? endDate
+      // 半年基準：前半（1-6月）か後半（7-12月）の開始月を返す
+      let month = calendar.component(.month, from: endDate)
+      let year = calendar.component(.year, from: endDate)
+      var components = DateComponents()
+      components.year = year
+      components.month = month <= 6 ? 1 : 7  // 前半なら1月、後半なら7月
+      components.day = 1
+      return calendar.date(from: components) ?? endDate
     case .oneYear:
       // カレンダー年に固定：終了日の年の1月1日を開始日とする
       let components = calendar.dateComponents([.year], from: endDate)
@@ -150,6 +157,31 @@ struct ChartWindowNavigator {
       return date
     }
     return endOfQuarter
+  }
+
+  /// 指定した日付が含まれる半年（四半期2つ分）の末日を取得
+  /// 1-6月 → 6月30日、7-12月 → 12月31日
+  static func endOfHalfYear(for date: Date) -> Date {
+    let calendar = Calendar.current
+    let month = calendar.component(.month, from: date)
+    let year = calendar.component(.year, from: date)
+
+    // 前半（1-6月）か後半（7-12月）かを判定
+    if month <= 6 {
+      // 前半 → 6月30日
+      var components = DateComponents()
+      components.year = year
+      components.month = 6
+      components.day = 30
+      return calendar.date(from: components) ?? date
+    } else {
+      // 後半 → 12月31日
+      var components = DateComponents()
+      components.year = year
+      components.month = 12
+      components.day = 31
+      return calendar.date(from: components) ?? date
+    }
   }
 
   // MARK: - 次のウィンドウ検索
@@ -333,17 +365,50 @@ struct ChartWindowNavigator {
     return .month
   }
 
+  // MARK: - データポイント表示判定
+
+  /// チャートにデータポイント（ドット）を表示するかどうかを判定
+  /// - Parameters:
+  ///   - recordCount: 表示するレコード数
+  ///   - startDay: 表示開始日
+  ///   - endDay: 表示終了日
+  /// - Returns: データポイントを表示する場合はtrue
+  static func shouldShowDataPoints(recordCount: Int, startDay: Date, endDay: Date) -> Bool {
+    let calendar = Calendar.current
+    let displayDays = calendar.dateComponents([.day], from: startDay, to: endDay).day ?? 0
+    // 表示期間が60日未満、かつレコード数が15個以下の場合のみポイントを表示
+    return recordCount <= 15 && displayDays < 60
+  }
+
   // MARK: - ウィンドウ終了日初期化
 
   /// レコードに基づいてウィンドウ終了日を初期化
   static func initializeWindowEnd(for records: [BatteryRecord], range: RangePreset) -> Date {
     guard !records.isEmpty else { return Date() }
 
+    let now = Date()
+
+    // 1ヶ月選択時は月末を終了日とする（完全な1ヶ月を表示）
+    if range == .oneMonth {
+      return endOfMonth(for: now)
+    }
+
+    // 3ヶ月選択時は四半期末を終了日とする（完全な四半期を表示）
+    if range == .threeMonths {
+      return endOfQuarter(for: now)
+    }
+
+    // 6ヶ月選択時は半年末を終了日とする（四半期2つ分、完全な半年を表示）
+    if range == .sixMonths {
+      return endOfHalfYear(for: now)
+    }
+
+    // 3年選択時は最新データの日付を終了日とする
     if range == .threeYears {
       return records.max(by: { $0.logDate < $1.logDate })?.logDate ?? Date()
     }
 
-    let now = Date()
+    // その他のレンジ：現在日付のウィンドウにデータがあれば今日、なければ最新データの日付
     let startNow = windowStart(for: now, range: range, allRecords: records)
     if windowContainsData(start: startNow, end: now, in: records) {
       return now

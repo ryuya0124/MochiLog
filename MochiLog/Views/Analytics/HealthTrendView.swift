@@ -135,7 +135,8 @@ struct HealthTrendView: View {
         }
 
         // データ点が多い場合はPointMarkを非表示（すっきり見せる）
-        let showPoints = visibleRecords.count <= 15
+        let showPoints = ChartWindowNavigator.shouldShowDataPoints(
+          recordCount: visibleRecords.count, startDay: startDay, endDay: endDay)
 
         Chart {
           ForEach(visibleRecords) { record in
@@ -177,11 +178,14 @@ struct HealthTrendView: View {
         }
         .chartYScale(domain: 68...107)  // 上下に余白を確保
         .chartXAxis {
-          // 表示期間の日数に基づいてグリッド線の間隔を計算
+          // 表示期間の日数と月数を計算
           let displayDays =
             Calendar.current.dateComponents([.day], from: startDay, to: endDay).day ?? 0
           let displayMonths =
             Calendar.current.dateComponents([.month], from: startDay, to: endDay).month ?? 0
+
+          // コンパクト画面（iPhone）かレギュラー画面（iPad）かで間引きを調整
+          let isCompact = horizontalSizeClass == .compact
 
           // 表示期間に応じて適切な単位とストライドを決定
           let (strideComponent, strideCount): (Calendar.Component, Int) = {
@@ -189,8 +193,11 @@ struct HealthTrendView: View {
               // 1週間以下: 日単位、1日ごと
               return (.day, 1)
             } else if displayDays <= 14 {
-              // 2週間以下: 日単位、1日ごと
-              return (.day, 1)
+              // 2週間以下: 日単位、コンパクトなら2日ごと、レギュラーなら1日ごと
+              return (.day, isCompact ? 2 : 1)
+            } else if displayDays <= 30 {
+              // 1ヶ月以下: 日単位、コンパクトなら3日ごと、レギュラーなら2日ごと
+              return (.day, isCompact ? 3 : 2)
             } else if displayDays <= 60 {
               // 2ヶ月以下: 週単位、1週間ごと
               return (.weekOfYear, 1)
@@ -201,11 +208,17 @@ struct HealthTrendView: View {
               // 6ヶ月以下: 月単位、1ヶ月ごと
               return (.month, 1)
             } else if displayMonths <= 12 {
-              // 1年以下: 月単位、3ヶ月ごと
-              return (.month, 3)
+              // 1年以下: 月単位、コンパクトなら3ヶ月ごと、レギュラーなら2ヶ月ごと
+              return (.month, isCompact ? 3 : 2)
+            } else if displayMonths <= 24 {
+              // 2年以下: 月単位、コンパクトなら6ヶ月ごと、レギュラーなら4ヶ月ごと
+              return (.month, isCompact ? 6 : 4)
+            } else if displayMonths <= 36 {
+              // 3年以下: 年単位、1年ごと
+              return (.year, 1)
             } else {
-              // 1年超: 月単位、6ヶ月ごと
-              return (.month, 6)
+              // 3年超: 年単位、1年ごと
+              return (.year, 1)
             }
           }()
 
@@ -215,8 +228,11 @@ struct HealthTrendView: View {
 
             AxisValueLabel {
               if let date = value.as(Date.self) {
-                if displayMonths > 6 {
-                  // 6ヶ月超: 月のみ表示（年は期間セレクターの横に表示）
+                if displayMonths > 24 {
+                  // 2年超: 年のみ表示
+                  Text(date.formatted(.dateTime.year()))
+                } else if displayMonths > 6 {
+                  // 6ヶ月超〜2年: 月のみ表示
                   Text(date.formatted(.dateTime.month(.defaultDigits)))
                 } else {
                   // 6ヶ月以下: 月/日形式
@@ -262,11 +278,6 @@ struct HealthTrendView: View {
             }
         }
         .frame(height: horizontalSizeClass == .regular ? 280 : 200)
-        .onAppear {
-          DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-            withAnimation(.easeOut(duration: 0.6)) { animateChart = true }
-          }
-        }
         .onAppear {
           animateChart = false
           DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {

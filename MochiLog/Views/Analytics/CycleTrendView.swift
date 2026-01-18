@@ -162,7 +162,8 @@ struct CycleTrendView: View {
         }
 
         // データ点が多い場合はPointMarkを非表示
-        let showPoints = visibleRecords.count <= 15
+        let showPoints = ChartWindowNavigator.shouldShowDataPoints(
+          recordCount: visibleRecords.count, startDay: startDay, endDay: endDay)
 
         Chart {
           ForEach(visibleRecords) { record in

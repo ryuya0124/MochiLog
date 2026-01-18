@@ -361,6 +361,22 @@
         }
       }
     },
+    "range_3y" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 Years"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3年"
+          }
+        }
+      }
+    },
     "range_6m" : {
       "localizations" : {
         "en" : {
@@ -377,18 +393,19 @@
         }
       }
     },
-    "range_3y" : {
+    "range_auto" : {
+      "comment" : "Auto range label",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "3 Years"
+            "value" : "Auto"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "3年"
+            "value" : "自動"
           }
         }
       }
