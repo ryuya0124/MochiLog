@@ -208,22 +208,20 @@ struct RecordListView<Header: View>: View {
                 ) {
                   ForEach(sectionRecords, id: \.logDate) { record in
                     NavigationLink(destination: RecordDetailView(record: record)) {
-                      CachedView(id: record.logDate.timeIntervalSinceReferenceDate) {
-                        RecordRowView(record: record)
-                          .padding()
-                          .background(Color(uiColor: .secondarySystemGroupedBackground))
-                          .clipShape(RoundedRectangle(cornerRadius: 12))
-                      }
+                      RecordRowView(record: record)
+                        .padding()
+                        .background(Color(uiColor: .secondarySystemGroupedBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
                   }
                 }
-                .drawingGroup()  // Optimize grid rendering
+                // drawingGroup()削除 - 各CachedViewで既にオフスクリーン
                 .padding(.top, 8)
               } label: {
                 Text(section.displayName)
                   .font(.title3)
                   .bold()
-                  .foregroundStyle(.primary)
+                  .foregroundColor(.primary)
               }
               .padding()
               .background(Color(uiColor: .secondarySystemGroupedBackground))
@@ -288,7 +286,7 @@ struct RecordListView<Header: View>: View {
           } label: {
             Text(section.displayName)
               .font(.headline)
-              .foregroundStyle(.primary)
+              .foregroundColor(.primary)
           }
         }
         .transition(

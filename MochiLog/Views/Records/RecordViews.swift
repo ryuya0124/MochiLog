@@ -14,15 +14,16 @@ struct RecordRowView: View {
       VStack(alignment: .leading, spacing: 4) {
         Text(record.deviceName)
           .font(.headline)
+          .foregroundColor(.primary)
         Text(record.logDate, style: .date)
           .font(.caption)
-          .foregroundStyle(.secondary)
+          .foregroundColor(.primary)
         Text(
           String(
             format: String(localized: "cycle_count_format", table: "Analytics"), record.cycleCount)
         )
         .font(.caption)
-        .foregroundStyle(.secondary)
+        .foregroundColor(.primary)
       }
       Spacer()
       VStack(alignment: .trailing, spacing: 4) {
@@ -32,10 +33,11 @@ struct RecordRowView: View {
         Text("\(String(format: "%.1f", health))%")
           .font(.title2)
           .bold()
-          .foregroundStyle(healthColor(health))
+          .foregroundColor(healthColor(health))
         // 動的に計算した診断結果を表示（分析基準に応じて切り替え）
         Text(record.cachedDiagnostic)
           .font(.caption2)
+          .foregroundColor(.primary)
       }
     }
     .padding(.vertical, 4)
@@ -87,26 +89,22 @@ struct DetailCard<Content: View>: View {
     VStack(alignment: .leading, spacing: 12) {
       HStack(alignment: .center, spacing: 12) {
         if let sys = systemImage {
-          CachedView(id: sys + title) {
-            ZStack {
-              Circle()
-                .fill(
-                  LinearGradient(
-                    gradient: Gradient(colors: [
-                      AppSettings.shared.accentColor.color.opacity(0.16),
-                      Color(uiColor: .systemBackground).opacity(0.06),
-                    ]),
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                  )
+          ZStack {
+            Circle()
+              .fill(
+                LinearGradient(
+                  gradient: Gradient(colors: [
+                    AppSettings.shared.accentColor.color.opacity(0.16),
+                    Color(uiColor: .systemBackground).opacity(0.06),
+                  ]),
+                  startPoint: .topLeading,
+                  endPoint: .bottomTrailing
                 )
-                .frame(width: 44, height: 44)
-                .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)  // Reduced shadow
-              Image(systemName: sys)
-                .foregroundStyle(AppSettings.shared.accentColor.color)
-                .font(.system(size: 18, weight: .semibold))
-            }
-            .drawingGroup()  // Offload shadow/gradient rendering to GPU
+              )
+              .frame(width: 44, height: 44)
+            Image(systemName: sys)
+              .foregroundStyle(AppSettings.shared.accentColor.color)
+              .font(.system(size: 18, weight: .semibold))
           }
           .frame(width: 44, height: 44)
         }
@@ -117,13 +115,10 @@ struct DetailCard<Content: View>: View {
     }
     .padding()
     .frame(minHeight: 120, maxHeight: .infinity, alignment: .top)
-    .padding()
-    .frame(minHeight: 120, maxHeight: .infinity, alignment: .top)
     .background(
       Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 18)
     )
     .overlay(RoundedRectangle(cornerRadius: 18).stroke(Color(uiColor: .separator).opacity(0.08)))
-    .shadow(color: Color.black.opacity(0.02), radius: 2, x: 0, y: 1)  // Reduced shadow
   }
 }
 
@@ -146,47 +141,43 @@ struct RecordDetailView: View {
       // iPad / Regular width: bento-styleカードグリッド with polished header and summary panel
       if horizontalSizeClass == .regular {
         ScrollView {
-          VStack(spacing: 18) {
+          LazyVStack(spacing: 18) {
             // Header with large circular health ring and summary info
             HStack(alignment: .center, spacing: 20) {
-              CachedView(id: record.logDate.timeIntervalSinceReferenceDate) {
-                ZStack {
-                  Circle()
-                    .stroke(Color(uiColor: .systemGray5), lineWidth: 12)
-                    .frame(width: 120, height: 120)
-                  Circle()
-                    .trim(
-                      from: 0,
-                      to: CGFloat(
-                        min(
-                          max(
-                            appSettings.analysisDataSource == .nominal
-                              ? record.nominalHealthPercent : record.healthPercent, 0), 100))
-                        / 100.0
-                    )
-                    .stroke(
-                      AngularGradient(
-                        gradient: Gradient(colors: [
-                          AppSettings.shared.accentColor.color, Color.green,
-                        ]), center: .center),
-                      style: StrokeStyle(lineWidth: 12, lineCap: .round)
-                    )
-                    .rotationEffect(.degrees(-90))
-                    .frame(width: 120, height: 120)
-                  VStack {
-                    let health =
-                      appSettings.analysisDataSource == .nominal
-                      ? record.nominalHealthPercent : record.healthPercent
-                    Text("\(String(format: "%.0f", health))%")
-                      .font(.title)
-                      .bold()
-                  }
+              // 健康リング（動的コンテンツなのでCachedView削除）
+              ZStack {
+                Circle()
+                  .stroke(Color(uiColor: .systemGray5), lineWidth: 8)
+                  .frame(width: 120, height: 120)
+                Circle()
+                  .trim(
+                    from: 0,
+                    to: CGFloat(
+                      min(
+                        max(
+                          appSettings.analysisDataSource == .nominal
+                            ? record.nominalHealthPercent : record.healthPercent, 0), 100))
+                      / 100.0
+                  )
+                  .stroke(
+                    AngularGradient(
+                      gradient: Gradient(colors: [
+                        AppSettings.shared.accentColor.color, Color.green,
+                      ]), center: .center),
+                    style: StrokeStyle(lineWidth: 8, lineCap: .round)
+                  )
+                  .rotationEffect(.degrees(-90))
+                  .frame(width: 120, height: 120)
+                VStack {
+                  let health =
+                    appSettings.analysisDataSource == .nominal
+                    ? record.nominalHealthPercent : record.healthPercent
+                  Text("\(String(format: "%.0f", health))%")
+                    .font(.title)
+                    .bold()
                 }
-                .padding(10)  // Prevent stroke clipping
-                .drawingGroup(opaque: true, colorMode: .linear)
               }
-              .background(Color(uiColor: .secondarySystemGroupedBackground))  // Ensure background matches for opaque drawing
-              .frame(width: 120, height: 120)
+              .padding(10)
 
               VStack(alignment: .leading, spacing: 6) {
                 Text(record.deviceName).font(.title2).bold()
@@ -213,10 +204,9 @@ struct RecordDetailView: View {
               Spacer()
 
               Button {
-                if let image = generateChartImage() {
+                Task {
+                  let image = await generateChartImageAsync()
                   shareContent(text: generateShareText(), image: image)
-                } else {
-                  shareContent(text: generateShareText(), image: nil)
                 }
               } label: {
                 Label(
@@ -567,10 +557,9 @@ struct RecordDetailView: View {
       if horizontalSizeClass != .regular {
         ToolbarItem(placement: .cancellationAction) {
           Button {
-            if let image = generateChartImage() {
+            Task {
+              let image = await generateChartImageAsync()
               shareContent(text: generateShareText(), image: image)
-            } else {
-              shareContent(text: generateShareText(), image: nil)
             }
           } label: {
             Image(systemName: "square.and.arrow.up")
@@ -670,9 +659,9 @@ struct RecordDetailView: View {
     return text
   }
 
-  // グラフ画像を生成
+  // グラフ画像を非同期生成（UIスレッドをブロックしない）
   @MainActor
-  private func generateChartImage() -> UIImage? {
+  private func generateChartImageAsync() async -> UIImage? {
     let deviceName = record.deviceName
     let descriptor = FetchDescriptor<BatteryRecord>(
       predicate: #Predicate { $0.deviceName == deviceName },
@@ -733,63 +722,68 @@ struct RecordDetailView: View {
       return d >= startDay && d <= endDay
     }
 
-    // 表示単位を決定するために日数を計算
-    let _ = calendar.dateComponents([.day], from: startDay, to: endDay).day ?? 0
-    // let unit: AppSettings.ChartUnit = days <= 14 ? .day : (days <= 120 ? .week : .month)
+    let dataSource = appSettings.analysisDataSource
+    let accentColor = appSettings.accentColor
+    let scale = displayScale
 
-    // グラフチャート部分のみをレンダリング（ヘッダーやコントロールなし）
-    let chartView = Chart {
-      ForEach(visibleRecords, id: \.logDate) { record in
-        let capacity =
-          appSettings.analysisDataSource == .nominal
-          ? record.nominalCapacity
-          : record.rawCapacity
+    // バックグラウンドスレッドで重い処理を実行
+    return await Task.detached(priority: .userInitiated) {
+      await MainActor.run {
+        // グラフチャート部分のみをレンダリング（ヘッダーやコントロールなし）
+        let chartView = Chart {
+          ForEach(visibleRecords, id: \.logDate) { record in
+            let capacity =
+              dataSource == .nominal
+              ? record.nominalCapacity
+              : record.rawCapacity
 
-        LineMark(
-          x: .value("Date", record.logDate),
-          y: .value("Capacity", capacity)
-        )
-        .foregroundStyle(appSettings.accentColor.color)
-        .lineStyle(StrokeStyle(lineWidth: 3))
-        .interpolationMethod(.catmullRom)
+            LineMark(
+              x: .value("Date", record.logDate),
+              y: .value("Capacity", capacity)
+            )
+            .foregroundStyle(accentColor.color)
+            .lineStyle(StrokeStyle(lineWidth: 3))
+            .interpolationMethod(.catmullRom)
 
-        PointMark(
-          x: .value("Date", record.logDate),
-          y: .value("Capacity", capacity)
-        )
-        .foregroundStyle(appSettings.accentColor.color)
-        .symbolSize(60)
-      }
-    }
-    .chartYScale(domain: .automatic(includesZero: false))
-    .chartYAxis {
-      AxisMarks(position: .leading, values: .automatic) { value in
-        AxisGridLine()
-          .foregroundStyle(Color.gray.opacity(0.3))
-        AxisValueLabel {
-          if let intValue = value.as(Int.self) {
-            Text("\(intValue)mAh")
+            PointMark(
+              x: .value("Date", record.logDate),
+              y: .value("Capacity", capacity)
+            )
+            .foregroundStyle(accentColor.color)
+            .symbolSize(60)
+          }
+        }
+        .chartYScale(domain: .automatic(includesZero: false))
+        .chartYAxis {
+          AxisMarks(position: .leading, values: .automatic) { value in
+            AxisGridLine()
+              .foregroundStyle(Color.gray.opacity(0.3))
+            AxisValueLabel {
+              if let intValue = value.as(Int.self) {
+                Text("\(intValue)mAh")
+                  .foregroundStyle(.primary)
+                  .font(.system(size: 14, weight: .medium))
+              }
+            }
+          }
+        }
+        .chartXScale(domain: startDay...endDay)
+        .chartXAxis {
+          AxisMarks(values: .automatic) { value in
+            AxisGridLine()
+              .foregroundStyle(Color.gray.opacity(0.3))
+            AxisValueLabel(format: .dateTime.month().day())
               .foregroundStyle(.primary)
               .font(.system(size: 14, weight: .medium))
           }
         }
-      }
-    }
-    .chartXScale(domain: startDay...endDay)
-    .chartXAxis {
-      AxisMarks(values: .automatic) { value in
-        AxisGridLine()
-          .foregroundStyle(Color.gray.opacity(0.3))
-        AxisValueLabel(format: .dateTime.month().day())
-          .foregroundStyle(.primary)
-          .font(.system(size: 14, weight: .medium))
-      }
-    }
-    .frame(width: 800, height: 480)
-    .padding(24)
-    .background(Color.white)
+        .frame(width: 800, height: 480)
+        .padding(24)
+        .background(Color.white)
 
-    return ViewRenderer.snapshot(view: chartView, scale: displayScale)
+        return ViewRenderer.snapshot(view: chartView, scale: scale)
+      }
+    }.value
   }
 
   // 共有処理

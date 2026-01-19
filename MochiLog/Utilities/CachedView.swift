@@ -41,7 +41,7 @@ struct CachedView<Content: View, ID: Hashable>: View {
           currentSize = newSize
           // サイズ変更時はキャッシュを破棄して再生成
           cachedImage = nil
-          render()
+          renderAsync()
         }
       }
       .opacity(cachedImage == nil ? 1 : 0)
@@ -56,26 +56,33 @@ struct CachedView<Content: View, ID: Hashable>: View {
       .id(id)
       .onChange(of: id) {
         cachedImage = nil
-        render()
+        renderAsync()
       }
       .onChange(of: colorScheme) {
         cachedImage = nil
-        render()
+        renderAsync()
       }
   }
 
   @MainActor
-  private func render() {
+  private func renderAsync() {
     // コンテンツサイズが確定していない場合はレンダリングしない
     guard currentSize != .zero else { return }
 
-    // ColorSchemeを適用した状態でレンダリング
-    let contentWithEnv = content.environment(\.colorScheme, colorScheme)
+    let size = currentSize
+    let contentCopy = content.environment(\.colorScheme, colorScheme)
+    let renderScale = scale
 
-    // ViewRendererを使用してスナップショットを作成
-    // 現在のサイズ(currentSize)を指定してレンダリング
-    if let image = ViewRenderer.snapshot(view: contentWithEnv, size: currentSize, scale: scale) {
-      self.cachedImage = image
+    // バックグラウンドスレッドでレンダリングしてUIスレッドをブロックしない
+    Task.detached(priority: .userInitiated) {
+      // ViewRendererはMainActorで実行する必要がある
+      let image = await MainActor.run {
+        ViewRenderer.snapshot(view: contentCopy, size: size, scale: renderScale)
+      }
+
+      await MainActor.run {
+        self.cachedImage = image
+      }
     }
   }
 }
