@@ -132,6 +132,8 @@ struct RecordDetailView: View {
   @State private var shareImage: Image?
   @State private var isShowingSharingSheet = false
   @State private var shareItems: [Any] = []
+  @State private var isGeneratingImage = false
+  @State private var cachedChartImage: UIImage?
 
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
@@ -205,15 +207,31 @@ struct RecordDetailView: View {
 
               Button {
                 Task {
-                  let image = await generateChartImageAsync()
+                  isGeneratingImage = true
+                  let image: UIImage?
+                  if let cached = cachedChartImage {
+                    image = cached
+                  } else {
+                    image = await generateChartImageAsync()
+                  }
+                  isGeneratingImage = false
                   shareContent(text: generateShareText(), image: image)
                 }
               } label: {
-                Label(
-                  String(localized: "share", table: "Common"),
-                  systemImage: "square.and.arrow.up")
+                if isGeneratingImage {
+                  ProgressView()
+                } else {
+                  Label(
+                    String(localized: "share", table: "Common"),
+                    systemImage: "square.and.arrow.up")
+                }
               }
               .buttonStyle(.borderedProminent)
+              .popover(isPresented: $isShowingSharingSheet) {
+                if !shareItems.isEmpty {
+                  ActivityViewController(activityItems: shareItems)
+                }
+              }
             }
             .padding()
 
@@ -563,18 +581,43 @@ struct RecordDetailView: View {
         ToolbarItem(placement: .navigationBarTrailing) {
           Button {
             Task {
-              let image = await generateChartImageAsync()
+              isGeneratingImage = true
+              let image: UIImage?
+              if let cached = cachedChartImage {
+                image = cached
+              } else {
+                image = await generateChartImageAsync()
+              }
+              isGeneratingImage = false
               shareContent(text: generateShareText(), image: image)
             }
           } label: {
-            Image(systemName: "square.and.arrow.up")
+            if isGeneratingImage {
+              ProgressView()
+            } else {
+              Image(systemName: "square.and.arrow.up")
+            }
           }
         }
       }
     }
-    .sheet(isPresented: $isShowingSharingSheet) {
+    .sheet(
+      isPresented: Binding(
+        get: { horizontalSizeClass == .compact && isShowingSharingSheet },
+        set: { if !$0 { isShowingSharingSheet = false } }
+      )
+    ) {
       if !shareItems.isEmpty {
         ActivityViewController(activityItems: shareItems)
+      }
+    }
+    .onAppear {
+      // 共有ボタンを押す前に画像を事前生成してキャッシュ
+      Task.detached(priority: .userInitiated) {
+        let image = await generateChartImageAsync()
+        await MainActor.run {
+          cachedChartImage = image
+        }
       }
     }
 
@@ -795,7 +838,11 @@ struct RecordDetailView: View {
     items.append(text)
 
     shareItems = items
-    isShowingSharingSheet = true
+
+    // 次のrunloopで共有シートを表示（ActivityViewControllerの初回初期化を待つ）
+    DispatchQueue.main.async {
+      self.isShowingSharingSheet = true
+    }
   }
 
   // Local helper that uses accent color for 'good' state when available
