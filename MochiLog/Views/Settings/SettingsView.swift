@@ -15,6 +15,8 @@ struct SettingsView: View {
   @State private var showingTutorial = false
   @State private var showingSupportForm = false
   @State private var showingDonation = false
+  @State private var showingDeleteDeviceConfirmation = false
+  @State private var deletingDeviceId: String? = nil
   @State private var isAdvancedExpanded = false
 
   // iCloud トグル用ローカル状態とエラー表示
@@ -186,16 +188,13 @@ struct SettingsView: View {
           )
         case .dataManagement:
           DataManagementSettingsView(
-            showingDeleteConfirmation: $showingDeleteConfirmation,
-            showingNoDataToDeleteAlert: $showingNoDataToDeleteAlert,
-            showingDeviceDeletePicker: $showingDeviceDeletePicker
+            showingDeleteAllConfirmation: $showingDeleteConfirmation,
+            showingDeleteDeviceConfirmation: $showingDeleteDeviceConfirmation,
+            deletingDeviceId: $deletingDeviceId,
+            appSettings: appSettings
           )
         case .support:
-          SupportSettingsView(
-            showingTutorial: $showingTutorial,
-            showingSupportForm: $showingSupportForm,
-            showingDonation: $showingDonation
-          )
+          SupportSettingsView()
         case .debug:
           DebugSettingsView(appSettings: appSettings)
         case .advanced:

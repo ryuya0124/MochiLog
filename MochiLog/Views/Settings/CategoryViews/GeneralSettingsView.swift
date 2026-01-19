@@ -9,72 +9,147 @@ struct GeneralSettingsView: View {
 
   var body: some View {
     VStack(spacing: 16) {
+      // iCloud同期（iPad向けレイアウト）
       GroupBox {
-        VStack(alignment: .leading, spacing: 12) {
-          Toggle(
-            String(localized: "enable_icloud_sync", table: "Settings"),
-            isOn: Binding(
-              get: {
-                localICloudToggle
-              },
-              set: { newValue in
-                localICloudToggle = newValue
-                Task {
-                  let result = await appSettings.attemptSetICloudSyncAsync(newValue)
-                  await MainActor.run {
-                    switch result {
-                    case .success:
-                      break
-                    case .failure(let err):
-                      localICloudToggle = appSettings.iCloudSyncEnabled
-                      iCloudErrorMessage =
-                        err.errorDescription
-                        ?? String(localized: "icloud_sync_failed", table: "Settings")
-                      showingICloudErrorAlert = true
+        HStack(spacing: 20) {
+          // アイコン
+          Image(systemName: "icloud.fill")
+            .font(.system(size: 40))
+            .foregroundStyle(
+              LinearGradient(
+                colors: [.blue, .cyan],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+              )
+            )
+            .frame(width: 60, height: 60)
+
+          VStack(alignment: .leading, spacing: 8) {
+            Toggle(
+              String(localized: "enable_icloud_sync", table: "Settings"),
+              isOn: Binding(
+                get: {
+                  localICloudToggle
+                },
+                set: { newValue in
+                  localICloudToggle = newValue
+                  Task {
+                    let result = await appSettings.attemptSetICloudSyncAsync(newValue)
+                    await MainActor.run {
+                      switch result {
+                      case .success:
+                        break
+                      case .failure(let err):
+                        localICloudToggle = appSettings.iCloudSyncEnabled
+                        iCloudErrorMessage =
+                          err.errorDescription
+                          ?? String(localized: "icloud_sync_failed", table: "Settings")
+                        showingICloudErrorAlert = true
+                      }
                     }
                   }
-                }
-              }))
+                })
+            )
+            .font(.headline)
 
-          if let blocked = appSettings.iCloudSyncBlockedReason {
-            Text(blocked)
-              .font(.caption)
-              .foregroundColor(.red)
-          }
-        }
-      }
+            Text("デバイス間でバッテリーログを自動同期します")
+              .font(.subheadline)
+              .foregroundStyle(.secondary)
 
-      GroupBox {
-        VStack(alignment: .leading, spacing: 12) {
-          HStack {
-            Text(String(localized: "accent_color", table: "Settings"))
-            Spacer()
-            Picker("", selection: $appSettings.accentColor) {
-              ForEach(AppSettings.ThemeColor.allCases) { theme in
-                HStack(spacing: 12) {
-                  RoundedRectangle(cornerRadius: 4)
-                    .fill(theme.color)
-                    .frame(width: 18, height: 18)
-                  Text(theme.localizedName)
-                }
-                .tag(theme)
-              }
+            if let blocked = appSettings.iCloudSyncBlockedReason {
+              Label(blocked, systemImage: "exclamationmark.triangle.fill")
+                .font(.caption)
+                .foregroundColor(.red)
             }
-            .pickerStyle(.menu)
           }
         }
+        .padding(.vertical, 8)
       }
+      .groupBoxStyle(RoundedGroupBoxStyle())
 
+      // アクセントカラー
+      GroupBox {
+        HStack(spacing: 20) {
+          // カラーパレットアイコン
+          Image(systemName: "paintpalette.fill")
+            .font(.system(size: 36))
+            .foregroundStyle(appSettings.accentColor.color)
+            .frame(width: 60, height: 60)
+
+          VStack(alignment: .leading, spacing: 8) {
+            HStack {
+              Text(String(localized: "accent_color", table: "Settings"))
+                .font(.headline)
+              Spacer()
+              Picker("", selection: $appSettings.accentColor) {
+                ForEach(AppSettings.ThemeColor.allCases) { theme in
+                  HStack(spacing: 12) {
+                    RoundedRectangle(cornerRadius: 4)
+                      .fill(theme.color)
+                      .frame(width: 18, height: 18)
+                    Text(theme.localizedName)
+                  }
+                  .tag(theme)
+                }
+              }
+              .pickerStyle(.menu)
+            }
+
+            Text("アプリ全体のテーマカラーを設定します")
+              .font(.subheadline)
+              .foregroundStyle(.secondary)
+          }
+        }
+        .padding(.vertical, 8)
+      }
+      .groupBoxStyle(RoundedGroupBoxStyle())
+
+      // サンプルデータ表示
       GroupBox {
         Button {
           appSettings.showingSampleData = true
           appSettings.selectedTabIndex = 0
         } label: {
-          Label(String(localized: "view_sample_data", table: "Home"), systemImage: "eye")
+          HStack(spacing: 16) {
+            Image(systemName: "eye.fill")
+              .font(.system(size: 32))
+              .foregroundStyle(.blue)
+              .frame(width: 50)
+
+            VStack(alignment: .leading, spacing: 4) {
+              Label(String(localized: "view_sample_data", table: "Home"), systemImage: "")
+                .font(.headline)
+                .foregroundStyle(.primary)
+
+              Text("サンプルデータで機能を確認できます")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+              .foregroundStyle(.secondary)
+          }
+          .padding(.vertical, 8)
         }
-        .buttonStyle(.borderless)
+        .buttonStyle(.plain)
       }
+      .groupBoxStyle(RoundedGroupBoxStyle())
     }
     .padding(.horizontal)
+  }
+}
+
+// MARK: - 純正設定アプリ風の角丸GroupBoxスタイル
+struct RoundedGroupBoxStyle: GroupBoxStyle {
+  func makeBody(configuration: Configuration) -> some View {
+    VStack(alignment: .leading, spacing: 8) {
+      configuration.label
+      configuration.content
+    }
+    .padding()
+    .background(Color(.secondarySystemGroupedBackground))
+    .cornerRadius(12)  // 純正設定アプリと同じ角丸
   }
 }

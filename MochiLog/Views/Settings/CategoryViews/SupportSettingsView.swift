@@ -2,36 +2,75 @@ import SwiftUI
 
 // MARK: - サポート設定ビュー
 struct SupportSettingsView: View {
-  @Binding var showingTutorial: Bool
-  @Binding var showingSupportForm: Bool
-  @Binding var showingDonation: Bool
+  @State private var showingSupportForm = false
 
   var body: some View {
     VStack(spacing: 16) {
+      // バージョン情報
       GroupBox {
-        VStack(spacing: 12) {
-          Button(action: { showingTutorial = true }) {
-            Label(String(localized: "view_tutorial", table: "Home"), systemImage: "book.fill")
+        VStack(alignment: .leading, spacing: 12) {
+          HStack(spacing: 20) {
+            Image(systemName: "info.circle.fill")
+              .font(.system(size: 36))
+              .foregroundStyle(.blue)
+              .frame(width: 60)
+
+            VStack(alignment: .leading, spacing: 8) {
+              Text(String(localized: "app_version", table: "Settings"))
+                .font(.headline)
+
+              if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String,
+                let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
+              {
+                Text("Version \(version) (Build \(build))")
+                  .font(.subheadline)
+                  .foregroundStyle(.secondary)
+              }
+            }
+
+            Spacer()
           }
-          .buttonStyle(.borderless)
-
-          Divider()
-
-          Button(action: { showingSupportForm = true }) {
-            Label(
-              String(localized: "contact_support", table: "Support"), systemImage: "envelope.fill")
-          }
-          .buttonStyle(.borderless)
-
-          Divider()
-
-          Button(action: { showingDonation = true }) {
-            Label(String(localized: "donation_title", table: "Settings"), systemImage: "heart.fill")
-          }
-          .buttonStyle(.borderless)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 8)
       }
+      .groupBoxStyle(RoundedGroupBoxStyle())
+
+      // フィードバック
+      GroupBox {
+        Button {
+          showingSupportForm = true
+        } label: {
+          HStack(spacing: 16) {
+            Image(systemName: "envelope.fill")
+              .font(.system(size: 32))
+              .foregroundStyle(.green)
+              .frame(width: 50)
+
+            VStack(alignment: .leading, spacing: 4) {
+              Text(String(localized: "contact_support", table: "Support"))
+                .font(.headline)
+                .foregroundStyle(.primary)
+
+              Text("バグ報告や機能リクエストをお寄せください")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+              .foregroundStyle(.secondary)
+          }
+          .padding(.vertical, 8)
+        }
+        .buttonStyle(.plain)
+      }
+      .groupBoxStyle(RoundedGroupBoxStyle())
     }
     .padding(.horizontal)
+    .sheet(isPresented: $showingSupportForm) {
+      SupportFormView()
+    }
   }
 }

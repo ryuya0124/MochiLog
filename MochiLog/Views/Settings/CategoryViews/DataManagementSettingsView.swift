@@ -3,9 +3,10 @@ import SwiftUI
 
 // MARK: - データ管理設定ビュー
 struct DataManagementSettingsView: View {
-  @Binding var showingDeleteConfirmation: Bool
-  @Binding var showingNoDataToDeleteAlert: Bool
-  @Binding var showingDeviceDeletePicker: Bool
+  @Binding var showingDeleteAllConfirmation: Bool
+  @Binding var showingDeleteDeviceConfirmation: Bool
+  @Binding var deletingDeviceId: String?
+  @ObservedObject var appSettings: AppSettings
   @Query private var records: [BatteryRecord]
 
   private var availableDevices: [String] {
@@ -14,35 +15,120 @@ struct DataManagementSettingsView: View {
 
   var body: some View {
     VStack(spacing: 16) {
-      GroupBox {
-        VStack(spacing: 12) {
-          Button(role: .destructive) {
-            if records.isEmpty {
-              showingNoDataToDeleteAlert = true
-            } else {
-              showingDeleteConfirmation = true
-            }
-          } label: {
-            Label(
-              String(localized: "delete_all_data", table: "Settings"), systemImage: "trash.fill")
-          }
-          .buttonStyle(.borderless)
+      deviceSelectionSection
 
-          Divider()
-
-          Button(role: .destructive) {
-            if availableDevices.isEmpty {
-              showingNoDataToDeleteAlert = true
-            } else {
-              showingDeviceDeletePicker = true
-            }
-          } label: {
-            Label(String(localized: "delete_device_data", table: "Settings"), systemImage: "trash")
-          }
-          .buttonStyle(.borderless)
-        }
+      if deletingDeviceId != nil {
+        deleteDeviceButtonSection
       }
+
+      deleteAllSection
     }
     .padding(.horizontal)
+  }
+
+  // MARK: - デバイス選択セクション
+  private var deviceSelectionSection: some View {
+    GroupBox {
+      HStack(spacing: 20) {
+        Image(systemName: "externaldrive.fill")
+          .font(.system(size: 36))
+          .foregroundStyle(.orange)
+          .frame(width: 60)
+
+        VStack(alignment: .leading, spacing: 8) {
+          devicePicker
+
+          Text("特定デバイスの全データを削除します")
+            .font(.subheadline)
+            .foregroundStyle(.secondary)
+        }
+      }
+      .padding(.vertical, 8)
+    }
+    .groupBoxStyle(RoundedGroupBoxStyle())
+  }
+
+  // MARK: - デバイス選択ピッカー
+  private var devicePicker: some View {
+    HStack {
+      Text(String(localized: "delete_device_data", table: "Settings"))
+        .font(.headline)
+      Spacer()
+      Picker(
+        "",
+        selection: Binding(
+          get: { deletingDeviceId ?? "" },
+          set: { deletingDeviceId = $0.isEmpty ? nil : $0 }
+        )
+      ) {
+        Text(String(localized: "select_device", table: "Settings"))
+          .tag("")
+        ForEach(availableDevices, id: \.self) { device in
+          Text(device)
+            .tag(device)
+        }
+      }
+      .pickerStyle(.menu)
+    }
+  }
+
+  // MARK: - デバイス削除ボタンセクション
+  private var deleteDeviceButtonSection: some View {
+    GroupBox {
+      Button(role: .destructive) {
+        showingDeleteDeviceConfirmation = true
+      } label: {
+        HStack(spacing: 16) {
+          Image(systemName: "trash.fill")
+            .font(.system(size: 28))
+            .frame(width: 50)
+
+          VStack(alignment: .leading, spacing: 4) {
+            Text(String(localized: "delete_selected_device_data", table: "Settings"))
+              .font(.headline)
+
+            Text("選択したデバイスのデータを完全に削除します")
+              .font(.subheadline)
+              .foregroundStyle(.secondary)
+          }
+
+          Spacer()
+        }
+        .padding(.vertical, 8)
+      }
+      .buttonStyle(.plain)
+    }
+    .groupBoxStyle(RoundedGroupBoxStyle())
+  }
+
+  // MARK: - 全削除セクション
+  private var deleteAllSection: some View {
+    GroupBox {
+      Button(role: .destructive) {
+        showingDeleteAllConfirmation = true
+      } label: {
+        HStack(spacing: 16) {
+          Image(systemName: "exclamationmark.triangle.fill")
+            .font(.system(size: 32))
+            .foregroundStyle(.red)
+            .frame(width: 50)
+
+          VStack(alignment: .leading, spacing: 4) {
+            Text(String(localized: "delete_all_data", table: "Settings"))
+              .font(.headline)
+              .foregroundStyle(.red)
+
+            Text("すべてのバッテリーログを完全に削除します（復元不可）")
+              .font(.subheadline)
+              .foregroundStyle(.secondary)
+          }
+
+          Spacer()
+        }
+        .padding(.vertical, 8)
+      }
+      .buttonStyle(.plain)
+    }
+    .groupBoxStyle(RoundedGroupBoxStyle())
   }
 }
