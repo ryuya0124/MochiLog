@@ -254,7 +254,9 @@ struct HomeView: View {
           set: { selectedRecord = $0 }
         )
       ) { record in
-        RecordDetailView(record: record)
+        NavigationStack {
+          RecordDetailView(record: record)
+        }
       }
       .navigationDestination(item: $navigatingRecord) { record in
         RecordDetailView(record: record)

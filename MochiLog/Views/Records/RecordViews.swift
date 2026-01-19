@@ -17,13 +17,13 @@ struct RecordRowView: View {
           .foregroundColor(.primary)
         Text(record.logDate, style: .date)
           .font(.caption)
-          .foregroundColor(.primary)
+          .foregroundColor(.secondary)
         Text(
           String(
             format: String(localized: "cycle_count_format", table: "Analytics"), record.cycleCount)
         )
         .font(.caption)
-        .foregroundColor(.primary)
+        .foregroundColor(.secondary)
       }
       Spacer()
       VStack(alignment: .trailing, spacing: 4) {
@@ -555,7 +555,12 @@ struct RecordDetailView: View {
     .navigationBarTitleDisplayMode(.inline)
     .toolbar {
       if horizontalSizeClass != .regular {
-        ToolbarItem(placement: .cancellationAction) {
+        ToolbarItem(placement: .navigationBarLeading) {
+          Button(String(localized: "close", table: "Common")) {
+            dismiss()
+          }
+        }
+        ToolbarItem(placement: .navigationBarTrailing) {
           Button {
             Task {
               let image = await generateChartImageAsync()
@@ -563,11 +568,6 @@ struct RecordDetailView: View {
             }
           } label: {
             Image(systemName: "square.and.arrow.up")
-          }
-        }
-        ToolbarItem(placement: .confirmationAction) {
-          Button(String(localized: "close", table: "Common")) {
-            dismiss()
           }
         }
       }
