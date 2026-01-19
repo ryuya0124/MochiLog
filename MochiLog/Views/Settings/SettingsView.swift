@@ -27,6 +27,9 @@ struct SettingsView: View {
   @State private var showingDeviceDeleteConfirmation = false
   @State private var selectedDeviceToDelete: String?
 
+  // 大画面レイアウト用: 選択されたカテゴリ
+  @State private var selectedCategory: SettingsCategory = .general
+
   var body: some View {
     NavigationStack {
       settingsList
@@ -117,18 +120,91 @@ struct SettingsView: View {
   @ViewBuilder
   private var settingsList: some View {
     if horizontalSizeClass == .regular {
-      // iPad: 横幅制限付きList（タップ領域は全幅を維持）
-      List {
-        settingsContent
+      // iPad: 2カラムレイアウト（左:カテゴリカード、右:詳細）
+      HStack(spacing: 0) {
+        categoriesColumn
+          .frame(width: 280)
+
+        Divider()
+
+        detailColumn
       }
-      .listStyle(.insetGrouped)
-      .contentMargins(.horizontal, UIScreen.main.bounds.width * 0.15, for: .scrollContent)
     } else {
       // iPhone: 通常のList
       List {
         settingsContent
       }
     }
+  }
+
+  // MARK: - カテゴリカラム（iPad専用）
+  @ViewBuilder
+  private var categoriesColumn: some View {
+    ScrollView {
+      VStack(spacing: 16) {
+        ForEach(SettingsCategory.allCases) { category in
+          CategoryCardView(
+            category: category,
+            isSelected: selectedCategory == category
+          )
+          .onTapGesture {
+            withAnimation(.easeInOut(duration: 0.2)) {
+              selectedCategory = category
+            }
+          }
+        }
+      }
+      .padding()
+    }
+    .background(Color(.systemGroupedBackground))
+  }
+
+  // MARK: - 詳細カラム（iPad専用）
+  @ViewBuilder
+  private var detailColumn: some View {
+    ScrollView {
+      VStack(alignment: .leading, spacing: 24) {
+        Text(selectedCategory.title)
+          .font(.largeTitle)
+          .bold()
+          .padding(.horizontal)
+          .padding(.top)
+
+        switch selectedCategory {
+        case .general:
+          GeneralSettingsView(
+            localICloudToggle: $localICloudToggle,
+            showingICloudErrorAlert: $showingICloudErrorAlert,
+            iCloudErrorMessage: $iCloudErrorMessage,
+            appSettings: appSettings
+          )
+        case .appleWatch:
+          AppleWatchSettingsView(
+            showingWatchPicker: $showingWatchPicker,
+            showingRemoveWatchConfirmation: $showingRemoveWatchConfirmation,
+            appSettings: appSettings
+          )
+        case .dataManagement:
+          DataManagementSettingsView(
+            showingDeleteConfirmation: $showingDeleteConfirmation,
+            showingNoDataToDeleteAlert: $showingNoDataToDeleteAlert,
+            showingDeviceDeletePicker: $showingDeviceDeletePicker
+          )
+        case .support:
+          SupportSettingsView(
+            showingTutorial: $showingTutorial,
+            showingSupportForm: $showingSupportForm,
+            showingDonation: $showingDonation
+          )
+        case .debug:
+          DebugSettingsView(appSettings: appSettings)
+        case .advanced:
+          AdvancedSettingsView(appSettings: appSettings)
+        }
+      }
+      .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    .background(Color(.systemBackground))
   }
 
   // MARK: - 設定内容
