@@ -127,6 +127,7 @@ struct RecordDetailView: View {
   @StateObject private var appSettings = AppSettings.shared
   @Environment(\.dismiss) private var dismiss
   @Environment(\.displayScale) private var displayScale
+  @Environment(\.colorScheme) private var colorScheme
 
   @Environment(\.modelContext) private var modelContext
   @State private var shareImage: Image?
@@ -229,7 +230,10 @@ struct RecordDetailView: View {
               .buttonStyle(.borderedProminent)
               .popover(isPresented: $isShowingSharingSheet) {
                 if !shareItems.isEmpty {
-                  ActivityViewController(activityItems: shareItems)
+                  ActivityViewController(
+                    activityItems: shareItems,
+                    thumbnailImage: cachedChartImage
+                  )
                 }
               }
             }
@@ -608,7 +612,10 @@ struct RecordDetailView: View {
       )
     ) {
       if !shareItems.isEmpty {
-        ActivityViewController(activityItems: shareItems)
+        ActivityViewController(
+          activityItems: shareItems,
+          thumbnailImage: cachedChartImage
+        )
       }
     }
     .onAppear {
@@ -768,6 +775,7 @@ struct RecordDetailView: View {
     let dataSource = appSettings.analysisDataSource
     let accentColor = appSettings.accentColor
     let scale = displayScale
+    let scheme = colorScheme
 
     // バックグラウンドスレッドで重い処理を実行
     return await Task.detached(priority: .userInitiated) {
@@ -804,7 +812,7 @@ struct RecordDetailView: View {
             AxisValueLabel {
               if let intValue = value.as(Int.self) {
                 Text("\(intValue)mAh")
-                  .foregroundStyle(.primary)
+                  .foregroundStyle(scheme == .dark ? .white : .black)
                   .font(.system(size: 14, weight: .medium))
               }
             }
@@ -816,13 +824,14 @@ struct RecordDetailView: View {
             AxisGridLine()
               .foregroundStyle(Color.gray.opacity(0.3))
             AxisValueLabel(format: .dateTime.month().day())
-              .foregroundStyle(.primary)
+              .foregroundStyle(scheme == .dark ? .white : .black)
               .font(.system(size: 14, weight: .medium))
           }
         }
         .frame(width: 800, height: 480)
         .padding(24)
-        .background(Color.white)
+        .background(colorScheme == .dark ? Color.black : Color.white)
+        .environment(\.colorScheme, colorScheme)
 
         return ViewRenderer.snapshot(view: chartView, scale: scale)
       }
