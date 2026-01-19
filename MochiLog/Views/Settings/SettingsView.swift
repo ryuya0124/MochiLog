@@ -125,11 +125,12 @@ struct SettingsView: View {
       // iPad: 2カラムレイアウト（左:カテゴリカード、右:詳細）
       HStack(spacing: 0) {
         categoriesColumn
-          .frame(width: 280)
+          .frame(width: 300)
 
         Divider()
 
-        detailColumn
+        // 右側：選択されたカテゴリの詳細
+        detailColumn(category: selectedCategory)
       }
     } else {
       // iPhone: 通常のList
@@ -162,17 +163,12 @@ struct SettingsView: View {
   }
 
   // MARK: - 詳細カラム（iPad専用）
+  // MARK: - 詳細カラム（選択されたカテゴリの内容）
   @ViewBuilder
-  private var detailColumn: some View {
+  private func detailColumn(category: SettingsCategory) -> some View {
     ScrollView {
-      VStack(alignment: .leading, spacing: 24) {
-        Text(selectedCategory.title)
-          .font(.largeTitle)
-          .bold()
-          .padding(.horizontal)
-          .padding(.top)
-
-        switch selectedCategory {
+      VStack(spacing: 0) {
+        switch category {
         case .general:
           GeneralSettingsView(
             localICloudToggle: $localICloudToggle,
@@ -201,9 +197,9 @@ struct SettingsView: View {
           AdvancedSettingsView(appSettings: appSettings)
         }
       }
-      .frame(maxWidth: .infinity, alignment: .leading)
+      .padding(.top)
     }
-    .background(Color(.systemBackground))
+    .background(Color(.systemGroupedBackground))
   }
 
   // MARK: - 設定内容

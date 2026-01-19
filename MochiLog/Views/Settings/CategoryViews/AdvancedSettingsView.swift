@@ -51,7 +51,6 @@ struct AdvancedSettingsView: View {
       }
       .padding(.vertical, 8)
     }
-    .groupBoxStyle(RoundedGroupBoxStyle())
   }
 
   // MARK: - 共有インポート設定
@@ -77,7 +76,6 @@ struct AdvancedSettingsView: View {
       }
       .padding(.vertical, 8)
     }
-    .groupBoxStyle(RoundedGroupBoxStyle())
   }
 
   // MARK: - 容量検証設定
@@ -133,7 +131,6 @@ struct AdvancedSettingsView: View {
       }
       .padding(.vertical, 8)
     }
-    .groupBoxStyle(RoundedGroupBoxStyle())
   }
 
   // MARK: - 重複ログ設定
@@ -159,7 +156,6 @@ struct AdvancedSettingsView: View {
       }
       .padding(.vertical, 8)
     }
-    .groupBoxStyle(RoundedGroupBoxStyle())
   }
 
   // MARK: - iCloudストレージ設定
@@ -198,6 +194,5 @@ struct AdvancedSettingsView: View {
       }
       .padding(.vertical, 8)
     }
-    .groupBoxStyle(RoundedGroupBoxStyle())
   }
 }

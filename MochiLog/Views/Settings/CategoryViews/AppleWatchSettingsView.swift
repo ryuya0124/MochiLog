@@ -72,7 +72,6 @@ struct AppleWatchSettingsView: View {
         }
         .padding(.vertical, 10)
       }
-      .groupBoxStyle(RoundedGroupBoxStyle())
 
       // Watchを変更/登録ボタン
       GroupBox {
@@ -95,7 +94,6 @@ struct AppleWatchSettingsView: View {
         }
         .buttonStyle(.plain)
       }
-      .groupBoxStyle(RoundedGroupBoxStyle())
 
       // 登録を解除ボタン（登録済みの場合のみ表示）
       if appSettings.registeredWatchModel != nil {
@@ -114,7 +112,6 @@ struct AppleWatchSettingsView: View {
           }
           .buttonStyle(.plain)
         }
-        .groupBoxStyle(RoundedGroupBoxStyle())
       }
 
       // 説明テキスト

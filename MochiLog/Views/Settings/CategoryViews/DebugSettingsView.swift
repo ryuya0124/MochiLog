@@ -28,7 +28,6 @@ struct DebugSettingsView: View {
         }
         .padding(.vertical, 8)
       }
-      .groupBoxStyle(RoundedGroupBoxStyle())
 
       // エラーログ
       GroupBox {
@@ -58,7 +57,6 @@ struct DebugSettingsView: View {
         }
         .buttonStyle(.plain)
       }
-      .groupBoxStyle(RoundedGroupBoxStyle())
     }
     .padding(.horizontal)
   }

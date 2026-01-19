@@ -45,7 +45,6 @@ struct DataManagementSettingsView: View {
       }
       .padding(.vertical, 8)
     }
-    .groupBoxStyle(RoundedGroupBoxStyle())
   }
 
   // MARK: - デバイス選択ピッカー
@@ -98,7 +97,6 @@ struct DataManagementSettingsView: View {
       }
       .buttonStyle(.plain)
     }
-    .groupBoxStyle(RoundedGroupBoxStyle())
   }
 
   // MARK: - 全削除セクション
@@ -129,6 +127,5 @@ struct DataManagementSettingsView: View {
       }
       .buttonStyle(.plain)
     }
-    .groupBoxStyle(RoundedGroupBoxStyle())
   }
 }

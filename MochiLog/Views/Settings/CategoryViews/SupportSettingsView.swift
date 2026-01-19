@@ -34,7 +34,6 @@ struct SupportSettingsView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 8)
       }
-      .groupBoxStyle(RoundedGroupBoxStyle())
 
       // フィードバック
       GroupBox {
@@ -66,7 +65,6 @@ struct SupportSettingsView: View {
         }
         .buttonStyle(.plain)
       }
-      .groupBoxStyle(RoundedGroupBoxStyle())
     }
     .padding(.horizontal)
     .sheet(isPresented: $showingSupportForm) {

@@ -65,7 +65,6 @@ struct GeneralSettingsView: View {
         }
         .padding(.vertical, 8)
       }
-      .groupBoxStyle(RoundedGroupBoxStyle())
 
       // アクセントカラー
       GroupBox {
@@ -102,7 +101,6 @@ struct GeneralSettingsView: View {
         }
         .padding(.vertical, 8)
       }
-      .groupBoxStyle(RoundedGroupBoxStyle())
 
       // サンプルデータ表示
       GroupBox {
@@ -135,21 +133,7 @@ struct GeneralSettingsView: View {
         }
         .buttonStyle(.plain)
       }
-      .groupBoxStyle(RoundedGroupBoxStyle())
     }
     .padding(.horizontal)
-  }
-}
-
-// MARK: - 純正設定アプリ風の角丸GroupBoxスタイル
-struct RoundedGroupBoxStyle: GroupBoxStyle {
-  func makeBody(configuration: Configuration) -> some View {
-    VStack(alignment: .leading, spacing: 8) {
-      configuration.label
-      configuration.content
-    }
-    .padding()
-    .background(Color(.secondarySystemGroupedBackground))
-    .cornerRadius(12)  // 純正設定アプリと同じ角丸
   }
 }
