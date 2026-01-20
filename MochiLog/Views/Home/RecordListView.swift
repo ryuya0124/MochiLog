@@ -213,6 +213,15 @@ struct RecordListView<Header: View>: View {
                         .background(Color(uiColor: .secondarySystemGroupedBackground))
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
+                    .contextMenu {
+                      if showContextMenu, let onDelete = onRecordDelete {
+                        Button(role: .destructive) {
+                          onDelete(record)
+                        } label: {
+                          Label(String(localized: "delete", table: "Common"), systemImage: "trash")
+                        }
+                      }
+                    }
                   }
                 }
                 // drawingGroup()削除 - 各CachedViewで既にオフスクリーン

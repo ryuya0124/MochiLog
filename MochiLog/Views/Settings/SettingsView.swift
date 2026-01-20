@@ -122,84 +122,70 @@ struct SettingsView: View {
   @ViewBuilder
   private var settingsList: some View {
     if horizontalSizeClass == .regular {
-      // iPad: 2カラムレイアウト（左:カテゴリカード、右:詳細）
-      HStack(spacing: 0) {
-        categoriesColumn
+      // iPad: 2カラムレイアウト（左:カテゴリカード、右:詳細） - スクロール同期
+      ScrollView {
+        HStack(alignment: .top, spacing: 0) {
+          // 左側：カテゴリ一覧
+          VStack(spacing: 16) {
+            ForEach(SettingsCategory.allCases) { category in
+              CategoryCardView(
+                category: category,
+                isSelected: selectedCategory == category
+              )
+              .onTapGesture {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                  selectedCategory = category
+                }
+              }
+            }
+          }
+          .padding()
           .frame(width: 300)
 
-        Divider()
+          Divider()
 
-        // 右側：選択されたカテゴリの詳細
-        detailColumn(category: selectedCategory)
+          // 右側：選択されたカテゴリの詳細
+          VStack(spacing: 0) {
+            switch selectedCategory {
+            case .general:
+              GeneralSettingsView(
+                localICloudToggle: $localICloudToggle,
+                showingICloudErrorAlert: $showingICloudErrorAlert,
+                iCloudErrorMessage: $iCloudErrorMessage,
+                appSettings: appSettings
+              )
+            case .appleWatch:
+              AppleWatchSettingsView(
+                showingWatchPicker: $showingWatchPicker,
+                showingRemoveWatchConfirmation: $showingRemoveWatchConfirmation,
+                appSettings: appSettings
+              )
+            case .dataManagement:
+              DataManagementSettingsView(
+                showingDeleteAllConfirmation: $showingDeleteConfirmation,
+                showingDeleteDeviceConfirmation: $showingDeleteDeviceConfirmation,
+                deletingDeviceId: $deletingDeviceId,
+                appSettings: appSettings
+              )
+            case .support:
+              SupportSettingsView()
+            case .debug:
+              DebugSettingsView(appSettings: appSettings)
+            case .advanced:
+              AdvancedSettingsView(appSettings: appSettings)
+            }
+          }
+          .padding(.top)
+          .frame(maxWidth: .infinity, alignment: .leading)
+        }
       }
+      .background(Color(.systemGroupedBackground))
     } else {
       // iPhone: 通常のList
       List {
         settingsContent
       }
     }
-  }
-
-  // MARK: - カテゴリカラム（iPad専用）
-  @ViewBuilder
-  private var categoriesColumn: some View {
-    ScrollView {
-      VStack(spacing: 16) {
-        ForEach(SettingsCategory.allCases) { category in
-          CategoryCardView(
-            category: category,
-            isSelected: selectedCategory == category
-          )
-          .onTapGesture {
-            withAnimation(.easeInOut(duration: 0.2)) {
-              selectedCategory = category
-            }
-          }
-        }
-      }
-      .padding()
-    }
-    .background(Color(.systemGroupedBackground))
-  }
-
-  // MARK: - 詳細カラム（iPad専用）
-  // MARK: - 詳細カラム（選択されたカテゴリの内容）
-  @ViewBuilder
-  private func detailColumn(category: SettingsCategory) -> some View {
-    ScrollView {
-      VStack(spacing: 0) {
-        switch category {
-        case .general:
-          GeneralSettingsView(
-            localICloudToggle: $localICloudToggle,
-            showingICloudErrorAlert: $showingICloudErrorAlert,
-            iCloudErrorMessage: $iCloudErrorMessage,
-            appSettings: appSettings
-          )
-        case .appleWatch:
-          AppleWatchSettingsView(
-            showingWatchPicker: $showingWatchPicker,
-            showingRemoveWatchConfirmation: $showingRemoveWatchConfirmation,
-            appSettings: appSettings
-          )
-        case .dataManagement:
-          DataManagementSettingsView(
-            showingDeleteAllConfirmation: $showingDeleteConfirmation,
-            showingDeleteDeviceConfirmation: $showingDeleteDeviceConfirmation,
-            deletingDeviceId: $deletingDeviceId,
-            appSettings: appSettings
-          )
-        case .support:
-          SupportSettingsView()
-        case .debug:
-          DebugSettingsView(appSettings: appSettings)
-        case .advanced:
-          AdvancedSettingsView(appSettings: appSettings)
-        }
-      }
-      .padding(.top)
-    }
-    .background(Color(.systemGroupedBackground))
   }
 
   // MARK: - 設定内容
