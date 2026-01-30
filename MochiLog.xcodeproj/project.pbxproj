@@ -10,7 +10,18 @@
 		4E0CF2BE2EFC23F300307800 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 4E0CF2BD2EFC23F300307800 /* ZIPFoundation */; };
 		4E15D8EB2F024BC000D6C3FE /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 4E15D8EA2F024BBF00D6C3FE /* LICENSE */; };
 		4EFB3E572F2CE3CA001F2930 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EFB3E562F2CE3CA001F2930 /* WatchConnectivity.framework */; };
+		4EFB42BB2F2CF31B001F2930 /* MochiLog Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 4EFB3AB82F2CD92B001F2930 /* MochiLog Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		4EFB42BC2F2CF461001F2930 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4E0CF1372EF9542800307800 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4EFB3AB72F2CD92B001F2930;
+			remoteInfo = "MochiLog Watch App";
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		4E0CF1902EF9680800307800 /* Embed Foundation Extensions */ = {
@@ -29,6 +40,7 @@
 			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
 			dstSubfolderSpec = 16;
 			files = (
+				4EFB42BB2F2CF31B001F2930 /* MochiLog Watch App.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -42,22 +54,9 @@
 		4EFB3E562F2CE3CA001F2930 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.2.sdk/System/Library/Frameworks/WatchConnectivity.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		4EFB3FC92F2CEB83001F2930 /* Exceptions for "MochiLog" folder in "MochiLog Watch App" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Resources/AppIcon.icon,
-			);
-			target = 4EFB3AB72F2CD92B001F2930 /* MochiLog Watch App */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		4E0CF1412EF9542800307800 /* MochiLog */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				4EFB3FC92F2CEB83001F2930 /* Exceptions for "MochiLog" folder in "MochiLog Watch App" target */,
-			);
 			path = MochiLog;
 			sourceTree = "<group>";
 		};
@@ -132,6 +131,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				4EFB42BD2F2CF461001F2930 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				4E0CF1412EF9542800307800 /* MochiLog */,
@@ -242,6 +242,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		4EFB42BD2F2CF461001F2930 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4EFB3AB72F2CD92B001F2930 /* MochiLog Watch App */;
+			targetProxy = 4EFB42BC2F2CF461001F2930 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		4E0CF14E2EF9542A00307800 /* Debug */ = {

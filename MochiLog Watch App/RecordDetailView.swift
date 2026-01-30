@@ -21,36 +21,27 @@ struct RecordDetailView: View {
         .frame(height: 120)
         .padding(.top, 8)
 
-        // メトリクス
+        // メトリクス（全情報表示）
         VStack(spacing: 12) {
+          // 実測ヘルス
+          MetricRow(
+            icon: "heart.fill",
+            label: String(localized: "actual_health"),
+            value: "\(Int(record.healthPercent))%"
+          )
+
+          // 公称ヘルス
+          MetricRow(
+            icon: "heart",
+            label: String(localized: "nominal_health"),
+            value: "\(Int(record.nominalHealthPercent))%"
+          )
+
           // サイクル数
           MetricRow(
             icon: "gauge",
             label: String(localized: "cycle_count"),
             value: String(format: String(localized: "cycles_count"), record.cycleCount)
-          )
-
-          // 容量情報（簡易表示）
-          VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 6) {
-              Image(systemName: "battery.100")
-                .font(.caption)
-                .foregroundStyle(.green)
-
-              Text(String(localized: "battery_info"))
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            }
-
-            Text(String(format: String(localized: "health_format"), Int(record.healthPercent)))
-              .font(.headline)
-              .fontWeight(.semibold)
-          }
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .padding(10)
-          .background(
-            RoundedRectangle(cornerRadius: 8)
-              .fill(Color.gray.opacity(0.15))
           )
 
           // 診断結果
@@ -79,19 +70,39 @@ struct RecordDetailView: View {
             )
           }
 
-          // ログ日時
-          HStack {
+          // ログ日時（詳細表示）
+          VStack(alignment: .leading, spacing: 4) {
             Text(String(localized: "log_date"))
               .font(.caption)
               .foregroundStyle(.secondary)
 
-            Spacer()
-
-            Text(formatDate(record.logDate))
-              .font(.caption)
-              .foregroundStyle(.primary)
+            Text(formatDateFull(record.logDate))
+              .font(.subheadline)
+              .fontWeight(.medium)
           }
-          .padding(.vertical, 4)
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .padding(10)
+          .background(
+            RoundedRectangle(cornerRadius: 8)
+              .fill(Color.gray.opacity(0.15))
+          )
+
+          // デバイス名
+          VStack(alignment: .leading, spacing: 4) {
+            Text(String(localized: "device_name"))
+              .font(.caption)
+              .foregroundStyle(.secondary)
+
+            Text(record.deviceName)
+              .font(.subheadline)
+              .fontWeight(.medium)
+          }
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .padding(10)
+          .background(
+            RoundedRectangle(cornerRadius: 8)
+              .fill(Color.gray.opacity(0.15))
+          )
         }
       }
       .padding(.horizontal, 8)
@@ -105,6 +116,14 @@ struct RecordDetailView: View {
   private func formatDate(_ date: Date) -> String {
     let formatter = DateFormatter()
     formatter.dateFormat = "M/d HH:mm"
+    return formatter.string(from: date)
+  }
+
+  /// 日付を詳細フォーマット
+  private func formatDateFull(_ date: Date) -> String {
+    let formatter = DateFormatter()
+    formatter.dateStyle = .long
+    formatter.timeStyle = .short
     return formatter.string(from: date)
   }
 }
@@ -138,10 +157,6 @@ struct HealthRingView: View {
         Text("\(percentage)%")
           .font(.title2)
           .fontWeight(.bold)
-
-        Text(String(localized: "battery_health"))
-          .font(.caption2)
-          .foregroundStyle(.secondary)
       }
     }
     .padding(8)

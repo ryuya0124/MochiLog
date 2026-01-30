@@ -26,7 +26,14 @@
           "glass" : true,
           "hidden" : false,
           "image-name" : "icon_1024_background.png",
-          "name" : "icon_1024_background"
+          "name" : "icon_1024_background",
+          "position" : {
+            "scale" : 1.15,
+            "translation-in-points" : [
+              0,
+              0
+            ]
+          }
         }
       ],
       "shadow" : {
