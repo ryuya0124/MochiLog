@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		4E0CF2BE2EFC23F300307800 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 4E0CF2BD2EFC23F300307800 /* ZIPFoundation */; };
 		4E15D8EB2F024BC000D6C3FE /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 4E15D8EA2F024BBF00D6C3FE /* LICENSE */; };
+		4EFB3E572F2CE3CA001F2930 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EFB3E562F2CE3CA001F2930 /* WatchConnectivity.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -22,17 +23,39 @@
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4EFB3AB02F2CD2D4001F2930 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		4E0CF13F2EF9542800307800 /* MochiLog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MochiLog.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4E15D8EA2F024BBF00D6C3FE /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		4EFB3AB82F2CD92B001F2930 /* MochiLog Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MochiLog Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4EFB3E562F2CE3CA001F2930 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.2.sdk/System/Library/Frameworks/WatchConnectivity.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		4E0CF1412EF9542800307800 /* MochiLog */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = MochiLog;
+			sourceTree = "<group>";
+		};
+		4EFB3AA62F2CD2D3001F2930 /* MochiLog Watch App Watch App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "MochiLog Watch App Watch App";
+			sourceTree = "<group>";
+		};
+		4EFB3AB92F2CD92B001F2930 /* MochiLog Watch App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "MochiLog Watch App";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -46,6 +69,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4EFB3AB52F2CD92B001F2930 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4EFB3E572F2CE3CA001F2930 /* WatchConnectivity.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -53,8 +84,11 @@
 			isa = PBXGroup;
 			children = (
 				4E0CF1412EF9542800307800 /* MochiLog */,
+				4EFB3AA62F2CD2D3001F2930 /* MochiLog Watch App Watch App */,
+				4EFB3AB92F2CD92B001F2930 /* MochiLog Watch App */,
 				4E0CF1402EF9542800307800 /* Products */,
 				4E15D8EA2F024BBF00D6C3FE /* LICENSE */,
+				4EFB3E552F2CE3CA001F2930 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -62,8 +96,17 @@
 			isa = PBXGroup;
 			children = (
 				4E0CF13F2EF9542800307800 /* MochiLog.app */,
+				4EFB3AB82F2CD92B001F2930 /* MochiLog Watch App.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		4EFB3E552F2CE3CA001F2930 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4EFB3E562F2CE3CA001F2930 /* WatchConnectivity.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -77,6 +120,7 @@
 				4E0CF13C2EF9542800307800 /* Frameworks */,
 				4E0CF13D2EF9542800307800 /* Resources */,
 				4E0CF1902EF9680800307800 /* Embed Foundation Extensions */,
+				4EFB3AB02F2CD2D4001F2930 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
@@ -93,6 +137,28 @@
 			productReference = 4E0CF13F2EF9542800307800 /* MochiLog.app */;
 			productType = "com.apple.product-type.application";
 		};
+		4EFB3AB72F2CD92B001F2930 /* MochiLog Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4EFB3AC02F2CD92C001F2930 /* Build configuration list for PBXNativeTarget "MochiLog Watch App" */;
+			buildPhases = (
+				4EFB3AB42F2CD92B001F2930 /* Sources */,
+				4EFB3AB52F2CD92B001F2930 /* Frameworks */,
+				4EFB3AB62F2CD92B001F2930 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				4EFB3AB92F2CD92B001F2930 /* MochiLog Watch App */,
+			);
+			name = "MochiLog Watch App";
+			packageProductDependencies = (
+			);
+			productName = "MochiLog Watch App";
+			productReference = 4EFB3AB82F2CD92B001F2930 /* MochiLog Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -104,6 +170,9 @@
 				LastUpgradeCheck = 2620;
 				TargetAttributes = {
 					4E0CF13E2EF9542800307800 = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					4EFB3AB72F2CD92B001F2930 = {
 						CreatedOnToolsVersion = 26.2;
 					};
 				};
@@ -127,6 +196,7 @@
 			projectRoot = "";
 			targets = (
 				4E0CF13E2EF9542800307800 /* MochiLog */,
+				4EFB3AB72F2CD92B001F2930 /* MochiLog Watch App */,
 			);
 		};
 /* End PBXProject section */
@@ -140,10 +210,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4EFB3AB62F2CD92B001F2930 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		4E0CF13B2EF9542800307800 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4EFB3AB42F2CD92B001F2930 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -379,6 +463,85 @@
 			};
 			name = Release;
 		};
+		4EFB3AC12F2CD92C001F2930 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "MochiLog Watch App/MochiLog Watch App.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=watchos*]" = FZ35ZF3CZV;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = MochiLog;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "net.ryuya-dev.MochiLog";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.1.2;
+				PRODUCT_BUNDLE_IDENTIFIER = "net.ryuya-dev.MochiLog.watchkitapp";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=watchos*]" = "match Development net.ryuya-dev.MochiLog.watchkitapp";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
+		4EFB3AC22F2CD92C001F2930 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "MochiLog Watch App/MochiLog Watch AppRelease.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=watchos*]" = FZ35ZF3CZV;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = MochiLog;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "net.ryuya-dev.MochiLog";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.1.2;
+				PRODUCT_BUNDLE_IDENTIFIER = "net.ryuya-dev.MochiLog.watchkitapp";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=watchos*]" = "match Development net.ryuya-dev.MochiLog.watchkitapp";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -396,6 +559,15 @@
 			buildConfigurations = (
 				4E0CF14E2EF9542A00307800 /* Debug */,
 				4E0CF14F2EF9542A00307800 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4EFB3AC02F2CD92C001F2930 /* Build configuration list for PBXNativeTarget "MochiLog Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4EFB3AC12F2CD92C001F2930 /* Debug */,
+				4EFB3AC22F2CD92C001F2930 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -1,3 +1,4 @@
+import SwiftData
 import SwiftUI
 
 /// 共通のレコードリストビュー

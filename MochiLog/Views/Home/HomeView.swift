@@ -378,6 +378,13 @@ struct HomeView: View {
         reconcileUnknownDeviceNames()
         reconcileMissingDesignCapacities()
         // UserDefaultsフォールバックは廃止（MochiLogAppから直接Notificationが送信される）
+
+        // Apple WatchにデータをNシンク
+        syncRecordsToWatch()
+      }
+      .onChange(of: records.count) { _, _ in
+        // レコード数が変更されたらWatchに同期
+        syncRecordsToWatch()
       }
       .sheet(isPresented: $showingWatchSelection) {
         HierarchicalDevicePickerView(initialCategory: .watch, lockCategory: true) {

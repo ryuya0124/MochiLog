@@ -104,6 +104,17 @@ extension HomeView {
     }
   }
 
+  /// Apple Watchにレコードを同期する
+  func syncRecordsToWatch() {
+    // サンプルデータ表示中は同期しない
+    guard !appSettings.showingSampleData else { return }
+
+    // レコードがある場合のみ同期
+    guard !records.isEmpty else { return }
+
+    // WatchConnectivityManagerを通じてデータを送信
+    WatchConnectivityManager.shared.sendRecordsToWatch(records)
+  }
 }
 
 // MARK: - 重複チェック

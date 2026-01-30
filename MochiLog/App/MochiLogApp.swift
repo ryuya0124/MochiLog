@@ -1,5 +1,6 @@
 import SwiftData
 import SwiftUI
+import WatchConnectivity
 
 @main
 struct MochiLogApp: App {
@@ -7,6 +8,9 @@ struct MochiLogApp: App {
 
   init() {
     prepareApplicationSupportDirectories()
+
+    // Watch Connectivityセッションを開始
+    WatchConnectivityManager.shared.startSession()
 
     // 処理完了通知を受け取ってフラグをリセットする
     NotificationCenter.default.addObserver(
