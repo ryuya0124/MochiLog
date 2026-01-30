@@ -102,6 +102,7 @@ struct DebugLogsView: View {
         }
       }
       .navigationTitle(String(localized: "view_error_logs", table: "Support"))
+      .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .navigationBarTrailing) {
           if !logs.isEmpty {
@@ -138,25 +139,9 @@ struct DebugLogsView: View {
       Button {
         selectedLog = log
       } label: {
-        logRowView(for: log)
+        logRowView(for: log, isSelected: selectedLog?.id == log.id)
       }
       .buttonStyle(.plain)
-      .listRowBackground(
-        Group {
-          if selectedLog?.id == log.id {
-            LinearGradient(
-              colors: [
-                Color.accentColor.opacity(0.2),
-                Color.accentColor.opacity(0.1),
-              ],
-              startPoint: .leading,
-              endPoint: .trailing
-            )
-          } else {
-            Color.clear
-          }
-        }
-      )
       .swipeActions(edge: .trailing) {
         Button(role: .destructive) {
           ErrorLogStore.shared.deleteLog(id: log.id)
@@ -170,7 +155,7 @@ struct DebugLogsView: View {
         .tint(.red)
       }
     }
-    .listStyle(.plain)
+    .listStyle(.sidebar)
   }
 
   // MARK: - ログ詳細カラム（iPad）
@@ -214,7 +199,7 @@ struct DebugLogsView: View {
   }
 
   // MARK: - ログ行ビュー
-  private func logRowView(for log: ErrorLogEntry) -> some View {
+  private func logRowView(for log: ErrorLogEntry, isSelected: Bool = false) -> some View {
     HStack(spacing: 16) {
       // 左側のアイコン（グラデーション付き）
       ZStack {
@@ -242,23 +227,23 @@ struct DebugLogsView: View {
           .lineLimit(2)
 
         HStack(spacing: 12) {
-          Label {
-            Text(log.timestamp, style: .date)
-              .font(.system(.caption, design: .rounded))
-          } icon: {
+          HStack(spacing: 4) {
             Image(systemName: "calendar")
               .font(.caption)
-          }
-          .foregroundStyle(.secondary)
-
-          Label {
-            Text(log.timestamp, style: .time)
+              .foregroundStyle(.secondary)
+            Text(log.timestamp, style: .date)
               .font(.system(.caption, design: .rounded))
-          } icon: {
+              .foregroundStyle(.secondary)
+          }
+
+          HStack(spacing: 4) {
             Image(systemName: "clock")
               .font(.caption)
+              .foregroundStyle(.secondary)
+            Text(log.timestamp, style: .time)
+              .font(.system(.caption, design: .rounded))
+              .foregroundStyle(.secondary)
           }
-          .foregroundStyle(.secondary)
         }
       }
 
@@ -272,23 +257,13 @@ struct DebugLogsView: View {
     .contentShape(Rectangle())
     .padding(16)
     .background(
-      RoundedRectangle(cornerRadius: 16)
-        .fill(Color(.secondarySystemGroupedBackground))
-        .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 2)
+      RoundedRectangle(cornerRadius: 12)
+        .fill(isSelected ? Color.accentColor.opacity(0.15) : Color.clear)
     )
     .overlay(
-      RoundedRectangle(cornerRadius: 16)
-        .strokeBorder(
-          LinearGradient(
-            colors: [Color.red.opacity(0.2), Color.orange.opacity(0.1)],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-          ),
-          lineWidth: 1
-        )
+      RoundedRectangle(cornerRadius: 12)
+        .strokeBorder(isSelected ? Color.accentColor : Color.clear, lineWidth: 2)
     )
-    .padding(.horizontal, 16)
-    .padding(.vertical, 6)
   }
 }
 

@@ -32,11 +32,11 @@ struct DebugSettingsView: View {
       // エラーログ
       GroupBox {
         NavigationLink(destination: DebugLogsView()) {
-          HStack(spacing: 16) {
+          HStack(spacing: 20) {
             Image(systemName: "doc.text.fill")
               .font(.system(size: 32))
               .foregroundStyle(.orange)
-              .frame(width: 50)
+              .frame(width: 60)
 
             VStack(alignment: .leading, spacing: 4) {
               Text(String(localized: "view_error_logs", table: "Support"))

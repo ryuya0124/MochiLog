@@ -36,7 +36,26 @@ struct DataManagementSettingsView: View {
           .frame(width: 60)
 
         VStack(alignment: .leading, spacing: 8) {
-          devicePicker
+          HStack {
+            Text(String(localized: "delete_device_data", table: "Settings"))
+              .font(.headline)
+            Spacer()
+            Picker(
+              "",
+              selection: Binding(
+                get: { deletingDeviceId ?? "" },
+                set: { deletingDeviceId = $0.isEmpty ? nil : $0 }
+              )
+            ) {
+              Text(String(localized: "select_device", table: "Settings"))
+                .tag("")
+              ForEach(availableDevices, id: \.self) { device in
+                Text(device)
+                  .tag(device)
+              }
+            }
+            .pickerStyle(.menu)
+          }
 
           Text("特定デバイスの全データを削除します")
             .font(.subheadline)
@@ -44,30 +63,6 @@ struct DataManagementSettingsView: View {
         }
       }
       .padding(.vertical, 8)
-    }
-  }
-
-  // MARK: - デバイス選択ピッカー
-  private var devicePicker: some View {
-    HStack {
-      Text(String(localized: "delete_device_data", table: "Settings"))
-        .font(.headline)
-      Spacer()
-      Picker(
-        "",
-        selection: Binding(
-          get: { deletingDeviceId ?? "" },
-          set: { deletingDeviceId = $0.isEmpty ? nil : $0 }
-        )
-      ) {
-        Text(String(localized: "select_device", table: "Settings"))
-          .tag("")
-        ForEach(availableDevices, id: \.self) { device in
-          Text(device)
-            .tag(device)
-        }
-      }
-      .pickerStyle(.menu)
     }
   }
 
@@ -105,11 +100,11 @@ struct DataManagementSettingsView: View {
       Button(role: .destructive) {
         showingDeleteAllConfirmation = true
       } label: {
-        HStack(spacing: 16) {
+        HStack(spacing: 20) {
           Image(systemName: "exclamationmark.triangle.fill")
-            .font(.system(size: 32))
+            .font(.system(size: 36))
             .foregroundStyle(.red)
-            .frame(width: 50)
+            .frame(width: 60)
 
           VStack(alignment: .leading, spacing: 4) {
             Text(String(localized: "delete_all_data", table: "Settings"))

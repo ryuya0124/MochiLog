@@ -40,11 +40,11 @@ struct SupportSettingsView: View {
         Button {
           showingSupportForm = true
         } label: {
-          HStack(spacing: 16) {
+          HStack(spacing: 20) {
             Image(systemName: "envelope.fill")
               .font(.system(size: 32))
               .foregroundStyle(.green)
-              .frame(width: 50)
+              .frame(width: 60)
 
             VStack(alignment: .leading, spacing: 4) {
               Text(String(localized: "contact_support", table: "Support"))

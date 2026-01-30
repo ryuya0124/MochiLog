@@ -690,6 +690,22 @@
         }
       }
     },
+    "select_device" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select Device"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスを選択"
+          }
+        }
+      }
+    },
     "select_device_to_delete" : {
       "localizations" : {
         "en" : {

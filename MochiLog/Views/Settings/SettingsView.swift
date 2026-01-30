@@ -35,7 +35,7 @@ struct SettingsView: View {
   var body: some View {
     NavigationStack {
       settingsList
-        .navigationTitle(String(localized: "settings", table: "Settings"))
+        .navigationTitle(selectedCategory.title)
         .onAppear { localICloudToggle = appSettings.iCloudSyncEnabled }
         .sheet(isPresented: $showingWatchPicker) {
           HierarchicalDevicePickerView(initialCategory: .watch, lockCategory: true) {
@@ -122,10 +122,10 @@ struct SettingsView: View {
   @ViewBuilder
   private var settingsList: some View {
     if horizontalSizeClass == .regular {
-      // iPad: 2カラムレイアウト（左:カテゴリカード、右:詳細） - スクロール同期
-      ScrollView {
-        HStack(alignment: .top, spacing: 0) {
-          // 左側：カテゴリ一覧
+      // iPad: 2カラムレイアウト（左:カテゴリ一覧、右:詳細） - スクロール分離
+      HStack(alignment: .top, spacing: 0) {
+        // 左側：カテゴリ一覧（独立したScrollView）
+        ScrollView {
           VStack(spacing: 16) {
             ForEach(SettingsCategory.allCases) { category in
               CategoryCardView(
@@ -140,11 +140,13 @@ struct SettingsView: View {
             }
           }
           .padding()
-          .frame(width: 300)
+        }
+        .frame(width: 300)
 
-          Divider()
+        Divider()
 
-          // 右側：選択されたカテゴリの詳細
+        // 右側：選択されたカテゴリの詳細（独立したScrollView）
+        ScrollView {
           VStack(spacing: 0) {
             switch selectedCategory {
             case .general:

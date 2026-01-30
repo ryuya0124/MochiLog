@@ -108,14 +108,14 @@ struct GeneralSettingsView: View {
           appSettings.showingSampleData = true
           appSettings.selectedTabIndex = 0
         } label: {
-          HStack(spacing: 16) {
+          HStack(spacing: 20) {
             Image(systemName: "eye.fill")
               .font(.system(size: 32))
               .foregroundStyle(.blue)
-              .frame(width: 50)
+              .frame(width: 60)
 
             VStack(alignment: .leading, spacing: 4) {
-              Label(String(localized: "view_sample_data", table: "Home"), systemImage: "")
+              Text(String(localized: "view_sample_data", table: "Home"))
                 .font(.headline)
                 .foregroundStyle(.primary)
 
