@@ -260,7 +260,7 @@
 				CODE_SIGN_ENTITLEMENTS = MochiLog/Resources/MochiLog.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development: ryuya watanabe (9CPT4RJCYF)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 40;
+				CURRENT_PROJECT_VERSION = 43;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = FZ35ZF3CZV;
 				ENABLE_APP_SANDBOX = YES;
@@ -287,7 +287,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
-				MARKETING_VERSION = 1.1.2;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "net.ryuya-dev.MochiLog";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -315,7 +315,7 @@
 				CODE_SIGN_ENTITLEMENTS = MochiLog/Resources/MochiLog.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Distribution: ryuya watanabe (FZ35ZF3CZV)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 40;
+				CURRENT_PROJECT_VERSION = 43;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = FZ35ZF3CZV;
 				ENABLE_APP_SANDBOX = YES;
@@ -342,7 +342,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
-				MARKETING_VERSION = 1.1.2;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "net.ryuya-dev.MochiLog";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -498,7 +498,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.2;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "net.ryuya-dev.MochiLog.watchkitapp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -522,7 +522,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = WatchAppIcon;
 				CODE_SIGN_ENTITLEMENTS = "MochiLog Watch App/MochiLog Watch AppRelease.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
@@ -536,11 +536,11 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.2;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "net.ryuya-dev.MochiLog.watchkitapp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=watchos*]" = "match Development net.ryuya-dev.MochiLog.watchkitapp";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=watchos*]" = "match AppStore net.ryuya-dev.MochiLog.watchkitapp";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
