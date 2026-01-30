@@ -15,20 +15,6 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "4E0CF13E2EF9542800307800"
-               BuildableName = "MochiLog.app"
-               BlueprintName = "MochiLog"
-               ReferencedContainer = "container:MochiLog.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "4EFB3AB72F2CD92B001F2930"
                BuildableName = "MochiLog Watch App.app"
                BlueprintName = "MochiLog Watch App"
@@ -48,8 +34,6 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      language = "ja"
-      region = "JP"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
@@ -60,15 +44,12 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4E0CF13E2EF9542800307800"
-            BuildableName = "MochiLog.app"
-            BlueprintName = "MochiLog"
+            BlueprintIdentifier = "4EFB3AB72F2CD92B001F2930"
+            BuildableName = "MochiLog Watch App.app"
+            BlueprintName = "MochiLog Watch App"
             ReferencedContainer = "container:MochiLog.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <StoreKitConfigurationFileReference
-         identifier = "../../MochiLog/Resources/MochiLog.storekit">
-      </StoreKitConfigurationFileReference>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -80,9 +61,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4E0CF13E2EF9542800307800"
-            BuildableName = "MochiLog.app"
-            BlueprintName = "MochiLog"
+            BlueprintIdentifier = "4EFB3AB72F2CD92B001F2930"
+            BuildableName = "MochiLog Watch App.app"
+            BlueprintName = "MochiLog Watch App"
             ReferencedContainer = "container:MochiLog.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

@@ -14,37 +14,88 @@ struct RecordDetailView: View {
   var body: some View {
     ScrollView {
       VStack(spacing: 16) {
-        // ヘルスリング
-        HealthRingView(percentage: record.healthPercentage)
-          .frame(height: 120)
-          .padding(.top, 8)
+        // ヘルスリング（iOS側と同じスタイル）
+        HealthRingView(
+          percentage: Int(record.healthPercent)
+        )
+        .frame(height: 120)
+        .padding(.top, 8)
 
         // メトリクス
         VStack(spacing: 12) {
           // サイクル数
-          MetricCard(
-            icon: "arrow.triangle.2.circlepath",
-            title: "サイクル数",
-            value: "\(record.cycleCount)",
-            color: .blue
+          MetricRow(
+            icon: "gauge",
+            label: "サイクル数",
+            value: "\(record.cycleCount) 回"
           )
 
           // 容量情報
-          MetricCard(
-            icon: "battery.100.bolt",
-            title: "最大容量",
-            value: "\(record.currentCapacity) mAh",
-            subtitle: "設計: \(record.designCapacity) mAh",
-            color: .green
+          VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 6) {
+              Image(systemName: "battery.100")
+                .font(.caption)
+                .foregroundStyle(.green)
+
+              Text("最大容量")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            }
+
+            Text("\(record.currentCapacity) mAh")
+              .font(.headline)
+              .fontWeight(.semibold)
+
+            Text("設計: \(record.designCapacity) mAh")
+              .font(.caption2)
+              .foregroundStyle(.tertiary)
+          }
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .padding(10)
+          .background(
+            RoundedRectangle(cornerRadius: 8)
+              .fill(Color(uiColor: .systemGray6))
           )
 
           // 診断結果
           if !record.diagnosticResult.isEmpty {
-            DiagnosticCard(result: record.diagnosticResult, health: record.healthPercentage)
+            HStack(spacing: 8) {
+              Image(systemName: "checkmark.circle.fill")
+                .font(.body)
+                .foregroundStyle(.green)
+
+              VStack(alignment: .leading, spacing: 2) {
+                Text("診断結果")
+                  .font(.caption2)
+                  .foregroundStyle(.secondary)
+
+                Text(record.diagnosticResult)
+                  .font(.subheadline)
+                  .fontWeight(.medium)
+              }
+
+              Spacer()
+            }
+            .padding(10)
+            .background(
+              RoundedRectangle(cornerRadius: 8)
+                .fill(Color(uiColor: .systemGray6))
+            )
           }
 
           // ログ日時
-          InfoRow(label: "ログ日時", value: formatDate(record.logDate))
+          HStack {
+            Text("ログ日時")
+              .font(.caption)
+              .foregroundStyle(.secondary)
+
+            Spacer()
+
+            Text(formatDate(record.logDate))
+              .font(.caption)
+              .foregroundStyle(.primary)
+          }
+          .padding(.vertical, 4)
         }
       }
       .padding(.horizontal, 8)
@@ -62,7 +113,7 @@ struct RecordDetailView: View {
   }
 }
 
-// MARK: - ヘルスリング
+// MARK: - ヘルスリング（iOS側と同じスタイル）
 
 struct HealthRingView: View {
   let percentage: Int
@@ -71,14 +122,17 @@ struct HealthRingView: View {
     ZStack {
       // 背景リング
       Circle()
-        .stroke(Color.gray.opacity(0.2), lineWidth: 12)
+        .stroke(Color(uiColor: .systemGray5), lineWidth: 10)
 
-      // プログレスリング
+      // プログレスリング（iOS側と同じグラデーション）
       Circle()
         .trim(from: 0, to: CGFloat(percentage) / 100)
         .stroke(
-          healthGradient,
-          style: StrokeStyle(lineWidth: 12, lineCap: .round)
+          AngularGradient(
+            gradient: Gradient(colors: [.green, .green]),
+            center: .center
+          ),
+          style: StrokeStyle(lineWidth: 10, lineCap: .round)
         )
         .rotationEffect(.degrees(-90))
         .animation(.easeInOut, value: percentage)
@@ -88,7 +142,6 @@ struct HealthRingView: View {
         Text("\(percentage)%")
           .font(.title2)
           .fontWeight(.bold)
-          .foregroundStyle(healthColor)
 
         Text("バッテリーヘルス")
           .font(.caption2)
@@ -97,161 +150,28 @@ struct HealthRingView: View {
     }
     .padding(8)
   }
-
-  /// ヘルスカラー
-  private var healthColor: Color {
-    if percentage >= 85 {
-      return .green
-    } else if percentage >= 70 {
-      return .orange
-    } else {
-      return .red
-    }
-  }
-
-  /// ヘルスグラデーション
-  private var healthGradient: LinearGradient {
-    if percentage >= 85 {
-      return LinearGradient(
-        colors: [.green, .green.opacity(0.7)],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-      )
-    } else if percentage >= 70 {
-      return LinearGradient(
-        colors: [.orange, .yellow],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-      )
-    } else {
-      return LinearGradient(
-        colors: [.red, .orange],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-      )
-    }
-  }
 }
 
-// MARK: - メトリクスカード
+// MARK: - メトリクス行
 
-struct MetricCard: View {
+struct MetricRow: View {
   let icon: String
-  let title: String
-  let value: String
-  var subtitle: String? = nil
-  let color: Color
-
-  var body: some View {
-    VStack(alignment: .leading, spacing: 6) {
-      // アイコン + タイトル
-      HStack(spacing: 6) {
-        Image(systemName: icon)
-          .font(.caption)
-          .foregroundStyle(color)
-
-        Text(title)
-          .font(.caption)
-          .foregroundStyle(.secondary)
-      }
-
-      // 値
-      Text(value)
-        .font(.headline)
-        .fontWeight(.semibold)
-
-      // サブタイトル
-      if let subtitle = subtitle {
-        Text(subtitle)
-          .font(.caption2)
-          .foregroundStyle(.tertiary)
-      }
-    }
-    .frame(maxWidth: .infinity, alignment: .leading)
-    .padding(12)
-    .background(
-      RoundedRectangle(cornerRadius: 8)
-        .fill(Color.gray.opacity(0.1))
-    )
-  }
-}
-
-// MARK: - 診断カード
-
-struct DiagnosticCard: View {
-  let result: String
-  let health: Int
-
-  var body: some View {
-    HStack(spacing: 8) {
-      // アイコン
-      Image(systemName: statusIcon)
-        .font(.title3)
-        .foregroundStyle(statusColor)
-
-      // テキスト
-      VStack(alignment: .leading, spacing: 2) {
-        Text("診断結果")
-          .font(.caption2)
-          .foregroundStyle(.secondary)
-
-        Text(result)
-          .font(.subheadline)
-          .fontWeight(.medium)
-      }
-
-      Spacer()
-    }
-    .padding(12)
-    .background(
-      RoundedRectangle(cornerRadius: 8)
-        .fill(statusColor.opacity(0.1))
-    )
-  }
-
-  /// ステータスアイコン
-  private var statusIcon: String {
-    if health >= 85 {
-      return "checkmark.circle.fill"
-    } else if health >= 70 {
-      return "exclamationmark.triangle.fill"
-    } else {
-      return "xmark.circle.fill"
-    }
-  }
-
-  /// ステータスカラー
-  private var statusColor: Color {
-    if health >= 85 {
-      return .green
-    } else if health >= 70 {
-      return .orange
-    } else {
-      return .red
-    }
-  }
-}
-
-// MARK: - 情報行
-
-struct InfoRow: View {
   let label: String
   let value: String
 
   var body: some View {
     HStack {
-      Text(label)
+      Label(label, systemImage: icon)
         .font(.caption)
         .foregroundStyle(.secondary)
 
       Spacer()
 
       Text(value)
-        .font(.caption)
-        .foregroundStyle(.primary)
+        .font(.headline)
+        .fontWeight(.semibold)
     }
     .padding(.vertical, 4)
-    .padding(.horizontal, 12)
   }
 }
 
@@ -265,10 +185,9 @@ struct InfoRow: View {
         deviceName: "iPhone 15 Pro",
         logDate: Date(),
         cycleCount: 120,
-        healthPercentage: 95,
-        diagnosticResult: "正常",
-        designCapacity: 3274,
-        currentCapacity: 3110
+        nominalHealthPercent: 95,
+        healthPercent: 95,
+        diagnosticResult: "正常"
       )
     )
   }

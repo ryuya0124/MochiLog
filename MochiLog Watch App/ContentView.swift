@@ -70,22 +70,19 @@ struct ContentView: View {
           Circle()
             .fill(
               LinearGradient(
-                colors: [.blue.opacity(0.3), .purple.opacity(0.3)],
+                colors: [
+                  Color.green.opacity(0.3),
+                  Color.green.opacity(0.1),
+                ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
               )
             )
             .frame(width: 70, height: 70)
 
-          Image(systemName: "applewatch.watchface")
-            .font(.system(size: 36))
-            .foregroundStyle(
-              LinearGradient(
-                colors: [.blue, .purple],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-              )
-            )
+          Image(systemName: "battery.100")
+            .font(.system(size: 32))
+            .foregroundStyle(Color.green)
         }
 
         // メインメッセージ
@@ -166,7 +163,7 @@ struct ContentView: View {
       let latestRecord = sortedRecords.first!
       return DeviceGroup(
         name: name,
-        latestHealth: latestRecord.healthPercentage,
+        latestHealth: Int(latestRecord.healthPercent),
         latestCycleCount: latestRecord.cycleCount,
         records: sortedRecords
       )
@@ -202,12 +199,12 @@ struct DeviceCard: View {
         HStack(spacing: 4) {
           Image(systemName: "bolt.heart.fill")
             .font(.caption)
-            .foregroundStyle(healthColor(device.latestHealth))
+            .foregroundStyle(healthGradient)
 
           Text("\(device.latestHealth)%")
             .font(.subheadline)
             .fontWeight(.medium)
-            .foregroundStyle(healthColor(device.latestHealth))
+            .foregroundStyle(healthGradient)
         }
 
         Divider()
@@ -215,7 +212,7 @@ struct DeviceCard: View {
 
         // サイクル数
         HStack(spacing: 4) {
-          Image(systemName: "arrow.triangle.2.circlepath")
+          Image(systemName: "gauge")
             .font(.caption)
             .foregroundStyle(.secondary)
 
@@ -233,15 +230,13 @@ struct DeviceCard: View {
     .padding(.vertical, 6)
   }
 
-  /// ヘルスパーセンテージに応じた色
-  private func healthColor(_ health: Int) -> Color {
-    if health >= 85 {
-      return .green
-    } else if health >= 70 {
-      return .orange
-    } else {
-      return .red
-    }
+  /// ヘルスパーセンテージに応じたグラデーション（iOS側と統一）
+  private var healthGradient: LinearGradient {
+    LinearGradient(
+      colors: [.green, .green.opacity(0.8)],
+      startPoint: .leading,
+      endPoint: .trailing
+    )
   }
 }
 

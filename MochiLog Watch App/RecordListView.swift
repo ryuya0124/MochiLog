@@ -45,13 +45,13 @@ struct RecordRow: View {
         // ヘルス
         HStack(spacing: 4) {
           Circle()
-            .fill(healthColor)
+            .fill(healthGradient)
             .frame(width: 8, height: 8)
 
-          Text("\(record.healthPercentage)%")
+          Text("\(Int(record.healthPercent))%")
             .font(.headline)
             .fontWeight(.semibold)
-            .foregroundStyle(healthColor)
+            .foregroundStyle(healthGradient)
         }
 
         Divider()
@@ -59,7 +59,7 @@ struct RecordRow: View {
 
         // サイクル数
         HStack(spacing: 4) {
-          Image(systemName: "arrow.triangle.2.circlepath")
+          Image(systemName: "gauge")
             .font(.caption2)
             .foregroundStyle(.secondary)
 
@@ -87,15 +87,13 @@ struct RecordRow: View {
     .padding(.vertical, 4)
   }
 
-  /// ヘルスステータスの色
-  private var healthColor: Color {
-    if record.healthPercentage >= 85 {
-      return .green
-    } else if record.healthPercentage >= 70 {
-      return .orange
-    } else {
-      return .red
-    }
+  /// ヘルスステータスのグラデーション（iOS側と統一）
+  private var healthGradient: LinearGradient {
+    LinearGradient(
+      colors: [.green, .green.opacity(0.8)],
+      startPoint: .leading,
+      endPoint: .trailing
+    )
   }
 }
 
@@ -111,20 +109,18 @@ struct RecordRow: View {
           deviceName: "iPhone 15 Pro",
           logDate: Date(),
           cycleCount: 120,
-          healthPercentage: 95,
-          diagnosticResult: "正常",
-          designCapacity: 3274,
-          currentCapacity: 3110
+          nominalHealthPercent: 95,
+          healthPercent: 95,
+          diagnosticResult: "正常"
         ),
         WatchBatteryRecord(
           id: UUID().uuidString,
           deviceName: "iPhone 15 Pro",
           logDate: Date().addingTimeInterval(-86400 * 30),
           cycleCount: 90,
-          healthPercentage: 88,
-          diagnosticResult: "良好",
-          designCapacity: 3274,
-          currentCapacity: 2881
+          nominalHealthPercent: 88,
+          healthPercent: 88,
+          diagnosticResult: "良好"
         ),
       ]
     )
