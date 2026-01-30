@@ -386,6 +386,10 @@ struct HomeView: View {
         // レコード数が変更されたらWatchに同期
         syncRecordsToWatch()
       }
+      .onChange(of: appSettings.showingSampleData) { _, _ in
+        // サンプルモードが変更されたらWatchに同期
+        syncRecordsToWatch()
+      }
       .sheet(isPresented: $showingWatchSelection) {
         HierarchicalDevicePickerView(initialCategory: .watch, lockCategory: true) {
           name, identifier in

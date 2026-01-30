@@ -46,11 +46,11 @@ final class WatchConnectivityManager: NSObject, ObservableObject {
     print("[WatchConnectivity] セッションをアクティベート中...")
   }
 
-  // MARK: - データ送信
-
   /// バッテリーレコードをApple Watchに送信
-  /// - Parameter records: 送信するBatteryRecordの配列
-  func sendRecordsToWatch(_ records: [BatteryRecord]) {
+  /// - Parameters:
+  ///   - records: 送信するBatteryRecordの配列
+  ///   - isSampleMode: サンプルモードかどうか
+  func sendRecordsToWatch(_ records: [BatteryRecord], isSampleMode: Bool = false) {
     guard let session = session, session.activationState == .activated else {
       print("[WatchConnectivity] セッションがアクティブではありません")
       return
@@ -74,11 +74,13 @@ final class WatchConnectivityManager: NSObject, ObservableObject {
       let context: [String: Any] = [
         "records": data,
         "syncDate": Date().timeIntervalSince1970,
+        "isSampleMode": isSampleMode,
       ]
 
       try session.updateApplicationContext(context)
       lastSyncDate = Date()
-      print("[WatchConnectivity] \(watchRecords.count)件のレコードをWatchに送信しました")
+      print(
+        "[WatchConnectivity] \(watchRecords.count)件のレコードをWatchに送信しました（サンプルモード: \(isSampleMode)）")
     } catch {
       print("[WatchConnectivity] データのエンコードまたは送信に失敗: \(error)")
     }

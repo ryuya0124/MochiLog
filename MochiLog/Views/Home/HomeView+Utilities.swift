@@ -106,14 +106,22 @@ extension HomeView {
 
   /// Apple Watchにレコードを同期する
   func syncRecordsToWatch() {
-    // サンプルデータ表示中は同期しない
-    guard !appSettings.showingSampleData else { return }
+    // サンプルデータ表示中はサンプルデータを送信
+    if appSettings.showingSampleData {
+      let sampleRecords = SampleDataProvider.generateSampleRecords()
+      WatchConnectivityManager.shared.sendRecordsToWatch(sampleRecords, isSampleMode: true)
+      return
+    }
 
     // レコードがある場合のみ同期
-    guard !records.isEmpty else { return }
+    guard !records.isEmpty else {
+      // レコードがない場合はサンプルモードをオフにして空で送信
+      WatchConnectivityManager.shared.sendRecordsToWatch([], isSampleMode: false)
+      return
+    }
 
-    // WatchConnectivityManagerを通じてデータを送信
-    WatchConnectivityManager.shared.sendRecordsToWatch(records)
+    // 通常モードでデータを送信
+    WatchConnectivityManager.shared.sendRecordsToWatch(records, isSampleMode: false)
   }
 }
 
@@ -179,7 +187,8 @@ extension HomeView {
         if record.rawCapacity > 0 {
           let rawRatio = (Double(record.rawCapacity) / Double(cap)) * 100.0
           if rawRatio < 80.0 {
-            record.diagnosticResult = String(localized: "diag_replace_recommended", table: "Records")
+            record.diagnosticResult = String(
+              localized: "diag_replace_recommended", table: "Records")
           } else if rawRatio < 90.0 {
             record.diagnosticResult = String(localized: "diag_slightly_degraded", table: "Records")
           } else {
@@ -196,7 +205,8 @@ extension HomeView {
         if record.rawCapacity > 0 {
           let rawRatio = (Double(record.rawCapacity) / Double(cap)) * 100.0
           if rawRatio < 80.0 {
-            record.diagnosticResult = String(localized: "diag_replace_recommended", table: "Records")
+            record.diagnosticResult = String(
+              localized: "diag_replace_recommended", table: "Records")
           } else if rawRatio < 90.0 {
             record.diagnosticResult = String(localized: "diag_slightly_degraded", table: "Records")
           } else {

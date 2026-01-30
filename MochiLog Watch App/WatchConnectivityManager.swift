@@ -25,6 +25,9 @@ final class WatchConnectivityManager: NSObject, ObservableObject {
   /// 同期中かどうか
   @Published private(set) var isSyncing = false
 
+  /// サンプルモードかどうか（iPhone側の設定を同期）
+  @Published private(set) var isSampleMode = false
+
   // MARK: - プライベートプロパティ
 
   private var session: WCSession?
@@ -107,8 +110,13 @@ final class WatchConnectivityManager: NSObject, ObservableObject {
         lastSyncDate = Date()
       }
 
+      // サンプルモードの状態を更新
+      if let sampleMode = data["isSampleMode"] as? Bool {
+        isSampleMode = sampleMode
+      }
+
       syncError = nil
-      print("[WatchConnectivity] \(decodedRecords.count)件のレコードを受信しました")
+      print("[WatchConnectivity] \(decodedRecords.count)件のレコードを受信しました（サンプルモード: \(isSampleMode)）")
     } catch {
       syncError = "データの読み込みに失敗しました"
       print("[WatchConnectivity] データのデコードに失敗: \(error)")

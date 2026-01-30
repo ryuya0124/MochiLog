@@ -29,6 +29,26 @@ struct ContentView: View {
 
   private var deviceListView: some View {
     List {
+      // サンプルモード表示バナー
+      if connectivityManager.isSampleMode {
+        HStack(spacing: 6) {
+          Image(systemName: "eye.fill")
+            .font(.caption)
+            .foregroundStyle(.orange)
+          Text(String(localized: "sample_data_viewing"))
+            .font(.caption)
+            .foregroundStyle(.orange)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 6)
+        .background(
+          RoundedRectangle(cornerRadius: 8)
+            .fill(Color.orange.opacity(0.15))
+        )
+        .listRowInsets(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
+        .listRowBackground(Color.clear)
+      }
+
       ForEach(groupedDevices, id: \.name) { device in
         NavigationLink(
           destination: RecordListView(deviceName: device.name, records: device.records)

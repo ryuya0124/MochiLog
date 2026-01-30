@@ -24,7 +24,7 @@ struct RecordListView: View {
     }
     .listStyle(.plain)
     .navigationTitle(deviceName)
-    .navigationBarTitleDisplayMode(.inline)
+    .navigationBarTitleDisplayMode(.large)
   }
 }
 
@@ -63,7 +63,7 @@ struct RecordRow: View {
             .font(.caption2)
             .foregroundStyle(.secondary)
 
-          Text("\(record.cycleCount)")
+          Text("\(record.cycleCount)\(String(localized: "cycles_suffix"))")
             .font(.subheadline)
             .foregroundStyle(.primary)
         }
