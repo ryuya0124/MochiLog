@@ -179,6 +179,7 @@
       }
     },
     "export_log" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

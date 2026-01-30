@@ -45,7 +45,7 @@ struct ContentView: View {
           HStack(spacing: 4) {
             Image(systemName: "arrow.triangle.2.circlepath")
               .font(.caption2)
-            Text("最終同期: \(lastSync, style: .relative)")
+            Text("\(String(localized: "last_sync")) \(lastSync, style: .relative)")
           }
           .font(.caption2)
           .foregroundStyle(.secondary)
@@ -87,11 +87,11 @@ struct ContentView: View {
 
         // メインメッセージ
         VStack(spacing: 8) {
-          Text("データ待機中")
+          Text(String(localized: "waiting_for_data"))
             .font(.headline)
             .fontWeight(.semibold)
 
-          Text("iPhoneでバッテリーログを追加すると\n自動的に同期されます")
+          Text(String(localized: "waiting_for_data_description"))
             .font(.caption)
             .foregroundStyle(.secondary)
             .multilineTextAlignment(.center)
@@ -101,17 +101,17 @@ struct ContentView: View {
         // 同期ステータス
         VStack(spacing: 8) {
           if connectivityManager.isReachable {
-            Label("iPhone接続中", systemImage: "checkmark.circle.fill")
+            Label(String(localized: "iphone_connected"), systemImage: "checkmark.circle.fill")
               .font(.caption2)
               .foregroundStyle(.green)
           } else {
-            Label("iPhone未接続", systemImage: "iphone.slash")
+            Label(String(localized: "iphone_not_connected"), systemImage: "iphone.slash")
               .font(.caption2)
               .foregroundStyle(.orange)
           }
 
           if let lastSync = connectivityManager.lastSyncDate {
-            Text("最終同期: \(lastSync, style: .relative)")
+            Text("\(String(localized: "last_sync")) \(lastSync, style: .relative)")
               .font(.caption2)
               .foregroundStyle(.secondary)
           }
@@ -134,12 +134,12 @@ struct ContentView: View {
             HStack(spacing: 6) {
               ProgressView()
                 .scaleEffect(0.8)
-              Text("同期中...")
+              Text(String(localized: "syncing"))
             }
             .font(.subheadline)
             .fontWeight(.medium)
           } else {
-            Label("今すぐ同期", systemImage: "arrow.triangle.2.circlepath")
+            Label(String(localized: "sync_now"), systemImage: "arrow.triangle.2.circlepath")
               .font(.subheadline)
               .fontWeight(.medium)
           }
@@ -223,9 +223,12 @@ struct DeviceCard: View {
       }
 
       // レコード数
-      Text("\(device.records.count)件のログ")
-        .font(.caption2)
-        .foregroundStyle(.tertiary)
+      Text(
+        String(localized: "logs_count", defaultValue: "%d logs", table: nil, comment: "")
+          .replacingOccurrences(of: "%d", with: "\(device.records.count)")
+      )
+      .font(.caption2)
+      .foregroundStyle(.tertiary)
     }
     .padding(.vertical, 6)
   }

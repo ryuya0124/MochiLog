@@ -105,7 +105,6 @@ struct RecordRow: View {
       deviceName: "iPhone 15 Pro",
       records: [
         WatchBatteryRecord(
-          id: UUID().uuidString,
           deviceName: "iPhone 15 Pro",
           logDate: Date(),
           cycleCount: 120,
@@ -114,7 +113,6 @@ struct RecordRow: View {
           diagnosticResult: "正常"
         ),
         WatchBatteryRecord(
-          id: UUID().uuidString,
           deviceName: "iPhone 15 Pro",
           logDate: Date().addingTimeInterval(-86400 * 30),
           cycleCount: 90,

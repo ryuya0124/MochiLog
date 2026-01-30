@@ -26,35 +26,31 @@ struct RecordDetailView: View {
           // サイクル数
           MetricRow(
             icon: "gauge",
-            label: "サイクル数",
-            value: "\(record.cycleCount) 回"
+            label: String(localized: "cycle_count"),
+            value: String(format: String(localized: "cycles_count"), record.cycleCount)
           )
 
-          // 容量情報
+          // 容量情報（簡易表示）
           VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 6) {
               Image(systemName: "battery.100")
                 .font(.caption)
                 .foregroundStyle(.green)
 
-              Text("最大容量")
+              Text(String(localized: "battery_info"))
                 .font(.caption)
                 .foregroundStyle(.secondary)
             }
 
-            Text("\(record.currentCapacity) mAh")
+            Text(String(format: String(localized: "health_format"), Int(record.healthPercent)))
               .font(.headline)
               .fontWeight(.semibold)
-
-            Text("設計: \(record.designCapacity) mAh")
-              .font(.caption2)
-              .foregroundStyle(.tertiary)
           }
           .frame(maxWidth: .infinity, alignment: .leading)
           .padding(10)
           .background(
             RoundedRectangle(cornerRadius: 8)
-              .fill(Color(uiColor: .systemGray6))
+              .fill(Color.gray.opacity(0.15))
           )
 
           // 診断結果
@@ -65,7 +61,7 @@ struct RecordDetailView: View {
                 .foregroundStyle(.green)
 
               VStack(alignment: .leading, spacing: 2) {
-                Text("診断結果")
+                Text(String(localized: "diagnostic_result"))
                   .font(.caption2)
                   .foregroundStyle(.secondary)
 
@@ -79,13 +75,13 @@ struct RecordDetailView: View {
             .padding(10)
             .background(
               RoundedRectangle(cornerRadius: 8)
-                .fill(Color(uiColor: .systemGray6))
+                .fill(Color.gray.opacity(0.15))
             )
           }
 
           // ログ日時
           HStack {
-            Text("ログ日時")
+            Text(String(localized: "log_date"))
               .font(.caption)
               .foregroundStyle(.secondary)
 
@@ -122,7 +118,7 @@ struct HealthRingView: View {
     ZStack {
       // 背景リング
       Circle()
-        .stroke(Color(uiColor: .systemGray5), lineWidth: 10)
+        .stroke(Color.gray.opacity(0.2), lineWidth: 10)
 
       // プログレスリング（iOS側と同じグラデーション）
       Circle()
@@ -143,7 +139,7 @@ struct HealthRingView: View {
           .font(.title2)
           .fontWeight(.bold)
 
-        Text("バッテリーヘルス")
+        Text(String(localized: "battery_health"))
           .font(.caption2)
           .foregroundStyle(.secondary)
       }
@@ -181,7 +177,6 @@ struct MetricRow: View {
   NavigationStack {
     RecordDetailView(
       record: WatchBatteryRecord(
-        id: UUID().uuidString,
         deviceName: "iPhone 15 Pro",
         logDate: Date(),
         cycleCount: 120,
