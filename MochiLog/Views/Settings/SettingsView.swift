@@ -170,46 +170,58 @@ struct SettingsView: View {
 
         Divider()
 
-        // 右側：選択されたカテゴリの詳細（独立したScrollView）
-        VStack(spacing: 0) {
-          Divider()  // ヘッダーとの境界線
-          ScrollView {
-            VStack(spacing: 0) {
-              switch selectedCategory {
-              case .general:
-                GeneralSettingsView(
-                  localICloudToggle: $localICloudToggle,
-                  showingICloudErrorAlert: $showingICloudErrorAlert,
-                  iCloudErrorMessage: $iCloudErrorMessage,
-                  appSettings: appSettings
-                )
-              case .appleWatch:
-                AppleWatchSettingsView(
-                  showingWatchPicker: $showingWatchPicker,
-                  appSettings: appSettings
-                )
-              case .dataManagement:
-                DataManagementSettingsView(
-                  showingDeleteAllConfirmation: $showingDeleteConfirmation,
-                  showingDeleteDeviceConfirmation: $showingDeleteDeviceConfirmation,
-                  deletingDeviceId: $deletingDeviceId,
-                  appSettings: appSettings
-                )
-              case .support:
-                SupportSettingsView()
-              case .debug:
-                DebugSettingsView(appSettings: appSettings)
-              case .advanced:
-                AdvancedSettingsView(appSettings: appSettings)
-              }
-            }
-            .padding(.top)
-            .frame(maxWidth: .infinity, alignment: .leading)
+        // 右側：選択されたカテゴリの詳細（Apple WatchのみList表示）
+        if selectedCategory == .appleWatch {
+          VStack(spacing: 0) {
+            Divider()  // ヘッダーとの境界線
+            AppleWatchSettingsView(
+              showingWatchPicker: $showingWatchPicker,
+              appSettings: appSettings
+            )
           }
+          .frame(maxHeight: .infinity)
+          .clipped()
+        } else {
+          VStack(spacing: 0) {
+            Divider()  // ヘッダーとの境界線
+            ScrollView {
+              VStack(spacing: 0) {
+                switch selectedCategory {
+                case .general:
+                  GeneralSettingsView(
+                    localICloudToggle: $localICloudToggle,
+                    showingICloudErrorAlert: $showingICloudErrorAlert,
+                    iCloudErrorMessage: $iCloudErrorMessage,
+                    appSettings: appSettings
+                  )
+                case .appleWatch:
+                  AppleWatchSettingsView(
+                    showingWatchPicker: $showingWatchPicker,
+                    appSettings: appSettings
+                  )
+                case .dataManagement:
+                  DataManagementSettingsView(
+                    showingDeleteAllConfirmation: $showingDeleteConfirmation,
+                    showingDeleteDeviceConfirmation: $showingDeleteDeviceConfirmation,
+                    deletingDeviceId: $deletingDeviceId,
+                    appSettings: appSettings
+                  )
+                case .support:
+                  SupportSettingsView()
+                case .debug:
+                  DebugSettingsView(appSettings: appSettings)
+                case .advanced:
+                  AdvancedSettingsView(appSettings: appSettings)
+                }
+              }
+              .padding(.top)
+              .frame(maxWidth: .infinity, alignment: .leading)
+            }
+          }
+          .groupBoxStyle(SettingsCardGroupBoxStyle())
+          .frame(maxHeight: .infinity)
+          .clipped()
         }
-        .groupBoxStyle(SettingsCardGroupBoxStyle())
-        .frame(maxHeight: .infinity)
-        .clipped()
       }
       .background(Color(.systemGroupedBackground))
     } else {

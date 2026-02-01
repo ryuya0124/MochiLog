@@ -11,181 +11,151 @@ struct AppleWatchSettingsView: View {
   @State private var showingRemoveAllConfirmation = false
 
   var body: some View {
-    VStack(spacing: 16) {
-      // 登録済みWatchリスト
-      if !appSettings.registeredWatches.isEmpty {
-        GroupBox {
-          VStack(spacing: 0) {
-            ForEach(appSettings.registeredWatches, id: \.self) { watchModel in
-              WatchListRow(
-                watchModel: watchModel,
-                onDelete: {
-                  watchToRemove = watchModel
-                  showingRemoveConfirmation = true
-                }
-              )
-
-              if watchModel != appSettings.registeredWatches.last {
-                Divider()
-                  .padding(.leading, 44)
-              }
-            }
+    watchList
+      .alert(
+        String(localized: "remove_watch", table: "Settings"),
+        isPresented: $showingRemoveConfirmation
+      ) {
+        Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
+        Button(String(localized: "remove", table: "Common"), role: .destructive) {
+          if let watch = watchToRemove {
+            appSettings.removeWatch(model: watch)
           }
         }
-      } else {
-        // Watch未登録時のプレースホルダー
-        GroupBox {
-          HStack(spacing: 16) {
-            Image(systemName: "applewatch")
-              .font(.system(size: 40))
-              .foregroundStyle(.secondary)
-
-            VStack(alignment: .leading, spacing: 4) {
-              Text(String(localized: "not_registered", table: "Settings"))
-                .font(.headline)
-              Text(String(localized: "watch_selection_description", table: "Settings"))
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            }
-
-            Spacer()
-          }
-          .padding(.vertical, 8)
-        }
-      }
-
-      // Watchを追加ボタン
-      GroupBox {
-        Button(action: { showingWatchPicker = true }) {
-          HStack {
-            Image(systemName: "plus.circle.fill")
-              .font(.title3)
-              .foregroundStyle(.green)
-
-            Text(String(localized: "add_watch", table: "Settings"))
-              .font(.headline)
-
-            Spacer()
-          }
-          .padding(.vertical, 8)
-        }
-        .buttonStyle(.plain)
-      }
-
-      // すべて削除ボタン（複数登録時のみ表示）
-      if appSettings.registeredWatches.count > 1 {
-        GroupBox {
-          Button(action: { showingRemoveAllConfirmation = true }) {
-            HStack(spacing: 8) {
-              Image(systemName: "trash")
-                .font(.title3)
-                .foregroundStyle(.red)
-
-              Text(String(localized: "remove_all_watches", table: "Settings"))
-                .font(.headline)
-                .foregroundStyle(.red)
-
-              Spacer()
-            }
-            .padding(.vertical, 8)
-          }
-          .buttonStyle(.plain)
-        }
-      }
-
-      // 説明テキスト
-      if !appSettings.registeredWatches.isEmpty {
-        Text(String(localized: "multiple_watch_description", table: "Settings"))
-          .font(.footnote)
-          .foregroundStyle(.secondary)
-          .padding(.horizontal)
-      }
-    }
-    .padding(.horizontal)
-    .alert(
-      String(localized: "remove_watch", table: "Settings"),
-      isPresented: $showingRemoveConfirmation
-    ) {
-      Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
-      Button(String(localized: "remove", table: "Common"), role: .destructive) {
+      } message: {
         if let watch = watchToRemove {
-          appSettings.removeWatch(model: watch)
+          Text(
+            String(
+              format: String(localized: "remove_watch_confirm_specific", table: "Settings"), watch))
         }
       }
-    } message: {
-      if let watch = watchToRemove {
-        Text(
-          String(
-            format: String(localized: "remove_watch_confirm_specific", table: "Settings"), watch))
+      .alert(
+        String(localized: "remove_all_watches", table: "Settings"),
+        isPresented: $showingRemoveAllConfirmation
+      ) {
+        Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
+        Button(String(localized: "remove", table: "Common"), role: .destructive) {
+          appSettings.unregisterAllWatches()
+        }
+      } message: {
+        Text(String(localized: "remove_all_watches_confirm", table: "Settings"))
       }
-    }
-    .alert(
-      String(localized: "remove_all_watches", table: "Settings"),
-      isPresented: $showingRemoveAllConfirmation
-    ) {
-      Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
-      Button(String(localized: "remove", table: "Common"), role: .destructive) {
-        appSettings.unregisterAllWatches()
-      }
-    } message: {
-      Text(String(localized: "remove_all_watches_confirm", table: "Settings"))
-    }
-  }
-}
-
-// MARK: - Watchリスト行
-struct WatchListRow: View {
-  let watchModel: String
-  let onDelete: () -> Void
-
-  // モデル名からWatchModelを取得
-  private var selectedWatchModel: WatchModel {
-    if watchModel.contains("Ultra") {
-      return .ultra2
-    } else if watchModel.contains("45mm") {
-      return .series9_45mm
-    } else if watchModel.contains("44mm") {
-      return .se_44mm
-    } else if watchModel.contains("40mm") {
-      return .se_40mm
-    } else {
-      return .series9_41mm
-    }
   }
 
-  var body: some View {
-    HStack(spacing: 12) {
-      // Watchアイコン
-      ZStack {
-        RoundedRectangle(cornerRadius: 8)
-          .fill(Color(.systemGray5))
-          .frame(width: 36, height: 44)
-
-        Image(systemName: "applewatch")
-          .font(.title3)
-          .foregroundStyle(.primary)
+  private var watchList: some View {
+    List {
+      Section {
+        watchShowcaseCard
+          .listRowInsets(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16))
+          .listRowBackground(Color.clear)
       }
 
-      // Watch情報
-      VStack(alignment: .leading, spacing: 2) {
-        Text(watchModel)
-          .font(.body)
-          .lineLimit(1)
+      Section {
+        if appSettings.registeredWatches.isEmpty {
+          HStack {
+            Label(
+              String(localized: "registered_watch", table: "Settings"),
+              systemImage: "applewatch")
+            Spacer()
+            Text(String(localized: "not_registered", table: "Settings"))
+              .foregroundStyle(.secondary)
+          }
+        } else {
+          ForEach(appSettings.registeredWatches, id: \.self) { watchModel in
+            watchRow(for: watchModel)
+          }
+        }
 
-        Text(String(localized: "registered", table: "Settings"))
-          .font(.caption)
-          .foregroundStyle(.green)
+        Button(action: { showingWatchPicker = true }) {
+          Label(
+            String(localized: "add_watch", table: "Settings"),
+            systemImage: "plus.circle"
+          )
+        }
+
+        if appSettings.registeredWatches.count > 1 {
+          Button(action: { showingRemoveAllConfirmation = true }) {
+            Label(
+              String(localized: "remove_all_watches", table: "Settings"),
+              systemImage: "trash"
+            )
+            .foregroundStyle(.red)
+          }
+        }
+      } header: {
+        watchSectionHeader
+      } footer: {
+        watchSectionFooter
       }
+    }
+    .listStyle(.insetGrouped)
+    .scrollContentBackground(.hidden)
+  }
 
+  private func watchRow(for watchModel: String) -> some View {
+    return HStack(spacing: 12) {
+      Label(watchModel, systemImage: "applewatch")
       Spacer()
-
-      // 削除ボタン
-      Button(action: onDelete) {
-        Image(systemName: "trash")
-          .foregroundStyle(.red)
-      }
-      .buttonStyle(.plain)
     }
-    .padding(.vertical, 8)
+    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+      Button(role: .destructive) {
+        watchToRemove = watchModel
+        showingRemoveConfirmation = true
+      } label: {
+        Label(String(localized: "remove", table: "Common"), systemImage: "trash")
+      }
+      .tint(.red)
+    }
+  }
+
+  private var watchSectionHeader: some View {
+    Text(String(localized: "apple_watch_settings", table: "Settings"))
+  }
+
+  private var watchSectionFooter: some View {
+    Text(watchDescriptionText)
+  }
+
+  private var watchDescriptionText: String {
+    appSettings.registeredWatches.isEmpty
+      ? String(localized: "watch_selection_description", table: "Settings")
+      : String(localized: "multiple_watch_description", table: "Settings")
+  }
+
+  private var primaryWatchModel: String? {
+    appSettings.registeredWatches.first
+  }
+
+  private var watchShowcaseCard: some View {
+    VStack(spacing: 12) {
+      AppleWatchMockupView(
+        modelName: primaryWatchModel,
+        isRegistered: primaryWatchModel != nil
+      )
+      .frame(maxWidth: .infinity)
+      .frame(height: 240)
+
+      VStack(alignment: .leading, spacing: 6) {
+        if primaryWatchModel != nil {
+          Text(String(localized: "registered", table: "Settings"))
+            .font(.subheadline)
+            .foregroundStyle(.green)
+        }
+
+        Text(watchDescriptionText)
+          .font(.subheadline)
+          .foregroundStyle(.secondary)
+      }
+      .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    .padding(16)
+    .background(
+      RoundedRectangle(cornerRadius: 16)
+        .fill(Color(.secondarySystemGroupedBackground))
+    )
+    .overlay(
+      RoundedRectangle(cornerRadius: 16)
+        .stroke(Color(uiColor: .separator).opacity(0.2), lineWidth: 1)
+    )
   }
 }

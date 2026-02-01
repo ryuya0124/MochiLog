@@ -260,91 +260,74 @@ struct AppleWatchMockupView: View {
         .fill(Color.black)
         .frame(width: 138, height: 170)
 
-      VStack(spacing: 8) {
-        Spacer()
+      VStack(spacing: 6) {
+        Text("MON 20")
+          .font(.system(size: 11, weight: .semibold, design: .rounded))
+          .foregroundStyle(Color.orange)
 
-        // デジタル時刻表示（9:41）
         Text("9:41")
-          .font(.system(size: 52, weight: .medium, design: .default))
-          .foregroundStyle(
-            isRegistered
-              ? LinearGradient(
-                colors: [Color.green, Color.green.opacity(0.9)],
-                startPoint: .top,
-                endPoint: .bottom
-              )
-              : LinearGradient(
-                colors: [Color.white, Color.white.opacity(0.95)],
-                startPoint: .top,
-                endPoint: .bottom
-              )
+          .font(.system(size: 50, weight: .semibold, design: .rounded))
+          .foregroundStyle(Color.white)
+          .shadow(color: .black.opacity(0.35), radius: 2, x: 0, y: 1)
+
+        Text("SUNNY 23°")
+          .font(.system(size: 11, weight: .medium, design: .rounded))
+          .foregroundStyle(Color.white.opacity(0.7))
+
+        HStack(spacing: 14) {
+          watchComplication(
+            icon: "figure.walk.circle.fill",
+            value: "3,482",
+            color: Color.red
           )
-          .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
-
-        // 曜日・日付表示
-        HStack(spacing: 6) {
-          Text("月曜日")
-            .font(.system(size: 13, weight: .medium))
-          Text("1月20日")
-            .font(.system(size: 13, weight: .regular))
+          watchComplication(
+            icon: "heart.fill",
+            value: "72",
+            color: Color.pink
+          )
+          batteryComplication(value: "85", color: Color.green)
         }
-        .foregroundStyle(
-          isRegistered
-            ? Color.green.opacity(0.85)
-            : Color.white.opacity(0.7)
-        )
-
-        Spacer()
-
-        // コンプリケーション風の装飾
-        HStack(spacing: 20) {
-          // 左側のコンプリケーション（アクティビティ風）
-          VStack(spacing: 2) {
-            ZStack {
-              Circle()
-                .stroke(Color.red.opacity(0.3), lineWidth: 2)
-                .frame(width: 24, height: 24)
-              Circle()
-                .trim(from: 0, to: 0.7)
-                .stroke(Color.red, lineWidth: 2)
-                .frame(width: 24, height: 24)
-                .rotationEffect(.degrees(-90))
-            }
-            Text("70%")
-              .font(.system(size: 8, weight: .medium))
-              .foregroundStyle(Color.white.opacity(0.6))
-          }
-
-          Spacer()
-
-          // 右側のコンプリケーション（バッテリー風）
-          VStack(spacing: 2) {
-            HStack(spacing: 2) {
-              RoundedRectangle(cornerRadius: 1)
-                .fill(Color.green)
-                .frame(width: 18, height: 10)
-                .overlay(
-                  RoundedRectangle(cornerRadius: 1)
-                    .strokeBorder(Color.white.opacity(0.3), lineWidth: 1)
-                )
-              Rectangle()
-                .fill(Color.white.opacity(0.6))
-                .frame(width: 2, height: 4)
-                .cornerRadius(0.5)
-            }
-            Text("85%")
-              .font(.system(size: 8, weight: .medium))
-              .foregroundStyle(Color.white.opacity(0.6))
-          }
-        }
-        .padding(.horizontal, 24)
-
-        Spacer()
-          .frame(height: 12)
+        .padding(.top, 4)
       }
-      .padding(.vertical, 12)
+      .padding(.vertical, 14)
     }
     .frame(width: 138, height: 170)
+  }
+
+  private func watchComplication(
+    icon: String,
+    value: String,
+    color: Color
+  ) -> some View {
+    VStack(spacing: 2) {
+      Image(systemName: icon)
+        .font(.system(size: 12))
+        .foregroundStyle(color)
+
+      Text(value)
+        .font(.system(size: 9, weight: .semibold, design: .rounded))
+        .foregroundStyle(Color.white.opacity(0.8))
+    }
+    .frame(width: 34)
+  }
+
+  private func batteryComplication(value: String, color: Color) -> some View {
+    ZStack {
+      Circle()
+        .stroke(color.opacity(0.35), lineWidth: 2)
+        .frame(width: 24, height: 24)
+
+      Circle()
+        .trim(from: 0, to: 0.85)
+        .stroke(color, style: StrokeStyle(lineWidth: 2, lineCap: .round))
+        .frame(width: 24, height: 24)
+        .rotationEffect(.degrees(-90))
+
+      Text(value)
+        .font(.system(size: 8, weight: .semibold, design: .rounded))
+        .foregroundStyle(Color.white.opacity(0.8))
+    }
+    .frame(width: 34)
   }
 }
 
