@@ -1,5 +1,6 @@
 import SwiftData
 import SwiftUI
+import UIKit
 
 /// 共通のレコードリストビュー
 /// サンプルデータと実データで同じレイアウトを使用するための共通コンポーネント
@@ -13,6 +14,7 @@ struct RecordListView<Header: View>: View {
   @StateObject private var appSettings = AppSettings.shared
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @State private var collapsedSections: Set<String> = []
+  @State private var allowSectionAnimation = false
 
   @State private var groupedRecords: [String: [BatteryRecord]] = [:]
 
@@ -59,7 +61,9 @@ struct RecordListView<Header: View>: View {
         }
         // スクロール中の不要なアニメーションを抑制
         .transaction { transaction in
-          transaction.animation = nil
+          if !allowSectionAnimation {
+            transaction.animation = nil
+          }
         }
       }
     }
@@ -194,11 +198,15 @@ struct RecordListView<Header: View>: View {
                   get: { !collapsedSections.contains(section.id) },
                   set: { isExpanded in
                     withAnimation(.snappy) {
+                      allowSectionAnimation = true
                       if isExpanded {
                         collapsedSections.remove(section.id)
                       } else {
                         collapsedSections.insert(section.id)
                       }
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                      allowSectionAnimation = false
                     }
                   }
                 )
@@ -222,13 +230,15 @@ struct RecordListView<Header: View>: View {
                           Label {
                             Text(String(localized: "delete", table: "Common"))
                           } icon: {
-                            Image(systemName: "trash")
-                              .foregroundStyle(.red)
+                            Image(
+                              uiImage: UIImage(systemName: "trash")?
+                                .withTintColor(.red, renderingMode: .alwaysOriginal)
+                                ?? UIImage())
                           }
                         }
-                        .tint(.red)
                       }
                     }
+                    .animation(.snappy, value: collapsedSections)
                   }
                 }
                 // drawingGroup()削除 - 各CachedViewで既にオフスクリーン
@@ -239,6 +249,7 @@ struct RecordListView<Header: View>: View {
                   .bold()
                   .foregroundColor(.primary)
               }
+              .animation(.snappy, value: collapsedSections)
               .padding()
               .background(Color(uiColor: .secondarySystemGroupedBackground))
               .clipShape(RoundedRectangle(cornerRadius: 16))
@@ -272,11 +283,15 @@ struct RecordListView<Header: View>: View {
               get: { !collapsedSections.contains(section.id) },
               set: { isExpanded in
                 withAnimation(.snappy) {
+                  allowSectionAnimation = true
                   if isExpanded {
                     collapsedSections.remove(section.id)
                   } else {
                     collapsedSections.insert(section.id)
                   }
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                  allowSectionAnimation = false
                 }
               }
             )
@@ -304,6 +319,7 @@ struct RecordListView<Header: View>: View {
               .font(.headline)
               .foregroundColor(.primary)
           }
+          .animation(.snappy, value: collapsedSections)
         }
         .transition(
           .asymmetric(
