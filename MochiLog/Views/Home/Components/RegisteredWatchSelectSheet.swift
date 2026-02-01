@@ -15,6 +15,7 @@ struct RegisteredWatchSelectSheet: View {
             // Buttonではなく行全体をタップ可能にする
             HStack {
               Image(systemName: "applewatch")
+                .foregroundStyle(.green)
               Text(watchModel)
               Spacer()
               Image(systemName: "chevron.right")
