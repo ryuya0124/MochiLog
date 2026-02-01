@@ -3,36 +3,40 @@ import SwiftUI
 // MARK: - サポート設定ビュー
 struct SupportSettingsView: View {
   @State private var showingSupportForm = false
+  @State private var showingTutorial = false
+  @State private var showingDonation = false
 
   var body: some View {
     VStack(spacing: 16) {
-      // バージョン情報
+      // チュートリアル
       GroupBox {
-        VStack(alignment: .leading, spacing: 12) {
+        Button {
+          showingTutorial = true
+        } label: {
           HStack(spacing: 20) {
-            Image(systemName: "info.circle.fill")
-              .font(.system(size: 36))
-              .foregroundStyle(.blue)
+            Image(systemName: "lightbulb.fill")
+              .font(.system(size: 32))
+              .foregroundStyle(.yellow)
               .frame(width: 60)
 
-            VStack(alignment: .leading, spacing: 8) {
-              Text(String(localized: "app_version", table: "Settings"))
+            VStack(alignment: .leading, spacing: 4) {
+              Text(String(localized: "tutorial", table: "Onboarding"))
                 .font(.headline)
+                .foregroundStyle(.primary)
 
-              if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String,
-                let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
-              {
-                Text("Version \(version) (Build \(build))")
-                  .font(.subheadline)
-                  .foregroundStyle(.secondary)
-              }
+              Text("基本操作や設定の流れを確認できます")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
             }
 
             Spacer()
+
+            Image(systemName: "chevron.right")
+              .foregroundStyle(.secondary)
           }
+          .padding(.vertical, 8)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, 8)
+        .buttonStyle(.plain)
       }
 
       // フィードバック
@@ -65,10 +69,48 @@ struct SupportSettingsView: View {
         }
         .buttonStyle(.plain)
       }
+
+      // 支援
+      GroupBox {
+        Button {
+          showingDonation = true
+        } label: {
+          HStack(spacing: 20) {
+            Image(systemName: "heart.fill")
+              .font(.system(size: 32))
+              .foregroundStyle(.pink)
+              .frame(width: 60)
+
+            VStack(alignment: .leading, spacing: 4) {
+              Text(String(localized: "donation_title", table: "Settings"))
+                .font(.headline)
+                .foregroundStyle(.primary)
+
+              Text("開発を応援していただけると嬉しいです")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+              .foregroundStyle(.secondary)
+          }
+          .padding(.vertical, 8)
+        }
+        .buttonStyle(.plain)
+      }
+
     }
     .padding(.horizontal)
     .sheet(isPresented: $showingSupportForm) {
       SupportFormView()
+    }
+    .sheet(isPresented: $showingTutorial) {
+      TutorialView()
+    }
+    .sheet(isPresented: $showingDonation) {
+      DonationView()
     }
   }
 }

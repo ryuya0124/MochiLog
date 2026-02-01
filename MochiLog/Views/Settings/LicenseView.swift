@@ -102,7 +102,7 @@ struct LicenseView: View {
       .navigationTitle(String(localized: "licenses", table: "Settings"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
-        ToolbarItem(placement: .navigationBarTrailing) {
+        ToolbarItem(placement: .cancellationAction) {
           Button(String(localized: "close", table: "Common")) {
             dismiss()
           }
@@ -199,7 +199,7 @@ struct FullLicenseView: View {
       .navigationTitle(licenseName)
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
-        ToolbarItem(placement: .navigationBarTrailing) {
+        ToolbarItem(placement: .cancellationAction) {
           Button(String(localized: "close", table: "Common")) {
             dismiss()
           }

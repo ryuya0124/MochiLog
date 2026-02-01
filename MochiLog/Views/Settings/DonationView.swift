@@ -136,7 +136,7 @@ struct DonationView: View {
       .navigationTitle(String(localized: "donation_title", table: "Settings"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
-        ToolbarItem(placement: .navigationBarTrailing) {
+        ToolbarItem(placement: .cancellationAction) {
           Button(String(localized: "close", table: "Common")) {
             dismiss()
           }

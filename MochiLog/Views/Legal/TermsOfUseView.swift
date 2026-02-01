@@ -65,7 +65,7 @@ struct TermsOfUseView: View {
       }
       .navigationTitle("")
       .toolbar {
-        ToolbarItem(placement: .navigationBarTrailing) {
+        ToolbarItem(placement: .cancellationAction) {
           Button(String(localized: "close", table: "Common")) { dismiss() }
         }
       }
@@ -80,13 +80,17 @@ struct TermsOfUseView: View {
     headerTitle = nil
     let resourceName = selectedResourceName()
     guard let url = Bundle.main.url(forResource: resourceName, withExtension: "md") else {
-      blocks = [.paragraph(AttributedString(String(localized: "terms_of_use_unavailable", table: "Legal")))]
+      blocks = [
+        .paragraph(AttributedString(String(localized: "terms_of_use_unavailable", table: "Legal")))
+      ]
       return
     }
 
     guard let data = try? Data(contentsOf: url), let str = String(data: data, encoding: .utf8)
     else {
-      blocks = [.paragraph(AttributedString(String(localized: "terms_of_use_unavailable", table: "Legal")))]
+      blocks = [
+        .paragraph(AttributedString(String(localized: "terms_of_use_unavailable", table: "Legal")))
+      ]
       return
     }
 

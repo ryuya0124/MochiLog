@@ -208,6 +208,8 @@ struct SettingsView: View {
                   )
                 case .support:
                   SupportSettingsView()
+                case .about:
+                  AboutSettingsView()
                 case .debug:
                   DebugSettingsView(appSettings: appSettings)
                 case .advanced:
@@ -382,15 +384,19 @@ struct SettingsView: View {
     Section(String(localized: "support", table: "Settings")) {
       Button(action: { showingTutorial = true }) {
         Label(String(localized: "view_tutorial", table: "Home"), systemImage: "book.fill")
+          .foregroundStyle(.primary)
       }
 
       Button(action: { showingSupportForm = true }) {
         Label(
-          String(localized: "contact_support", table: "Support"), systemImage: "envelope.fill")
+          String(localized: "contact_support", table: "Support"), systemImage: "envelope.fill"
+        )
+        .foregroundStyle(.primary)
       }
 
       Button(action: { showingDonation = true }) {
         Label(String(localized: "donation_title", table: "Settings"), systemImage: "heart.fill")
+          .foregroundStyle(.primary)
       }
     }
 

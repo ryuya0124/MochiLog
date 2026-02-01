@@ -66,7 +66,7 @@ struct PrivacyPolicyView: View {
       }
       .navigationTitle("")
       .toolbar {
-        ToolbarItem(placement: .navigationBarTrailing) {
+        ToolbarItem(placement: .cancellationAction) {
           Button(String(localized: "close", table: "Common")) { dismiss() }
         }
       }
@@ -81,13 +81,19 @@ struct PrivacyPolicyView: View {
     headerTitle = nil
     let resourceName = selectedResourceName()
     guard let url = Bundle.main.url(forResource: resourceName, withExtension: "md") else {
-      blocks = [.paragraph(AttributedString(String(localized: "privacy_policy_unavailable", table: "Legal")))]
+      blocks = [
+        .paragraph(
+          AttributedString(String(localized: "privacy_policy_unavailable", table: "Legal")))
+      ]
       return
     }
 
     guard let data = try? Data(contentsOf: url), let raw = String(data: data, encoding: .utf8)
     else {
-      blocks = [.paragraph(AttributedString(String(localized: "privacy_policy_unavailable", table: "Legal")))]
+      blocks = [
+        .paragraph(
+          AttributedString(String(localized: "privacy_policy_unavailable", table: "Legal")))
+      ]
       return
     }
 
