@@ -13,7 +13,7 @@ struct RegisteredWatchSelectSheet: View {
         Section {
           ForEach(appSettings.registeredWatches, id: \.self) { watchModel in
             // Buttonではなく行全体をタップ可能にする
-            HStack {
+            HStack(spacing: 12) {
               Image(systemName: "applewatch")
                 .foregroundStyle(.green)
               Text(watchModel)
