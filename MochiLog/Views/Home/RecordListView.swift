@@ -219,8 +219,14 @@ struct RecordListView<Header: View>: View {
                         Button(role: .destructive) {
                           onDelete(record)
                         } label: {
-                          Label(String(localized: "delete", table: "Common"), systemImage: "trash")
+                          Label {
+                            Text(String(localized: "delete", table: "Common"))
+                          } icon: {
+                            Image(systemName: "trash")
+                              .foregroundStyle(.red)
+                          }
                         }
+                        .tint(.red)
                       }
                     }
                   }
