@@ -12,6 +12,8 @@ struct SettingsView: View {
   @State private var showingDeleteConfirmation = false
   @State private var showingNoDataToDeleteAlert = false
   @State private var showingRemoveWatchConfirmation = false
+  @State private var watchToRemove: String? = nil
+  @State private var showingRemoveAllWatchesConfirmation = false
   @State private var showingTutorial = false
   @State private var showingSupportForm = false
   @State private var showingDonation = false
@@ -35,7 +37,7 @@ struct SettingsView: View {
   var body: some View {
     NavigationStack {
       settingsList
-        .navigationTitle(selectedCategory.title)
+        .navigationTitle(String(localized: "settings_title", table: "Settings"))
         .onAppear { localICloudToggle = appSettings.iCloudSyncEnabled }
         .sheet(isPresented: $showingWatchPicker) {
           HierarchicalDevicePickerView(initialCategory: .watch, lockCategory: true) {
@@ -76,11 +78,31 @@ struct SettingsView: View {
           isPresented: $showingRemoveWatchConfirmation
         ) {
           Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
-          Button(String(localized: "remove_watch", table: "Settings"), role: .destructive) {
-            appSettings.unregisterWatch()
+          Button(String(localized: "remove", table: "Common"), role: .destructive) {
+            if let watch = watchToRemove {
+              appSettings.removeWatch(model: watch)
+            }
           }
         } message: {
-          Text(String(localized: "remove_watch_confirm", table: "Settings"))
+          if let watch = watchToRemove {
+            Text(
+              String(
+                format: String(localized: "remove_watch_confirm_specific", table: "Settings"), watch
+              ))
+          } else {
+            Text(String(localized: "remove_watch_confirm", table: "Settings"))
+          }
+        }
+        .alert(
+          String(localized: "remove_all_watches", table: "Settings"),
+          isPresented: $showingRemoveAllWatchesConfirmation
+        ) {
+          Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
+          Button(String(localized: "remove", table: "Common"), role: .destructive) {
+            appSettings.unregisterAllWatches()
+          }
+        } message: {
+          Text(String(localized: "remove_all_watches_confirm", table: "Settings"))
         }
         .alert(
           String(localized: "icloud_sync_failed", table: "Settings"),
@@ -125,61 +147,68 @@ struct SettingsView: View {
       // iPad: 2カラムレイアウト（左:カテゴリ一覧、右:詳細） - スクロール分離
       HStack(alignment: .top, spacing: 0) {
         // 左側：カテゴリ一覧（独立したScrollView）
-        ScrollView {
-          VStack(spacing: 16) {
-            ForEach(SettingsCategory.allCases) { category in
-              CategoryCardView(
-                category: category,
-                isSelected: selectedCategory == category
-              )
-              .onTapGesture {
-                withAnimation(.easeInOut(duration: 0.2)) {
+        VStack(spacing: 0) {
+          Divider()  // ヘッダーとの境界線
+          ScrollView {
+            VStack(spacing: 16) {
+              ForEach(SettingsCategory.allCases) { category in
+                CategoryCardView(
+                  category: category,
+                  isSelected: selectedCategory == category
+                )
+                .onTapGesture {
                   selectedCategory = category
                 }
               }
             }
+            .padding()
           }
-          .padding()
         }
         .frame(width: 300)
+        .frame(maxHeight: .infinity)
+        .clipped()
 
         Divider()
 
         // 右側：選択されたカテゴリの詳細（独立したScrollView）
-        ScrollView {
-          VStack(spacing: 0) {
-            switch selectedCategory {
-            case .general:
-              GeneralSettingsView(
-                localICloudToggle: $localICloudToggle,
-                showingICloudErrorAlert: $showingICloudErrorAlert,
-                iCloudErrorMessage: $iCloudErrorMessage,
-                appSettings: appSettings
-              )
-            case .appleWatch:
-              AppleWatchSettingsView(
-                showingWatchPicker: $showingWatchPicker,
-                showingRemoveWatchConfirmation: $showingRemoveWatchConfirmation,
-                appSettings: appSettings
-              )
-            case .dataManagement:
-              DataManagementSettingsView(
-                showingDeleteAllConfirmation: $showingDeleteConfirmation,
-                showingDeleteDeviceConfirmation: $showingDeleteDeviceConfirmation,
-                deletingDeviceId: $deletingDeviceId,
-                appSettings: appSettings
-              )
-            case .support:
-              SupportSettingsView()
-            case .debug:
-              DebugSettingsView(appSettings: appSettings)
-            case .advanced:
-              AdvancedSettingsView(appSettings: appSettings)
+        VStack(spacing: 0) {
+          Divider()  // ヘッダーとの境界線
+          ScrollView {
+            VStack(spacing: 0) {
+              switch selectedCategory {
+              case .general:
+                GeneralSettingsView(
+                  localICloudToggle: $localICloudToggle,
+                  showingICloudErrorAlert: $showingICloudErrorAlert,
+                  iCloudErrorMessage: $iCloudErrorMessage,
+                  appSettings: appSettings
+                )
+              case .appleWatch:
+                AppleWatchSettingsView(
+                  showingWatchPicker: $showingWatchPicker,
+                  appSettings: appSettings
+                )
+              case .dataManagement:
+                DataManagementSettingsView(
+                  showingDeleteAllConfirmation: $showingDeleteConfirmation,
+                  showingDeleteDeviceConfirmation: $showingDeleteDeviceConfirmation,
+                  deletingDeviceId: $deletingDeviceId,
+                  appSettings: appSettings
+                )
+              case .support:
+                SupportSettingsView()
+              case .debug:
+                DebugSettingsView(appSettings: appSettings)
+              case .advanced:
+                AdvancedSettingsView(appSettings: appSettings)
+              }
             }
+            .padding(.top)
+            .frame(maxWidth: .infinity, alignment: .leading)
           }
-          .padding(.top)
-          .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .frame(maxHeight: .infinity)
+        .clipped()
       }
       .background(Color(.systemGroupedBackground))
     } else {
@@ -253,36 +282,62 @@ struct SettingsView: View {
 
     // MARK: - Apple Watch 設定
     Section {
-      HStack {
-        Label(
-          String(localized: "registered_watch", table: "Settings"), systemImage: "applewatch")
-        Spacer()
-        Text(
-          appSettings.registeredWatchModel
-            ?? String(localized: "not_registered", table: "Settings")
-        )
-        .foregroundStyle(.secondary)
+      // 登録済みWatchのリスト
+      if appSettings.registeredWatches.isEmpty {
+        HStack {
+          Label(
+            String(localized: "registered_watch", table: "Settings"), systemImage: "applewatch")
+          Spacer()
+          Text(String(localized: "not_registered", table: "Settings"))
+            .foregroundStyle(.secondary)
+        }
+      } else {
+        ForEach(appSettings.registeredWatches, id: \.self) { watchModel in
+          HStack {
+            Label(watchModel, systemImage: "applewatch")
+            Spacer()
+            Image(systemName: "checkmark.circle.fill")
+              .foregroundStyle(.green)
+          }
+          .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+            Button(role: .destructive) {
+              watchToRemove = watchModel
+              showingRemoveWatchConfirmation = true
+            } label: {
+              Label(String(localized: "remove", table: "Common"), systemImage: "trash")
+            }
+            .tint(.red)
+          }
+        }
       }
 
+      // Watchを追加ボタン
       Button(action: { showingWatchPicker = true }) {
         Label(
-          appSettings.registeredWatchModel == nil
-            ? String(localized: "register_watch", table: "Settings")
-            : String(localized: "change_watch", table: "Settings"),
+          String(localized: "add_watch", table: "Settings"),
           systemImage: "plus.circle"
         )
       }
 
-      if appSettings.registeredWatchModel != nil {
-        Button(role: .destructive, action: { showingRemoveWatchConfirmation = true }) {
-          Label(
-            String(localized: "remove_watch", table: "Settings"), systemImage: "minus.circle")
+      // すべて削除ボタン（複数登録時のみ表示）
+      if appSettings.registeredWatches.count > 1 {
+        Button(action: { showingRemoveAllWatchesConfirmation = true }) {
+          HStack {
+            Image(systemName: "trash")
+              .foregroundStyle(.red)
+            Text(String(localized: "remove_all_watches", table: "Settings"))
+              .foregroundStyle(.red)
+          }
         }
       }
     } header: {
       Text(String(localized: "apple_watch_settings", table: "Settings"))
     } footer: {
-      Text(String(localized: "watch_selection_description", table: "Settings"))
+      Text(
+        appSettings.registeredWatches.isEmpty
+          ? String(localized: "watch_selection_description", table: "Settings")
+          : String(localized: "multiple_watch_description", table: "Settings")
+      )
     }
 
     // MARK: - データ管理

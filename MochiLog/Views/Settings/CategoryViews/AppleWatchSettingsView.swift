@@ -3,77 +3,58 @@ import SwiftUI
 // MARK: - Apple Watch設定ビュー
 struct AppleWatchSettingsView: View {
   @Binding var showingWatchPicker: Bool
-  @Binding var showingRemoveWatchConfirmation: Bool
   @ObservedObject var appSettings: AppSettings
 
-  // 登録されているWatch機種を取得
-  private var selectedWatchModel: WatchModel {
-    guard let modelName = appSettings.registeredWatchModel else {
-      return .series9_41mm  // デフォルト
-    }
-
-    // モデル名から適切なWatchModelを選択
-    if modelName.contains("Ultra") {
-      return .ultra2
-    } else if modelName.contains("45mm") {
-      return .series9_45mm
-    } else if modelName.contains("44mm") {
-      return .se_44mm
-    } else if modelName.contains("40mm") {
-      return .se_40mm
-    } else {
-      return .series9_41mm
-    }
-  }
+  // 削除確認用の状態
+  @State private var showingRemoveConfirmation = false
+  @State private var watchToRemove: String?
+  @State private var showingRemoveAllConfirmation = false
 
   var body: some View {
     VStack(spacing: 16) {
-      // Apple Watchプレビューエリア（2列レイアウト）
-      GroupBox {
-        HStack(alignment: .top, spacing: 24) {
-          // 左側：Watchモックアップ（40%）
-          WatchFrameContainer(
-            model: selectedWatchModel,
-            isRegistered: appSettings.registeredWatchModel != nil
-          ) {
-            WatchFaceView(isRegistered: appSettings.registeredWatchModel != nil)
-          }
-          .frame(maxWidth: .infinity)
-
-          // 右側：登録済みWatch情報（60%、大きめ表示）
-          VStack(alignment: .leading, spacing: 16) {
-            Spacer()
-
-            HStack(spacing: 12) {
-              Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(.green)
-                .font(.title2)
-                .opacity(appSettings.registeredWatchModel != nil ? 1 : 0)
-
-              Text(
-                appSettings.registeredWatchModel != nil
-                  ? String(localized: "registered_watch", table: "Settings")
-                  : String(localized: "not_registered", table: "Settings")
+      // 登録済みWatchリスト
+      if !appSettings.registeredWatches.isEmpty {
+        GroupBox {
+          VStack(spacing: 0) {
+            ForEach(appSettings.registeredWatches, id: \.self) { watchModel in
+              WatchListRow(
+                watchModel: watchModel,
+                onDelete: {
+                  watchToRemove = watchModel
+                  showingRemoveConfirmation = true
+                }
               )
-              .font(.title3)
-              .fontWeight(.semibold)
-            }
 
-            if let model = appSettings.registeredWatchModel {
-              Text(model)
-                .font(.body)
+              if watchModel != appSettings.registeredWatches.last {
+                Divider()
+                  .padding(.leading, 44)
+              }
+            }
+          }
+        }
+      } else {
+        // Watch未登録時のプレースホルダー
+        GroupBox {
+          HStack(spacing: 16) {
+            Image(systemName: "applewatch")
+              .font(.system(size: 40))
+              .foregroundStyle(.secondary)
+
+            VStack(alignment: .leading, spacing: 4) {
+              Text(String(localized: "not_registered", table: "Settings"))
+                .font(.headline)
+              Text(String(localized: "watch_selection_description", table: "Settings"))
+                .font(.caption)
                 .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
             }
 
             Spacer()
           }
-          .frame(maxWidth: .infinity)
+          .padding(.vertical, 8)
         }
-        .padding(.vertical, 10)
       }
 
-      // Watchを変更/登録ボタン
+      // Watchを追加ボタン
       GroupBox {
         Button(action: { showingWatchPicker = true }) {
           HStack {
@@ -81,12 +62,8 @@ struct AppleWatchSettingsView: View {
               .font(.title3)
               .foregroundStyle(.green)
 
-            Text(
-              appSettings.registeredWatchModel == nil
-                ? String(localized: "register_watch", table: "Settings")
-                : String(localized: "change_watch", table: "Settings")
-            )
-            .font(.headline)
+            Text(String(localized: "add_watch", table: "Settings"))
+              .font(.headline)
 
             Spacer()
           }
@@ -95,16 +72,18 @@ struct AppleWatchSettingsView: View {
         .buttonStyle(.plain)
       }
 
-      // 登録を解除ボタン（登録済みの場合のみ表示）
-      if appSettings.registeredWatchModel != nil {
+      // すべて削除ボタン（複数登録時のみ表示）
+      if appSettings.registeredWatches.count > 1 {
         GroupBox {
-          Button(role: .destructive, action: { showingRemoveWatchConfirmation = true }) {
+          Button(action: { showingRemoveAllConfirmation = true }) {
             HStack {
-              Image(systemName: "minus.circle.fill")
+              Image(systemName: "trash")
                 .font(.title3)
+                .foregroundStyle(.red)
 
-              Text(String(localized: "remove_watch", table: "Settings"))
+              Text(String(localized: "remove_all_watches", table: "Settings"))
                 .font(.headline)
+                .foregroundStyle(.red)
 
               Spacer()
             }
@@ -115,11 +94,98 @@ struct AppleWatchSettingsView: View {
       }
 
       // 説明テキスト
-      Text(String(localized: "watch_selection_description", table: "Settings"))
-        .font(.footnote)
-        .foregroundStyle(.secondary)
-        .padding(.horizontal)
+      if !appSettings.registeredWatches.isEmpty {
+        Text(String(localized: "multiple_watch_description", table: "Settings"))
+          .font(.footnote)
+          .foregroundStyle(.secondary)
+          .padding(.horizontal)
+      }
     }
     .padding(.horizontal)
+    .alert(
+      String(localized: "remove_watch", table: "Settings"),
+      isPresented: $showingRemoveConfirmation
+    ) {
+      Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
+      Button(String(localized: "remove", table: "Common"), role: .destructive) {
+        if let watch = watchToRemove {
+          appSettings.removeWatch(model: watch)
+        }
+      }
+    } message: {
+      if let watch = watchToRemove {
+        Text(
+          String(
+            format: String(localized: "remove_watch_confirm_specific", table: "Settings"), watch))
+      }
+    }
+    .alert(
+      String(localized: "remove_all_watches", table: "Settings"),
+      isPresented: $showingRemoveAllConfirmation
+    ) {
+      Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
+      Button(String(localized: "remove", table: "Common"), role: .destructive) {
+        appSettings.unregisterAllWatches()
+      }
+    } message: {
+      Text(String(localized: "remove_all_watches_confirm", table: "Settings"))
+    }
+  }
+}
+
+// MARK: - Watchリスト行
+struct WatchListRow: View {
+  let watchModel: String
+  let onDelete: () -> Void
+
+  // モデル名からWatchModelを取得
+  private var selectedWatchModel: WatchModel {
+    if watchModel.contains("Ultra") {
+      return .ultra2
+    } else if watchModel.contains("45mm") {
+      return .series9_45mm
+    } else if watchModel.contains("44mm") {
+      return .se_44mm
+    } else if watchModel.contains("40mm") {
+      return .se_40mm
+    } else {
+      return .series9_41mm
+    }
+  }
+
+  var body: some View {
+    HStack(spacing: 12) {
+      // Watchアイコン
+      ZStack {
+        RoundedRectangle(cornerRadius: 8)
+          .fill(Color(.systemGray5))
+          .frame(width: 36, height: 44)
+
+        Image(systemName: "applewatch")
+          .font(.title3)
+          .foregroundStyle(.primary)
+      }
+
+      // Watch情報
+      VStack(alignment: .leading, spacing: 2) {
+        Text(watchModel)
+          .font(.body)
+          .lineLimit(1)
+
+        Text(String(localized: "registered", table: "Settings"))
+          .font(.caption)
+          .foregroundStyle(.green)
+      }
+
+      Spacer()
+
+      // 削除ボタン
+      Button(action: onDelete) {
+        Image(systemName: "trash")
+          .foregroundStyle(.red)
+      }
+      .buttonStyle(.plain)
+    }
+    .padding(.vertical, 8)
   }
 }

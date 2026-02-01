@@ -65,8 +65,23 @@ extension HomeView {
     logDate: Date,
     silent: Bool
   ) -> (record: BatteryRecord?, shouldReturn: Bool) {
-    // 登録済みWatchモデルがある場合
-    if let registeredWatch = AppSettings.shared.registeredWatchModel {
+    let registeredWatches = AppSettings.shared.registeredWatches
+
+    // 複数のWatchが登録されている場合 → ユーザーに選択させる
+    if registeredWatches.count > 1 {
+      if silent {
+        // サイレントモードでは処理できない（どのWatchか選べないため）
+        return (nil, true)
+      } else {
+        // 対話モードではWatch選択画面を表示
+        pendingParseResult = result
+        showingWatchSelection = true
+        return (nil, true)
+      }
+    }
+
+    // 1つのWatchが登録されている場合 → そのWatchを使用
+    if let registeredWatch = registeredWatches.first {
       // 重複チェック（設定に応じて）
       if !AppSettings.shared.allowDuplicateRecords,
         hasDuplicateRecord(on: logDate, deviceName: registeredWatch)

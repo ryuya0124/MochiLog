@@ -391,32 +391,75 @@ struct HomeView: View {
         syncRecordsToWatch()
       }
       .sheet(isPresented: $showingWatchSelection) {
-        HierarchicalDevicePickerView(initialCategory: .watch, lockCategory: true) {
-          name, identifier in
-          guard let result = pendingParseResult else { return }
-          let record = createRecord(
-            from: result,
-            deviceName: name,
-            deviceModelCodeOverride: identifier,
-            designCapacityOverride: DeviceLibrary.getCapacity(for: name)
-          )
-          withAnimation(.snappy) {
-            modelContext.insert(record)
-          }
-          // 保存はアニメーション外で行う
-          Task.detached(priority: .userInitiated) {
-            await MainActor.run {
-              try? self.modelContext.save()
+        // 登録済みWatchがある場合は登録済みリストから選択
+        // ない場合は全Watchモデルから選択
+        if appSettings.registeredWatches.isEmpty {
+          HierarchicalDevicePickerView(initialCategory: .watch, lockCategory: true) {
+            name, identifier in
+            guard let result = pendingParseResult else { return }
+            let record = createRecord(
+              from: result,
+              deviceName: name,
+              deviceModelCodeOverride: identifier,
+              designCapacityOverride: DeviceLibrary.getCapacity(for: name)
+            )
+            withAnimation(.snappy) {
+              modelContext.insert(record)
             }
-          }
-          selectedRecord = nil
-          pendingParseResult = nil
+            // 保存はアニメーション外で行う
+            Task.detached(priority: .userInitiated) {
+              await MainActor.run {
+                try? self.modelContext.save()
+              }
+            }
+            selectedRecord = nil
+            pendingParseResult = nil
 
-          if appSettings.registeredWatchModel == nil {
+            // 初回登録を提案
             watchNameToRegister = name
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
               showingRegisterWatchAlert = true
             }
+          }
+        } else {
+          RegisteredWatchSelectSheet { selectedWatch in
+            guard let result = pendingParseResult else { return }
+            let logDate = result.logDate ?? Date()
+
+            // 重複チェック
+            if !appSettings.allowDuplicateRecords,
+              hasDuplicateRecord(on: logDate, deviceName: selectedWatch)
+            {
+              DispatchQueue.main.async {
+                NotificationCenter.default.post(
+                  name: NSNotification.Name("ShowImportError"),
+                  object: nil,
+                  userInfo: ["errorMessage": String(localized: "duplicate_record", table: "Home")]
+                )
+              }
+              selectedRecord = nil
+              pendingParseResult = nil
+              return
+            }
+
+            let identifier = DeviceLibrary.getIdentifierForDeviceName(selectedWatch)
+            let record = createRecord(
+              from: result,
+              deviceName: selectedWatch,
+              deviceModelCodeOverride: identifier,
+              designCapacityOverride: DeviceLibrary.getCapacity(for: selectedWatch)
+            )
+            withAnimation(.snappy) {
+              modelContext.insert(record)
+            }
+            // 保存はアニメーション外で行う
+            Task.detached(priority: .userInitiated) {
+              await MainActor.run {
+                try? self.modelContext.save()
+              }
+            }
+            selectedRecord = nil
+            pendingParseResult = nil
           }
         }
       }
@@ -425,7 +468,7 @@ struct HomeView: View {
         isPresented: $showingRegisterWatchAlert
       ) {
         Button(String(localized: "register", table: "Common")) {
-          appSettings.registeredWatchModel = watchNameToRegister
+          appSettings.registerWatch(model: watchNameToRegister)
         }
         Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
       } message: {
@@ -465,7 +508,7 @@ struct HomeView: View {
           selectedRecord = nil
           pendingParseResult = nil
 
-          if name.contains("Apple Watch") && appSettings.registeredWatchModel == nil {
+          if name.contains("Apple Watch") && appSettings.registeredWatches.isEmpty {
             watchNameToRegister = name
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
               showingRegisterWatchAlert = true

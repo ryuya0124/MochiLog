@@ -10,6 +10,7 @@ final class AppSettings: ObservableObject {
   // MARK: - UserDefaults Keys
   private enum Keys {
     static let registeredWatchModel = "registeredWatchModel"
+    static let registeredWatches = "registeredWatches"
     static let hasCompletedTutorial = "hasCompletedTutorial"
     static let enableCapacityValidation = "enableCapacityValidation"
     static let capacityValidationThreshold = "capacityValidationThreshold"
@@ -126,8 +127,13 @@ final class AppSettings: ObservableObject {
 
   // MARK: - Published Properties
 
-  /// 登録済みのApple Watchモデル名
-  @Published var registeredWatchModel: String?
+  /// 登録済みのApple Watchモデル名のリスト
+  @Published var registeredWatches: [String] = []
+
+  /// 後方互換性のため: 最初の登録Watchを返す（読み取り専用）
+  var registeredWatchModel: String? {
+    registeredWatches.first
+  }
 
   /// チュートリアル完了済みフラグ
   @Published var hasCompletedTutorial: Bool
@@ -188,7 +194,16 @@ final class AppSettings: ObservableObject {
   // MARK: - Initialization
 
   private init() {
-    self.registeredWatchModel = UserDefaults.standard.string(forKey: Keys.registeredWatchModel)
+    // Watchデータのマイグレーション: 旧形式（単一）から新形式（複数）へ
+    if let savedWatches = UserDefaults.standard.stringArray(forKey: Keys.registeredWatches) {
+      self.registeredWatches = savedWatches
+    } else if let legacyWatch = UserDefaults.standard.string(forKey: Keys.registeredWatchModel) {
+      // 旧データをマイグレーション
+      self.registeredWatches = [legacyWatch]
+      UserDefaults.standard.set([legacyWatch], forKey: Keys.registeredWatches)
+    } else {
+      self.registeredWatches = []
+    }
     self.hasCompletedTutorial = UserDefaults.standard.bool(forKey: Keys.hasCompletedTutorial)
 
     // デフォルト値の設定
@@ -285,10 +300,10 @@ final class AppSettings: ObservableObject {
   private var cancellables = Set<AnyCancellable>()
 
   private func setupObservers() {
-    $registeredWatchModel
+    $registeredWatches
       .dropFirst()
       .sink { value in
-        UserDefaults.standard.set(value, forKey: Keys.registeredWatchModel)
+        UserDefaults.standard.set(value, forKey: Keys.registeredWatches)
       }
       .store(in: &cancellables)
 
@@ -401,14 +416,29 @@ final class AppSettings: ObservableObject {
 
   // MARK: - Methods
 
-  /// Apple Watchモデルを登録
+  /// Apple Watchモデルを登録（配列に追加）
   func registerWatch(model: String) {
-    registeredWatchModel = model
+    // 重複登録を防止
+    guard !registeredWatches.contains(model) else { return }
+    registeredWatches.append(model)
   }
 
-  /// Apple Watch登録を解除
+  /// 特定のApple Watchを登録解除
+  func removeWatch(model: String) {
+    registeredWatches.removeAll { $0 == model }
+  }
+
+  /// すべてのApple Watch登録を解除
+  func unregisterAllWatches() {
+    registeredWatches.removeAll()
+  }
+
+  /// 後方互換性のため: 最初のWatchを解除
+  @available(*, deprecated, message: "Use removeWatch(model:) instead")
   func unregisterWatch() {
-    registeredWatchModel = nil
+    if !registeredWatches.isEmpty {
+      registeredWatches.removeFirst()
+    }
   }
 
   /// チュートリアル完了を記録

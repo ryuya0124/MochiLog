@@ -17,8 +17,8 @@ struct ActivityViewController: UIViewControllerRepresentable {
       )
       items.append(metadata)
 
-      // 画像以外のアイテムを追加
-      items.append(contentsOf: activityItems.filter { !($0 is UIImage) })
+      // テキストと画像以外のアイテムを追加（テキストはCustomActivityItemSourceに含まれるため除外）
+      items.append(contentsOf: activityItems.filter { !($0 is UIImage) && !($0 is String) })
     } else {
       items = activityItems
     }

@@ -807,6 +807,22 @@
         }
       }
     },
+    "settings_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定"
+          }
+        }
+      }
+    },
     "support" : {
       "localizations" : {
         "en" : {
@@ -963,6 +979,134 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Apple Watchのログを解析する際に自動で使用されます"
+          }
+        }
+      }
+    },
+    "add_watch" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add Apple Watch"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Watchを追加"
+          }
+        }
+      }
+    },
+    "multiple_watch_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When importing a Watch log with multiple watches registered, you will be prompted to select which watch to use."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "複数のWatchが登録されている場合、ログ取り込み時にどのWatchを使用するか選択できます。"
+          }
+        }
+      }
+    },
+    "registered" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registered"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登録済み"
+          }
+        }
+      }
+    },
+    "remove_watch_confirm_specific" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove %@ from registered watches?"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@を登録済みWatchから削除しますか？"
+          }
+        }
+      }
+    },
+    "select_watch" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select Watch"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Watchを選択"
+          }
+        }
+      }
+    },
+    "select_registered_watch" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registered Watches"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登録済みWatch"
+          }
+        }
+      }
+    },
+    "remove_all_watches" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove All Watches"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべてのWatchを削除"
+          }
+        }
+      }
+    },
+    "remove_all_watches_confirm" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove all registered watches? This will stop automatic model detection for future logs."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登録済みのすべてのWatchを削除しますか？今後ログで自動的にWatchモデルが適用されなくなります。"
           }
         }
       }

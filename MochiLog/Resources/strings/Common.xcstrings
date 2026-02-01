@@ -405,6 +405,22 @@
     },
     "unknown" : {
 
+    },
+    "remove" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "削除"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"
