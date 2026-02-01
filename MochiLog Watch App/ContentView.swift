@@ -65,7 +65,9 @@ struct ContentView: View {
           HStack(spacing: 4) {
             Image(systemName: "arrow.triangle.2.circlepath")
               .font(.caption2)
-            Text("\(String(localized: "last_sync")) \(lastSync, style: .relative)")
+            Text(
+              "\(String(localized: "last_sync")) \(lastSync, format: .dateTime.month().day().hour().minute())"
+            )
           }
           .font(.caption2)
           .foregroundStyle(.secondary)
@@ -131,9 +133,11 @@ struct ContentView: View {
           }
 
           if let lastSync = connectivityManager.lastSyncDate {
-            Text("\(String(localized: "last_sync")) \(lastSync, style: .relative)")
-              .font(.caption2)
-              .foregroundStyle(.secondary)
+            Text(
+              "\(String(localized: "last_sync")) \(lastSync, format: .dateTime.month().day().hour().minute())"
+            )
+            .font(.caption2)
+            .foregroundStyle(.secondary)
           }
         }
 
