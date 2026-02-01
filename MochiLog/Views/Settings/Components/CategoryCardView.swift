@@ -20,7 +20,7 @@ struct CategoryCardView: View {
     }
     .padding()
     .background(
-      RoundedRectangle(cornerRadius: 12)
+      RoundedRectangle(cornerRadius: 16)
         .fill(isSelected ? Color.accentColor : Color(.secondarySystemGroupedBackground))
     )
   }

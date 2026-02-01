@@ -207,6 +207,7 @@ struct SettingsView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
           }
         }
+        .groupBoxStyle(SettingsCardGroupBoxStyle())
         .frame(maxHeight: .infinity)
         .clipped()
       }
@@ -533,6 +534,20 @@ struct SettingsView: View {
     // Notify other components (HomeView etc.) to clear transient UI state
     NotificationCenter.default.post(
       name: NSNotification.Name("DeleteAllDataPerformed"), object: nil)
+  }
+}
+
+private struct SettingsCardGroupBoxStyle: GroupBoxStyle {
+  func makeBody(configuration: Configuration) -> some View {
+    VStack(alignment: .leading, spacing: 8) {
+      configuration.label
+      configuration.content
+    }
+    .padding()
+    .background(
+      RoundedRectangle(cornerRadius: 16)
+        .fill(Color(.secondarySystemGroupedBackground))
+    )
   }
 }
 
