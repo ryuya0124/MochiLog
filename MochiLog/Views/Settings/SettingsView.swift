@@ -295,9 +295,6 @@ struct SettingsView: View {
         ForEach(appSettings.registeredWatches, id: \.self) { watchModel in
           HStack {
             Label(watchModel, systemImage: "applewatch")
-            Spacer()
-            Image(systemName: "checkmark.circle.fill")
-              .foregroundStyle(.green)
           }
           .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             Button(role: .destructive) {

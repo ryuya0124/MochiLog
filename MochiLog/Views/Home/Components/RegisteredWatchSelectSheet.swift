@@ -13,10 +13,13 @@ struct RegisteredWatchSelectSheet: View {
         Section {
           ForEach(appSettings.registeredWatches, id: \.self) { watchModel in
             // Buttonではなく行全体をタップ可能にする
-            HStack(spacing: 12) {
-              Image(systemName: "applewatch")
-                .foregroundStyle(.green)
-              Text(watchModel)
+            HStack {
+              Label {
+                Text(watchModel)
+              } icon: {
+                Image(systemName: "applewatch")
+                  .foregroundStyle(appSettings.accentColor.color)
+              }
               Spacer()
               Image(systemName: "chevron.right")
                 .font(.caption)
@@ -26,8 +29,8 @@ struct RegisteredWatchSelectSheet: View {
             .onTapGesture {
               let selected = watchModel
               dismiss()
-              // シートが閉じた後にコールバックを実行
-              DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+              // シートを閉じた直後にコールバックを実行
+              DispatchQueue.main.async {
                 onSelect(selected)
               }
             }
@@ -46,5 +49,6 @@ struct RegisteredWatchSelectSheet: View {
         }
       }
     }
+    .tint(appSettings.accentColor.color)
   }
 }
