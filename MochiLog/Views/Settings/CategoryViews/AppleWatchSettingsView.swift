@@ -76,7 +76,7 @@ struct AppleWatchSettingsView: View {
       if appSettings.registeredWatches.count > 1 {
         GroupBox {
           Button(action: { showingRemoveAllConfirmation = true }) {
-            HStack {
+            HStack(spacing: 8) {
               Image(systemName: "trash")
                 .font(.title3)
                 .foregroundStyle(.red)

@@ -322,12 +322,11 @@ struct SettingsView: View {
       // すべて削除ボタン（複数登録時のみ表示）
       if appSettings.registeredWatches.count > 1 {
         Button(action: { showingRemoveAllWatchesConfirmation = true }) {
-          HStack {
-            Image(systemName: "trash")
-              .foregroundStyle(.red)
-            Text(String(localized: "remove_all_watches", table: "Settings"))
-              .foregroundStyle(.red)
-          }
+          Label(
+            String(localized: "remove_all_watches", table: "Settings"),
+            systemImage: "trash"
+          )
+          .foregroundStyle(.red)
         }
       }
     } header: {
@@ -350,8 +349,11 @@ struct SettingsView: View {
         }
       } label: {
         Label(
-          String(localized: "delete_all_data", table: "Settings"), systemImage: "trash.fill")
+          String(localized: "delete_all_data", table: "Settings"), systemImage: "trash.fill"
+        )
+        .foregroundStyle(.red)
       }
+      .tint(.red)
 
       Button(role: .destructive) {
         if availableDevices.isEmpty {
@@ -361,7 +363,9 @@ struct SettingsView: View {
         }
       } label: {
         Label(String(localized: "delete_device_data", table: "Settings"), systemImage: "trash")
+          .foregroundStyle(.red)
       }
+      .tint(.red)
     }
 
     // MARK: - サポート

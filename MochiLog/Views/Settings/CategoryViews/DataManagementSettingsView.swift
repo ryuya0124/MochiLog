@@ -76,10 +76,12 @@ struct DataManagementSettingsView: View {
           Image(systemName: "trash.fill")
             .font(.system(size: 28))
             .frame(width: 50)
+            .foregroundStyle(.red)
 
           VStack(alignment: .leading, spacing: 4) {
             Text(String(localized: "delete_selected_device_data", table: "Settings"))
               .font(.headline)
+              .foregroundStyle(.red)
 
             Text("選択したデバイスのデータを完全に削除します")
               .font(.subheadline)
@@ -91,6 +93,7 @@ struct DataManagementSettingsView: View {
         .padding(.vertical, 8)
       }
       .buttonStyle(.plain)
+      .tint(.red)
     }
   }
 
