@@ -134,9 +134,9 @@ struct HealthTrendView: View {
           }
         }
 
-        // データ点が多い場合はPointMarkを非表示（すっきり見せる）
-        let showPoints = ChartAxisHelper.shouldShowDataPoints(
-          recordCount: visibleRecords.count, startDay: startDay, endDay: endDay)
+        // データ点は期間に応じて間引き（すっきり見せる）
+        let pointRecords = ChartAxisHelper.downsampledRecords(
+          visibleRecords, startDay: startDay, endDay: endDay)
 
         Chart {
           ForEach(visibleRecords) { record in
@@ -156,22 +156,25 @@ struct HealthTrendView: View {
             .interpolationMethod(.catmullRom)
             .opacity(animateChart ? 1 : 0)
 
-            if showPoints {
-              PointMark(
-                x: .value(
-                  String(localized: "date", table: "Common"),
-                  Calendar.current.startOfDay(for: record.logDate),
-                  unit: unit.calendarComponent),
-                y: .value(
-                  String(localized: "real_capacity", table: "Analytics"),
-                  appSettings.analysisDataSource == .nominal
-                    ? record.nominalHealthPercent : record.healthPercent)
-              )
-              .foregroundStyle(
-                by: .value(String(localized: "device_name", table: "Common"), record.deviceName)
-              )
-              .symbol(.circle)
-              .opacity(animateChart ? 1 : 0)
+            if !pointRecords.isEmpty {
+              ForEach(pointRecords) { pointRecord in
+                PointMark(
+                  x: .value(
+                    String(localized: "date", table: "Common"),
+                    Calendar.current.startOfDay(for: pointRecord.logDate),
+                    unit: unit.calendarComponent),
+                  y: .value(
+                    String(localized: "real_capacity", table: "Analytics"),
+                    appSettings.analysisDataSource == .nominal
+                      ? pointRecord.nominalHealthPercent : pointRecord.healthPercent)
+                )
+                .foregroundStyle(
+                  by: .value(
+                    String(localized: "device_name", table: "Common"), pointRecord.deviceName)
+                )
+                .symbol(.circle)
+                .opacity(animateChart ? 1 : 0)
+              }
             }
           }
 

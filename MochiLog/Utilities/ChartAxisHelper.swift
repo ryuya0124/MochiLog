@@ -7,37 +7,70 @@ struct ChartAxisHelper {
 
   // MARK: - データポイント表示判定
 
-  /// チャートにデータポイント（ドット）を表示するかどうかを判定
+  /// 期間に応じて「何日ごとに1点」かを決定
   /// - Parameters:
-  ///   - recordCount: 表示するレコード数
   ///   - startDay: 表示開始日
   ///   - endDay: 表示終了日
-  /// - Returns: データポイントを表示する場合はtrue
-  static func shouldShowDataPoints(recordCount: Int, startDay: Date, endDay: Date) -> Bool {
+  /// - Returns: 何日ごとに1点か（最低1日）
+  static func pointIntervalDays(startDay: Date, endDay: Date) -> Int {
     let calendar = Calendar.current
-    let displayDays = calendar.dateComponents([.day], from: startDay, to: endDay).day ?? 0
-    // 1ヶ月以内は最大31件までポイント表示
-    if displayDays <= 31 {
-      return recordCount <= 31
+    let displayDays = max(1, calendar.dateComponents([.day], from: startDay, to: endDay).day ?? 0)
+
+    // 期間に応じて「何日ごとに1点」かを自動調整
+    let intervalDays: Int
+    switch displayDays {
+    case 0...14:
+      intervalDays = 1
+    case 15...31:
+      intervalDays = 5
+    case 32...92:
+      intervalDays = 4
+    case 93...183:
+      intervalDays = 7
+    case 184...365:
+      intervalDays = 14
+    case 366...730:
+      intervalDays = 30
+    default:
+      intervalDays = 45
     }
-    // 3ヶ月以内は最大45件までポイント表示
-    if displayDays <= 92 {
-      return recordCount <= 45
+    return max(1, intervalDays)
+  }
+
+  /// 期間に応じてデータポイントを間引く
+  /// - Parameters:
+  ///   - records: 表示対象レコード
+  ///   - startDay: 表示開始日
+  ///   - endDay: 表示終了日
+  /// - Returns: 表示するポイント用レコード
+  static func downsampledRecords(
+    _ records: [BatteryRecord],
+    startDay: Date,
+    endDay: Date
+  ) -> [BatteryRecord] {
+    let intervalDays = pointIntervalDays(startDay: startDay, endDay: endDay)
+    guard intervalDays > 1 else { return records }
+
+    let calendar = Calendar.current
+    var buckets: [String: [Int: BatteryRecord]] = [:]
+
+    for record in records {
+      let day = calendar.startOfDay(for: record.logDate)
+      let diff = calendar.dateComponents([.day], from: startDay, to: day).day ?? 0
+      let bucket = diff / intervalDays
+      var deviceBuckets = buckets[record.deviceName] ?? [:]
+      if deviceBuckets[bucket] == nil {
+        deviceBuckets[bucket] = record
+      }
+      buckets[record.deviceName] = deviceBuckets
     }
-    // 6ヶ月以内は最大60件までポイント表示
-    if displayDays <= 183 {
-      return recordCount <= 60
-    }
-    // 1年以内は最大90件までポイント表示
-    if displayDays <= 365 {
-      return recordCount <= 90
-    }
-    // 2年以内は最大120件までポイント表示
-    if displayDays <= 730 {
-      return recordCount <= 120
-    }
-    // それ以上は最大180件までポイント表示
-    return recordCount <= 180
+
+    return buckets
+      .values
+      .flatMap { deviceBuckets in
+        deviceBuckets.keys.sorted().compactMap { deviceBuckets[$0] }
+      }
+      .sorted { $0.logDate < $1.logDate }
   }
 
   // MARK: - 横軸ラベル間引き

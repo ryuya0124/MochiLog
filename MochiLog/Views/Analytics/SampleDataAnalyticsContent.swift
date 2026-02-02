@@ -59,20 +59,23 @@ struct SampleDataAnalyticsContent: View {
       // デバイス選択ピッカー
       DevicePickerView(deviceNames: deviceNames, selectedDevice: $selectedDevice)
 
-      // 期間計算
+      // 期間計算（共通ロジック）
+      let dates = filteredRecords.map { $0.logDate }
+      let window = ChartWindowNavigator.computeChartWindow(
+        recordDates: dates,
+        windowEnd: windowEnd,
+        range: selectedRange)
+
       let calendar = Calendar.current
-      let startDate = ChartWindowNavigator.windowStart(
-        for: windowEnd, range: selectedRange, allRecords: filteredRecords)
-      let startDay = calendar.startOfDay(for: startDate)
-      let endDay = calendar.startOfDay(for: windowEnd)
+      let startDay = window.startDay
+      let endDay = window.endDay
 
       let visibleRecords = filteredRecords.filter {
         let d = calendar.startOfDay(for: $0.logDate)
         return d >= startDay && d <= endDay
       }
 
-      let unit = ChartWindowNavigator.autoUnit(
-        for: visibleRecords, startDay: startDay, endDay: endDay)
+      let unit = window.unit
 
       // iPad: 2列レイアウト、iPhone: 1列レイアウト
       if horizontalSizeClass == .regular {
@@ -135,6 +138,13 @@ struct SampleDataAnalyticsContent: View {
         for: filteredRecords, range: selectedRange)
       // 自動でレンジを設定
       selectedRange = ChartWindowNavigator.autoRange(for: filteredRecords)
+    }
+    .onChange(of: selectedRange) { _, newValue in
+      windowEnd = ChartWindowNavigator.adjustedWindowEndForRangeChange(
+        range: newValue,
+        currentEnd: windowEnd,
+        records: filteredRecords
+      )
     }
   }
 }

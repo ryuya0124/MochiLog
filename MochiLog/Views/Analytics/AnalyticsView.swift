@@ -91,37 +91,11 @@ struct AnalyticsView: View {
         let filteredRecords =
           selectedDevice.map { device in records.filter { $0.deviceName == device } } ?? records
 
-        // 新しいレンジに対応する終了日を設定
-        let newWindowEnd: Date
-        let now = Date()
-
-        switch newValue {
-        case .oneMonth:
-          // 1ヶ月 → 月末を終了日に
-          newWindowEnd = ChartWindowNavigator.endOfMonth(for: now)
-        case .threeMonths:
-          // 3ヶ月 → 四半期末を終了日に
-          newWindowEnd = ChartWindowNavigator.endOfQuarter(for: now)
-        case .sixMonths:
-          // 6ヶ月 → 半年末を終了日に
-          newWindowEnd = ChartWindowNavigator.endOfHalfYear(for: now)
-        default:
-          // その他 → 現在のwindowEndを維持するか、データの有無を確認
-          let start = ChartWindowNavigator.windowStart(
-            for: windowEnd, range: newValue, allRecords: filteredRecords)
-          if ChartWindowNavigator.windowContainsData(
-            start: start, end: windowEnd, in: filteredRecords)
-          {
-            // 現在のwindowEndでデータがあればそのまま
-            newWindowEnd = windowEnd
-          } else {
-            // データがなければ初期化
-            newWindowEnd = ChartWindowNavigator.initializeWindowEnd(
-              for: filteredRecords, range: newValue)
-          }
-        }
-
-        windowEnd = newWindowEnd
+        windowEnd = ChartWindowNavigator.adjustedWindowEndForRangeChange(
+          range: newValue,
+          currentEnd: windowEnd,
+          records: filteredRecords
+        )
       }
       .navigationTitle(String(localized: "analytics", table: "Analytics"))
       .background(Color(.systemGroupedBackground))

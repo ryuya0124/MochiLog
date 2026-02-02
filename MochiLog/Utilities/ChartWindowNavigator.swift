@@ -4,6 +4,84 @@ import Foundation
 /// グラフの期間移動に関する共通ロジック
 struct ChartWindowNavigator {
 
+  // MARK: - 共通チャート計算
+
+  /// レンジに応じた実効レンジを決定（autoの場合のみ）
+  static func effectiveRange(for recordDates: [Date], range: RangePreset) -> RangePreset {
+    guard range == .auto else { return range }
+    let now = Date()
+    let pastDates = recordDates.filter { $0 <= now }
+    let sourceDates = pastDates.isEmpty ? recordDates : pastDates
+    return autoRange(forDates: sourceDates)
+  }
+
+  /// レンジに応じた実効終了日を決定（autoの場合のみ、未来日を回避）
+  static func effectiveEndDate(
+    for recordDates: [Date],
+    windowEnd: Date,
+    range: RangePreset
+  ) -> Date {
+    guard range == .auto else { return windowEnd }
+    let now = Date()
+    if windowEnd <= now { return windowEnd }
+    let pastDates = recordDates.filter { $0 <= now }
+    if let latestPast = pastDates.max() { return latestPast }
+    return min(windowEnd, now)
+  }
+
+  /// recordDatesに基づいてウィンドウ開始・終了日と表示単位を計算
+  static func computeChartWindow(
+    recordDates: [Date],
+    windowEnd: Date,
+    range: RangePreset
+  ) -> (startDay: Date, endDay: Date, unit: AppSettings.ChartUnit) {
+    let calendar = Calendar.current
+    let effectiveRange = effectiveRange(for: recordDates, range: range)
+    let effectiveEnd = effectiveEndDate(for: recordDates, windowEnd: windowEnd, range: range)
+    let startDate = windowStart(for: effectiveEnd, range: effectiveRange, allRecords: [])
+    let startDay = calendar.startOfDay(for: startDate)
+    let endDay = calendar.startOfDay(for: effectiveEnd)
+
+    let visibleDates = recordDates.filter {
+      let d = calendar.startOfDay(for: $0)
+      return d >= startDay && d <= endDay
+    }
+
+    let unit = autoUnit(forDates: visibleDates, startDay: startDay, endDay: endDay)
+    return (startDay, endDay, unit)
+  }
+
+  /// レンジ変更時の終了日を共通で算出
+  static func adjustedWindowEndForRangeChange(
+    range: RangePreset,
+    currentEnd: Date,
+    records: [BatteryRecord]
+  ) -> Date {
+    let now = Date()
+
+    switch range {
+    case .oneMonth:
+      let endOfCurrentMonth = endOfMonth(for: now)
+      let start = windowStart(for: endOfCurrentMonth, range: range, allRecords: records)
+      if windowContainsData(start: start, end: endOfCurrentMonth, in: records) {
+        return endOfCurrentMonth
+      }
+      return initializeWindowEnd(for: records, range: range)
+    case .threeMonths:
+      return endOfQuarter(for: now)
+    case .sixMonths:
+      return endOfHalfYear(for: now)
+    case .oneYear:
+      return endOfYear(for: now)
+    default:
+      let start = windowStart(for: currentEnd, range: range, allRecords: records)
+      if windowContainsData(start: start, end: currentEnd, in: records) {
+        return currentEnd
+      }
+      return initializeWindowEnd(for: records, range: range)
+    }
+  }
+
   // MARK: - 期間コンポーネント
 
   /// 選択されたレンジに対応するDateComponentsを返す
@@ -352,6 +430,21 @@ struct ChartWindowNavigator {
     return .threeYears
   }
 
+  /// 日付配列に基づいて初期レンジを決定
+  static func autoRange(forDates recordDates: [Date]) -> RangePreset {
+    guard let first = recordDates.min(), let last = recordDates.max() else { return .oneMonth }
+    let days = Calendar.current.dateComponents([.day], from: first, to: last).day ?? 0
+
+    if days <= 7 { return .oneWeek }
+    if days <= 14 { return .twoWeeks }
+    if days <= 30 { return .oneMonth }
+    if days <= 90 { return .threeMonths }
+    if days <= 180 { return .sixMonths }
+    if days <= 365 { return .oneYear }
+    if days <= 730 { return .twoYears }
+    return .threeYears
+  }
+
   // MARK: - 自動単位決定
 
   /// 期間に応じて表示単位を決定
@@ -364,7 +457,23 @@ struct ChartWindowNavigator {
 
     if days <= 2 && count > 24 { return .hour }
     if days <= 14 { return .day }
-    if days <= 120 { return .week }
+    if days <= 120 { return .day }
+    if days <= 730 { return .week }
+    return .month
+  }
+
+  /// 日付配列に基づいて表示単位を決定
+  static func autoUnit(forDates dates: [Date], startDay: Date, endDay: Date)
+    -> AppSettings.ChartUnit
+  {
+    let calendar = Calendar.current
+    let days = calendar.dateComponents([.day], from: startDay, to: endDay).day ?? 0
+    let count = dates.count
+
+    if days <= 2 && count > 24 { return .hour }
+    if days <= 14 { return .day }
+    if days <= 120 { return .day }
+    if days <= 730 { return .week }
     return .month
   }
 

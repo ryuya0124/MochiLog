@@ -47,13 +47,15 @@ struct AnalyticsContentView: View {
 
   private var canMoveNext: Bool {
     ChartWindowNavigator.canMoveNext(
-      currentEnd: effectiveWindowEndForNavigation, range: effectiveRangeForNavigation,
+      currentEnd: effectiveWindowEndForNavigation,
+      range: effectiveRangeForNavigation,
       records: filteredRecords)
   }
 
   private var canMovePrevious: Bool {
     ChartWindowNavigator.canMovePrevious(
-      currentEnd: effectiveWindowEndForNavigation, range: effectiveRangeForNavigation,
+      currentEnd: effectiveWindowEndForNavigation,
+      range: effectiveRangeForNavigation,
       records: filteredRecords)
   }
 
@@ -229,150 +231,11 @@ struct AnalyticsContentView: View {
     windowEnd: Date,
     selectedRange: RangePreset
   ) -> (startDay: Date, endDay: Date, unit: AppSettings.ChartUnit) {
-    let calendar = Calendar.current
-    let end = windowEnd
-
-    func startDateForRange(_ range: RangePreset, endDate: Date) -> Date {
-      switch range {
-      case .auto:
-        return calendar.date(byAdding: .month, value: -1, to: endDate) ?? endDate
-      case .oneWeek:
-        return calendar.date(byAdding: .day, value: -7, to: endDate) ?? endDate
-      case .twoWeeks:
-        return calendar.date(byAdding: .day, value: -14, to: endDate) ?? endDate
-      case .oneMonth:
-        // カレンダー月に固定：終了日の月の1日を開始日とする
-        let components = calendar.dateComponents([.year, .month], from: endDate)
-        return calendar.date(from: components) ?? endDate
-      case .threeMonths:
-        // 四半期境界に固定：Q1(1-3月), Q2(4-6月), Q3(7-9月), Q4(10-12月)
-        let month = calendar.component(.month, from: endDate)
-        let year = calendar.component(.year, from: endDate)
-        let quarterStartMonth = ((month - 1) / 3) * 3 + 1  // 1, 4, 7, 10
-        var components = DateComponents()
-        components.year = year
-        components.month = quarterStartMonth
-        components.day = 1
-        return calendar.date(from: components) ?? endDate
-      case .sixMonths:
-        // 半年基準：前半（1-6月）か後半（7-12月）の開始月を返す
-        let month = calendar.component(.month, from: endDate)
-        let year = calendar.component(.year, from: endDate)
-        var components = DateComponents()
-        components.year = year
-        components.month = month <= 6 ? 1 : 7  // 前半なら1月、後半なら7月
-        components.day = 1
-        return calendar.date(from: components) ?? endDate
-      case .oneYear:
-        // カレンダー年に固定：終了日の年の1月1日を開始日とする
-        let components = calendar.dateComponents([.year], from: endDate)
-        return calendar.date(from: components) ?? endDate
-      case .twoYears:
-        // 2年前の1月1日を開始日とする
-        let year = calendar.component(.year, from: endDate)
-        var components = DateComponents()
-        components.year = year - 1
-        components.month = 1
-        components.day = 1
-        return calendar.date(from: components) ?? endDate
-      case .threeYears:
-        // 2年前の1月1日を開始日とする（3年分表示）
-        let year = calendar.component(.year, from: endDate)
-        var components = DateComponents()
-        components.year = year - 2
-        components.month = 1
-        components.day = 1
-        return calendar.date(from: components) ?? endDate
-      }
-    }
-
-    // 自動レンジの場合は最新データ日を終了日として使用
-    let effectiveEndDate: Date = {
-      guard selectedRange == .auto else { return end }
-      let now = Date()
-      if end <= now { return end }
-      let pastInfos = recordInfos.filter { $0.logDate <= now }
-      if let latestPast = pastInfos.max(by: { $0.logDate < $1.logDate })?.logDate {
-        return latestPast
-      }
-      return min(end, now)
-    }()
-
-    // 開始日を計算
-    let startDate: Date = {
-      switch selectedRange {
-      case .auto:
-        // 自動：データ分布に応じた実効レンジを適用
-        let now = Date()
-        // AnalyticsContentViewではrecordInfosはタプルの配列なのでフィルタリング
-        let pastInfos = recordInfos.filter { $0.logDate <= now }
-
-        guard let first = pastInfos.min(by: { $0.logDate < $1.logDate })?.logDate,
-          let last = pastInfos.max(by: { $0.logDate < $1.logDate })?.logDate
-        else { return startDateForRange(.oneMonth, endDate: effectiveEndDate) }
-
-        let days = calendar.dateComponents([.day], from: first, to: last).day ?? 0
-
-        let effectiveRange: RangePreset
-        if days <= 7 {
-          effectiveRange = .oneWeek
-        } else if days <= 14 {
-          effectiveRange = .twoWeeks
-        } else if days <= 30 {
-          effectiveRange = .oneMonth
-        } else if days <= 90 {
-          effectiveRange = .threeMonths
-        } else if days <= 180 {
-          effectiveRange = .sixMonths
-        } else if days <= 365 {
-          effectiveRange = .oneYear
-        } else if days <= 730 {
-          effectiveRange = .twoYears
-        } else {
-          effectiveRange = .threeYears
-        }
-
-        return startDateForRange(effectiveRange, endDate: effectiveEndDate)
-      case .oneWeek, .twoWeeks, .oneMonth, .threeMonths, .sixMonths, .oneYear, .twoYears,
-        .threeYears:
-        return startDateForRange(selectedRange, endDate: end)
-      }
-    }()
-
-    let startDay = calendar.startOfDay(for: startDate)
-    let endDay = calendar.startOfDay(for: effectiveEndDate)
-
-    // 期間内のレコードをフィルタリング
-    let visibleInfos = recordInfos.filter { info in
-      let d = calendar.startOfDay(for: info.logDate)
-      return d >= startDay && d <= endDay
-    }
-
-    // 表示単位を自動決定
-    let unit = autoUnit(for: visibleInfos)
-
-    return (startDay, endDay, unit)
-  }
-
-  /// レコードに応じて表示単位を自動決定する
-  nonisolated private static func autoUnit(for recordInfos: [(logDate: Date, deviceName: String)])
-    -> AppSettings.ChartUnit
-  {
-    guard !recordInfos.isEmpty else { return .day }
-
-    let calendar = Calendar.current
-    let first = recordInfos.min(by: { $0.logDate < $1.logDate })!.logDate
-    let last = recordInfos.max(by: { $0.logDate < $1.logDate })!.logDate
-    let days = calendar.dateComponents([.day], from: first, to: last).day ?? 0
-    let count = recordInfos.count
-
-    // 短い期間で多数のサンプルがある場合は hour
-    if days <= 2 && count > 24 { return .hour }
-    // 2週間以下は day が見やすい
-    if days <= 14 { return .day }
-    // 4ヶ月以下は週次表示
-    if days <= 120 { return .week }
-    // それ以上は月次表示
-    return .month
+    let dates = recordInfos.map { $0.logDate }
+    return ChartWindowNavigator.computeChartWindow(
+      recordDates: dates,
+      windowEnd: windowEnd,
+      range: selectedRange
+    )
   }
 }
