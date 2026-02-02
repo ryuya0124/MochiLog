@@ -26,21 +26,29 @@ struct AnalyticsContentView: View {
   }
 
   // MARK: - ナビゲーション
+  private var effectiveRangeForNavigation: RangePreset {
+    if selectedRange != .auto { return selectedRange }
+    let now = Date()
+    let pastRecords = filteredRecords.filter { $0.logDate <= now }
+    let sourceRecords = pastRecords.isEmpty ? filteredRecords : pastRecords
+    return ChartWindowNavigator.autoRange(for: sourceRecords)
+  }
+
   private var canMoveNext: Bool {
     ChartWindowNavigator.canMoveNext(
-      currentEnd: windowEnd, range: selectedRange, records: filteredRecords)
+      currentEnd: windowEnd, range: effectiveRangeForNavigation, records: filteredRecords)
   }
 
   private var canMovePrevious: Bool {
     ChartWindowNavigator.canMovePrevious(
-      currentEnd: windowEnd, range: selectedRange, records: filteredRecords)
+      currentEnd: windowEnd, range: effectiveRangeForNavigation, records: filteredRecords)
   }
 
   private func shiftWindow(backward: Bool) {
     windowEnd = ChartWindowNavigator.shiftWindow(
       currentEnd: windowEnd,
       backward: backward,
-      range: selectedRange,
+      range: effectiveRangeForNavigation,
       records: filteredRecords
     )
   }
@@ -211,76 +219,114 @@ struct AnalyticsContentView: View {
     let calendar = Calendar.current
     let end = windowEnd
 
-    // 開始日を計算
-    let startDate: Date = {
-      switch selectedRange {
+    func startDateForRange(_ range: RangePreset, endDate: Date) -> Date {
+      switch range {
       case .auto:
-        // 自動：現在時刻以前のデータの最も古い日付を開始日とする
-        // ただし最大で3年前までとする
-        let now = Date()
-        let threeYearsAgo = calendar.date(byAdding: .year, value: -3, to: end) ?? end
-
-        // AnalyticsContentViewではrecordInfosはタプルの配列なのでフィルタリング
-        let pastInfos = recordInfos.filter { $0.logDate <= now }
-
-        if let oldest = pastInfos.min(by: { $0.logDate < $1.logDate })?.logDate {
-          let oldestStart = calendar.startOfDay(for: oldest)
-          // データ開始日と3年前の新しい方を採用
-          return max(oldestStart, threeYearsAgo)
-        }
-        return calendar.date(byAdding: .month, value: -1, to: end) ?? end
+        return calendar.date(byAdding: .month, value: -1, to: endDate) ?? endDate
       case .oneWeek:
-        return calendar.date(byAdding: .day, value: -7, to: end) ?? end
+        return calendar.date(byAdding: .day, value: -7, to: endDate) ?? endDate
       case .twoWeeks:
-        return calendar.date(byAdding: .day, value: -14, to: end) ?? end
+        return calendar.date(byAdding: .day, value: -14, to: endDate) ?? endDate
       case .oneMonth:
         // カレンダー月に固定：終了日の月の1日を開始日とする
-        let components = calendar.dateComponents([.year, .month], from: end)
-        return calendar.date(from: components) ?? end
+        let components = calendar.dateComponents([.year, .month], from: endDate)
+        return calendar.date(from: components) ?? endDate
       case .threeMonths:
         // 四半期境界に固定：Q1(1-3月), Q2(4-6月), Q3(7-9月), Q4(10-12月)
-        let month = calendar.component(.month, from: end)
-        let year = calendar.component(.year, from: end)
+        let month = calendar.component(.month, from: endDate)
+        let year = calendar.component(.year, from: endDate)
         let quarterStartMonth = ((month - 1) / 3) * 3 + 1  // 1, 4, 7, 10
         var components = DateComponents()
         components.year = year
         components.month = quarterStartMonth
         components.day = 1
-        return calendar.date(from: components) ?? end
+        return calendar.date(from: components) ?? endDate
       case .sixMonths:
         // 半年基準：前半（1-6月）か後半（7-12月）の開始月を返す
-        let month = calendar.component(.month, from: end)
-        let year = calendar.component(.year, from: end)
+        let month = calendar.component(.month, from: endDate)
+        let year = calendar.component(.year, from: endDate)
         var components = DateComponents()
         components.year = year
         components.month = month <= 6 ? 1 : 7  // 前半なら1月、後半なら7月
         components.day = 1
-        return calendar.date(from: components) ?? end
+        return calendar.date(from: components) ?? endDate
       case .oneYear:
         // カレンダー年に固定：終了日の年の1月1日を開始日とする
-        let components = calendar.dateComponents([.year], from: end)
-        return calendar.date(from: components) ?? end
+        let components = calendar.dateComponents([.year], from: endDate)
+        return calendar.date(from: components) ?? endDate
       case .twoYears:
         // 2年前の1月1日を開始日とする
-        let year = calendar.component(.year, from: end)
+        let year = calendar.component(.year, from: endDate)
         var components = DateComponents()
         components.year = year - 1
         components.month = 1
         components.day = 1
-        return calendar.date(from: components) ?? end
+        return calendar.date(from: components) ?? endDate
       case .threeYears:
         // 2年前の1月1日を開始日とする（3年分表示）
-        let year = calendar.component(.year, from: end)
+        let year = calendar.component(.year, from: endDate)
         var components = DateComponents()
         components.year = year - 2
         components.month = 1
         components.day = 1
-        return calendar.date(from: components) ?? end
+        return calendar.date(from: components) ?? endDate
+      }
+    }
+
+    // 自動レンジの場合は最新データ日を終了日として使用
+    let effectiveEndDate: Date = {
+      guard selectedRange == .auto else { return end }
+      let now = Date()
+      let pastInfos = recordInfos.filter { $0.logDate <= now }
+      if let latestPast = pastInfos.max(by: { $0.logDate < $1.logDate })?.logDate {
+        return latestPast
+      }
+      return min(end, now)
+    }()
+
+    // 開始日を計算
+    let startDate: Date = {
+      switch selectedRange {
+      case .auto:
+        // 自動：データ分布に応じた実効レンジを適用
+        let now = Date()
+        // AnalyticsContentViewではrecordInfosはタプルの配列なのでフィルタリング
+        let pastInfos = recordInfos.filter { $0.logDate <= now }
+
+        guard let first = pastInfos.min(by: { $0.logDate < $1.logDate })?.logDate,
+          let last = pastInfos.max(by: { $0.logDate < $1.logDate })?.logDate
+        else { return startDateForRange(.oneMonth, endDate: effectiveEndDate) }
+
+        let days = calendar.dateComponents([.day], from: first, to: last).day ?? 0
+
+        let effectiveRange: RangePreset
+        if days <= 7 {
+          effectiveRange = .oneWeek
+        } else if days <= 14 {
+          effectiveRange = .twoWeeks
+        } else if days <= 30 {
+          effectiveRange = .oneMonth
+        } else if days <= 90 {
+          effectiveRange = .threeMonths
+        } else if days <= 180 {
+          effectiveRange = .sixMonths
+        } else if days <= 365 {
+          effectiveRange = .oneYear
+        } else if days <= 730 {
+          effectiveRange = .twoYears
+        } else {
+          effectiveRange = .threeYears
+        }
+
+        return startDateForRange(effectiveRange, endDate: effectiveEndDate)
+      case .oneWeek, .twoWeeks, .oneMonth, .threeMonths, .sixMonths, .oneYear, .twoYears,
+        .threeYears:
+        return startDateForRange(selectedRange, endDate: end)
       }
     }()
 
     let startDay = calendar.startOfDay(for: startDate)
-    let endDay = calendar.startOfDay(for: end)
+    let endDay = calendar.startOfDay(for: effectiveEndDate)
 
     // 期間内のレコードをフィルタリング
     let visibleInfos = recordInfos.filter { info in

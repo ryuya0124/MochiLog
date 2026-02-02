@@ -39,11 +39,9 @@ struct ChartWindowNavigator {
     let calendar = Calendar.current
     switch range {
     case .auto:
-      // 自動：全データの最も古い日付を開始日とする
-      if let oldest = allRecords.min(by: { $0.logDate < $1.logDate })?.logDate {
-        return calendar.startOfDay(for: oldest)
-      }
-      return calendar.date(byAdding: .month, value: -1, to: endDate) ?? endDate
+      // 自動：データ分布に応じた実効レンジを適用
+      let effectiveRange = autoRange(for: allRecords)
+      return windowStart(for: endDate, range: effectiveRange, allRecords: allRecords)
     case .oneWeek:
       return calendar.date(byAdding: .day, value: -7, to: endDate) ?? endDate
     case .twoWeeks:

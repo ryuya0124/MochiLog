@@ -16,8 +16,28 @@ struct ChartAxisHelper {
   static func shouldShowDataPoints(recordCount: Int, startDay: Date, endDay: Date) -> Bool {
     let calendar = Calendar.current
     let displayDays = calendar.dateComponents([.day], from: startDay, to: endDay).day ?? 0
-    // 表示期間が60日未満、かつレコード数が15個以下の場合のみポイントを表示
-    return recordCount <= 15 && displayDays < 60
+    // 1ヶ月以内は最大31件までポイント表示
+    if displayDays <= 31 {
+      return recordCount <= 31
+    }
+    // 3ヶ月以内は最大45件までポイント表示
+    if displayDays <= 92 {
+      return recordCount <= 45
+    }
+    // 6ヶ月以内は最大60件までポイント表示
+    if displayDays <= 183 {
+      return recordCount <= 60
+    }
+    // 1年以内は最大90件までポイント表示
+    if displayDays <= 365 {
+      return recordCount <= 90
+    }
+    // 2年以内は最大120件までポイント表示
+    if displayDays <= 730 {
+      return recordCount <= 120
+    }
+    // それ以上は最大180件までポイント表示
+    return recordCount <= 180
   }
 
   // MARK: - 横軸ラベル間引き

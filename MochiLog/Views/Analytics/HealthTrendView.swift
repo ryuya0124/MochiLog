@@ -4,6 +4,7 @@ import SwiftUI
 struct HealthTrendView: View {
   let visibleRecords: [BatteryRecord]
   let startDay: Date
+            .interpolationMethod(.catmullRom)
   let endDay: Date
   let unit: AppSettings.ChartUnit
   @Binding var selectedRange: RangePreset
@@ -113,7 +114,7 @@ struct HealthTrendView: View {
                 } label: {
                   Image(systemName: "chevron.left")
                 }
-                .disabled(!canMovePrevious || selectedRange == .auto)
+                .disabled(!canMovePrevious)
 
                 Picker("", selection: $selectedRange) {
                   ForEach(RangePreset.manualCases) { preset in
@@ -128,7 +129,7 @@ struct HealthTrendView: View {
                 } label: {
                   Image(systemName: "chevron.right")
                 }
-                .disabled(!canMoveNext || selectedRange == .auto)
+                .disabled(!canMoveNext)
               }
             }
           }

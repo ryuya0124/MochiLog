@@ -59,13 +59,19 @@ struct CycleTrendView: View {
   private var canMoveNext: Bool {
     sharedCanMoveNext
       ?? ChartWindowNavigator.canMoveNext(
-        currentEnd: localWindowEnd, range: localSelectedRange, records: allRecords)
+        currentEnd: localWindowEnd, range: effectiveLocalRange, records: allRecords)
   }
 
   private var canMovePrevious: Bool {
     sharedCanMovePrevious
       ?? ChartWindowNavigator.canMovePrevious(
-        currentEnd: localWindowEnd, range: localSelectedRange, records: allRecords)
+        currentEnd: localWindowEnd, range: effectiveLocalRange, records: allRecords)
+  }
+
+  private var effectiveLocalRange: RangePreset {
+    localSelectedRange == .auto
+      ? ChartWindowNavigator.autoRange(for: allRecords)
+      : localSelectedRange
   }
 
   private func shiftWindow(backward: Bool) {
@@ -75,7 +81,7 @@ struct CycleTrendView: View {
       localWindowEnd = ChartWindowNavigator.shiftWindow(
         currentEnd: localWindowEnd,
         backward: backward,
-        range: localSelectedRange,
+        range: effectiveLocalRange,
         records: allRecords
       )
     }
@@ -130,7 +136,7 @@ struct CycleTrendView: View {
                 } label: {
                   Image(systemName: "chevron.left")
                 }
-                .disabled(!canMovePrevious || localSelectedRange == .auto)
+                .disabled(!canMovePrevious)
 
                 Picker(
                   "",
@@ -155,7 +161,7 @@ struct CycleTrendView: View {
                 } label: {
                   Image(systemName: "chevron.right")
                 }
-                .disabled(!canMoveNext || localSelectedRange == .auto)
+                .disabled(!canMoveNext)
               }
             }
           }
@@ -177,6 +183,7 @@ struct CycleTrendView: View {
             .foregroundStyle(
               by: .value(String(localized: "device_name", table: "Common"), record.deviceName)
             )
+            .interpolationMethod(.catmullRom)
             .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
             .opacity(animateChart ? 1 : 0)
 
