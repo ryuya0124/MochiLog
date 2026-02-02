@@ -391,6 +391,11 @@ struct ChartWindowNavigator {
       return endOfHalfYear(for: now)
     }
 
+    // 1年選択時は年末を終了日とする（完全な1年を表示）
+    if range == .oneYear {
+      return endOfYear(for: now)
+    }
+
     // 3年選択時は最新データの日付を終了日とする
     if range == .threeYears {
       return records.max(by: { $0.logDate < $1.logDate })?.logDate ?? Date()
