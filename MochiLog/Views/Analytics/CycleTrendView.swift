@@ -34,9 +34,9 @@ struct CycleTrendView: View {
   // 現在のウィンドウに含まれるレコードを計算
   private var visibleRecords: [BatteryRecord] {
     let calendar = Calendar.current
-    let startDate = windowStart(for: windowEnd, range: selectedRange)
+    let startDate = windowStart(for: effectiveEndDate, range: effectiveSelectedRange)
     let startDay = calendar.startOfDay(for: startDate)
-    let endDay = calendar.startOfDay(for: windowEnd)
+    let endDay = calendar.startOfDay(for: effectiveEndDate)
     return allRecords.filter {
       let d = calendar.startOfDay(for: $0.logDate)
       return d >= startDay && d <= endDay
@@ -44,11 +44,12 @@ struct CycleTrendView: View {
   }
 
   private var startDay: Date {
-    Calendar.current.startOfDay(for: windowStart(for: windowEnd, range: selectedRange))
+    Calendar.current.startOfDay(
+      for: windowStart(for: effectiveEndDate, range: effectiveSelectedRange))
   }
 
   private var endDay: Date {
-    Calendar.current.startOfDay(for: windowEnd)
+    Calendar.current.startOfDay(for: effectiveEndDate)
   }
 
   // ウィンドウ計算ヘルパー
@@ -59,19 +60,51 @@ struct CycleTrendView: View {
   private var canMoveNext: Bool {
     sharedCanMoveNext
       ?? ChartWindowNavigator.canMoveNext(
-        currentEnd: localWindowEnd, range: effectiveLocalRange, records: allRecords)
+        currentEnd: effectiveLocalWindowEnd, range: effectiveLocalRange, records: allRecords)
   }
 
   private var canMovePrevious: Bool {
     sharedCanMovePrevious
       ?? ChartWindowNavigator.canMovePrevious(
-        currentEnd: localWindowEnd, range: effectiveLocalRange, records: allRecords)
+        currentEnd: effectiveLocalWindowEnd, range: effectiveLocalRange, records: allRecords)
   }
 
   private var effectiveLocalRange: RangePreset {
-    localSelectedRange == .auto
-      ? ChartWindowNavigator.autoRange(for: allRecords)
-      : localSelectedRange
+    guard localSelectedRange == .auto else { return localSelectedRange }
+    let now = Date()
+    let pastRecords = allRecords.filter { $0.logDate <= now }
+    let sourceRecords = pastRecords.isEmpty ? allRecords : pastRecords
+    return ChartWindowNavigator.autoRange(for: sourceRecords)
+  }
+
+  private var effectiveLocalWindowEnd: Date {
+    guard localSelectedRange == .auto else { return localWindowEnd }
+    let now = Date()
+    if localWindowEnd <= now { return localWindowEnd }
+    let pastRecords = allRecords.filter { $0.logDate <= now }
+    if let latestPast = pastRecords.max(by: { $0.logDate < $1.logDate })?.logDate {
+      return latestPast
+    }
+    return min(localWindowEnd, now)
+  }
+
+  private var effectiveSelectedRange: RangePreset {
+    guard selectedRange == .auto else { return selectedRange }
+    let now = Date()
+    let pastRecords = allRecords.filter { $0.logDate <= now }
+    let sourceRecords = pastRecords.isEmpty ? allRecords : pastRecords
+    return ChartWindowNavigator.autoRange(for: sourceRecords)
+  }
+
+  private var effectiveEndDate: Date {
+    guard selectedRange == .auto else { return windowEnd }
+    let now = Date()
+    if windowEnd <= now { return windowEnd }
+    let pastRecords = allRecords.filter { $0.logDate <= now }
+    if let latestPast = pastRecords.max(by: { $0.logDate < $1.logDate })?.logDate {
+      return latestPast
+    }
+    return min(windowEnd, now)
   }
 
   private func shiftWindow(backward: Bool) {
@@ -79,7 +112,7 @@ struct CycleTrendView: View {
       sharedShift(backward)
     } else {
       localWindowEnd = ChartWindowNavigator.shiftWindow(
-        currentEnd: localWindowEnd,
+        currentEnd: effectiveLocalWindowEnd,
         backward: backward,
         range: effectiveLocalRange,
         records: allRecords

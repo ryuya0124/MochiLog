@@ -4,7 +4,6 @@ import SwiftUI
 struct HealthTrendView: View {
   let visibleRecords: [BatteryRecord]
   let startDay: Date
-            .interpolationMethod(.catmullRom)
   let endDay: Date
   let unit: AppSettings.ChartUnit
   @Binding var selectedRange: RangePreset

@@ -34,19 +34,32 @@ struct AnalyticsContentView: View {
     return ChartWindowNavigator.autoRange(for: sourceRecords)
   }
 
+  private var effectiveWindowEndForNavigation: Date {
+    if selectedRange != .auto { return windowEnd }
+    let now = Date()
+    if windowEnd <= now { return windowEnd }
+    let pastRecords = filteredRecords.filter { $0.logDate <= now }
+    if let latestPast = pastRecords.max(by: { $0.logDate < $1.logDate })?.logDate {
+      return latestPast
+    }
+    return min(windowEnd, now)
+  }
+
   private var canMoveNext: Bool {
     ChartWindowNavigator.canMoveNext(
-      currentEnd: windowEnd, range: effectiveRangeForNavigation, records: filteredRecords)
+      currentEnd: effectiveWindowEndForNavigation, range: effectiveRangeForNavigation,
+      records: filteredRecords)
   }
 
   private var canMovePrevious: Bool {
     ChartWindowNavigator.canMovePrevious(
-      currentEnd: windowEnd, range: effectiveRangeForNavigation, records: filteredRecords)
+      currentEnd: effectiveWindowEndForNavigation, range: effectiveRangeForNavigation,
+      records: filteredRecords)
   }
 
   private func shiftWindow(backward: Bool) {
     windowEnd = ChartWindowNavigator.shiftWindow(
-      currentEnd: windowEnd,
+      currentEnd: effectiveWindowEndForNavigation,
       backward: backward,
       range: effectiveRangeForNavigation,
       records: filteredRecords
@@ -277,6 +290,7 @@ struct AnalyticsContentView: View {
     let effectiveEndDate: Date = {
       guard selectedRange == .auto else { return end }
       let now = Date()
+      if end <= now { return end }
       let pastInfos = recordInfos.filter { $0.logDate <= now }
       if let latestPast = pastInfos.max(by: { $0.logDate < $1.logDate })?.logDate {
         return latestPast
