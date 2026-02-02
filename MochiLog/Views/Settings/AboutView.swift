@@ -18,15 +18,19 @@ struct AboutView: View {
       Section {
         Button(action: { showingTermsOfUse = true }) {
           Label(String(localized: "terms_of_use", table: "Legal"), systemImage: "doc.plaintext")
+            .foregroundStyle(.primary)
         }
 
         Button(action: { showingPrivacyPolicy = true }) {
           Label(
-            String(localized: "privacy_policy", table: "Legal"), systemImage: "hand.raised.fill")
+            String(localized: "privacy_policy", table: "Legal"), systemImage: "hand.raised.fill"
+          )
+          .foregroundStyle(.primary)
         }
 
         Button(action: { showingLicenses = true }) {
           Label(String(localized: "licenses", table: "Settings"), systemImage: "doc.text")
+            .foregroundStyle(.primary)
         }
       }
 
@@ -34,6 +38,7 @@ struct AboutView: View {
       Section {
         Link(destination: URL(string: "https://github.com/ryuya0124/MochiLog")!) {
           Label(String(localized: "view_on_github", table: "Support"), systemImage: "link")
+            .foregroundStyle(.primary)
         }
 
         LabeledContent(String(localized: "app_version", table: "Settings"), value: appVersion)

@@ -167,6 +167,7 @@ struct LicenseDetailView: View {
               Text(urlString)
                 .font(.caption)
             }
+            .foregroundStyle(.primary)
           }
         }
       }

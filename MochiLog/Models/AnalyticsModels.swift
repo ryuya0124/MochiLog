@@ -15,9 +15,12 @@ enum RangePreset: String, CaseIterable, Identifiable {
 
   var id: String { self.rawValue }
 
-  /// 手動選択用のケースリスト（2週間を除外）
+  /// 手動選択用のケースリスト
   static var manualCases: [RangePreset] {
-    [.auto, .oneWeek, .oneMonth, .threeMonths, .sixMonths, .oneYear, .twoYears, .threeYears]
+    [
+      .auto, .oneWeek, .twoWeeks, .oneMonth, .threeMonths, .sixMonths, .oneYear, .twoYears,
+      .threeYears,
+    ]
   }
 
   /// ローカライズされた表示名
