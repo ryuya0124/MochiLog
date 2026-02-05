@@ -1,3 +1,4 @@
+import Combine
 import SwiftData
 import SwiftUI
 import WatchConnectivity
@@ -193,7 +194,7 @@ struct MochiLogApp: App {
 
 /// アプリのルートビュー。iCloud設定に応じてModelContainerを動的に切り替える責務を持つ。
 struct MochiLogRootView: View {
-  @ObservedObject private var appSettings = AppSettings.shared
+  private let appSettings = AppSettings.shared
   @State private var container: ModelContainer?
   @State private var viewID = UUID()
   @State private var isReloading = false
@@ -246,7 +247,7 @@ struct MochiLogRootView: View {
         .transition(.opacity.animation(.easeInOut(duration: 0.5)))
       }
     }
-    .onChange(of: appSettings.iCloudSyncEnabled) { _, _ in
+    .onReceive(appSettings.$iCloudSyncEnabled.removeDuplicates().dropFirst()) { _ in
       print("iCloud設定変更検知 - RootView再構築開始")
       // タブインデックスを保存してリロード後に復元
       let currentTabIndex = appSettings.selectedTabIndex

@@ -1,4 +1,5 @@
 import Charts
+import Combine
 import SwiftData
 // HomeView.swift
 // 別ファイルへ分離
@@ -7,20 +8,17 @@ import UniformTypeIdentifiers
 
 // MARK: - メインタブビュー
 struct MainTabView: View {
-  @StateObject private var appSettings = AppSettings.shared
-  private let recordDataManager = RecordDataManager.shared
+  private let appSettings = AppSettings.shared
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @State private var showingTutorial = false
   @State private var selectedTab: AppTab
-
-  /// SwiftDataから全レコードを取得（降順：最新が先頭）
-  @Query(sort: \BatteryRecord.logDate, order: .reverse)
-  private var records: [BatteryRecord]
+  @State private var accentColor: AppSettings.ThemeColor
 
   init() {
     // AppSettings.selectedTabIndexから初期値を取得
     let savedIndex = AppSettings.shared.selectedTabIndex
     _selectedTab = State(initialValue: AppTab(rawValue: savedIndex) ?? .home)
+    _accentColor = State(initialValue: AppSettings.shared.accentColor)
   }
 
   /// タブの定義
@@ -49,7 +47,10 @@ struct MainTabView: View {
   }
 
   var body: some View {
-    Group {
+    let _ = print("[Performance] MainTabView.body構築開始")
+    let startTime = CFAbsoluteTimeGetCurrent()
+
+    return Group {
       if #available(iOS 18.0, *) {
         // iOS 18+: sidebarAdaptable スタイル（サイドバーを閉じると上部にタブバー）
         modernTabView
@@ -61,17 +62,15 @@ struct MainTabView: View {
         legacyTabView
       }
     }
+    .background(RecordsObserverView())
     .onAppear {
+      let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
+      print("[Performance] MainTabView.body構築完了: \(String(format: "%.2f", elapsed))ms")
+
       // 初回起動時にチュートリアルを表示
       if !appSettings.hasCompletedTutorial {
         showingTutorial = true
       }
-      // RecordDataManagerを初期化
-      recordDataManager.updateRecords(records)
-    }
-    .onChange(of: records) { _, newRecords in
-      // レコードが変更されたらRecordDataManagerを更新
-      recordDataManager.updateRecords(newRecords)
     }
     .onChange(of: selectedTab) { oldValue, newValue in
       print("[Performance] タブ切り替え: \(oldValue.rawValue) -> \(newValue.rawValue)")
@@ -80,10 +79,13 @@ struct MainTabView: View {
       TutorialView()
     }
     // AppSettings.selectedTabIndexの変更を監視してselectedTabに反映
-    .onChange(of: appSettings.selectedTabIndex) { _, newValue in
+    .onReceive(appSettings.$selectedTabIndex.removeDuplicates()) { newValue in
       if let newTab = AppTab(rawValue: newValue), newTab != selectedTab {
         selectedTab = newTab
       }
+    }
+    .onReceive(appSettings.$accentColor.removeDuplicates()) { newValue in
+      accentColor = newValue
     }
     // selectedTabの変更をselectedTabIndexに反映
     .onChange(of: selectedTab) { _, newValue in
@@ -108,7 +110,7 @@ struct MainTabView: View {
       }
     }
     .tabViewStyle(.sidebarAdaptable)
-    .tint(appSettings.accentColor.color)
+    .tint(accentColor.color)
   }
 
   // MARK: - iOS 17以下 iPad用 NavigationSplitView
@@ -139,7 +141,7 @@ struct MainTabView: View {
     }
     // トランジションアニメーションを無効化
     .animation(nil, value: selectedTab)
-    .tint(appSettings.accentColor.color)
+    .tint(accentColor.color)
   }
 
   // MARK: - iOS 17以下 iPhone用 TabView
@@ -161,7 +163,28 @@ struct MainTabView: View {
         }
         .tag(AppTab.settings)
     }
-    .tint(appSettings.accentColor.color)
+    .tint(accentColor.color)
+  }
+}
+
+// MARK: - SwiftDataレコード監視（MainTabViewの再描画抑制用）
+private struct RecordsObserverView: View {
+  private let recordDataManager = RecordDataManager.shared
+
+  /// SwiftDataから全レコードを取得（降順：最新が先頭）
+  @Query(sort: \BatteryRecord.logDate, order: .reverse)
+  private var records: [BatteryRecord]
+
+  var body: some View {
+    Color.clear
+      .frame(width: 0, height: 0)
+      .allowsHitTesting(false)
+      .onAppear {
+        recordDataManager.updateRecords(records)
+      }
+      .onChange(of: records) { _, newRecords in
+        recordDataManager.updateRecords(newRecords)
+      }
   }
 }
 
@@ -170,7 +193,7 @@ struct HomeView: View {
   @Environment(\.modelContext) var modelContext
   @Environment(\.horizontalSizeClass) var horizontalSizeClass
   @StateObject var appSettings = AppSettings.shared
-  private let recordDataManager = RecordDataManager.shared
+  @State private var recordDataManager = RecordDataManager.shared
 
   /// RecordDataManagerからレコードを取得（キャッシュ済み）
   var records: [BatteryRecord] {
@@ -201,7 +224,6 @@ struct HomeView: View {
   private let instanceID = UUID()
 
   /// 処理済みのログハッシュとタイムスタンプ（複数インスタンスで共有）
-
   private static var lastProcessedLogHash: Int?
   private static var lastProcessedTime: Date?
 
@@ -214,6 +236,9 @@ struct HomeView: View {
   static var processingLock = NSLock()
 
   var body: some View {
+    let startTime = CFAbsoluteTimeGetCurrent()
+    let _ = print("[Performance] HomeView.body構築開始")
+
     NavigationStack {
       ZStack {
         homeContent
@@ -394,7 +419,8 @@ struct HomeView: View {
         TutorialView()
       }
       .onAppear {
-        let startTime = CFAbsoluteTimeGetCurrent()
+        let bodyElapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
+        print("[Performance] HomeView.body構築完了: \(String(format: "%.2f", bodyElapsed))ms")
         print("[Performance] HomeView.onAppear開始")
 
         reconcileUnknownDeviceNames()
@@ -403,9 +429,6 @@ struct HomeView: View {
 
         // Apple WatchにデータをNシンク
         syncRecordsToWatch()
-
-        let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
-        print("[Performance] HomeView.onAppear完了: \(String(format: "%.2f", elapsed))ms")
       }
       .onChange(of: records.count) { _, _ in
         // レコード数が変更されたらWatchに同期

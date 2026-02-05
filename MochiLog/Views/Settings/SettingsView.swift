@@ -6,7 +6,7 @@ struct SettingsView: View {
   @Environment(\.modelContext) private var modelContext
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @StateObject private var appSettings = AppSettings.shared
-  private let recordDataManager = RecordDataManager.shared
+  @State private var recordDataManager = RecordDataManager.shared
 
   /// RecordDataManagerからレコードを取得（キャッシュ済み）
   private var records: [BatteryRecord] {

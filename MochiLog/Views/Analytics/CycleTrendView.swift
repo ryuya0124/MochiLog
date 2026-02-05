@@ -121,7 +121,10 @@ struct CycleTrendView: View {
   }
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 12) {
+    let _ = print("[Performance] CycleTrendView.body構築開始")
+    let startTime = CFAbsoluteTimeGetCurrent()
+
+    return VStack(alignment: .leading, spacing: 12) {
       HStack(alignment: .firstTextBaseline) {
         Text(String(localized: "cycle_trend", table: "Analytics"))
           .font(.headline)
@@ -301,6 +304,9 @@ struct CycleTrendView: View {
     .padding()
     .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
     .onAppear {
+      let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
+      print("[Performance] CycleTrendView.body構築完了: \(String(format: "%.2f", elapsed))ms")
+
       // 初期レンジを設定（一度だけ、親から渡されていない場合のみ）
       if !hasInitialized && sharedSelectedRange == nil {
         localSelectedRange = initialRange
@@ -308,13 +314,8 @@ struct CycleTrendView: View {
           for: allRecords, range: initialRange)
         hasInitialized = true
       }
-      // アニメーション開始
-      animateChart = false
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-        withAnimation(.easeOut(duration: 0.6)) {
-          animateChart = true
-        }
-      }
+      // 初回表示時はアニメーションを無効化して高速化
+      animateChart = true
     }
     .onChange(of: selectedRange) {
       animateChart = false

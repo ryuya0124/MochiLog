@@ -71,6 +71,10 @@ struct AnalyticsContentView: View {
   }
 
   var body: some View {
+    let _ = print(
+      "[Performance] AnalyticsContentView.body構築 - isLoading: \(isLoading), cachedVisibleRecords: \(cachedVisibleRecords.count)件"
+    )
+
     ZStack {
       if isLoading && cachedVisibleRecords.isEmpty {
         // 初回ローディング中
@@ -274,10 +278,12 @@ struct AnalyticsContentView: View {
         cachedEndDay = result.endDay
         cachedUnit = result.unit
         lastParametersHash = parametersHash
-        isLoading = false
 
         let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
         print("[Performance] prepareChartDataIfNeeded完了: \(String(format: "%.2f", elapsed))ms")
+        print("[Performance] isLoadingをfalseに設定")
+
+        isLoading = false
       }
     }
   }

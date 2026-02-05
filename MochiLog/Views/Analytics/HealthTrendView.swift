@@ -16,7 +16,10 @@ struct HealthTrendView: View {
   @StateObject private var appSettings = AppSettings.shared
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 12) {
+    let _ = print("[Performance] HealthTrendView.body構築開始")
+    let startTime = CFAbsoluteTimeGetCurrent()
+
+    return VStack(alignment: .leading, spacing: 12) {
       HStack(alignment: .firstTextBaseline) {
         Text(
           String(
@@ -241,12 +244,11 @@ struct HealthTrendView: View {
         }
         .frame(height: horizontalSizeClass == .regular ? 280 : 200)
         .onAppear {
-          animateChart = false
-          DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            withAnimation(.easeOut(duration: 0.6)) {
-              animateChart = true
-            }
-          }
+          let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
+          print("[Performance] HealthTrendView.body構築完了: \(String(format: "%.2f", elapsed))ms")
+
+          // 初回表示時はアニメーションを無効化して高速化
+          animateChart = true
         }
         .onChange(of: selectedRange) {
           animateChart = false

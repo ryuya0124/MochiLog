@@ -5,7 +5,7 @@ import SwiftUI
 struct AnalyticsView: View {
   @State private var selectedDevice: String?
   @StateObject private var appSettings = AppSettings.shared
-  private let recordDataManager = RecordDataManager.shared
+  @State private var recordDataManager = RecordDataManager.shared
 
   @State private var selectedRange: RangePreset = .oneMonth
   // 表示ウィンドウの終了日時（endDate）。範囲を前後に移動すると変更される。デフォルトは現在時刻。
@@ -113,7 +113,9 @@ struct AnalyticsView: View {
         print(
           "[Performance] analyticsContent GeometryReader内部: \(String(format: "%.2f", elapsed))ms")
       }()
+
       if appSettings.showingSampleData {
+        let _ = print("[Performance] analyticsContent: サンプルモード分岐")
         // サンプルモードON → サンプルグラフ表示
         ScrollView {
           SampleDataAnalyticsContent(
@@ -122,6 +124,7 @@ struct AnalyticsView: View {
           )
         }
       } else if !records.isEmpty {
+        let _ = print("[Performance] analyticsContent: 実データ表示分岐 - records: \(records.count)件")
         // コンテンツビュー（バックグラウンドでデータ計算）
         AnalyticsContentView(
           records: records,
@@ -131,6 +134,7 @@ struct AnalyticsView: View {
           windowEnd: $windowEnd
         )
       } else {
+        let _ = print("[Performance] analyticsContent: データなし分岐")
         // データなし + サンプルモードOFF → ボタン表示（中央配置）
         noDataView(geometry: geometry)
       }

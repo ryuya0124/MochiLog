@@ -46,7 +46,10 @@ struct SampleDataAnalyticsContent: View {
   }
 
   var body: some View {
-    VStack(spacing: 20) {
+    let _ = print("[Performance] SampleDataAnalyticsContent.body構築開始")
+    let bodyStartTime = CFAbsoluteTimeGetCurrent()
+
+    return VStack(spacing: 20) {
       // サンプルデータバナー
       SampleDataBanner(
         onClose: {
@@ -74,6 +77,12 @@ struct SampleDataAnalyticsContent: View {
       }
 
       let unit = window.unit
+
+      let _ = {
+        let elapsed = (CFAbsoluteTimeGetCurrent() - bodyStartTime) * 1000
+        print(
+          "[Performance] SampleDataAnalyticsContent.body計算完了: \(String(format: "%.2f", elapsed))ms")
+      }()
 
       // iPad: 2列レイアウト、iPhone: 1列レイアウト
       if horizontalSizeClass == .regular {
