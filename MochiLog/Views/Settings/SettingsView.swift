@@ -5,8 +5,35 @@ import SwiftUI
 struct SettingsView: View {
   @Environment(\.modelContext) private var modelContext
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-  @Query private var records: [BatteryRecord]
   @StateObject private var appSettings = AppSettings.shared
+  private let recordDataManager = RecordDataManager.shared
+
+  /// RecordDataManagerからレコードを取得（キャッシュ済み）
+  private var records: [BatteryRecord] {
+    recordDataManager.recordsDescending
+  }
+
+  /// 利用可能なデバイス名リスト（ソート済み）
+  private var availableDevices: [String] {
+    let deviceNames = recordDataManager.deviceNames
+
+    // AppSettings.deviceSortOrderでソート
+    if appSettings.deviceSortOrder.isEmpty {
+      return deviceNames
+    } else {
+      var ordered: [String] = []
+      var remaining = Set(deviceNames)
+
+      for name in appSettings.deviceSortOrder {
+        if remaining.contains(name) {
+          ordered.append(name)
+          remaining.remove(name)
+        }
+      }
+      ordered.append(contentsOf: remaining.sorted())
+      return ordered
+    }
+  }
 
   @State private var showingWatchPicker = false
   @State private var showingDeleteConfirmation = false
@@ -204,7 +231,8 @@ struct SettingsView: View {
                     showingDeleteAllConfirmation: $showingDeleteConfirmation,
                     showingDeleteDeviceConfirmation: $showingDeleteDeviceConfirmation,
                     deletingDeviceId: $deletingDeviceId,
-                    appSettings: appSettings
+                    appSettings: appSettings,
+                    availableDevices: availableDevices
                   )
                 case .support:
                   SupportSettingsView()
@@ -523,12 +551,11 @@ struct SettingsView: View {
     }
   }
 
-  private var availableDevices: [String] {
-    Array(Set(records.map { $0.deviceName })).sorted()
-  }
-
   private func deleteAllRecords() {
-    for record in records {
+    // modelContextから直接フェッチして削除
+    let descriptor = FetchDescriptor<BatteryRecord>()
+    guard let allRecords = try? modelContext.fetch(descriptor) else { return }
+    for record in allRecords {
       modelContext.delete(record)
     }
     try? modelContext.save()
@@ -543,7 +570,10 @@ struct SettingsView: View {
   }
 
   private func deleteRecordsForDevice(_ deviceName: String) {
-    let recordsToDelete = records.filter { $0.deviceName == deviceName }
+    // modelContextから直接フェッチして削除
+    let descriptor = FetchDescriptor<BatteryRecord>(
+      predicate: #Predicate { $0.deviceName == deviceName })
+    guard let recordsToDelete = try? modelContext.fetch(descriptor) else { return }
     for record in recordsToDelete {
       modelContext.delete(record)
     }

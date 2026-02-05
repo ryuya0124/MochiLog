@@ -134,12 +134,12 @@ struct HealthTrendView: View {
           }
         }
 
-        // データ点は期間に応じて間引き（すっきり見せる）
-        let pointRecords = ChartAxisHelper.downsampledRecords(
+        // 描画用データは期間に応じて間引き（負荷軽減）
+        let chartRecords = ChartAxisHelper.downsampledRecords(
           visibleRecords, startDay: startDay, endDay: endDay)
 
         Chart {
-          ForEach(visibleRecords) { record in
+          ForEach(chartRecords) { record in
             LineMark(
               x: .value(
                 String(localized: "date", table: "Common"),
@@ -156,8 +156,8 @@ struct HealthTrendView: View {
             .interpolationMethod(.catmullRom)
             .opacity(animateChart ? 1 : 0)
 
-            if !pointRecords.isEmpty {
-              ForEach(pointRecords) { pointRecord in
+            if !chartRecords.isEmpty {
+              ForEach(chartRecords) { pointRecord in
                 PointMark(
                   x: .value(
                     String(localized: "date", table: "Common"),

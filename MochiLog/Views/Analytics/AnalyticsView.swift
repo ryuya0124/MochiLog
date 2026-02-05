@@ -3,9 +3,9 @@ import SwiftUI
 
 // MARK: - 分析ビュー
 struct AnalyticsView: View {
-  @Query(sort: \BatteryRecord.logDate, order: .forward) private var records: [BatteryRecord]
   @State private var selectedDevice: String?
   @StateObject private var appSettings = AppSettings.shared
+  private let recordDataManager = RecordDataManager.shared
 
   @State private var selectedRange: RangePreset = .oneMonth
   // 表示ウィンドウの終了日時（endDate）。範囲を前後に移動すると変更される。デフォルトは現在時刻。
@@ -15,11 +15,15 @@ struct AnalyticsView: View {
   @State private var viewportHeight: CGFloat = 0
   @State private var showingTutorial = false
 
-  // MARK: - 初期化処理用の状態
-  @State private var isInitializing = true
-  @State private var cachedDeviceNames: [String] = []
+  /// RecordDataManagerからレコードを取得（キャッシュ済み、昇順）
+  private var records: [BatteryRecord] {
+    recordDataManager.recordsAscending
+  }
 
-  // MARK: - computed properties を削除し、キャッシュを使用
+  /// RecordDataManagerからデバイス名リストを取得（キャッシュ済み）
+  private var cachedDeviceNames: [String] {
+    recordDataManager.deviceNames
+  }
 
   /// データの分布に基づいて初期レンジを決定する（短い期間しかなければ小さいレンジを選ぶ）
   private func autoRange(for records: [BatteryRecord]) -> RangePreset {
@@ -58,57 +62,57 @@ struct AnalyticsView: View {
   }
 
   var body: some View {
-    NavigationStack {
-      ZStack {
-        if isInitializing && !appSettings.showingSampleData {
-          // 初期化中のローディング表示
-          VStack(spacing: 16) {
-            ProgressView()
-              .scaleEffect(1.2)
-            Text(String(localized: "preparing_data", table: "Home"))
-              .font(.subheadline)
-              .foregroundStyle(.secondary)
-          }
-          .frame(maxWidth: .infinity, maxHeight: .infinity)
-        } else {
-          analyticsContent
+    let _ = print("[Performance] AnalyticsView.body構築開始")
+    let startTime = CFAbsoluteTimeGetCurrent()
+
+    return NavigationStack {
+      analyticsContent
+        .onAppear {
+          let startTime = CFAbsoluteTimeGetCurrent()
+          print("[Performance] AnalyticsView.onAppear開始")
+
+          initializeViewIfNeeded()
+
+          let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
+          print("[Performance] AnalyticsView.onAppear完了: \(String(format: "%.2f", elapsed))ms")
         }
-      }
-      .onAppear {
-        initializeViewIfNeeded()
-      }
-      .onChange(of: records) {
-        handleRecordsChange()
-      }
-      .onChange(of: selectedDevice) {
-        handleDeviceChange()
-      }
-      .onChange(of: selectedRange) { _, newValue in
-        // レンジ変更時にAppSettingsに保存（再起動後も保持）
-        appSettings.selectedChartRange = newValue.rawValue
+        .onChange(of: selectedDevice) {
+          handleDeviceChange()
+        }
+        .onChange(of: selectedRange) { _, newValue in
+          // レンジ変更時にAppSettingsに保存（再起動後も保持）
+          appSettings.selectedChartRange = newValue.rawValue
 
-        // レンジ変更時に終了日を適切に更新
-        let filteredRecords =
-          selectedDevice.map { device in records.filter { $0.deviceName == device } } ?? records
+          // レンジ変更時に終了日を適切に更新
+          let filteredRecords =
+            selectedDevice.map { device in records.filter { $0.deviceName == device } } ?? records
 
-        windowEnd = ChartWindowNavigator.adjustedWindowEndForRangeChange(
-          range: newValue,
-          currentEnd: windowEnd,
-          records: filteredRecords
-        )
-      }
-      .navigationTitle(String(localized: "analytics", table: "Analytics"))
-      .background(Color(.systemGroupedBackground))
-      .sheet(isPresented: $showingTutorial) {
-        TutorialView()
-      }
+          windowEnd = ChartWindowNavigator.adjustedWindowEndForRangeChange(
+            range: newValue,
+            currentEnd: windowEnd,
+            records: filteredRecords
+          )
+        }
+        .navigationTitle(String(localized: "analytics", table: "Analytics"))
+        .background(Color(.systemGroupedBackground))
+        .sheet(isPresented: $showingTutorial) {
+          TutorialView()
+        }
     }
   }
 
   // MARK: - メインコンテンツ
   @ViewBuilder
   private var analyticsContent: some View {
-    GeometryReader { geometry in
+    let _ = print("[Performance] analyticsContent構築開始")
+    let startTime = CFAbsoluteTimeGetCurrent()
+
+    return GeometryReader { geometry in
+      let _ = {
+        let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
+        print(
+          "[Performance] analyticsContent GeometryReader内部: \(String(format: "%.2f", elapsed))ms")
+      }()
       if appSettings.showingSampleData {
         // サンプルモードON → サンプルグラフ表示
         ScrollView {
@@ -122,7 +126,7 @@ struct AnalyticsView: View {
         AnalyticsContentView(
           records: records,
           selectedDevice: $selectedDevice,
-          cachedDeviceNames: cachedDeviceNames,
+          cachedDeviceNames: cachedDeviceNames,  // キャッシュから取得
           selectedRange: $selectedRange,
           windowEnd: $windowEnd
         )
@@ -179,52 +183,23 @@ struct AnalyticsView: View {
     }
   }
 
-  // MARK: - 初期化処理（バックグラウンドで実行）
+  // MARK: - 初期化処理
   private func initializeViewIfNeeded() {
-    // サンプルモードなら即座に表示
-    if appSettings.showingSampleData {
-      isInitializing = false
-      return
+    // サンプルモードまたはデータがない場合は何もしない
+    guard !appSettings.showingSampleData && !records.isEmpty else { return }
+
+    // 保存されたレンジがあればそれを使用、なければ自動選択
+    if let savedRangeString = appSettings.selectedChartRange,
+      let savedRange = RangePreset(rawValue: savedRangeString)
+    {
+      selectedRange = savedRange
+    } else if !appSettings.hasAutoInitializedChartRange {
+      selectedRange = calculateAutoRange(for: records)
+      appSettings.hasAutoInitializedChartRange = true
     }
 
-    // データがなければ即座に表示
-    if records.isEmpty {
-      isInitializing = false
-      return
-    }
-
-    // バックグラウンドで初期化処理を実行
-    let currentRecords = records
-    let shouldAutoInitFlag = !appSettings.hasAutoInitializedChartRange
-
-    Task.detached(priority: .userInitiated) {
-      // デバイス名リストを計算
-      let deviceNames = Array(Set(currentRecords.map { $0.deviceName })).sorted()
-
-      // 保存されたレンジがあればそれを使用、なければ自動選択
-      let savedRangeString = await MainActor.run { AppSettings.shared.selectedChartRange }
-      let savedRange = savedRangeString.flatMap { RangePreset(rawValue: $0) }
-
-      let finalRange: RangePreset
-      if let saved = savedRange {
-        // 保存されたレンジを使用
-        finalRange = saved
-      } else if shouldAutoInitFlag {
-        // 自動選択
-        finalRange = calculateAutoRange(for: currentRecords)
-      } else {
-        // 既定値
-        finalRange = .oneMonth
-      }
-
-      await MainActor.run {
-        cachedDeviceNames = deviceNames
-        selectedRange = finalRange
-        windowEnd = ChartWindowNavigator.initializeWindowEnd(for: currentRecords, range: finalRange)
-        appSettings.hasAutoInitializedChartRange = true
-        isInitializing = false
-      }
-    }
+    // ウィンドウ終了日を設定
+    windowEnd = ChartWindowNavigator.initializeWindowEnd(for: records, range: selectedRange)
   }
 
   /// バックグラウンドスレッドで安全に呼べるautoRange計算
@@ -250,37 +225,8 @@ struct AnalyticsView: View {
     return .threeYears
   }
 
-  // MARK: - records変更時の処理
-  private func handleRecordsChange() {
-    // デバイス名リストを更新
-    let currentRecords = records
-    Task.detached(priority: .userInitiated) {
-      let deviceNames = Array(Set(currentRecords.map { $0.deviceName })).sorted()
-
-      await MainActor.run {
-        cachedDeviceNames = deviceNames
-
-        if !appSettings.hasAutoInitializedChartRange {
-          selectedRange = calculateAutoRange(for: currentRecords)
-          windowEnd = ChartWindowNavigator.initializeWindowEnd(
-            for: currentRecords, range: selectedRange)
-          appSettings.hasAutoInitializedChartRange = true
-        } else {
-          let filteredRecords =
-            selectedDevice.map { device in currentRecords.filter { $0.deviceName == device } }
-            ?? currentRecords
-          let start = ChartWindowNavigator.windowStart(
-            for: windowEnd, range: selectedRange, allRecords: filteredRecords)
-          if !ChartWindowNavigator.windowContainsData(
-            start: start, end: windowEnd, in: filteredRecords)
-          {
-            windowEnd = ChartWindowNavigator.initializeWindowEnd(
-              for: filteredRecords, range: selectedRange)
-          }
-        }
-      }
-    }
-  }
+  // MARK: - records変更時の処理（キャッシュから取得するため不要）
+  // 削除済み
 
   // MARK: - デバイス変更時の処理
   private func handleDeviceChange() {

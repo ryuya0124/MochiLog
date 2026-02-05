@@ -7,11 +7,7 @@ struct DataManagementSettingsView: View {
   @Binding var showingDeleteDeviceConfirmation: Bool
   @Binding var deletingDeviceId: String?
   @ObservedObject var appSettings: AppSettings
-  @Query private var records: [BatteryRecord]
-
-  private var availableDevices: [String] {
-    Array(Set(records.map { $0.deviceName })).sorted()
-  }
+  let availableDevices: [String]  // 外部から受け取る
 
   var body: some View {
     VStack(spacing: 16) {

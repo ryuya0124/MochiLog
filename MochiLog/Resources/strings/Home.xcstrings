@@ -212,6 +212,22 @@
         }
       }
     },
+    "load_more" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Load More"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "もっと読み込む"
+          }
+        }
+      }
+    },
     "mismatch_warning_message" : {
       "localizations" : {
         "en" : {

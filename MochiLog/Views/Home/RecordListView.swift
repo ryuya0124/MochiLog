@@ -16,13 +16,39 @@ struct RecordListView<Header: View>: View {
   @State private var collapsedSections: Set<String> = []
   @State private var allowSectionAnimation = false
 
-  @State private var groupedRecords: [String: [BatteryRecord]] = [:]
+  // MARK: - ページネーション用の状態
+  /// 各デバイスの表示件数（初期値: 50件）
+  @State private var displayLimits: [String: Int] = [:]
+  /// 1デバイスあたりの初期表示件数
+  private let initialDisplayLimit = 50
+  /// 「もっと読み込む」で追加する件数
+  private let loadMoreCount = 50
 
-  // MARK: - バックグラウンド計算用の状態
-  @State private var isLoading = true
-  @State private var cachedSections: [DeviceSection] = []
-  @State private var lastRecordsHash: Int?
-  @State private var lastSortOrderHash: Int?
+  /// recordsから直接デバイスセクションを計算
+  private var cachedSections: [DeviceSection] {
+    // デバイス名を抽出（重複排除）
+    let deviceNames = Array(Set(records.map { $0.deviceName }))
+
+    // AppSettings.deviceSortOrderでソート
+    let sortedNames: [String]
+    if appSettings.deviceSortOrder.isEmpty {
+      sortedNames = deviceNames.sorted()
+    } else {
+      var ordered: [String] = []
+      var remaining = Set(deviceNames)
+
+      for name in appSettings.deviceSortOrder {
+        if remaining.contains(name) {
+          ordered.append(name)
+          remaining.remove(name)
+        }
+      }
+      ordered.append(contentsOf: remaining.sorted())
+      sortedNames = ordered
+    }
+
+    return sortedNames.map { DeviceSection(id: $0, displayName: $0, recordIDs: []) }
+  }
 
   init(
     records: [BatteryRecord],
@@ -40,138 +66,48 @@ struct RecordListView<Header: View>: View {
 
   var body: some View {
     ZStack {
-      if isLoading && cachedSections.isEmpty {
-        // 初回ローディング中
-        VStack(spacing: 16) {
-          ProgressView()
-            .scaleEffect(1.2)
-          Text(String(localized: "preparing_data", table: "Home"))
-            .font(.subheadline)
-            .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-      } else {
-        // コンテンツ表示
-        Group {
-          if horizontalSizeClass == .regular {
-            iPadGridLayout
-          } else {
-            iPhoneLayout
-          }
-        }
-        // スクロール中の不要なアニメーションを抑制
-        .transaction { transaction in
-          if !allowSectionAnimation {
-            transaction.animation = nil
-          }
+      // コンテンツ表示
+      Group {
+        if horizontalSizeClass == .regular {
+          iPadGridLayout
+        } else {
+          iPhoneLayout
         }
       }
-    }
-    .onAppear {
-      updateGroupedRecords()
-      prepareDeviceSectionsIfNeeded()
-    }
-    .onChange(of: records) {
-      updateGroupedRecords()
-      prepareDeviceSectionsIfNeeded()
-    }
-    .onChange(of: appSettings.deviceSortOrder) {
-      prepareDeviceSectionsIfNeeded(force: true)
-    }
-  }
-
-  // MARK: - データ準備
-  private func updateGroupedRecords() {
-    // デバイス名でグルーピング (Main thread, O(N))
-    groupedRecords = Dictionary(grouping: records, by: { $0.deviceName })
-  }
-
-  // MARK: - バックグラウンドでセクションを準備
-  private func prepareDeviceSectionsIfNeeded(force: Bool = false) {
-    // レコードの内容からハッシュを計算
-    var hasher = Hasher()
-    for record in records {
-      hasher.combine(record.logDate)
-      hasher.combine(record.deviceName)
-    }
-    let recordsHash = hasher.finalize()
-    let sortOrderHash = appSettings.deviceSortOrder.hashValue
-
-    // 変更がなければスキップ（ただしforceが指定されている場合は再計算）
-    if !force && recordsHash == lastRecordsHash && sortOrderHash == lastSortOrderHash {
-      return
-    }
-
-    isLoading = true
-
-    // レコード情報を抽出（Sendable対応）- logDateの文字列表現をIDとして使用
-    let dateFormatter = ISO8601DateFormatter()
-    let recordInfos = records.map { record in
-      let recordID = "\(record.deviceName)_\(dateFormatter.string(from: record.logDate))"
-      return (id: recordID, deviceName: record.deviceName)
-    }
-    let sortOrder = appSettings.deviceSortOrder
-
-    Task.detached(priority: .userInitiated) {
-      // バックグラウンドでセクション計算
-      let sections = Self.computeDeviceSections(recordInfos: recordInfos, sortOrder: sortOrder)
-
-      await MainActor.run {
-        withAnimation(.snappy) {
-          cachedSections = sections
+      // スクロール中の不要なアニメーションを抑制
+      .transaction { transaction in
+        if !allowSectionAnimation {
+          transaction.animation = nil
         }
-        lastRecordsHash = recordsHash
-        lastSortOrderHash = sortOrderHash
-        isLoading = false
       }
     }
   }
 
-  /// デバイスセクションを計算する（バックグラウンドスレッドで実行）
-  nonisolated private static func computeDeviceSections(
-    recordInfos: [(id: String, deviceName: String)],
-    sortOrder: [String]
-  ) -> [DeviceSection] {
-    var sections: [DeviceSection] = []
-    var indexForDevice: [String: Int] = [:]
-    var recordIDsForDevice: [String: [String]] = [:]
-
-    for info in recordInfos {
-      let name = info.deviceName
-      if recordIDsForDevice[name] != nil {
-        recordIDsForDevice[name]?.append(info.id)
-      } else {
-        recordIDsForDevice[name] = [info.id]
-        indexForDevice[name] = sections.count
-        sections.append(DeviceSection(id: name, displayName: name, recordIDs: []))
-      }
-    }
-
-    // recordIDsを設定
-    sections = sections.map { section in
-      DeviceSection(
-        id: section.id,
-        displayName: section.displayName,
-        recordIDs: recordIDsForDevice[section.id] ?? []
-      )
-    }
-
-    // ソート順を適用
-    if !sortOrder.isEmpty {
-      sections.sort { a, b in
-        let indexA = sortOrder.firstIndex(of: a.id) ?? Int.max
-        let indexB = sortOrder.firstIndex(of: b.id) ?? Int.max
-        return indexA < indexB
-      }
-    }
-
-    return sections
-  }
-
-  /// セクションIDからレコードを取得するヘルパー
+  /// セクションIDから表示するレコードを取得するヘルパー（ページネーション対応）
   private func recordsForSection(_ section: DeviceSection) -> [BatteryRecord] {
-    // 辞書から高速検索 (O(1))
-    return groupedRecords[section.id] ?? []
+    // recordsから直接フィルタ
+    let filtered = records.filter { $0.deviceName == section.id }
+    // 表示件数制限を適用
+    let limit = displayLimits[section.id] ?? initialDisplayLimit
+    return Array(filtered.prefix(limit))
+  }
+
+  /// セクションの全レコード数を取得
+  private func totalRecordsForSection(_ section: DeviceSection) -> Int {
+    return records.filter { $0.deviceName == section.id }.count
+  }
+
+  /// 「もっと読み込む」ボタンを表示すべきか
+  private func hasMoreRecords(_ section: DeviceSection) -> Bool {
+    let limit = displayLimits[section.id] ?? initialDisplayLimit
+    let total = totalRecordsForSection(section)
+    return limit < total
+  }
+
+  /// 表示件数を増やす
+  private func loadMoreRecords(for section: DeviceSection) {
+    let currentLimit = displayLimits[section.id] ?? initialDisplayLimit
+    displayLimits[section.id] = currentLimit + loadMoreCount
   }
 
   // MARK: - iPad レイアウト（複数列表示）
@@ -211,38 +147,10 @@ struct RecordListView<Header: View>: View {
                   }
                 )
               ) {
-                // Inner Grid: Cards within the device section
-                LazyVGrid(
-                  columns: [GridItem(.adaptive(minimum: 280), spacing: 16)], spacing: 16
-                ) {
-                  ForEach(sectionRecords, id: \.logDate) { record in
-                    NavigationLink(destination: RecordDetailView(record: record)) {
-                      RecordRowView(record: record)
-                        .padding()
-                        .background(Color(uiColor: .secondarySystemGroupedBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                    }
-                    .contextMenu {
-                      if showContextMenu, let onDelete = onRecordDelete {
-                        Button(role: .destructive) {
-                          onDelete(record)
-                        } label: {
-                          Label {
-                            Text(String(localized: "delete", table: "Common"))
-                          } icon: {
-                            Image(
-                              uiImage: UIImage(systemName: "trash")?
-                                .withTintColor(.red, renderingMode: .alwaysOriginal)
-                                ?? UIImage())
-                          }
-                        }
-                      }
-                    }
-                    .animation(.snappy, value: collapsedSections)
-                  }
-                }
-                // drawingGroup()削除 - 各CachedViewで既にオフスクリーン
-                .padding(.top, 8)
+                iPadDeviceSectionContent(
+                  section: section,
+                  sectionRecords: sectionRecords
+                )
               } label: {
                 Text(section.displayName)
                   .font(.title3)
@@ -314,6 +222,27 @@ struct RecordListView<Header: View>: View {
                 items.forEach { onDelete($0) }
               }
             }
+
+            // もっと読み込むボタン
+            if hasMoreRecords(section) {
+              Button {
+                withAnimation(.snappy) {
+                  loadMoreRecords(for: section)
+                }
+              } label: {
+                HStack {
+                  Spacer()
+                  Text(String(localized: "load_more", table: "Home"))
+                    .font(.subheadline)
+                  Text("(\(sectionRecords.count)/\(totalRecordsForSection(section)))")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                  Spacer()
+                }
+                .padding(.vertical, 8)
+              }
+              .buttonStyle(.borderless)
+            }
           } label: {
             Text(section.displayName)
               .font(.headline)
@@ -327,6 +256,68 @@ struct RecordListView<Header: View>: View {
             removal: .move(edge: .top).combined(with: .opacity)
           ))
       }
+    }
+  }
+
+  // MARK: - iPadレイアウト用ヘルパービュー
+  @ViewBuilder
+  private func iPadDeviceSectionContent(
+    section: DeviceSection,
+    sectionRecords: [BatteryRecord]
+  ) -> some View {
+    // Inner Grid: Cards within the device section
+    LazyVGrid(
+      columns: [GridItem(.adaptive(minimum: 280), spacing: 16)], spacing: 16
+    ) {
+      ForEach(sectionRecords, id: \.logDate) { record in
+        NavigationLink(destination: RecordDetailView(record: record)) {
+          RecordRowView(record: record)
+            .padding()
+            .background(Color(uiColor: .secondarySystemGroupedBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+        .contextMenu {
+          if showContextMenu, let onDelete = onRecordDelete {
+            Button(role: .destructive) {
+              onDelete(record)
+            } label: {
+              Label {
+                Text(String(localized: "delete", table: "Common"))
+              } icon: {
+                Image(
+                  uiImage: UIImage(systemName: "trash")?
+                    .withTintColor(.red, renderingMode: .alwaysOriginal)
+                    ?? UIImage())
+              }
+            }
+          }
+        }
+        .animation(.snappy, value: collapsedSections)
+      }
+    }
+
+    // もっと読み込むボタン
+    if hasMoreRecords(section) {
+      Button {
+        withAnimation(.snappy) {
+          loadMoreRecords(for: section)
+        }
+      } label: {
+        HStack {
+          Spacer()
+          Text(String(localized: "load_more", table: "Home"))
+            .font(.subheadline)
+          Text("(\(sectionRecords.count)/\(totalRecordsForSection(section)))")
+            .font(.caption)
+            .foregroundStyle(.secondary)
+          Spacer()
+        }
+        .padding(.vertical, 12)
+        .background(Color(uiColor: .tertiarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+      }
+      .buttonStyle(.plain)
+      .padding(.top, 8)
     }
   }
 

@@ -46,43 +46,55 @@ final class WatchConnectivityManager: NSObject, ObservableObject {
     print("[WatchConnectivity] セッションをアクティベート中...")
   }
 
-  /// バッテリーレコードをApple Watchに送信
+  /// バッテリーレコードをApple Watchに送信（バックグラウンドで実行）
   /// - Parameters:
   ///   - records: 送信するBatteryRecordの配列
   ///   - isSampleMode: サンプルモードかどうか
   func sendRecordsToWatch(_ records: [BatteryRecord], isSampleMode: Bool = false) {
-    guard let session = session, session.activationState == .activated else {
-      print("[WatchConnectivity] セッションがアクティブではありません")
-      return
-    }
+    let startTime = CFAbsoluteTimeGetCurrent()
 
-    guard session.isWatchAppInstalled else {
-      print("[WatchConnectivity] Watchアプリがインストールされていません")
-      return
-    }
+    // バックグラウンドキューで実行
+    DispatchQueue.global(qos: .utility).async {
+      guard let session = self.session, session.activationState == .activated else {
+        print("[WatchConnectivity] セッションがアクティブではありません")
+        return
+      }
 
-    // BatteryRecordを軽量なWatchBatteryRecordに変換
-    let watchRecords = records.map { WatchBatteryRecord(from: $0) }
+      guard session.isWatchAppInstalled else {
+        print("[WatchConnectivity] Watchアプリがインストールされていません")
+        return
+      }
 
-    // Codableデータをシリアライズ
-    do {
-      let encoder = JSONEncoder()
-      encoder.dateEncodingStrategy = .iso8601
-      let data = try encoder.encode(watchRecords)
+      // BatteryRecordを軽量なWatchBatteryRecordに変換
+      let watchRecords = records.map { WatchBatteryRecord(from: $0) }
 
-      // Application Contextとして送信（最新の状態を保持）
-      let context: [String: Any] = [
-        "records": data,
-        "syncDate": Date().timeIntervalSince1970,
-        "isSampleMode": isSampleMode,
-      ]
+      // Codableデータをシリアライズ
+      do {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let data = try encoder.encode(watchRecords)
 
-      try session.updateApplicationContext(context)
-      lastSyncDate = Date()
-      print(
-        "[WatchConnectivity] \(watchRecords.count)件のレコードをWatchに送信しました（サンプルモード: \(isSampleMode)）")
-    } catch {
-      print("[WatchConnectivity] データのエンコードまたは送信に失敗: \(error)")
+        // Application Contextとして送信（最新の状態を保持）
+        let context: [String: Any] = [
+          "records": data,
+          "syncDate": Date().timeIntervalSince1970,
+          "isSampleMode": isSampleMode,
+        ]
+
+        try session.updateApplicationContext(context)
+
+        let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
+
+        Task { @MainActor in
+          self.lastSyncDate = Date()
+        }
+
+        print(
+          "[WatchConnectivity] \(watchRecords.count)件のレコードをWatchに送信しました（サンプルモード: \(isSampleMode)）- \(String(format: "%.2f", elapsed))ms"
+        )
+      } catch {
+        print("[WatchConnectivity] データのエンコードまたは送信に失敗: \(error)")
+      }
     }
   }
 

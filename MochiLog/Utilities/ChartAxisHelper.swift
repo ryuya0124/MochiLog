@@ -73,6 +73,53 @@ struct ChartAxisHelper {
       .sorted { $0.logDate < $1.logDate }
   }
 
+  /// 期間に応じてデータポイントのインデックスを間引く
+  /// - Parameters:
+  ///   - recordInfos: (date, deviceName) の配列
+  ///   - startDay: 表示開始日
+  ///   - endDay: 表示終了日
+  ///   - maxPoints: 目標の最大点数
+  /// - Returns: 表示するインデックス
+  static func downsampledIndexes(
+    recordInfos: [(date: Date, deviceName: String)],
+    startDay: Date,
+    endDay: Date,
+    maxPoints: Int
+  ) -> [Int] {
+    let intervalDays = pointIntervalDays(startDay: startDay, endDay: endDay)
+    let calendar = Calendar.current
+    let visibleIndices = recordInfos.enumerated().compactMap { index, info in
+      let d = calendar.startOfDay(for: info.date)
+      return (d >= startDay && d <= endDay) ? index : nil
+    }
+
+    if visibleIndices.count <= maxPoints || intervalDays <= 1 {
+      return visibleIndices
+    }
+
+    var buckets: [String: [Int: Int]] = [:]
+
+    for index in visibleIndices {
+      let info = recordInfos[index]
+      let day = calendar.startOfDay(for: info.date)
+      let diff = calendar.dateComponents([.day], from: startDay, to: day).day ?? 0
+      let bucket = diff / intervalDays
+      var deviceBuckets = buckets[info.deviceName] ?? [:]
+      if deviceBuckets[bucket] == nil {
+        deviceBuckets[bucket] = index
+      }
+      buckets[info.deviceName] = deviceBuckets
+    }
+
+    let indices = buckets
+      .values
+      .flatMap { deviceBuckets in
+        deviceBuckets.keys.sorted().compactMap { deviceBuckets[$0] }
+      }
+
+    return indices.sorted { recordInfos[$0].date < recordInfos[$1].date }
+  }
+
   // MARK: - 横軸ラベル間引き
 
   /// 横軸ラベルの間引きストライドとフォーマット指定を計算

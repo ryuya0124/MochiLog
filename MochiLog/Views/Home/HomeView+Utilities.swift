@@ -104,24 +104,42 @@ extension HomeView {
     }
   }
 
-  /// Apple Watchにレコードを同期する
+  /// Apple Watchにレコードを同期する（バックグラウンドで実行）
   func syncRecordsToWatch() {
-    // サンプルデータ表示中はサンプルデータを送信
-    if appSettings.showingSampleData {
-      let sampleRecords = SampleDataProvider.generateSampleRecords()
-      WatchConnectivityManager.shared.sendRecordsToWatch(sampleRecords, isSampleMode: true)
-      return
-    }
+    let startTime = CFAbsoluteTimeGetCurrent()
+    print("[Performance] syncRecordsToWatch開始")
 
-    // レコードがある場合のみ同期
-    guard !records.isEmpty else {
-      // レコードがない場合はサンプルモードをオフにして空で送信
-      WatchConnectivityManager.shared.sendRecordsToWatch([], isSampleMode: false)
-      return
-    }
+    // バックグラウンドで実行してUIスレッドをブロックしない
+    Task.detached(priority: .utility) {
+      // サンプルデータ表示中はサンプルデータを送信
+      let isSampleMode = await MainActor.run { AppSettings.shared.showingSampleData }
+      if isSampleMode {
+        let sampleRecords = SampleDataProvider.generateSampleRecords()
+        WatchConnectivityManager.shared.sendRecordsToWatch(sampleRecords, isSampleMode: true)
+        let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
+        print("[Performance] syncRecordsToWatch完了（サンプルモード）: \(String(format: "%.2f", elapsed))ms")
+        return
+      }
 
-    // 通常モードでデータを送信
-    WatchConnectivityManager.shared.sendRecordsToWatch(records, isSampleMode: false)
+      // レコードを取得
+      let currentRecords = await MainActor.run { self.records }
+
+      // レコードがある場合のみ同期
+      guard !currentRecords.isEmpty else {
+        // レコードがない場合はサンプルモードをオフにして空で送信
+        WatchConnectivityManager.shared.sendRecordsToWatch([], isSampleMode: false)
+        let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
+        print("[Performance] syncRecordsToWatch完了（空）: \(String(format: "%.2f", elapsed))ms")
+        return
+      }
+
+      // 通常モードでデータを送信
+      WatchConnectivityManager.shared.sendRecordsToWatch(currentRecords, isSampleMode: false)
+      let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
+      print(
+        "[Performance] syncRecordsToWatch完了（\(currentRecords.count)件）: \(String(format: "%.2f", elapsed))ms"
+      )
+    }
   }
 }
 

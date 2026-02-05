@@ -8,9 +8,14 @@ import UniformTypeIdentifiers
 // MARK: - メインタブビュー
 struct MainTabView: View {
   @StateObject private var appSettings = AppSettings.shared
+  private let recordDataManager = RecordDataManager.shared
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @State private var showingTutorial = false
   @State private var selectedTab: AppTab
+
+  /// SwiftDataから全レコードを取得（降順：最新が先頭）
+  @Query(sort: \BatteryRecord.logDate, order: .reverse)
+  private var records: [BatteryRecord]
 
   init() {
     // AppSettings.selectedTabIndexから初期値を取得
@@ -61,6 +66,15 @@ struct MainTabView: View {
       if !appSettings.hasCompletedTutorial {
         showingTutorial = true
       }
+      // RecordDataManagerを初期化
+      recordDataManager.updateRecords(records)
+    }
+    .onChange(of: records) { _, newRecords in
+      // レコードが変更されたらRecordDataManagerを更新
+      recordDataManager.updateRecords(newRecords)
+    }
+    .onChange(of: selectedTab) { oldValue, newValue in
+      print("[Performance] タブ切り替え: \(oldValue.rawValue) -> \(newValue.rawValue)")
     }
     .sheet(isPresented: $showingTutorial) {
       TutorialView()
@@ -155,8 +169,13 @@ struct MainTabView: View {
 struct HomeView: View {
   @Environment(\.modelContext) var modelContext
   @Environment(\.horizontalSizeClass) var horizontalSizeClass
-  @Query(sort: \BatteryRecord.logDate, order: .reverse) var records: [BatteryRecord]
   @StateObject var appSettings = AppSettings.shared
+  private let recordDataManager = RecordDataManager.shared
+
+  /// RecordDataManagerからレコードを取得（キャッシュ済み）
+  var records: [BatteryRecord] {
+    recordDataManager.recordsDescending
+  }
 
   @State private var showingFilePicker = false
   @State var showingErrorAlert = false
@@ -375,12 +394,18 @@ struct HomeView: View {
         TutorialView()
       }
       .onAppear {
+        let startTime = CFAbsoluteTimeGetCurrent()
+        print("[Performance] HomeView.onAppear開始")
+
         reconcileUnknownDeviceNames()
         reconcileMissingDesignCapacities()
         // UserDefaultsフォールバックは廃止（MochiLogAppから直接Notificationが送信される）
 
         // Apple WatchにデータをNシンク
         syncRecordsToWatch()
+
+        let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
+        print("[Performance] HomeView.onAppear完了: \(String(format: "%.2f", elapsed))ms")
       }
       .onChange(of: records.count) { _, _ in
         // レコード数が変更されたらWatchに同期
