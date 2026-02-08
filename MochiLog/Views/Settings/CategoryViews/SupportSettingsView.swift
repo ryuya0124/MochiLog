@@ -34,6 +34,8 @@ struct SupportSettingsView: View {
             Image(systemName: "chevron.right")
               .foregroundStyle(.secondary)
           }
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .contentShape(Rectangle())
           .padding(.vertical, 8)
         }
         .buttonStyle(.plain)
@@ -65,6 +67,8 @@ struct SupportSettingsView: View {
             Image(systemName: "chevron.right")
               .foregroundStyle(.secondary)
           }
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .contentShape(Rectangle())
           .padding(.vertical, 8)
         }
         .buttonStyle(.plain)
@@ -96,6 +100,8 @@ struct SupportSettingsView: View {
             Image(systemName: "chevron.right")
               .foregroundStyle(.secondary)
           }
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .contentShape(Rectangle())
           .padding(.vertical, 8)
         }
         .buttonStyle(.plain)
