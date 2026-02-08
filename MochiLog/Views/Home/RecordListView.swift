@@ -115,6 +115,7 @@ struct RecordListView<Header: View>: View {
     GeometryReader { geometry in
       ScrollView {
         header
+          .padding(.horizontal, 20)
 
         let availableWidth = geometry.size.width
         let minSectionWidth: CGFloat = 340
@@ -152,10 +153,18 @@ struct RecordListView<Header: View>: View {
                   sectionRecords: sectionRecords
                 )
               } label: {
-                Text(section.displayName)
-                  .font(.title3)
-                  .bold()
-                  .foregroundColor(.primary)
+                let parts = splitDeviceName(section.displayName)
+                VStack(alignment: .leading, spacing: 2) {
+                  Text(parts.primary)
+                    .font(.title3)
+                    .bold()
+                    .foregroundColor(.primary)
+                  if let secondary = parts.secondary {
+                    Text(secondary)
+                      .font(.subheadline)
+                      .foregroundColor(.secondary)
+                  }
+                }
               }
               .animation(.snappy, value: collapsedSections)
               .padding()
@@ -319,6 +328,29 @@ struct RecordListView<Header: View>: View {
       .buttonStyle(.plain)
       .padding(.top, 8)
     }
+  }
+
+  // MARK: - デバイス名表示ヘルパー（iPad用）
+  /// デバイス名を種類と詳細に分割して表示を綺麗にする
+  /// 例: "iPhone 16 Pro Max" → ("iPhone 16", "Pro Max")
+  /// 例: "Apple Watch Ultra 2" → ("Apple Watch", "Ultra 2")
+  private func splitDeviceName(_ name: String) -> (primary: String, secondary: String?) {
+    // Apple Watch の場合：「Apple Watch」の後ろで分割
+    if name.hasPrefix("Apple Watch") {
+      let rest = String(name.dropFirst("Apple Watch".count)).trimmingCharacters(in: .whitespaces)
+      return rest.isEmpty ? (name, nil) : ("Apple Watch", rest)
+    }
+    // iPhone / iPad の場合：ブランド名 + 最初の識別子 / 残りで分割
+    for prefix in ["iPhone", "iPad"] {
+      guard name.hasPrefix(prefix) else { continue }
+      let rest = String(name.dropFirst(prefix.count)).trimmingCharacters(in: .whitespaces)
+      let words = rest.split(separator: " ", maxSplits: .max, omittingEmptySubsequences: true)
+      guard words.count >= 2 else { return (name, nil) }
+      let primary = "\(prefix) \(words[0])"
+      let secondary = words.dropFirst().joined(separator: " ")
+      return (primary, secondary)
+    }
+    return (name, nil)
   }
 
   // MARK: - デバイスセクション構造体

@@ -33,14 +33,12 @@ struct CycleTrendView: View {
 
   // 現在のウィンドウに含まれるレコードを計算
   private var visibleRecords: [BatteryRecord] {
-    let calendar = Calendar.current
     let startDate = windowStart(for: effectiveEndDate, range: effectiveSelectedRange)
-    let startDay = calendar.startOfDay(for: startDate)
-    let endDay = calendar.startOfDay(for: effectiveEndDate)
-    return allRecords.filter {
-      let d = calendar.startOfDay(for: $0.logDate)
-      return d >= startDay && d <= endDay
-    }
+    return ChartWindowNavigator.visibleRecordsWithContext(
+      in: allRecords,
+      start: startDate,
+      end: effectiveEndDate
+    )
   }
 
   private var startDay: Date {
@@ -50,6 +48,11 @@ struct CycleTrendView: View {
 
   private var endDay: Date {
     Calendar.current.startOfDay(for: effectiveEndDate)
+  }
+
+  /// 全レコードのデバイス名（ソート済み）— 色の安定割り当て用
+  private var sortedAllDeviceNames: [String] {
+    Array(Set(allRecords.map { $0.deviceName })).sorted()
   }
 
   // ウィンドウ計算ヘルパー
@@ -264,6 +267,10 @@ struct CycleTrendView: View {
             }
           }
         }
+        .chartForegroundStyleScale(
+          domain: sortedAllDeviceNames,
+          range: ChartAxisHelper.stableDeviceColors(for: sortedAllDeviceNames)
+        )
         .chartXAxis {
           // 共通の横軸ラベル間引き関数を使用
           let axisStart = CFAbsoluteTimeGetCurrent()
@@ -350,7 +357,8 @@ struct CycleTrendView: View {
       }
     }
     .onChange(of: initialRange) {
-      if !isUserInteracted && sharedSelectedRange == nil {
+      // iPad独立モードでは初回初期化後はinitialRangeの変更に追従しない
+      if !isUserInteracted && sharedSelectedRange == nil && !hasInitialized {
         localSelectedRange = initialRange
         localWindowEnd = ChartWindowNavigator.initializeWindowEnd(
           for: allRecords, range: initialRange)

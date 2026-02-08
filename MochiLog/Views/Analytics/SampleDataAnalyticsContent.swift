@@ -24,6 +24,11 @@ struct SampleDataAnalyticsContent: View {
     return sampleRecords.filter { $0.deviceName == device }
   }
 
+  /// 全デバイス名（ソート済み）— チャートの色安定割り当て用
+  private var sortedAllDeviceNames: [String] {
+    SampleDataProvider.sampleDeviceNames.sorted()
+  }
+
   // MARK: - 共通ユーティリティを使用したプロパティ
 
   private var canMoveNext: Bool {
@@ -98,7 +103,8 @@ struct SampleDataAnalyticsContent: View {
               selectedRange: $selectedRange,
               canMoveNext: canMoveNext,
               canMovePrevious: canMovePrevious,
-              shiftWindow: shiftWindow
+              shiftWindow: shiftWindow,
+              allDeviceNames: sortedAllDeviceNames
             )
 
             // サイクル推移グラフ
@@ -124,7 +130,8 @@ struct SampleDataAnalyticsContent: View {
           selectedRange: $selectedRange,
           canMoveNext: canMoveNext,
           canMovePrevious: canMovePrevious,
-          shiftWindow: shiftWindow
+          shiftWindow: shiftWindow,
+          allDeviceNames: sortedAllDeviceNames
         )
 
         // サイクル推移グラフ

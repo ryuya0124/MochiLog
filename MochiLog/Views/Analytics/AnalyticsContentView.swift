@@ -15,7 +15,8 @@ struct AnalyticsContentView: View {
   // MARK: - バックグラウンド計算用の状態
   @State private var isLoading = true
   @State private var cachedFilteredRecords: [BatteryRecord] = []
-  @State private var cachedVisibleRecords: [BatteryRecord] = []
+  @State private var cachedVisibleRecords: [BatteryRecord] = []  // 統計用（期間内のみ）
+  @State private var cachedChartRecords: [BatteryRecord] = []  // グラフ用（前後バッファ付き）
   @State private var cachedStartDay: Date = Date()
   @State private var cachedEndDay: Date = Date()
   @State private var cachedUnit: AppSettings.ChartUnit = .day
@@ -27,6 +28,11 @@ struct AnalyticsContentView: View {
   // MARK: - フィルタ済みレコード
   private var filteredRecords: [BatteryRecord] {
     cachedFilteredRecords
+  }
+
+  /// 全デバイス名（ソート済み）— チャートの色安定割り当て用
+  private var sortedAllDeviceNames: [String] {
+    Array(Set(cachedFilteredRecords.map { $0.deviceName })).sorted()
   }
 
   // MARK: - ナビゲーション
@@ -103,14 +109,15 @@ struct AnalyticsContentView: View {
                 HStack(alignment: .top, spacing: 20) {
                   // ヘルス推移グラフ
                   HealthTrendView(
-                    visibleRecords: cachedVisibleRecords,
+                    visibleRecords: cachedChartRecords,
                     startDay: cachedStartDay,
                     endDay: cachedEndDay,
                     unit: cachedUnit,
                     selectedRange: $selectedRange,
                     canMoveNext: canMoveNext,
                     canMovePrevious: canMovePrevious,
-                    shiftWindow: shiftWindow
+                    shiftWindow: shiftWindow,
+                    allDeviceNames: sortedAllDeviceNames
                   )
 
                   // サイクル推移グラフ
@@ -123,7 +130,7 @@ struct AnalyticsContentView: View {
 
                 // 統計情報（iPad）
                 if !cachedFilteredRecords.isEmpty {
-                  StatisticsView(filteredRecords: cachedFilteredRecords)
+                  StatisticsView(filteredRecords: cachedVisibleRecords)
                 }
               }
               .frame(maxWidth: 1200)
@@ -131,14 +138,15 @@ struct AnalyticsContentView: View {
               // iPhone向け1列レイアウト
               // ヘルス推移グラフ
               HealthTrendView(
-                visibleRecords: cachedVisibleRecords,
+                visibleRecords: cachedChartRecords,
                 startDay: cachedStartDay,
                 endDay: cachedEndDay,
                 unit: cachedUnit,
                 selectedRange: $selectedRange,
                 canMoveNext: canMoveNext,
                 canMovePrevious: canMovePrevious,
-                shiftWindow: shiftWindow
+                shiftWindow: shiftWindow,
+                allDeviceNames: sortedAllDeviceNames
               )
 
               // サイクル推移グラフ（iPhoneでは親と期間を共有）
@@ -155,7 +163,7 @@ struct AnalyticsContentView: View {
 
               // 統計情報（iPhone）
               if !cachedFilteredRecords.isEmpty {
-                StatisticsView(filteredRecords: cachedFilteredRecords)
+                StatisticsView(filteredRecords: cachedVisibleRecords)
               }
             }
           }
@@ -297,10 +305,21 @@ struct AnalyticsContentView: View {
       DispatchQueue.main.async {
         let uiUpdateStartTime = CFAbsoluteTimeGetCurrent()
 
-        // 計算結果に基づいてfilteredRecordsからvisibleRecordsを取得
+        let visibleStart = result.startDay
+        let visibleEnd = result.endDay
+
+        // 統計用
         cachedVisibleRecords = visibleIndexes.map { cachedFilteredRecords[$0] }
-        cachedStartDay = result.startDay
-        cachedEndDay = result.endDay
+
+        // チャート描画用
+        cachedChartRecords = ChartWindowNavigator.visibleRecordsWithContext(
+          in: cachedFilteredRecords,
+          start: visibleStart,
+          end: visibleEnd
+        )
+
+        cachedStartDay = visibleStart
+        cachedEndDay = visibleEnd
         cachedUnit = result.unit
         lastParametersHash = parametersHash
         isPreparingChartData = false

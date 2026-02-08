@@ -47,8 +47,8 @@ struct MainTabView: View {
   }
 
   var body: some View {
-    let bodyStartTime = CFAbsoluteTimeGetCurrent()
     let _ = print("[Performance] MainTabView.body構築開始")
+    let startTime = CFAbsoluteTimeGetCurrent()
 
     return Group {
       if #available(iOS 18.0, *) {
@@ -64,7 +64,7 @@ struct MainTabView: View {
     }
     .background(RecordsObserverView())
     .onAppear {
-      let elapsed = (CFAbsoluteTimeGetCurrent() - bodyStartTime) * 1000
+      let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
       print("[Performance] MainTabView.body構築完了: \(String(format: "%.2f", elapsed))ms")
 
       // 初回起動時にチュートリアルを表示
@@ -73,14 +73,7 @@ struct MainTabView: View {
       }
     }
     .onChange(of: selectedTab) { oldValue, newValue in
-      let switchStartTime = CFAbsoluteTimeGetCurrent()
-      print("[Performance] タブ切り替え開始: \(oldValue.rawValue) -> \(newValue.rawValue)")
-
-      // 次のフレームでタブ切り替え完了を測定
-      DispatchQueue.main.async {
-        let elapsed = (CFAbsoluteTimeGetCurrent() - switchStartTime) * 1000
-        print("[Performance] タブ切り替え完了: \(String(format: "%.2f", elapsed))ms")
-      }
+      print("[Performance] タブ切り替え: \(oldValue.rawValue) -> \(newValue.rawValue)")
     }
     .sheet(isPresented: $showingTutorial) {
       TutorialView()
@@ -151,40 +144,26 @@ struct MainTabView: View {
     .tint(accentColor.color)
   }
 
-  // MARK: - iOS 17以下 iPhone用 TabView（Lazy版）
+  // MARK: - iOS 17以下 iPhone用 TabView
   private var legacyTabView: some View {
-    ZStack {
-      // 選択中のタブのみを描画（Lazy）
-      switch selectedTab {
-      case .home:
-        HomeView()
-      case .analytics:
-        AnalyticsView()
-      case .settings:
-        SettingsView()
-      }
-    }
-    .safeAreaInset(edge: .bottom) {
-      // カスタムタブバー
-      HStack(spacing: 0) {
-        ForEach(AppTab.allCases) { tab in
-          Button {
-            selectedTab = tab
-          } label: {
-            VStack(spacing: 4) {
-              Image(systemName: tab.icon)
-                .font(.system(size: 24))
-              Text(tab.title)
-                .font(.caption2)
-            }
-            .frame(maxWidth: .infinity)
-            .foregroundStyle(selectedTab == tab ? accentColor.color : .secondary)
-          }
+    TabView(selection: $selectedTab) {
+      HomeView()
+        .tabItem {
+          Label(AppTab.home.title, systemImage: AppTab.home.icon)
         }
-      }
-      .padding(.vertical, 8)
-      .background(.ultraThinMaterial)
+        .tag(AppTab.home)
+      AnalyticsView()
+        .tabItem {
+          Label(AppTab.analytics.title, systemImage: AppTab.analytics.icon)
+        }
+        .tag(AppTab.analytics)
+      SettingsView()
+        .tabItem {
+          Label(AppTab.settings.title, systemImage: AppTab.settings.icon)
+        }
+        .tag(AppTab.settings)
     }
+    .tint(accentColor.color)
   }
 }
 

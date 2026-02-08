@@ -59,6 +59,11 @@ struct ChartWindowNavigator {
   ) -> Date {
     let now = Date()
 
+    // グラフの自動モード（自動センター）要求に応じ、.auto の場合は最も密集している場所を探す
+    if range == .auto {
+      return initializeWindowEnd(for: records, range: range)
+    }
+
     switch range {
     case .oneMonth:
       let endOfCurrentMonth = endOfMonth(for: now)
@@ -170,8 +175,6 @@ struct ChartWindowNavigator {
     }
   }
 
-  // MARK: - データ存在チェック
-
   /// 指定した期間内にデータが存在するかチェック
   static func windowContainsData(start: Date, end: Date, in records: [BatteryRecord]) -> Bool {
     let cal = Calendar.current
@@ -181,6 +184,37 @@ struct ChartWindowNavigator {
       let d = cal.startOfDay(for: $0.logDate)
       return d >= startDay && d <= endDay
     }
+  }
+
+  /// 指定期間の前後1点ずつを含めたレコードを抽出（グラフの連続性を保つため）
+  static func visibleRecordsWithContext(
+    in records: [BatteryRecord],
+    start: Date,
+    end: Date
+  ) -> [BatteryRecord] {
+    let cal = Calendar.current
+    let startDay = cal.startOfDay(for: start)
+    let endDay = cal.startOfDay(for: end)
+
+    // 期間内のデータを特定（インデックスを保持）
+    let recordInfos = records.enumerated().map {
+      (index: $0.offset, date: cal.startOfDay(for: $0.element.logDate))
+    }
+    let visibleIndices = recordInfos.filter { $0.date >= startDay && $0.date <= endDay }.map {
+      $0.index
+    }
+
+    guard let firstVisibleIndex = visibleIndices.min(),
+      let lastVisibleIndex = visibleIndices.max()
+    else {
+      return []
+    }
+
+    // 前後のバッファ：前後に1点ずつ猶予を持たせる
+    let startIndex = max(0, firstVisibleIndex - 1)
+    let endIndex = min(records.count - 1, lastVisibleIndex + 1)
+
+    return Array(records[startIndex...endIndex])
   }
 
   // MARK: - 日付計算ヘルパー
@@ -410,6 +444,49 @@ struct ChartWindowNavigator {
     findPreviousWindowEnd(currentEnd: currentEnd, range: range, records: records) != nil
   }
 
+  /// 最もデータが密集しているウィンドウを探索する
+  static func findWindowWithMostData(
+    in records: [BatteryRecord],
+    range: RangePreset
+  ) -> Date? {
+    guard !records.isEmpty else { return nil }
+
+    // レコードが少なすぎる場合は単純に最後を返す
+    if records.count <= 2 {
+      return records.last?.logDate
+    }
+
+    let cal = Calendar.current
+    var maxCount = 0
+    var bestEnd: Date?
+
+    // 探索のステップを決定（レンジが長い場合は大雑把に）
+    // 基本は各レコードを終了日候補としてスライディングウィンドウを試す
+    // パフォーマンスのため、最大100個程度の候補に絞る
+    let step = max(1, records.count / 100)
+
+    for i in stride(from: records.count - 1, through: 0, by: -step) {
+      let candidateEnd = records[i].logDate
+      let candidateStart = windowStart(for: candidateEnd, range: range, allRecords: records)
+
+      let startDay = cal.startOfDay(for: candidateStart)
+      let endDay = cal.startOfDay(for: candidateEnd)
+
+      // このウィンドウに含まれるレコード数をカウント
+      let count = records.filter {
+        let d = cal.startOfDay(for: $0.logDate)
+        return d >= startDay && d <= endDay
+      }.count
+
+      if count > maxCount {
+        maxCount = count
+        bestEnd = candidateEnd
+      }
+    }
+
+    return bestEnd
+  }
+
   // MARK: - 自動レンジ決定
 
   /// データ分布に基づいて初期レンジを決定
@@ -508,6 +585,14 @@ struct ChartWindowNavigator {
     // 3年選択時は最新データの日付を終了日とする
     if range == .threeYears {
       return records.max(by: { $0.logDate < $1.logDate })?.logDate ?? Date()
+    }
+
+    // 自動モード時は最も密集している期間を優先
+    if range == .auto {
+      let effective = autoRange(for: records)
+      if let densestEnd = findWindowWithMostData(in: records, range: effective) {
+        return densestEnd
+      }
     }
 
     // その他のレンジ：現在日付のウィンドウにデータがあれば今日、なければ最新データの日付

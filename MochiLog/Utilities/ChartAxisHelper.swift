@@ -200,4 +200,19 @@ struct ChartAxisHelper {
     case monthOnly  // 月のみ（例: 3月）
     case yearOnly  // 年のみ（例: 2024年）
   }
+
+  // MARK: - デバイス色パレット
+
+  /// デバイス名に安定した色を割り当てるためのパレット
+  static let deviceColorPalette: [Color] = [
+    .blue, .green, .orange, .purple, .red, .pink, .cyan, .yellow, .mint, .indigo,
+  ]
+
+  /// ソート済みデバイス名に対応する色の配列を返す
+  /// ページ切り替え時にデバイスの色が変わらないよう、全デバイス名のソート順で割り当てる
+  static func stableDeviceColors(for sortedDeviceNames: [String]) -> [Color] {
+    sortedDeviceNames.enumerated().map { index, _ in
+      deviceColorPalette[index % deviceColorPalette.count]
+    }
+  }
 }

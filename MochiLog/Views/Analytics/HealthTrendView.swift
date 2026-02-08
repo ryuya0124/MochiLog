@@ -11,6 +11,7 @@ struct HealthTrendView: View {
   let canMoveNext: Bool
   let canMovePrevious: Bool
   let shiftWindow: (Bool) -> Void
+  let allDeviceNames: [String]  // 色の安定割り当て用（全デバイス名ソート済み）
   @State private var animateChart: Bool = false
 
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -201,6 +202,10 @@ struct HealthTrendView: View {
             }
           }
         }
+        .chartForegroundStyleScale(
+          domain: allDeviceNames,
+          range: ChartAxisHelper.stableDeviceColors(for: allDeviceNames)
+        )
         .chartYScale(domain: 68...107)  // 上下に余白を確保
         .chartXAxis {
           // 共通の横軸ラベル間引き関数を使用
@@ -304,6 +309,7 @@ struct HealthTrendView: View {
     selectedRange: .constant(.oneMonth),
     canMoveNext: false,
     canMovePrevious: false,
-    shiftWindow: { _ in }
+    shiftWindow: { _ in },
+    allDeviceNames: []
   )
 }

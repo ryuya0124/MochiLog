@@ -122,6 +122,11 @@ struct AnalyticsView: View {
           }
           appSettings.showingSampleData = newValue
         }
+        .onReceive(appSettings.$showingSampleData.removeDuplicates()) { newValue in
+          if showingSampleData != newValue {
+            showingSampleData = newValue
+          }
+        }
         .navigationTitle(String(localized: "analytics", table: "Analytics"))
         .background(Color(.systemGroupedBackground))
         .sheet(isPresented: $showingTutorial) {

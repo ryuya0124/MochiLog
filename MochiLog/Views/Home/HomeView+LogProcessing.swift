@@ -307,7 +307,7 @@ extension HomeView {
 
     // 容量不一致チェック
     if result.isCapacityMismatch {
-      if appSettings.mismatchBehavior == .error {
+      if AppSettings.shared.mismatchBehavior == .error {
         DispatchQueue.main.async {
           NotificationCenter.default.post(
             name: NSNotification.Name("ShowImportError"),
