@@ -152,33 +152,16 @@ struct AnalyticsView: View {
         noDataView(geometry: geometry)
       }
     }
-    .onReceive(appSettings.$showingSampleData.removeDuplicates()) { newValue in
-      print("[Redraw] appSettings.showingSampleData changed: \(showingSampleData) -> \(newValue)")
-      guard isInitialized else {
-        print("[Redraw] onReceive ignored (not initialized yet)")
-        return
-      }
-      if showingSampleData != newValue {
-        showingSampleData = newValue
-      }
-    }
-    .onReceive(appSettings.$selectedChartRange.removeDuplicates()) { newValue in
-      print(
-        "[Redraw] appSettings.selectedChartRange changed: \(selectedRange.rawValue) -> \(newValue ?? "nil")"
-      )
-      guard isInitialized else {
-        print("[Redraw] onReceive ignored (not initialized yet)")
-        return
-      }
-      guard let newValue else { return }
-      if let range = RangePreset(rawValue: newValue), range != selectedRange {
-        selectedRange = range
-      }
-    }
     .onChange(of: showingSampleData) { _, newValue in
       print("[Redraw] showingSampleData onChange: \(newValue)")
       if appSettings.showingSampleData != newValue {
         appSettings.showingSampleData = newValue
+      }
+    }
+    .onChange(of: selectedRange) { _, newValue in
+      print("[Redraw] selectedRange onChange: \(newValue.rawValue)")
+      if appSettings.selectedChartRange != newValue.rawValue {
+        appSettings.selectedChartRange = newValue.rawValue
       }
     }
   }

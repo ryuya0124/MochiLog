@@ -121,8 +121,10 @@ struct CycleTrendView: View {
   }
 
   var body: some View {
-    let _ = print("[Performance] CycleTrendView.body構築開始")
-    let startTime = CFAbsoluteTimeGetCurrent()
+    let bodyStartTime = CFAbsoluteTimeGetCurrent()
+    let _ = print(
+      "[Performance] CycleTrendView.body構築開始 - allRecords: \(allRecords.count)件, visible: \(visibleRecords.count)件"
+    )
 
     return VStack(alignment: .leading, spacing: 12) {
       HStack(alignment: .firstTextBaseline) {
@@ -204,8 +206,13 @@ struct CycleTrendView: View {
         }
 
         // データ点は期間に応じて間引き
+        let downsampleStart = CFAbsoluteTimeGetCurrent()
         let pointRecords = ChartAxisHelper.downsampledRecords(
           visibleRecords, startDay: startDay, endDay: endDay)
+        let downsampleElapsed = (CFAbsoluteTimeGetCurrent() - downsampleStart) * 1000
+        let _ = print(
+          "[Performance] CycleTrendView.downsample: \(String(format: "%.2f", downsampleElapsed))ms (\(visibleRecords.count) -> \(pointRecords.count)件)"
+        )
 
         Chart {
           ForEach(visibleRecords) { record in
@@ -222,9 +229,21 @@ struct CycleTrendView: View {
             .interpolationMethod(.catmullRom)
             .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
             .opacity(animateChart ? 1 : 0)
+          }
 
-            if !pointRecords.isEmpty {
-              ForEach(pointRecords) { pointRecord in
+          // PointMarkはさらに間引く（デバイスごとに均等に間引く）
+          if !pointRecords.isEmpty {
+            // デバイスごとにグループ化
+            let deviceGroups = Dictionary(grouping: pointRecords) { $0.deviceName }
+
+            ForEach(Array(deviceGroups.keys.sorted()), id: \.self) { deviceName in
+              let deviceRecords = deviceGroups[deviceName] ?? []
+              let thinningFactor = max(1, deviceRecords.count / 15)  // デバイスごとに最大15件
+
+              ForEach(
+                Array(deviceRecords.enumerated().filter { $0.offset % thinningFactor == 0 }),
+                id: \.element.id
+              ) { _, pointRecord in
                 PointMark(
                   x: .value(
                     String(localized: "date", table: "Common"),
@@ -247,9 +266,13 @@ struct CycleTrendView: View {
         }
         .chartXAxis {
           // 共通の横軸ラベル間引き関数を使用
+          let axisStart = CFAbsoluteTimeGetCurrent()
           let (strideComponent, strideCount, labelFormat) =
             ChartAxisHelper.calculateXAxisStride(
               startDay: startDay, endDay: endDay, isCompact: horizontalSizeClass == .compact)
+          let axisElapsed = (CFAbsoluteTimeGetCurrent() - axisStart) * 1000
+          let _ = print(
+            "[Performance] CycleTrendView.axisCalc: \(String(format: "%.2f", axisElapsed))ms")
 
           AxisMarks(values: .stride(by: strideComponent, count: strideCount)) { value in
             AxisGridLine()
@@ -304,7 +327,7 @@ struct CycleTrendView: View {
     .padding()
     .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
     .onAppear {
-      let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
+      let elapsed = (CFAbsoluteTimeGetCurrent() - bodyStartTime) * 1000
       print("[Performance] CycleTrendView.body構築完了: \(String(format: "%.2f", elapsed))ms")
 
       // 初期レンジを設定（一度だけ、親から渡されていない場合のみ）
@@ -314,13 +337,16 @@ struct CycleTrendView: View {
           for: allRecords, range: initialRange)
         hasInitialized = true
       }
-      // 初回表示時はアニメーションを無効化して高速化
+      // 初回表示時はアニメーションなしで即座に表示（高速化）
       animateChart = true
     }
     .onChange(of: selectedRange) {
+      // レンジ変更時のみアニメーション実行
       animateChart = false
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
-        withAnimation(.easeOut(duration: 0.5)) { animateChart = true }
+        withAnimation(.easeOut(duration: 0.4)) {
+          animateChart = true
+        }
       }
     }
     .onChange(of: initialRange) {

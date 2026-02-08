@@ -18,8 +18,9 @@ struct HealthTrendView: View {
   @State private var analysisDataSource = AppSettings.shared.analysisDataSource
 
   var body: some View {
-    let _ = print("[Performance] HealthTrendView.body構築開始")
-    let startTime = CFAbsoluteTimeGetCurrent()
+    let bodyStartTime = CFAbsoluteTimeGetCurrent()
+    let _ = print(
+      "[Performance] HealthTrendView.body構築開始 - visibleRecords: \(visibleRecords.count)件")
 
     return VStack(alignment: .leading, spacing: 12) {
       HStack(alignment: .firstTextBaseline) {
@@ -140,8 +141,13 @@ struct HealthTrendView: View {
         }
 
         // 描画用データは期間に応じて間引き（負荷軽減）
+        let downsampleStart = CFAbsoluteTimeGetCurrent()
         let chartRecords = ChartAxisHelper.downsampledRecords(
           visibleRecords, startDay: startDay, endDay: endDay)
+        let downsampleElapsed = (CFAbsoluteTimeGetCurrent() - downsampleStart) * 1000
+        let _ = print(
+          "[Performance] HealthTrendView.downsample: \(String(format: "%.2f", downsampleElapsed))ms (\(visibleRecords.count) -> \(chartRecords.count)件)"
+        )
 
         Chart {
           ForEach(chartRecords) { record in
@@ -160,9 +166,21 @@ struct HealthTrendView: View {
             )
             .interpolationMethod(.catmullRom)
             .opacity(animateChart ? 1 : 0)
+          }
 
-            if !chartRecords.isEmpty {
-              ForEach(chartRecords) { pointRecord in
+          // PointMarkはさらに間引く（デバイスごとに均等に間引く）
+          if !chartRecords.isEmpty {
+            // デバイスごとにグループ化
+            let deviceGroups = Dictionary(grouping: chartRecords) { $0.deviceName }
+
+            ForEach(Array(deviceGroups.keys.sorted()), id: \.self) { deviceName in
+              let deviceRecords = deviceGroups[deviceName] ?? []
+              let thinningFactor = max(1, deviceRecords.count / 15)  // デバイスごとに最大15件
+
+              ForEach(
+                Array(deviceRecords.enumerated().filter { $0.offset % thinningFactor == 0 }),
+                id: \.element.id
+              ) { _, pointRecord in
                 PointMark(
                   x: .value(
                     String(localized: "date", table: "Common"),
@@ -182,14 +200,17 @@ struct HealthTrendView: View {
               }
             }
           }
-
         }
         .chartYScale(domain: 68...107)  // 上下に余白を確保
         .chartXAxis {
           // 共通の横軸ラベル間引き関数を使用
+          let axisStart = CFAbsoluteTimeGetCurrent()
           let (strideComponent, strideCount, labelFormat) =
             ChartAxisHelper.calculateXAxisStride(
               startDay: startDay, endDay: endDay, isCompact: horizontalSizeClass == .compact)
+          let axisElapsed = (CFAbsoluteTimeGetCurrent() - axisStart) * 1000
+          let _ = print(
+            "[Performance] HealthTrendView.axisCalc: \(String(format: "%.2f", axisElapsed))ms")
 
           AxisMarks(values: .stride(by: strideComponent, count: strideCount)) { value in
             AxisGridLine()
@@ -246,16 +267,17 @@ struct HealthTrendView: View {
         }
         .frame(height: horizontalSizeClass == .regular ? 280 : 200)
         .onAppear {
-          let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
+          let elapsed = (CFAbsoluteTimeGetCurrent() - bodyStartTime) * 1000
           print("[Performance] HealthTrendView.body構築完了: \(String(format: "%.2f", elapsed))ms")
 
-          // 初回表示時はアニメーションを無効化して高速化
+          // 初回表示時はアニメーションなしで即座に表示（高速化）
           animateChart = true
         }
         .onChange(of: selectedRange) {
+          // レンジ変更時のみアニメーション実行
           animateChart = false
-          DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-            withAnimation(.easeOut(duration: 0.6)) {
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
+            withAnimation(.easeOut(duration: 0.4)) {
               animateChart = true
             }
           }

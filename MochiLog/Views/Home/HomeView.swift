@@ -151,26 +151,40 @@ struct MainTabView: View {
     .tint(accentColor.color)
   }
 
-  // MARK: - iOS 17以下 iPhone用 TabView
+  // MARK: - iOS 17以下 iPhone用 TabView（Lazy版）
   private var legacyTabView: some View {
-    TabView(selection: $selectedTab) {
-      HomeView()
-        .tabItem {
-          Label(AppTab.home.title, systemImage: AppTab.home.icon)
-        }
-        .tag(AppTab.home)
-      AnalyticsView()
-        .tabItem {
-          Label(AppTab.analytics.title, systemImage: AppTab.analytics.icon)
-        }
-        .tag(AppTab.analytics)
-      SettingsView()
-        .tabItem {
-          Label(AppTab.settings.title, systemImage: AppTab.settings.icon)
-        }
-        .tag(AppTab.settings)
+    ZStack {
+      // 選択中のタブのみを描画（Lazy）
+      switch selectedTab {
+      case .home:
+        HomeView()
+      case .analytics:
+        AnalyticsView()
+      case .settings:
+        SettingsView()
+      }
     }
-    .tint(accentColor.color)
+    .safeAreaInset(edge: .bottom) {
+      // カスタムタブバー
+      HStack(spacing: 0) {
+        ForEach(AppTab.allCases) { tab in
+          Button {
+            selectedTab = tab
+          } label: {
+            VStack(spacing: 4) {
+              Image(systemName: tab.icon)
+                .font(.system(size: 24))
+              Text(tab.title)
+                .font(.caption2)
+            }
+            .frame(maxWidth: .infinity)
+            .foregroundStyle(selectedTab == tab ? accentColor.color : .secondary)
+          }
+        }
+      }
+      .padding(.vertical, 8)
+      .background(.ultraThinMaterial)
+    }
   }
 }
 
