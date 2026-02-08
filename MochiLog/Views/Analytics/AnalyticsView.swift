@@ -17,6 +17,8 @@ struct AnalyticsView: View {
   @State private var showingTutorial = false
   @State private var showingSampleData = AppSettings.shared.showingSampleData
   @State private var isInitialized = false  // 初回表示完了フラグ
+  @State private var savedRangeBeforeSample: RangePreset?
+  @State private var savedWindowEndBeforeSample: Date?
 
   /// RecordDataManagerからレコードを取得（キャッシュ済み、昇順）
   private var records: [BatteryRecord] {
@@ -94,6 +96,11 @@ struct AnalyticsView: View {
         }
         .onChange(of: selectedRange) { _, newValue in
           print("[Redraw] selectedRange onChange: \(newValue.rawValue)")
+          // サンプルモード中は保存・ウィンドウ更新を行わない
+          guard !showingSampleData else {
+            print("[Performance] selectedRange onChange スキップ（サンプルモード中）")
+            return
+          }
           // ガード: 既に同じ値なら何もしない
           guard appSettings.selectedChartRange != newValue.rawValue else {
             print("[Performance] selectedRange onChange スキップ（既に同じ値）")
@@ -115,6 +122,11 @@ struct AnalyticsView: View {
         }
         .onChange(of: showingSampleData) { _, newValue in
           print("[Redraw] showingSampleData onChange: \(newValue)")
+          if newValue {
+            saveRangeBeforeSampleIfNeeded()
+          } else {
+            restoreRangeAfterSampleIfNeeded()
+          }
           // ガード: 既に同じ値なら何もしない
           guard appSettings.showingSampleData != newValue else {
             print("[Performance] showingSampleData onChange スキップ（既に同じ値）")
@@ -290,6 +302,30 @@ struct AnalyticsView: View {
     if percent < 80 { return .red }
     if percent < 90 { return .orange }
     return appSettings.accentColor.color
+  }
+
+  // MARK: - サンプルモード前後のレンジ復元
+  private func saveRangeBeforeSampleIfNeeded() {
+    guard savedRangeBeforeSample == nil else { return }
+    savedRangeBeforeSample = selectedRange
+    savedWindowEndBeforeSample = windowEnd
+  }
+
+  private func restoreRangeAfterSampleIfNeeded() {
+    guard let savedRange = savedRangeBeforeSample else { return }
+    selectedRange = savedRange
+
+    if let savedEnd = savedWindowEndBeforeSample {
+      windowEnd = savedEnd
+    } else {
+      let filteredRecords =
+        selectedDevice.map { device in records.filter { $0.deviceName == device } } ?? records
+      windowEnd = ChartWindowNavigator.initializeWindowEnd(
+        for: filteredRecords, range: selectedRange)
+    }
+
+    savedRangeBeforeSample = nil
+    savedWindowEndBeforeSample = nil
   }
 }
 
