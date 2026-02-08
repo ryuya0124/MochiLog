@@ -60,6 +60,8 @@ struct AboutSettingsView: View {
             Image(systemName: "chevron.right")
               .foregroundStyle(.secondary)
           }
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .contentShape(Rectangle())
           .padding(.vertical, 8)
         }
         .buttonStyle(.plain)
@@ -89,6 +91,8 @@ struct AboutSettingsView: View {
             Image(systemName: "chevron.right")
               .foregroundStyle(.secondary)
           }
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .contentShape(Rectangle())
           .padding(.vertical, 8)
         }
         .buttonStyle(.plain)
@@ -118,6 +122,8 @@ struct AboutSettingsView: View {
             Image(systemName: "chevron.right")
               .foregroundStyle(.secondary)
           }
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .contentShape(Rectangle())
           .padding(.vertical, 8)
         }
         .buttonStyle(.plain)

@@ -129,6 +129,8 @@ struct GeneralSettingsView: View {
             Image(systemName: "chevron.right")
               .foregroundStyle(.secondary)
           }
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .contentShape(Rectangle())
           .padding(.vertical, 8)
         }
         .buttonStyle(.plain)

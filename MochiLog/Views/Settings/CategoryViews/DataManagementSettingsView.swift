@@ -117,6 +117,8 @@ struct DataManagementSettingsView: View {
 
           Spacer()
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
         .padding(.vertical, 8)
       }
       .buttonStyle(.plain)
