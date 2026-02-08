@@ -114,33 +114,43 @@ struct MainTabView: View {
   }
 
   // MARK: - iOS 17以下 iPad用 NavigationSplitView
+
+  /// List(selection:) 用のオプショナルバインディング
+  private var sidebarSelection: Binding<AppTab?> {
+    Binding<AppTab?>(
+      get: { selectedTab },
+      set: { if let tab = $0 { selectedTab = tab } }
+    )
+  }
+
   private var legacySplitView: some View {
     NavigationSplitView {
-      List {
+      // List(selection:) を使って NavigationSplitView と正しく連携する
+      // onTapGesture だと NavigationSplitView の内部選択状態と乖離し、
+      // 設定画面訪問後に detail が切り替わらなくなる問題が発生する
+      List(selection: sidebarSelection) {
         ForEach(AppTab.allCases) { tab in
           Label(tab.title, systemImage: tab.icon)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .contentShape(Rectangle())
-            .onTapGesture {
-              selectedTab = tab
-            }
-            .listRowBackground(selectedTab == tab ? Color.accentColor.opacity(0.2) : Color.clear)
+            .tag(tab)
         }
       }
       .navigationTitle("MochiLog")
       .listStyle(.sidebar)
     } detail: {
-      switch selectedTab {
-      case .home:
-        HomeView()
-      case .analytics:
-        AnalyticsView()
-      case .settings:
-        SettingsView()
+      // .id(selectedTab) でタブ切り替え時にビューを強制再生成し、
+      // 前のタブの NavigationStack 状態が残留するのを防ぐ
+      Group {
+        switch selectedTab {
+        case .home:
+          HomeView()
+        case .analytics:
+          AnalyticsView()
+        case .settings:
+          SettingsView()
+        }
       }
+      .id(selectedTab)
     }
-    // トランジションアニメーションを無効化
-    .animation(nil, value: selectedTab)
     .tint(accentColor.color)
   }
 
