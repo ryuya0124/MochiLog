@@ -1,10 +1,11 @@
+import Combine
 import SwiftData
 import SwiftUI
 
 // MARK: - 分析ビュー
 struct AnalyticsView: View {
   @State private var selectedDevice: String?
-  @StateObject private var appSettings = AppSettings.shared
+  private let appSettings = AppSettings.shared
   @State private var recordDataManager = RecordDataManager.shared
 
   @State private var selectedRange: RangePreset = .oneMonth
@@ -14,6 +15,8 @@ struct AnalyticsView: View {
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @State private var viewportHeight: CGFloat = 0
   @State private var showingTutorial = false
+  @State private var showingSampleData = AppSettings.shared.showingSampleData
+  @State private var isInitialized = false  // 初回表示完了フラグ
 
   /// RecordDataManagerからレコードを取得（キャッシュ済み、昇順）
   private var records: [BatteryRecord] {
@@ -62,19 +65,29 @@ struct AnalyticsView: View {
   }
 
   var body: some View {
-    let _ = print("[Performance] AnalyticsView.body構築開始")
-    let startTime = CFAbsoluteTimeGetCurrent()
+    let bodyStartTime = CFAbsoluteTimeGetCurrent()
+    let _ = print("[Performance] AnalyticsView.body構築開始 - records: \(records.count)件")
+    let _ = print(
+      "[Redraw] AnalyticsView states - showingSampleData: \(showingSampleData), selectedRange: \(selectedRange.rawValue), selectedDevice: \(selectedDevice ?? "nil")"
+    )
 
     return NavigationStack {
       analyticsContent
         .onAppear {
-          let startTime = CFAbsoluteTimeGetCurrent()
-          print("[Performance] AnalyticsView.onAppear開始")
+          let appearStartTime = CFAbsoluteTimeGetCurrent()
+          let bodyElapsed = (appearStartTime - bodyStartTime) * 1000
+          print(
+            "[Performance] AnalyticsView.onAppear開始 (body構築から: \(String(format: "%.2f", bodyElapsed))ms)"
+          )
 
           initializeViewIfNeeded()
+          isInitialized = true  // 初回表示完了を記録
 
-          let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
-          print("[Performance] AnalyticsView.onAppear完了: \(String(format: "%.2f", elapsed))ms")
+          let appearElapsed = (CFAbsoluteTimeGetCurrent() - appearStartTime) * 1000
+          let totalElapsed = (CFAbsoluteTimeGetCurrent() - bodyStartTime) * 1000
+          print(
+            "[Performance] AnalyticsView.onAppear完了: \(String(format: "%.2f", appearElapsed))ms")
+          print("[Performance] AnalyticsView 合計初期化時間: \(String(format: "%.2f", totalElapsed))ms")
         }
         .onChange(of: selectedDevice) {
           handleDeviceChange()
@@ -114,12 +127,12 @@ struct AnalyticsView: View {
           "[Performance] analyticsContent GeometryReader内部: \(String(format: "%.2f", elapsed))ms")
       }()
 
-      if appSettings.showingSampleData {
+      if showingSampleData {
         let _ = print("[Performance] analyticsContent: サンプルモード分岐")
         // サンプルモードON → サンプルグラフ表示
         ScrollView {
           SampleDataAnalyticsContent(
-            showingSampleData: $appSettings.showingSampleData,
+            showingSampleData: $showingSampleData,
             selectedRange: $selectedRange
           )
         }
@@ -137,6 +150,35 @@ struct AnalyticsView: View {
         let _ = print("[Performance] analyticsContent: データなし分岐")
         // データなし + サンプルモードOFF → ボタン表示（中央配置）
         noDataView(geometry: geometry)
+      }
+    }
+    .onReceive(appSettings.$showingSampleData.removeDuplicates()) { newValue in
+      print("[Redraw] appSettings.showingSampleData changed: \(showingSampleData) -> \(newValue)")
+      guard isInitialized else {
+        print("[Redraw] onReceive ignored (not initialized yet)")
+        return
+      }
+      if showingSampleData != newValue {
+        showingSampleData = newValue
+      }
+    }
+    .onReceive(appSettings.$selectedChartRange.removeDuplicates()) { newValue in
+      print(
+        "[Redraw] appSettings.selectedChartRange changed: \(selectedRange.rawValue) -> \(newValue ?? "nil")"
+      )
+      guard isInitialized else {
+        print("[Redraw] onReceive ignored (not initialized yet)")
+        return
+      }
+      guard let newValue else { return }
+      if let range = RangePreset(rawValue: newValue), range != selectedRange {
+        selectedRange = range
+      }
+    }
+    .onChange(of: showingSampleData) { _, newValue in
+      print("[Redraw] showingSampleData onChange: \(newValue)")
+      if appSettings.showingSampleData != newValue {
+        appSettings.showingSampleData = newValue
       }
     }
   }
@@ -190,7 +232,7 @@ struct AnalyticsView: View {
   // MARK: - 初期化処理
   private func initializeViewIfNeeded() {
     // サンプルモードまたはデータがない場合は何もしない
-    guard !appSettings.showingSampleData && !records.isEmpty else { return }
+    guard !showingSampleData && !records.isEmpty else { return }
 
     // 保存されたレンジがあればそれを使用、なければ自動選択
     if let savedRangeString = appSettings.selectedChartRange,

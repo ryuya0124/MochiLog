@@ -21,6 +21,8 @@ struct AnalyticsContentView: View {
   @State private var cachedUnit: AppSettings.ChartUnit = .day
   @State private var lastQuickSignature: Int?
   @State private var lastParametersHash: Int?
+  @State private var isPreparingChartData: Bool = false
+  @State private var pendingParametersHash: Int?
 
   // MARK: - フィルタ済みレコード
   private var filteredRecords: [BatteryRecord] {
@@ -246,7 +248,16 @@ struct AnalyticsContentView: View {
       return
     }
 
-    print("[Performance] prepareChartDataIfNeeded開始")
+    if isPreparingChartData {
+      pendingParametersHash = parametersHash
+      print("[Performance] prepareChartDataIfNeeded保留（処理中）- メインスレッドブロック対策")
+      return
+    }
+
+    print(
+      "[Performance] prepareChartDataIfNeeded開始 - records: \(cachedFilteredRecords.count)件, range: \(selectedRange.rawValue)"
+    )
+    isPreparingChartData = true
     isLoading = true
 
     // 日付配列を抽出（Sendable対応）
@@ -255,13 +266,20 @@ struct AnalyticsContentView: View {
     let currentRange = selectedRange
 
     // ウィンドウ計算はMainActorで実行（軽量）
+    let windowStartTime = CFAbsoluteTimeGetCurrent()
     let result = computeWindow(
       recordDates: recordDates,
       windowEnd: currentWindowEnd,
       range: currentRange
     )
+    let windowElapsed = (CFAbsoluteTimeGetCurrent() - windowStartTime) * 1000
+    print(
+      "[Performance] prepareChartDataIfNeeded - ウィンドウ計算: \(String(format: "%.2f", windowElapsed))ms"
+    )
 
     DispatchQueue.global(qos: .userInitiated).async {
+      let bgStartTime = CFAbsoluteTimeGetCurrent()
+
       // 可視インデックスをバックグラウンドで計算
       let calendar = Calendar.current
       let startDay = result.startDay
@@ -271,19 +289,42 @@ struct AnalyticsContentView: View {
         return (d >= startDay && d <= endDay) ? index : nil
       }
 
+      let bgElapsed = (CFAbsoluteTimeGetCurrent() - bgStartTime) * 1000
+      print(
+        "[Performance] prepareChartDataIfNeeded - バックグラウンド処理: \(String(format: "%.2f", bgElapsed))ms, 可視レコード: \(visibleIndexes.count)件"
+      )
+
       DispatchQueue.main.async {
+        let uiUpdateStartTime = CFAbsoluteTimeGetCurrent()
+
         // 計算結果に基づいてfilteredRecordsからvisibleRecordsを取得
         cachedVisibleRecords = visibleIndexes.map { cachedFilteredRecords[$0] }
         cachedStartDay = result.startDay
         cachedEndDay = result.endDay
         cachedUnit = result.unit
         lastParametersHash = parametersHash
+        isPreparingChartData = false
 
-        let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
-        print("[Performance] prepareChartDataIfNeeded完了: \(String(format: "%.2f", elapsed))ms")
+        let uiUpdateElapsed = (CFAbsoluteTimeGetCurrent() - uiUpdateStartTime) * 1000
+        let totalElapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
+        print(
+          "[Performance] prepareChartDataIfNeeded - UI更新: \(String(format: "%.2f", uiUpdateElapsed))ms"
+        )
+        print(
+          "[Performance] prepareChartDataIfNeeded完了（合計）: \(String(format: "%.2f", totalElapsed))ms")
         print("[Performance] isLoadingをfalseに設定")
 
         isLoading = false
+
+        if let pending = pendingParametersHash {
+          pendingParametersHash = nil
+          if pending != parametersHash {
+            print("[Performance] prepareChartDataIfNeeded - 保留中の処理を再実行")
+            DispatchQueue.main.async {
+              prepareChartDataIfNeeded()
+            }
+          }
+        }
       }
     }
   }

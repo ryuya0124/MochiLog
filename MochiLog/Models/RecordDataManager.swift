@@ -24,17 +24,26 @@ class RecordDataManager {
 
   /// レコードを更新（降順で受け取る想定）
   func updateRecords(_ newRecords: [BatteryRecord]) {
-    // ハッシュ値を計算して変更を検知
+    let startTime = CFAbsoluteTimeGetCurrent()
+
+    // より軽量なハッシュ計算（先頭と末尾の5件のみサンプリング）
     var hasher = Hasher()
     hasher.combine(newRecords.count)
-    if let first = newRecords.first {
-      hasher.combine(first.logDate)
-      hasher.combine(first.deviceName)
+
+    let sampleSize = min(5, newRecords.count)
+    for i in 0..<sampleSize {
+      let record = newRecords[i]
+      hasher.combine(record.logDate)
+      hasher.combine(record.deviceName)
     }
-    if let last = newRecords.last {
-      hasher.combine(last.logDate)
-      hasher.combine(last.deviceName)
+    if newRecords.count > sampleSize {
+      for i in (newRecords.count - sampleSize)..<newRecords.count {
+        let record = newRecords[i]
+        hasher.combine(record.logDate)
+        hasher.combine(record.deviceName)
+      }
     }
+
     let newHash = hasher.finalize()
 
     // 変更がなければスキップ
@@ -43,15 +52,18 @@ class RecordDataManager {
       return
     }
 
-    print("[Performance] RecordDataManager.updateRecords実行（\(newRecords.count)件）")
+    print("[Performance] RecordDataManager.updateRecords開始（\(newRecords.count)件）")
 
     recordsDescending = newRecords
     recordsAscending = newRecords.reversed()
 
-    // デバイス名リストを更新
+    // デバイス名リストを更新（Set経由で重複削除）
     deviceNames = Array(Set(newRecords.map { $0.deviceName })).sorted()
 
     lastRecordsHash = newHash
+
+    let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
+    print("[Performance] RecordDataManager.updateRecords完了: \(String(format: "%.2f", elapsed))ms")
   }
 
   /// レコード数を取得

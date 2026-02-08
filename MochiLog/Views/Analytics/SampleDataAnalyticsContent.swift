@@ -7,11 +7,11 @@ import SwiftUI
 struct SampleDataAnalyticsContent: View {
   @Binding var showingSampleData: Bool
   @Binding var selectedRange: RangePreset
-  @StateObject private var appSettings = AppSettings.shared
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
   @State private var selectedDevice: String?
   @State private var windowEnd: Date = Date()
+  @State private var hasInitialized = false
 
   private let sampleRecords = SampleDataProvider.generateSampleRecords()
 
@@ -140,11 +140,17 @@ struct SampleDataAnalyticsContent: View {
     }
     .padding(.horizontal)
     .onAppear {
+      guard !hasInitialized else { return }
+      hasInitialized = true
+
       // ウィンドウ終了日を初期化
       windowEnd = ChartWindowNavigator.initializeWindowEnd(
         for: filteredRecords, range: selectedRange)
       // 自動でレンジを設定
-      selectedRange = ChartWindowNavigator.autoRange(for: filteredRecords)
+      let autoRange = ChartWindowNavigator.autoRange(for: filteredRecords)
+      if selectedRange != autoRange {
+        selectedRange = autoRange
+      }
     }
     .onChange(of: selectedRange) { _, newValue in
       windowEnd = ChartWindowNavigator.adjustedWindowEndForRangeChange(

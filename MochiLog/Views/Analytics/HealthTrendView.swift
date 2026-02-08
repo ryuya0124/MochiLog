@@ -1,4 +1,5 @@
 import Charts
+import Combine
 import SwiftUI
 
 struct HealthTrendView: View {
@@ -13,7 +14,8 @@ struct HealthTrendView: View {
   @State private var animateChart: Bool = false
 
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-  @StateObject private var appSettings = AppSettings.shared
+  private let appSettings = AppSettings.shared
+  @State private var analysisDataSource = AppSettings.shared.analysisDataSource
 
   var body: some View {
     let _ = print("[Performance] HealthTrendView.body構築開始")
@@ -23,7 +25,7 @@ struct HealthTrendView: View {
       HStack(alignment: .firstTextBaseline) {
         Text(
           String(
-            localized: appSettings.analysisDataSource == .nominal
+            localized: analysisDataSource == .nominal
               ? "health_trend_nominal" : "health_trend_actual",
             table: "Analytics")
         )
@@ -150,7 +152,7 @@ struct HealthTrendView: View {
                 unit: unit.calendarComponent),
               y: .value(
                 String(localized: "real_capacity", table: "Analytics"),
-                appSettings.analysisDataSource == .nominal
+                analysisDataSource == .nominal
                   ? record.nominalHealthPercent : record.healthPercent)
             )
             .foregroundStyle(
@@ -168,7 +170,7 @@ struct HealthTrendView: View {
                     unit: unit.calendarComponent),
                   y: .value(
                     String(localized: "real_capacity", table: "Analytics"),
-                    appSettings.analysisDataSource == .nominal
+                    analysisDataSource == .nominal
                       ? pointRecord.nominalHealthPercent : pointRecord.healthPercent)
                 )
                 .foregroundStyle(
@@ -263,6 +265,11 @@ struct HealthTrendView: View {
     .frame(height: horizontalSizeClass == .regular ? 480 : nil, alignment: .top)
     .padding()
     .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+    .onReceive(appSettings.$analysisDataSource.removeDuplicates()) { newValue in
+      if analysisDataSource != newValue {
+        analysisDataSource = newValue
+      }
+    }
   }
 }
 

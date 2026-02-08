@@ -47,8 +47,8 @@ struct MainTabView: View {
   }
 
   var body: some View {
+    let bodyStartTime = CFAbsoluteTimeGetCurrent()
     let _ = print("[Performance] MainTabView.body構築開始")
-    let startTime = CFAbsoluteTimeGetCurrent()
 
     return Group {
       if #available(iOS 18.0, *) {
@@ -64,7 +64,7 @@ struct MainTabView: View {
     }
     .background(RecordsObserverView())
     .onAppear {
-      let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
+      let elapsed = (CFAbsoluteTimeGetCurrent() - bodyStartTime) * 1000
       print("[Performance] MainTabView.body構築完了: \(String(format: "%.2f", elapsed))ms")
 
       // 初回起動時にチュートリアルを表示
@@ -73,7 +73,14 @@ struct MainTabView: View {
       }
     }
     .onChange(of: selectedTab) { oldValue, newValue in
-      print("[Performance] タブ切り替え: \(oldValue.rawValue) -> \(newValue.rawValue)")
+      let switchStartTime = CFAbsoluteTimeGetCurrent()
+      print("[Performance] タブ切り替え開始: \(oldValue.rawValue) -> \(newValue.rawValue)")
+
+      // 次のフレームでタブ切り替え完了を測定
+      DispatchQueue.main.async {
+        let elapsed = (CFAbsoluteTimeGetCurrent() - switchStartTime) * 1000
+        print("[Performance] タブ切り替え完了: \(String(format: "%.2f", elapsed))ms")
+      }
     }
     .sheet(isPresented: $showingTutorial) {
       TutorialView()
@@ -192,7 +199,7 @@ private struct RecordsObserverView: View {
 struct HomeView: View {
   @Environment(\.modelContext) var modelContext
   @Environment(\.horizontalSizeClass) var horizontalSizeClass
-  @StateObject var appSettings = AppSettings.shared
+  let appSettings = AppSettings.shared
   @State private var recordDataManager = RecordDataManager.shared
 
   /// RecordDataManagerからレコードを取得（キャッシュ済み）
@@ -217,6 +224,11 @@ struct HomeView: View {
   @State private var showingDebugLogsSheet = false
   @State private var showingReorderSheet = false
   @State private var showingTutorial = false
+
+  @State private var showingSampleData = AppSettings.shared.showingSampleData
+  @State private var showPopupOnLoad = AppSettings.shared.showPopupOnLoad
+  @State private var registeredWatches = AppSettings.shared.registeredWatches
+  @State private var allowDuplicateRecords = AppSettings.shared.allowDuplicateRecords
 
   @State private var viewportHeight: CGFloat = 0
 
@@ -246,7 +258,7 @@ struct HomeView: View {
       }
       .navigationTitle("MochiLog")
       .toolbar {
-        if !records.isEmpty || appSettings.showingSampleData {
+        if !records.isEmpty || showingSampleData {
           ToolbarItem(placement: .navigationBarTrailing) {
             Button(action: { showingReorderSheet = true }) {
               Image(systemName: "arrow.up.arrow.down")
@@ -262,7 +274,7 @@ struct HomeView: View {
       }
       .sheet(isPresented: $showingReorderSheet) {
         DeviceReorderView(
-          items: appSettings.showingSampleData
+          items: showingSampleData
             ? SampleDataProvider.sampleDeviceNames
             : Array(Set(records.map { $0.deviceName })).sorted(),
           onSave: { newOrder in
@@ -395,7 +407,7 @@ struct HomeView: View {
       ) {
         _ in
         // デバッグログ表示設定がオンの場合のみアラートを表示
-        if appSettings.showPopupOnLoad {
+        if showPopupOnLoad {
           showingParseErrorSavedAlert = true
         }
       }
@@ -434,14 +446,38 @@ struct HomeView: View {
         // レコード数が変更されたらWatchに同期
         syncRecordsToWatch()
       }
-      .onChange(of: appSettings.showingSampleData) { _, _ in
+      .onChange(of: showingSampleData) { _, newValue in
         // サンプルモードが変更されたらWatchに同期
         syncRecordsToWatch()
+
+        if appSettings.showingSampleData != newValue {
+          appSettings.showingSampleData = newValue
+        }
+      }
+      .onReceive(appSettings.$showingSampleData.removeDuplicates()) { newValue in
+        if showingSampleData != newValue {
+          showingSampleData = newValue
+        }
+      }
+      .onReceive(appSettings.$showPopupOnLoad.removeDuplicates()) { newValue in
+        if showPopupOnLoad != newValue {
+          showPopupOnLoad = newValue
+        }
+      }
+      .onReceive(appSettings.$registeredWatches.removeDuplicates()) { newValue in
+        if registeredWatches != newValue {
+          registeredWatches = newValue
+        }
+      }
+      .onReceive(appSettings.$allowDuplicateRecords.removeDuplicates()) { newValue in
+        if allowDuplicateRecords != newValue {
+          allowDuplicateRecords = newValue
+        }
       }
       .sheet(isPresented: $showingWatchSelection) {
         // 登録済みWatchがある場合は登録済みリストから選択
         // ない場合は全Watchモデルから選択
-        if appSettings.registeredWatches.isEmpty {
+        if registeredWatches.isEmpty {
           HierarchicalDevicePickerView(initialCategory: .watch, lockCategory: true) {
             name, identifier in
             guard let result = pendingParseResult else { return }
@@ -475,7 +511,7 @@ struct HomeView: View {
             let logDate = result.logDate ?? Date()
 
             // 重複チェック
-            if !appSettings.allowDuplicateRecords,
+            if !allowDuplicateRecords,
               hasDuplicateRecord(on: logDate, deviceName: selectedWatch)
             {
               DispatchQueue.main.async {
@@ -556,7 +592,7 @@ struct HomeView: View {
           selectedRecord = nil
           pendingParseResult = nil
 
-          if name.contains("Apple Watch") && appSettings.registeredWatches.isEmpty {
+          if name.contains("Apple Watch") && registeredWatches.isEmpty {
             watchNameToRegister = name
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
               showingRegisterWatchAlert = true
@@ -569,9 +605,9 @@ struct HomeView: View {
 
   @ViewBuilder
   private var homeContent: some View {
-    if appSettings.showingSampleData {
+    if showingSampleData {
       SampleDataHomeView(
-        showingSampleData: $appSettings.showingSampleData,
+        showingSampleData: $showingSampleData,
         onRecordTap: { record in
           showRecordDetail(record)
         },
@@ -611,7 +647,7 @@ struct HomeView: View {
             .buttonStyle(.bordered)
 
             Button {
-              withAnimation { appSettings.showingSampleData = true }
+              withAnimation { showingSampleData = true }
             } label: {
               Label(String(localized: "view_sample_data", table: "Home"), systemImage: "eye")
             }
