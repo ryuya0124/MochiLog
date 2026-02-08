@@ -78,8 +78,10 @@ final class DonationManager: ObservableObject {
 struct DonationView: View {
   @StateObject private var donationManager = DonationManager.shared
   @Environment(\.dismiss) private var dismiss
+  @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @State private var isPurchasing = false
   @State private var showingError = false
+  @State private var showingThankYouFullScreen = false
 
   var body: some View {
     NavigationStack {
@@ -150,6 +152,21 @@ struct DonationView: View {
       } message: {
         Text(String(localized: "purchase_error_message", table: "Settings"))
       }
+      .fullScreenCover(isPresented: compactThankYouBinding) {
+        ThankYouFullScreenView {
+          showingThankYouFullScreen = false
+          dismiss()
+        }
+      }
+      .sheet(isPresented: regularThankYouBinding) {
+        ThankYouFullScreenView {
+          showingThankYouFullScreen = false
+          dismiss()
+        }
+        .presentationDetents([.large])
+        .presentationCornerRadius(28)
+        .presentationDragIndicator(.visible)
+      }
       .overlay {
         if isPurchasing {
           ZStack {
@@ -172,10 +189,96 @@ struct DonationView: View {
     do {
       let success = try await donationManager.purchase(product)
       if success {
-        dismiss()
+        showingThankYouFullScreen = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+          if showingThankYouFullScreen {
+            showingThankYouFullScreen = false
+            dismiss()
+          }
+        }
       }
     } catch {
       showingError = true
+    }
+  }
+
+  private var compactThankYouBinding: Binding<Bool> {
+    Binding(
+      get: { showingThankYouFullScreen && horizontalSizeClass != .regular },
+      set: { newValue in
+        showingThankYouFullScreen = newValue
+      }
+    )
+  }
+
+  private var regularThankYouBinding: Binding<Bool> {
+    Binding(
+      get: { showingThankYouFullScreen && horizontalSizeClass == .regular },
+      set: { newValue in
+        showingThankYouFullScreen = newValue
+      }
+    )
+  }
+}
+
+private struct ThankYouFullScreenView: View {
+  let onClose: () -> Void
+
+  var body: some View {
+    ZStack {
+      LinearGradient(
+        colors: [
+          Color(red: 0.00, green: 0.36, blue: 0.30),
+          Color(red: 0.04, green: 0.62, blue: 0.47),
+          Color(red: 0.10, green: 0.78, blue: 0.55),
+        ],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+      )
+      .ignoresSafeArea()
+
+      VStack(spacing: 20) {
+        Spacer()
+
+        ZStack {
+          Circle()
+            .fill(Color.white.opacity(0.18))
+            .frame(width: 120, height: 120)
+          Circle()
+            .strokeBorder(Color.white.opacity(0.25), lineWidth: 1)
+            .frame(width: 120, height: 120)
+          Image(systemName: "heart.fill")
+            .font(.system(size: 48, weight: .semibold))
+            .foregroundStyle(.white)
+        }
+        .shadow(color: Color.black.opacity(0.25), radius: 20, x: 0, y: 12)
+
+        VStack(spacing: 8) {
+          Text(String(localized: "donation_thanks_title", table: "Settings"))
+            .font(.title2.bold())
+            .foregroundColor(.white)
+          Text(String(localized: "donation_thanks_message", table: "Settings"))
+            .font(.body)
+            .foregroundColor(.white.opacity(0.95))
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, 24)
+        }
+
+        Spacer()
+
+        Button(action: onClose) {
+          Text(String(localized: "close", table: "Common"))
+            .font(.headline)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 14)
+            .background(Color.white)
+            .foregroundColor(Color(red: 0.02, green: 0.55, blue: 0.42))
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .shadow(color: Color.black.opacity(0.18), radius: 10, x: 0, y: 6)
+        }
+        .padding(.horizontal, 24)
+        .padding(.bottom, 28)
+      }
     }
   }
 }

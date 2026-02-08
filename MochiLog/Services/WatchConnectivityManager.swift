@@ -51,6 +51,15 @@ final class WatchConnectivityManager: NSObject, ObservableObject {
   ///   - records: 送信するBatteryRecordの配列
   ///   - isSampleMode: サンプルモードかどうか
   func sendRecordsToWatch(_ records: [BatteryRecord], isSampleMode: Bool = false) {
+    let watchRecords = records.map { WatchBatteryRecord(from: $0) }
+    sendWatchRecordsToWatch(watchRecords, isSampleMode: isSampleMode)
+  }
+
+  /// WatchBatteryRecordをApple Watchに送信（バックグラウンドで実行）
+  /// - Parameters:
+  ///   - records: 送信するWatchBatteryRecordの配列
+  ///   - isSampleMode: サンプルモードかどうか
+  func sendWatchRecordsToWatch(_ records: [WatchBatteryRecord], isSampleMode: Bool = false) {
     let startTime = CFAbsoluteTimeGetCurrent()
 
     // バックグラウンドキューで実行
@@ -65,14 +74,11 @@ final class WatchConnectivityManager: NSObject, ObservableObject {
         return
       }
 
-      // BatteryRecordを軽量なWatchBatteryRecordに変換
-      let watchRecords = records.map { WatchBatteryRecord(from: $0) }
-
       // Codableデータをシリアライズ
       do {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
-        let data = try encoder.encode(watchRecords)
+        let data = try encoder.encode(records)
 
         // Application Contextとして送信（最新の状態を保持）
         let context: [String: Any] = [
@@ -90,7 +96,7 @@ final class WatchConnectivityManager: NSObject, ObservableObject {
         }
 
         print(
-          "[WatchConnectivity] \(watchRecords.count)件のレコードをWatchに送信しました（サンプルモード: \(isSampleMode)）- \(String(format: "%.2f", elapsed))ms"
+          "[WatchConnectivity] \(records.count)件のレコードをWatchに送信しました（サンプルモード: \(isSampleMode)）- \(String(format: "%.2f", elapsed))ms"
         )
       } catch {
         print("[WatchConnectivity] データのエンコードまたは送信に失敗: \(error)")

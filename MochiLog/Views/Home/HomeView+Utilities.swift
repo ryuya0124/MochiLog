@@ -109,36 +109,43 @@ extension HomeView {
     let startTime = CFAbsoluteTimeGetCurrent()
     print("[Performance] syncRecordsToWatch開始")
 
-    // バックグラウンドで実行してUIスレッドをブロックしない
-    Task.detached(priority: .utility) {
+    Task { @MainActor in
       // サンプルデータ表示中はサンプルデータを送信
-      let isSampleMode = await MainActor.run { AppSettings.shared.showingSampleData }
+      let isSampleMode = AppSettings.shared.showingSampleData
       if isSampleMode {
         let sampleRecords = SampleDataProvider.generateSampleRecords()
-        WatchConnectivityManager.shared.sendRecordsToWatch(sampleRecords, isSampleMode: true)
-        let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
-        print("[Performance] syncRecordsToWatch完了（サンプルモード）: \(String(format: "%.2f", elapsed))ms")
+        let watchRecords = sampleRecords.map { WatchBatteryRecord(from: $0) }
+        Task.detached(priority: .utility) {
+          WatchConnectivityManager.shared.sendWatchRecordsToWatch(watchRecords, isSampleMode: true)
+          let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
+          print("[Performance] syncRecordsToWatch完了（サンプルモード）: \(String(format: "%.2f", elapsed))ms")
+        }
         return
       }
 
       // レコードを取得
-      let currentRecords = await MainActor.run { self.records }
+      let currentRecords = self.records
 
       // レコードがある場合のみ同期
       guard !currentRecords.isEmpty else {
         // レコードがない場合はサンプルモードをオフにして空で送信
-        WatchConnectivityManager.shared.sendRecordsToWatch([], isSampleMode: false)
-        let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
-        print("[Performance] syncRecordsToWatch完了（空）: \(String(format: "%.2f", elapsed))ms")
+        Task.detached(priority: .utility) {
+          WatchConnectivityManager.shared.sendWatchRecordsToWatch([], isSampleMode: false)
+          let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
+          print("[Performance] syncRecordsToWatch完了（空）: \(String(format: "%.2f", elapsed))ms")
+        }
         return
       }
 
-      // 通常モードでデータを送信
-      WatchConnectivityManager.shared.sendRecordsToWatch(currentRecords, isSampleMode: false)
-      let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
-      print(
-        "[Performance] syncRecordsToWatch完了（\(currentRecords.count)件）: \(String(format: "%.2f", elapsed))ms"
-      )
+      let watchRecords = currentRecords.map { WatchBatteryRecord(from: $0) }
+      Task.detached(priority: .utility) {
+        // 通常モードでデータを送信
+        WatchConnectivityManager.shared.sendWatchRecordsToWatch(watchRecords, isSampleMode: false)
+        let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
+        print(
+          "[Performance] syncRecordsToWatch完了（\(watchRecords.count)件）: \(String(format: "%.2f", elapsed))ms"
+        )
+      }
     }
   }
 }

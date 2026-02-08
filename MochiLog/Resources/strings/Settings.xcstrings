@@ -358,6 +358,38 @@
         }
       }
     },
+    "donation_thanks_message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your support means a lot and keeps MochiLog growing."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ご支援は大きな励みになり、MochiLogの改善を続けられます。"
+          }
+        }
+      }
+    },
+    "donation_thanks_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thank you so much!"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "心よりありがとうございます"
+          }
+        }
+      }
+    },
     "enable_capacity_validation" : {
       "localizations" : {
         "en" : {
