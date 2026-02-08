@@ -223,15 +223,22 @@ struct DonationView: View {
 
 private struct ThankYouFullScreenView: View {
   let onClose: () -> Void
+  @Environment(\.colorScheme) private var colorScheme
 
   var body: some View {
     ZStack {
       LinearGradient(
-        colors: [
-          Color(red: 0.00, green: 0.36, blue: 0.30),
-          Color(red: 0.04, green: 0.62, blue: 0.47),
-          Color(red: 0.10, green: 0.78, blue: 0.55),
-        ],
+        colors: colorScheme == .dark
+          ? [
+            Color(red: 0.02, green: 0.18, blue: 0.16),
+            Color(red: 0.03, green: 0.26, blue: 0.22),
+            Color(red: 0.05, green: 0.34, blue: 0.27),
+          ]
+          : [
+            Color(red: 0.00, green: 0.36, blue: 0.30),
+            Color(red: 0.04, green: 0.62, blue: 0.47),
+            Color(red: 0.10, green: 0.78, blue: 0.55),
+          ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
       )
@@ -271,8 +278,12 @@ private struct ThankYouFullScreenView: View {
             .font(.headline)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
-            .background(Color.white)
-            .foregroundColor(Color(red: 0.02, green: 0.55, blue: 0.42))
+            .background(colorScheme == .dark ? Color.white.opacity(0.9) : Color.white)
+            .foregroundColor(
+              colorScheme == .dark
+                ? Color(red: 0.04, green: 0.32, blue: 0.26)
+                : Color(red: 0.02, green: 0.55, blue: 0.42)
+            )
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .shadow(color: Color.black.opacity(0.18), radius: 10, x: 0, y: 6)
         }
