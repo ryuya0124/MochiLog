@@ -93,6 +93,13 @@ struct AnalyticsView: View {
           handleDeviceChange()
         }
         .onChange(of: selectedRange) { _, newValue in
+          print("[Redraw] selectedRange onChange: \(newValue.rawValue)")
+          // ガード: 既に同じ値なら何もしない
+          guard appSettings.selectedChartRange != newValue.rawValue else {
+            print("[Performance] selectedRange onChange スキップ（既に同じ値）")
+            return
+          }
+
           // レンジ変更時にAppSettingsに保存（再起動後も保持）
           appSettings.selectedChartRange = newValue.rawValue
 
@@ -106,6 +113,15 @@ struct AnalyticsView: View {
             records: filteredRecords
           )
         }
+        .onChange(of: showingSampleData) { _, newValue in
+          print("[Redraw] showingSampleData onChange: \(newValue)")
+          // ガード: 既に同じ値なら何もしない
+          guard appSettings.showingSampleData != newValue else {
+            print("[Performance] showingSampleData onChange スキップ（既に同じ値）")
+            return
+          }
+          appSettings.showingSampleData = newValue
+        }
         .navigationTitle(String(localized: "analytics", table: "Analytics"))
         .background(Color(.systemGroupedBackground))
         .sheet(isPresented: $showingTutorial) {
@@ -118,50 +134,32 @@ struct AnalyticsView: View {
   @ViewBuilder
   private var analyticsContent: some View {
     let _ = print("[Performance] analyticsContent構築開始")
-    let startTime = CFAbsoluteTimeGetCurrent()
 
-    return GeometryReader { geometry in
-      let _ = {
-        let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
-        print(
-          "[Performance] analyticsContent GeometryReader内部: \(String(format: "%.2f", elapsed))ms")
-      }()
-
-      if showingSampleData {
-        let _ = print("[Performance] analyticsContent: サンプルモード分岐")
-        // サンプルモードON → サンプルグラフ表示
-        ScrollView {
-          SampleDataAnalyticsContent(
-            showingSampleData: $showingSampleData,
-            selectedRange: $selectedRange
-          )
-        }
-      } else if !records.isEmpty {
-        let _ = print("[Performance] analyticsContent: 実データ表示分岐 - records: \(records.count)件")
-        // コンテンツビュー（バックグラウンドでデータ計算）
-        AnalyticsContentView(
-          records: records,
-          selectedDevice: $selectedDevice,
-          cachedDeviceNames: cachedDeviceNames,  // キャッシュから取得
-          selectedRange: $selectedRange,
-          windowEnd: $windowEnd
+    if showingSampleData {
+      let _ = print("[Performance] analyticsContent: サンプルモード分岐")
+      // サンプルモードON → サンプルグラフ表示
+      ScrollView {
+        SampleDataAnalyticsContent(
+          showingSampleData: $showingSampleData,
+          selectedRange: $selectedRange
         )
-      } else {
-        let _ = print("[Performance] analyticsContent: データなし分岐")
-        // データなし + サンプルモードOFF → ボタン表示（中央配置）
+      }
+    } else if !records.isEmpty {
+      let _ = print("[Performance] analyticsContent: 実データ表示分岐 - records: \(records.count)件")
+      // コンテンツビュー（バックグラウンドでデータ計算）
+      AnalyticsContentView(
+        records: records,
+        selectedDevice: $selectedDevice,
+        cachedDeviceNames: cachedDeviceNames,  // キャッシュから取得
+        selectedRange: $selectedRange,
+        windowEnd: $windowEnd
+      )
+    } else {
+      let _ = print("[Performance] analyticsContent: データなし分岐")
+      // データなし + サンプルモードOFF → ボタン表示（中央配置）
+      // GeometryReaderはここだけで使用
+      GeometryReader { geometry in
         noDataView(geometry: geometry)
-      }
-    }
-    .onChange(of: showingSampleData) { _, newValue in
-      print("[Redraw] showingSampleData onChange: \(newValue)")
-      if appSettings.showingSampleData != newValue {
-        appSettings.showingSampleData = newValue
-      }
-    }
-    .onChange(of: selectedRange) { _, newValue in
-      print("[Redraw] selectedRange onChange: \(newValue.rawValue)")
-      if appSettings.selectedChartRange != newValue.rawValue {
-        appSettings.selectedChartRange = newValue.rawValue
       }
     }
   }
