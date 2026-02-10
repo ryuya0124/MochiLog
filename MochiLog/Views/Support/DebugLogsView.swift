@@ -31,7 +31,7 @@ struct DebugLogsView: View {
             ProgressView()
               .scaleEffect(1.5)
 
-            Text("ログを読み込み中...")
+            Text(String(localized: "loading_logs", table: "Support"))
               .font(.system(.subheadline, design: .rounded))
               .foregroundStyle(.secondary)
           }
@@ -56,7 +56,7 @@ struct DebugLogsView: View {
             }
 
             VStack(spacing: 8) {
-              Text("エラーログなし")
+              Text(String(localized: "no_error_logs_title", table: "Support"))
                 .font(.system(.title2, design: .rounded, weight: .bold))
 
               Text(String(localized: "no_error_logs", table: "Support"))
@@ -183,10 +183,10 @@ struct DebugLogsView: View {
           }
 
           VStack(spacing: 8) {
-            Text("ログを選択してください")
+            Text(String(localized: "select_log_title", table: "Support"))
               .font(.system(.title2, design: .rounded, weight: .bold))
 
-            Text("左側のリストからログを選択すると詳細が表示されます")
+            Text(String(localized: "select_log_message", table: "Support"))
               .font(.system(.body, design: .rounded))
               .foregroundStyle(.secondary)
               .multilineTextAlignment(.center)
@@ -298,7 +298,7 @@ struct DebugLogDetailContentView: View {
             }
 
             VStack(alignment: .leading, spacing: 6) {
-              Text("エラーログ")
+              Text(String(localized: "error_log_title", table: "Support"))
                 .font(.system(.title2, design: .rounded, weight: .bold))
 
               HStack(spacing: 12) {
@@ -352,7 +352,7 @@ struct DebugLogDetailContentView: View {
         // メッセージ
         VStack(alignment: .leading, spacing: 12) {
           Label {
-            Text("メッセージ")
+            Text(String(localized: "message", table: "Support"))
               .font(.system(.headline, design: .rounded, weight: .semibold))
           } icon: {
             Image(systemName: "text.bubble.fill")
@@ -386,7 +386,7 @@ struct DebugLogDetailContentView: View {
         VStack(alignment: .leading, spacing: 12) {
           HStack {
             Label {
-              Text("詳細")
+              Text(String(localized: "details_label", table: "Support"))
                 .font(.system(.headline, design: .rounded, weight: .semibold))
             } icon: {
               Image(systemName: "doc.text.fill")
@@ -406,7 +406,7 @@ struct DebugLogDetailContentView: View {
                 HStack(spacing: 4) {
                   Image(systemName: "square.and.arrow.up")
                     .font(.system(.caption, design: .rounded, weight: .medium))
-                  Text("共有")
+                  Text(String(localized: "share_label", table: "Support"))
                     .font(.system(.caption, design: .rounded, weight: .medium))
                 }
                 .padding(.horizontal, 12)
