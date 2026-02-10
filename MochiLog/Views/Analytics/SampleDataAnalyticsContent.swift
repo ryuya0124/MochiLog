@@ -144,8 +144,7 @@ struct SampleDataAnalyticsContent: View {
           sharedCanMoveNext: canMoveNext,
           sharedCanMovePrevious: canMovePrevious,
           sharedShiftWindow: shiftWindow,
-          sharedStartDay: startDay,
-          sharedEndDay: endDay
+          sharedWindowEndValue: windowEnd
         )
 
         // 統計情報（iPhone）

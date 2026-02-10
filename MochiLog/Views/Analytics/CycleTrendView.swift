@@ -14,9 +14,8 @@ struct CycleTrendView: View {
   var sharedCanMovePrevious: Bool?
   var sharedShiftWindow: ((Bool) -> Void)?
 
-  // iPhone用：親から計算済みの表示期間（HealthTrendViewと同じ期間を使用）
-  var sharedStartDay: Date?
-  var sharedEndDay: Date?
+  // iPhone用：windowEndの実値（SwiftUIのdiff検知用、Binding経由だと再描画がトリガーされない）
+  var sharedWindowEndValue: Date?
 
   // iPad用：独自の期間設定
   @State private var localSelectedRange: RangePreset = .oneMonth
@@ -35,26 +34,23 @@ struct CycleTrendView: View {
     sharedWindowEnd?.wrappedValue ?? localWindowEnd
   }
 
-  // 表示期間の開始日（共有値があれば優先）
+  // 現在のウィンドウに含まれるレコードを計算
+  private var visibleRecords: [BatteryRecord] {
+    let startDate = windowStart(for: effectiveEndDate, range: effectiveSelectedRange)
+    return ChartWindowNavigator.visibleRecordsWithContext(
+      in: allRecords,
+      start: startDate,
+      end: effectiveEndDate
+    )
+  }
+
   private var startDay: Date {
-    if let shared = sharedStartDay { return shared }
-    return Calendar.current.startOfDay(
+    Calendar.current.startOfDay(
       for: windowStart(for: effectiveEndDate, range: effectiveSelectedRange))
   }
 
-  // 表示期間の終了日（共有値があれば優先）
   private var endDay: Date {
-    if let shared = sharedEndDay { return shared }
-    return Calendar.current.startOfDay(for: effectiveEndDate)
-  }
-
-  // 現在のウィンドウに含まれるレコードを計算
-  private var visibleRecords: [BatteryRecord] {
-    return ChartWindowNavigator.visibleRecordsWithContext(
-      in: allRecords,
-      start: startDay,
-      end: endDay
-    )
+    Calendar.current.startOfDay(for: effectiveEndDate)
   }
 
   /// 全レコードのデバイス名（ソート済み）— 色の安定割り当て用

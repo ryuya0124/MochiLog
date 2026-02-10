@@ -159,8 +159,7 @@ struct AnalyticsContentView: View {
                 sharedCanMoveNext: canMoveNext,
                 sharedCanMovePrevious: canMovePrevious,
                 sharedShiftWindow: shiftWindow,
-                sharedStartDay: cachedStartDay,
-                sharedEndDay: cachedEndDay
+                sharedWindowEndValue: windowEnd
               )
 
               // 統計情報（iPhone）

@@ -187,6 +187,7 @@ struct ChartWindowNavigator {
   }
 
   /// 指定期間の前後1点ずつを含めたレコードを抽出（グラフの連続性を保つため）
+  /// ウィンドウ内にデータがない場合も、前後の最寄りデータを返して補間描画を可能にする
   static func visibleRecordsWithContext(
     in records: [BatteryRecord],
     start: Date,
@@ -204,17 +205,27 @@ struct ChartWindowNavigator {
       $0.index
     }
 
-    guard let firstVisibleIndex = visibleIndices.min(),
+    if let firstVisibleIndex = visibleIndices.min(),
       let lastVisibleIndex = visibleIndices.max()
-    else {
-      return []
+    {
+      // 期間内にデータあり：前後に1点ずつバッファを持たせる
+      let startIndex = max(0, firstVisibleIndex - 1)
+      let endIndex = min(records.count - 1, lastVisibleIndex + 1)
+      return Array(records[startIndex...endIndex])
     }
 
-    // 前後のバッファ：前後に1点ずつ猶予を持たせる
-    let startIndex = max(0, firstVisibleIndex - 1)
-    let endIndex = min(records.count - 1, lastVisibleIndex + 1)
+    // 期間内にデータなし：前後の最寄りデータポイントを返して補間描画を可能にする
+    let beforeIndex = recordInfos.last { $0.date < startDay }?.index
+    let afterIndex = recordInfos.first { $0.date > endDay }?.index
 
-    return Array(records[startIndex...endIndex])
+    var contextRecords: [BatteryRecord] = []
+    if let before = beforeIndex {
+      contextRecords.append(records[before])
+    }
+    if let after = afterIndex {
+      contextRecords.append(records[after])
+    }
+    return contextRecords
   }
 
   // MARK: - 日付計算ヘルパー
@@ -301,7 +312,7 @@ struct ChartWindowNavigator {
   // MARK: - 次のウィンドウ検索
 
   /// 次の（未来方向の）ウィンドウ終了日を検索
-  /// 空白期間がある場合は、次のデータがある場所に直接ジャンプする
+  /// まず1期間分先にステップし、データがなければ最寄りの未来データにジャンプする
   static func findNextWindowEnd(
     currentEnd: Date,
     range: RangePreset,
@@ -310,53 +321,85 @@ struct ChartWindowNavigator {
     let cal = Calendar.current
     let currentEndDay = cal.startOfDay(for: currentEnd)
 
-    // 現在のウィンドウより先にあるデータを探す
+    // 現在のウィンドウより先にデータがあるか確認
     let futureRecords = records.filter { cal.startOfDay(for: $0.logDate) > currentEndDay }
-    guard let nextDataDate = futureRecords.min(by: { $0.logDate < $1.logDate })?.logDate else {
-      // 現在のウィンドウより先にデータがない
+    guard !futureRecords.isEmpty else { return nil }
+
+    // ステップ1: 1期間分先のウィンドウ終了日を計算
+    let steppedEnd: Date?
+    switch range {
+    case .auto:
       return nil
+    case .oneMonth:
+      // 翌月の末日
+      if let nextMonth = cal.date(byAdding: .month, value: 1, to: currentEnd) {
+        steppedEnd = endOfMonth(for: nextMonth)
+      } else {
+        steppedEnd = nil
+      }
+    case .threeMonths:
+      // 次の四半期の末日
+      if let nextQuarter = cal.date(byAdding: .month, value: 3, to: currentEnd) {
+        steppedEnd = endOfQuarter(for: nextQuarter)
+      } else {
+        steppedEnd = nil
+      }
+    case .sixMonths:
+      // 次の半年の末日
+      if let nextHalf = cal.date(byAdding: .month, value: 6, to: currentEnd) {
+        steppedEnd = endOfHalfYear(for: nextHalf)
+      } else {
+        steppedEnd = nil
+      }
+    case .oneYear, .twoYears, .threeYears:
+      // 翌年の末日
+      if let nextYear = cal.date(byAdding: .year, value: 1, to: currentEnd) {
+        steppedEnd = endOfYear(for: nextYear)
+      } else {
+        steppedEnd = nil
+      }
+    default:
+      // oneWeek, twoWeeks: currentEndから1期間分足す
+      if let comp = periodComponent(for: range) {
+        steppedEnd = dateByAdding(comp, multiplier: 1, to: currentEnd)
+      } else {
+        steppedEnd = nil
+      }
     }
 
-    // 1ヶ月表示の場合はカレンダー月単位でナビゲート
-    if range == .oneMonth {
-      return endOfMonth(for: nextDataDate)
-    }
+    guard let newEnd = steppedEnd else { return nil }
 
-    // 3ヶ月表示の場合は四半期単位でナビゲート
-    if range == .threeMonths {
-      return endOfQuarter(for: nextDataDate)
-    }
-
-    // 1年/2年/3年表示の場合はカレンダー年単位でナビゲート
-    if range == .oneYear || range == .twoYears || range == .threeYears {
-      return endOfYear(for: nextDataDate)
-    }
-
-    guard let comp = periodComponent(for: range) else { return nil }
-
-    // 次のデータを含むウィンドウの終了日を決定
-    // データの日付 + 選択されたレンジの期間をウィンドウの終了日とする
-    var newEnd: Date
-    if let endFromNextData = cal.date(byAdding: comp, to: cal.startOfDay(for: nextDataDate)) {
-      newEnd = endFromNextData
-    } else {
-      newEnd = nextDataDate
-    }
-
-    // ウィンドウにデータが含まれることを確認
+    // ステップ2: 新しいウィンドウにデータが含まれるか確認
     let start = windowStart(for: newEnd, range: range, allRecords: records)
     if windowContainsData(start: start, end: newEnd, in: records) {
       return newEnd
     }
 
-    // もしウィンドウにデータがなければ、次のデータの日付をウィンドウの終了日として使用
-    return nextDataDate
+    // ステップ3: データがない場合、最寄りの未来データにジャンプ
+    guard let nextDataDate = futureRecords.min(by: { $0.logDate < $1.logDate })?.logDate else {
+      return nil
+    }
+
+    // 未来データを含むウィンドウの終了日を決定
+    switch range {
+    case .oneMonth: return endOfMonth(for: nextDataDate)
+    case .threeMonths: return endOfQuarter(for: nextDataDate)
+    case .sixMonths: return endOfHalfYear(for: nextDataDate)
+    case .oneYear, .twoYears, .threeYears: return endOfYear(for: nextDataDate)
+    default:
+      if let comp = periodComponent(for: range),
+        let end = cal.date(byAdding: comp, to: cal.startOfDay(for: nextDataDate))
+      {
+        return end
+      }
+      return nextDataDate
+    }
   }
 
   // MARK: - 前のウィンドウ検索
 
   /// 前の（過去方向の）ウィンドウ終了日を検索
-  /// 空白期間がある場合は、前のデータがある場所に直接ジャンプする
+  /// まず1期間分前にステップし、データがなければ最寄りの過去データにジャンプする
   static func findPreviousWindowEnd(
     currentEnd: Date,
     range: RangePreset,
@@ -364,53 +407,85 @@ struct ChartWindowNavigator {
   ) -> Date? {
     let cal = Calendar.current
 
-    // 現在のウィンドウの開始日を取得
-    let currentStart = windowStart(for: currentEnd, range: range, allRecords: records)
-    let currentStartDay = cal.startOfDay(for: currentStart)
-
-    // 現在のウィンドウより前にあるデータを探す
-    let pastRecords = records.filter { cal.startOfDay(for: $0.logDate) < currentStartDay }
-    guard let prevDataDate = pastRecords.max(by: { $0.logDate < $1.logDate })?.logDate else {
-      // 現在のウィンドウより前にデータがない
+    // ステップ1: 1期間分前のウィンドウ終了日を計算
+    let steppedEnd: Date?
+    switch range {
+    case .auto:
       return nil
+    case .oneMonth:
+      // 前月の末日: 現在の月の1日の1日前
+      let components = cal.dateComponents([.year, .month], from: currentEnd)
+      if let firstOfMonth = cal.date(from: components),
+        let prevMonthEnd = cal.date(byAdding: .day, value: -1, to: firstOfMonth)
+      {
+        steppedEnd = endOfMonth(for: prevMonthEnd)
+      } else {
+        steppedEnd = nil
+      }
+    case .threeMonths:
+      // 前四半期の末日
+      let currentStart = windowStart(for: currentEnd, range: range, allRecords: records)
+      if let prevDay = cal.date(byAdding: .day, value: -1, to: currentStart) {
+        steppedEnd = endOfQuarter(for: prevDay)
+      } else {
+        steppedEnd = nil
+      }
+    case .sixMonths:
+      // 前半年の末日
+      let currentStart = windowStart(for: currentEnd, range: range, allRecords: records)
+      if let prevDay = cal.date(byAdding: .day, value: -1, to: currentStart) {
+        steppedEnd = endOfHalfYear(for: prevDay)
+      } else {
+        steppedEnd = nil
+      }
+    case .oneYear, .twoYears, .threeYears:
+      // 前年の末日
+      let currentStart = windowStart(for: currentEnd, range: range, allRecords: records)
+      if let prevDay = cal.date(byAdding: .day, value: -1, to: currentStart) {
+        steppedEnd = endOfYear(for: prevDay)
+      } else {
+        steppedEnd = nil
+      }
+    default:
+      // oneWeek, twoWeeks: currentEndから1期間分引く
+      if let comp = periodComponent(for: range) {
+        steppedEnd = dateByAdding(comp, multiplier: -1, to: currentEnd)
+      } else {
+        steppedEnd = nil
+      }
     }
 
-    // 1ヶ月表示の場合はカレンダー月単位でナビゲート
-    if range == .oneMonth {
-      return endOfMonth(for: prevDataDate)
-    }
+    guard let newEnd = steppedEnd else { return nil }
 
-    // 3ヶ月表示の場合は四半期単位でナビゲート
-    if range == .threeMonths {
-      return endOfQuarter(for: prevDataDate)
-    }
-
-    // 1年/2年/3年表示の場合はカレンダー年単位でナビゲート
-    if range == .oneYear || range == .twoYears || range == .threeYears {
-      return endOfYear(for: prevDataDate)
-    }
-
-    // 前のデータを含むウィンドウの終了日を計算
-    // 前のデータの日付をウィンドウに含むようにする
-    guard let comp = periodComponent(for: range) else { return nil }
-
-    // 前のデータを含むウィンドウの終了日を決定
-    // データの日付 + 選択されたレンジの期間をウィンドウの終了日とする
-    var newEnd: Date
-    if let endFromPrevData = cal.date(byAdding: comp, to: cal.startOfDay(for: prevDataDate)) {
-      newEnd = endFromPrevData
-    } else {
-      newEnd = prevDataDate
-    }
-
-    // ウィンドウにデータが含まれることを確認
+    // ステップ2: 新しいウィンドウにデータが含まれるか確認
     let start = windowStart(for: newEnd, range: range, allRecords: records)
     if windowContainsData(start: start, end: newEnd, in: records) {
       return newEnd
     }
 
-    // もしウィンドウにデータがなければ、前のデータの日付をウィンドウの終了日として使用
-    return prevDataDate
+    // ステップ3: データがない場合、最寄りの過去データにジャンプ
+    let currentStart = windowStart(for: currentEnd, range: range, allRecords: records)
+    let currentStartDay = cal.startOfDay(for: currentStart)
+    let pastRecords = records.filter { cal.startOfDay(for: $0.logDate) < currentStartDay }
+    guard let prevDataDate = pastRecords.max(by: { $0.logDate < $1.logDate })?.logDate else {
+      return nil
+    }
+
+    // 過去データを含むウィンドウの終了日を決定
+    switch range {
+    case .oneMonth: return endOfMonth(for: prevDataDate)
+    case .threeMonths: return endOfQuarter(for: prevDataDate)
+    case .sixMonths: return endOfHalfYear(for: prevDataDate)
+    case .oneYear, .twoYears, .threeYears: return endOfYear(for: prevDataDate)
+    default:
+      // oneWeek, twoWeeks: 過去データの日付 + 期間
+      if let comp = periodComponent(for: range),
+        let end = cal.date(byAdding: comp, to: cal.startOfDay(for: prevDataDate))
+      {
+        return end
+      }
+      return prevDataDate
+    }
   }
 
   // MARK: - ウィンドウ移動
