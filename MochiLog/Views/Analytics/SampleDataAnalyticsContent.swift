@@ -107,7 +107,7 @@ struct SampleDataAnalyticsContent: View {
               allDeviceNames: sortedAllDeviceNames
             )
 
-            // サイクル推移グラフ
+            // サイクル推移グラフ（iPadは独立動作、initialRangeで初期化）
             CycleTrendView(
               allRecords: filteredRecords,
               unit: unit,
@@ -134,11 +134,18 @@ struct SampleDataAnalyticsContent: View {
           allDeviceNames: sortedAllDeviceNames
         )
 
-        // サイクル推移グラフ
+        // サイクル推移グラフ（iPhoneでは親と期間を共有）
         CycleTrendView(
           allRecords: filteredRecords,
           unit: unit,
-          initialRange: selectedRange
+          initialRange: selectedRange,
+          sharedSelectedRange: $selectedRange,
+          sharedWindowEnd: $windowEnd,
+          sharedCanMoveNext: canMoveNext,
+          sharedCanMovePrevious: canMovePrevious,
+          sharedShiftWindow: shiftWindow,
+          sharedStartDay: startDay,
+          sharedEndDay: endDay
         )
 
         // 統計情報（iPhone）

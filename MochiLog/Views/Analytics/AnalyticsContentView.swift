@@ -158,7 +158,9 @@ struct AnalyticsContentView: View {
                 sharedWindowEnd: $windowEnd,
                 sharedCanMoveNext: canMoveNext,
                 sharedCanMovePrevious: canMovePrevious,
-                sharedShiftWindow: shiftWindow
+                sharedShiftWindow: shiftWindow,
+                sharedStartDay: cachedStartDay,
+                sharedEndDay: cachedEndDay
               )
 
               // 統計情報（iPhone）

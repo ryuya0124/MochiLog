@@ -124,6 +124,8 @@ struct AnalyticsView: View {
           print("[Redraw] showingSampleData onChange: \(newValue)")
           if newValue {
             saveRangeBeforeSampleIfNeeded()
+            // サンプルモード開始時に3年レンジに設定
+            selectedRange = .threeYears
           } else {
             restoreRangeAfterSampleIfNeeded()
           }

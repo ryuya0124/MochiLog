@@ -63,83 +63,14 @@ struct HealthTrendView: View {
           .padding()
       } else {
         // チャートコントロール：範囲のみ（表示単位は親が決定）
-        if horizontalSizeClass == .compact {
-          HStack(spacing: 8) {
-            VStack(alignment: .leading, spacing: 4) {
-              Text(String(localized: "chart_range", table: "Analytics"))
-                .font(.caption)
-                .foregroundStyle(.secondary)
-              HStack(spacing: 8) {
-                Button {
-                  shiftWindow(true)
-                } label: {
-                  Image(systemName: "chevron.left")
-                }
-                .disabled(!canMovePrevious)
-
-                Picker("", selection: $selectedRange) {
-                  ForEach(RangePreset.manualCases) { preset in
-                    Text(preset.localizedName).tag(preset)
-                  }
-                }
-                .pickerStyle(.menu)
-                .accessibilityLabel(Text(String(localized: "chart_range", table: "Analytics")))
-
-                Button {
-                  shiftWindow(false)
-                } label: {
-                  Image(systemName: "chevron.right")
-                }
-                .disabled(!canMoveNext)
-
-                // 年を表示（2年以上の場合はレンジ表示）
-                let startYear = Calendar.current.component(.year, from: startDay)
-                let endYear = Calendar.current.component(.year, from: endDay)
-                if startYear != endYear {
-                  Text("\(String(startYear))年 ~ \(String(endYear))年")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                } else {
-                  Text("\(String(endYear))年")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                }
-              }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-          }
-        } else {
-          HStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 6) {
-              Text(String(localized: "chart_range", table: "Analytics"))
-                .font(.caption)
-                .foregroundStyle(.secondary)
-              HStack(spacing: 12) {
-                Button {
-                  shiftWindow(true)
-                } label: {
-                  Image(systemName: "chevron.left")
-                }
-                .disabled(!canMovePrevious)
-
-                Picker("", selection: $selectedRange) {
-                  ForEach(RangePreset.manualCases) { preset in
-                    Text(preset.localizedName).tag(preset)
-                  }
-                }
-                .pickerStyle(.segmented)
-                .accessibilityLabel(Text(String(localized: "chart_range", table: "Analytics")))
-
-                Button {
-                  shiftWindow(false)
-                } label: {
-                  Image(systemName: "chevron.right")
-                }
-                .disabled(!canMoveNext)
-              }
-            }
-          }
-        }
+        ChartRangeSelector(
+          selectedRange: $selectedRange,
+          canMoveNext: canMoveNext,
+          canMovePrevious: canMovePrevious,
+          shiftWindow: shiftWindow,
+          startDay: startDay,
+          endDay: endDay
+        )
 
         // 描画用データは期間に応じて間引き（負荷軽減）
         let downsampleStart = CFAbsoluteTimeGetCurrent()

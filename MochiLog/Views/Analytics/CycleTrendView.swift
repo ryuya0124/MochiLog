@@ -14,6 +14,10 @@ struct CycleTrendView: View {
   var sharedCanMovePrevious: Bool?
   var sharedShiftWindow: ((Bool) -> Void)?
 
+  // iPhone用：親から計算済みの表示期間（HealthTrendViewと同じ期間を使用）
+  var sharedStartDay: Date?
+  var sharedEndDay: Date?
+
   // iPad用：独自の期間設定
   @State private var localSelectedRange: RangePreset = .oneMonth
   @State private var localWindowEnd: Date = Date()
@@ -31,23 +35,26 @@ struct CycleTrendView: View {
     sharedWindowEnd?.wrappedValue ?? localWindowEnd
   }
 
-  // 現在のウィンドウに含まれるレコードを計算
-  private var visibleRecords: [BatteryRecord] {
-    let startDate = windowStart(for: effectiveEndDate, range: effectiveSelectedRange)
-    return ChartWindowNavigator.visibleRecordsWithContext(
-      in: allRecords,
-      start: startDate,
-      end: effectiveEndDate
-    )
-  }
-
+  // 表示期間の開始日（共有値があれば優先）
   private var startDay: Date {
-    Calendar.current.startOfDay(
+    if let shared = sharedStartDay { return shared }
+    return Calendar.current.startOfDay(
       for: windowStart(for: effectiveEndDate, range: effectiveSelectedRange))
   }
 
+  // 表示期間の終了日（共有値があれば優先）
   private var endDay: Date {
-    Calendar.current.startOfDay(for: effectiveEndDate)
+    if let shared = sharedEndDay { return shared }
+    return Calendar.current.startOfDay(for: effectiveEndDate)
+  }
+
+  // 現在のウィンドウに含まれるレコードを計算
+  private var visibleRecords: [BatteryRecord] {
+    return ChartWindowNavigator.visibleRecordsWithContext(
+      in: allRecords,
+      start: startDay,
+      end: endDay
+    )
   }
 
   /// 全レコードのデバイス名（ソート済み）— 色の安定割り当て用
@@ -73,7 +80,9 @@ struct CycleTrendView: View {
   }
 
   private var effectiveLocalRange: RangePreset {
-    guard localSelectedRange == .auto else { return localSelectedRange }
+    // sharedSelectedRange がある場合は親の値を使う（iPhone 連動用）
+    let rangeToUse = sharedSelectedRange != nil ? selectedRange : localSelectedRange
+    guard rangeToUse == .auto else { return rangeToUse }
     let now = Date()
     let pastRecords = allRecords.filter { $0.logDate <= now }
     let sourceRecords = pastRecords.isEmpty ? allRecords : pastRecords
@@ -81,14 +90,17 @@ struct CycleTrendView: View {
   }
 
   private var effectiveLocalWindowEnd: Date {
-    guard localSelectedRange == .auto else { return localWindowEnd }
+    // sharedWindowEnd がある場合は親の値を使う（iPhone 連動用）
+    let rangeToUse = sharedSelectedRange != nil ? selectedRange : localSelectedRange
+    let windowEndToUse = sharedWindowEnd != nil ? windowEnd : localWindowEnd
+    guard rangeToUse == .auto else { return windowEndToUse }
     let now = Date()
-    if localWindowEnd <= now { return localWindowEnd }
+    if windowEndToUse <= now { return windowEndToUse }
     let pastRecords = allRecords.filter { $0.logDate <= now }
     if let latestPast = pastRecords.max(by: { $0.logDate < $1.logDate })?.logDate {
       return latestPast
     }
-    return min(localWindowEnd, now)
+    return min(windowEndToUse, now)
   }
 
   private var effectiveSelectedRange: RangePreset {
@@ -165,47 +177,23 @@ struct CycleTrendView: View {
       } else {
         // iPad向け期間セレクター
         if horizontalSizeClass == .regular {
-          HStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 6) {
-              Text(String(localized: "chart_range", table: "Analytics"))
-                .font(.caption)
-                .foregroundStyle(.secondary)
-              HStack(spacing: 12) {
-                Button {
-                  isUserInteracted = true
-                  shiftWindow(backward: true)
-                } label: {
-                  Image(systemName: "chevron.left")
-                }
-                .disabled(!canMovePrevious)
-
-                Picker(
-                  "",
-                  selection: Binding(
-                    get: { localSelectedRange },
-                    set: {
-                      isUserInteracted = true
-                      localSelectedRange = $0
-                    }
-                  )
-                ) {
-                  ForEach(RangePreset.manualCases) { preset in
-                    Text(preset.localizedName).tag(preset)
-                  }
-                }
-                .pickerStyle(.segmented)
-                .accessibilityLabel(Text(String(localized: "chart_range", table: "Analytics")))
-
-                Button {
-                  isUserInteracted = true
-                  shiftWindow(backward: false)
-                } label: {
-                  Image(systemName: "chevron.right")
-                }
-                .disabled(!canMoveNext)
+          ChartRangeSelector(
+            selectedRange: Binding(
+              get: { localSelectedRange },
+              set: {
+                isUserInteracted = true
+                localSelectedRange = $0
               }
-            }
-          }
+            ),
+            canMoveNext: canMoveNext,
+            canMovePrevious: canMovePrevious,
+            shiftWindow: { backward in
+              isUserInteracted = true
+              shiftWindow(backward: backward)
+            },
+            startDay: startDay,
+            endDay: endDay
+          )
         }
 
         // データ点は期間に応じて間引き
@@ -356,9 +344,22 @@ struct CycleTrendView: View {
         }
       }
     }
+    .onChange(of: windowEnd) {
+      // iPhone での連動：親の windowEnd が変わったらアニメーション実行
+      // （戻る・進むボタンで期間移動した時）
+      if sharedWindowEnd != nil {
+        animateChart = false
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
+          withAnimation(.easeOut(duration: 0.4)) {
+            animateChart = true
+          }
+        }
+      }
+    }
     .onChange(of: initialRange) {
-      // iPad独立モードでは初回初期化後はinitialRangeの変更に追従しない
-      if !isUserInteracted && sharedSelectedRange == nil && !hasInitialized {
+      // iPad独立モードで、ユーザー操作がまだない場合は initialRange の変更に追従
+      // （サンプルモード開始時などに外部から3年レンジを設定できるようにする）
+      if !isUserInteracted && sharedSelectedRange == nil {
         localSelectedRange = initialRange
         localWindowEnd = ChartWindowNavigator.initializeWindowEnd(
           for: allRecords, range: initialRange)
