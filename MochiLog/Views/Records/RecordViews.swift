@@ -292,11 +292,17 @@ struct RecordDetailView: View {
                     String(localized: "design_capacity", table: "Analytics"),
                     value: String(localized: "unknown", table: "Common"))
                 }
-                LabeledContent(
-                  String(localized: "nominal_capacity", table: "Analytics"),
-                  value:
-                    "\(record.nominalCapacity) mAh (\(String(format: "%.1f%%", record.designCapacity > 0 ? (Double(record.nominalCapacity) / Double(record.designCapacity)) * 100.0 : record.realHealthPercent)))"
-                )
+                LabeledContent(String(localized: "nominal_capacity", table: "Analytics")) {
+                  HStack(spacing: 8) {
+                    Text("\(record.nominalCapacity) mAh")
+                    let nominalPercent =
+                      record.designCapacity > 0
+                      ? (Double(record.nominalCapacity) / Double(record.designCapacity)) * 100.0
+                      : record.realHealthPercent
+                    Text("(\(String(format: "%.1f%%", nominalPercent)))")
+                      .foregroundStyle(healthColorLocal(nominalPercent))
+                  }
+                }
                 LabeledContent(String(localized: "raw_capacity", table: "Analytics")) {
                   HStack(spacing: 8) {
                     Text("\(record.rawCapacity) mAh")
@@ -473,11 +479,17 @@ struct RecordDetailView: View {
                 String(localized: "design_capacity", table: "Analytics"),
                 value: String(localized: "unknown", table: "Common"))
             }
-            LabeledContent(
-              String(localized: "nominal_capacity", table: "Analytics"),
-              value:
-                "\(record.nominalCapacity) mAh (\(String(format: "%.1f%%", record.designCapacity > 0 ? (Double(record.nominalCapacity) / Double(record.designCapacity)) * 100.0 : record.realHealthPercent)))"
-            )
+            LabeledContent(String(localized: "nominal_capacity", table: "Analytics")) {
+              HStack(spacing: 8) {
+                Text("\(record.nominalCapacity) mAh")
+                let nominalPercent =
+                  record.designCapacity > 0
+                  ? (Double(record.nominalCapacity) / Double(record.designCapacity)) * 100.0
+                  : record.realHealthPercent
+                Text("(\(String(format: "%.1f%%", nominalPercent)))")
+                  .foregroundStyle(healthColorLocal(nominalPercent))
+              }
+            }
             LabeledContent(String(localized: "raw_capacity", table: "Analytics")) {
               HStack(spacing: 8) {
                 Text("\(record.rawCapacity) mAh")
