@@ -5,6 +5,7 @@ struct CycleTrendView: View {
   let allRecords: [BatteryRecord]  // フィルタ前の全レコード（期間計算用）
   let unit: AppSettings.ChartUnit
   @State private var animateChart: Bool = false
+  @State private var isChartReady: Bool = false  // 遅延レンダリング用
   var initialRange: RangePreset = .oneMonth  // 初期レンジ（サンプルモード用）
 
   // iPhone用：親から渡される期間情報（Bindingがある場合は親と同期）
@@ -192,134 +193,29 @@ struct CycleTrendView: View {
           )
         }
 
-        // データ点は期間に応じて間引き
+        // 描画用データは期間に応じて間引き（負荷軽減）
         let downsampleStart = CFAbsoluteTimeGetCurrent()
-        let pointRecords = ChartAxisHelper.downsampledRecords(
+        let chartRecords = ChartAxisHelper.downsampledRecords(
           visibleRecords, startDay: startDay, endDay: endDay)
         let downsampleElapsed = (CFAbsoluteTimeGetCurrent() - downsampleStart) * 1000
         let _ = print(
-          "[Performance] CycleTrendView.downsample: \(String(format: "%.2f", downsampleElapsed))ms (\(visibleRecords.count) -> \(pointRecords.count)件)"
+          "[Performance] CycleTrendView.downsample: \(String(format: "%.2f", downsampleElapsed))ms (\(visibleRecords.count) -> \(chartRecords.count)件)"
         )
 
-        Chart {
-          ForEach(visibleRecords) { record in
-            LineMark(
-              x: .value(
-                String(localized: "date", table: "Common"),
-                Calendar.current.startOfDay(for: record.logDate),
-                unit: unit.calendarComponent),
-              y: .value(String(localized: "cycle_count", table: "Analytics"), record.cycleCount)
-            )
-            .foregroundStyle(
-              by: .value(String(localized: "device_name", table: "Common"), record.deviceName)
-            )
-            .interpolationMethod(.catmullRom)
-            .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
-            .opacity(animateChart ? 1 : 0)
-          }
-
-          // PointMarkはさらに間引く（デバイスごとに均等に間引く）
-          if !pointRecords.isEmpty {
-            // デバイスごとにグループ化
-            let deviceGroups = Dictionary(grouping: pointRecords) { $0.deviceName }
-
-            ForEach(Array(deviceGroups.keys.sorted()), id: \.self) { deviceName in
-              let deviceRecords = deviceGroups[deviceName] ?? []
-              let thinningFactor = max(1, deviceRecords.count / 15)  // デバイスごとに最大15件
-
-              ForEach(
-                Array(deviceRecords.enumerated().filter { $0.offset % thinningFactor == 0 }),
-                id: \.element.id
-              ) { _, pointRecord in
-                PointMark(
-                  x: .value(
-                    String(localized: "date", table: "Common"),
-                    Calendar.current.startOfDay(for: pointRecord.logDate),
-                    unit: unit.calendarComponent),
-                  y: .value(
-                    String(localized: "cycle_count", table: "Analytics"),
-                    pointRecord.cycleCount)
-                )
-                .foregroundStyle(
-                  by: .value(
-                    String(localized: "device_name", table: "Common"), pointRecord.deviceName)
-                )
-                .symbol(.circle)
-                .symbolSize(40)
-                .opacity(animateChart ? 1 : 0)
-              }
-            }
-          }
+        // 遅延レンダリング: タブ切り替え時はプレースホルダーを表示し、次フレームでChart描画
+        if isChartReady {
+          cycleChartView(chartRecords: chartRecords)
+            .transition(.opacity.animation(.easeOut(duration: 0.3)))
         }
-        .chartForegroundStyleScale(
-          domain: sortedAllDeviceNames,
-          range: ChartAxisHelper.stableDeviceColors(for: sortedAllDeviceNames)
-        )
-        .chartXAxis {
-          // 共通の横軸ラベル間引き関数を使用
-          let axisStart = CFAbsoluteTimeGetCurrent()
-          let (strideComponent, strideCount, labelFormat) =
-            ChartAxisHelper.calculateXAxisStride(
-              startDay: startDay, endDay: endDay, isCompact: horizontalSizeClass == .compact)
-          let axisElapsed = (CFAbsoluteTimeGetCurrent() - axisStart) * 1000
-          let _ = print(
-            "[Performance] CycleTrendView.axisCalc: \(String(format: "%.2f", axisElapsed))ms")
-
-          AxisMarks(values: .stride(by: strideComponent, count: strideCount)) { value in
-            AxisGridLine()
-              .foregroundStyle(.white.opacity(0.95))
-
-            AxisValueLabel {
-              if let date = value.as(Date.self) {
-                switch labelFormat {
-                case .monthDay:
-                  Text(date.formatted(.dateTime.month(.defaultDigits).day()))
-                case .monthOnly:
-                  Text(date.formatted(.dateTime.month(.defaultDigits)))
-                case .yearOnly:
-                  Text(date.formatted(.dateTime.year()))
-                }
-              }
-            }
-          }
-        }
-        // Y軸ドメインを設定（最大値に余白を追加してポイントが見切れないように）
-        .chartYScale(domain: 0...(Double(visibleRecords.map { $0.cycleCount }.max() ?? 10) * 1.15))
-        // X軸ドメインを設定（選択レンジに固定、コンテキストレコードからの補間線はドメイン通過部分のみ描画）
-        .chartXScale(
-          domain: {
-            let cal = Calendar.current
-            let days = cal.dateComponents([.day], from: startDay, to: endDay).day ?? 0
-            if days < 7 {
-              // 最低1週間分の幅を確保
-              return startDay...(cal.date(byAdding: .day, value: 7, to: startDay) ?? endDay)
-            }
-            return startDay...endDay
-          }()
-        )
-        .chartPlotStyle { plotArea in
-          plotArea
-            .clipped()  // まずプロット領域の境界でクリップ
-            .padding(.trailing, 24)  // その後パディングを追加
-            .mask {
-              GeometryReader { geo in
-                Rectangle()
-                  .frame(width: animateChart ? geo.size.width : 0)
-                  .frame(maxWidth: .infinity, alignment: .leading)
-                  .animation(.easeOut(duration: 0.6), value: animateChart)
-              }
-            }
-        }
-        .frame(height: horizontalSizeClass == .regular ? 280 : 200)
+        // チャート領域の高さを常に確保（プレースホルダー兼用）
+        Color.clear
+          .frame(height: isChartReady ? 0 : (horizontalSizeClass == .regular ? 280 : 200))
       }
     }
     .frame(height: horizontalSizeClass == .regular ? 480 : nil, alignment: .top)
     .padding()
-    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+    .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16))
     .onAppear {
-      let elapsed = (CFAbsoluteTimeGetCurrent() - bodyStartTime) * 1000
-      print("[Performance] CycleTrendView.body構築完了: \(String(format: "%.2f", elapsed))ms")
-
       // 初期レンジを設定（一度だけ、親から渡されていない場合のみ）
       if !hasInitialized && sharedSelectedRange == nil {
         localSelectedRange = initialRange
@@ -327,8 +223,17 @@ struct CycleTrendView: View {
           for: allRecords, range: initialRange)
         hasInitialized = true
       }
-      // 初回表示時はアニメーションなしで即座に表示（高速化）
+      // 次のランループでChart描画を開始（タブ切り替えアニメーションをブロックしない）
+      if !isChartReady {
+        DispatchQueue.main.async {
+          isChartReady = true
+        }
+      }
       animateChart = true
+    }
+    .onDisappear {
+      // タブ切り替え時にリセット → 次回表示時に遅延レンダリングが再度有効になる
+      isChartReady = false
     }
     .onChange(of: selectedRange) {
       // レンジ変更時のみアニメーション実行
@@ -360,6 +265,104 @@ struct CycleTrendView: View {
           for: allRecords, range: initialRange)
       }
     }
+  }
+
+  // MARK: - チャートビュー（bodyから分離してコンパイラの型チェック負荷を軽減）
+  @ViewBuilder
+  private func cycleChartView(chartRecords: [BatteryRecord]) -> some View {
+    Chart {
+      ForEach(chartRecords) { record in
+        LineMark(
+          x: .value(
+            String(localized: "date", table: "Common"),
+            Calendar.current.startOfDay(for: record.logDate),
+            unit: unit.calendarComponent),
+          y: .value(String(localized: "cycle_count", table: "Analytics"), record.cycleCount)
+        )
+        .foregroundStyle(
+          by: .value(String(localized: "device_name", table: "Common"), record.deviceName)
+        )
+        .interpolationMethod(.catmullRom)
+        .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+      }
+
+      if !chartRecords.isEmpty {
+        let deviceGroups = Dictionary(grouping: chartRecords) { $0.deviceName }
+
+        ForEach(Array(deviceGroups.keys.sorted()), id: \.self) { deviceName in
+          let deviceRecords = deviceGroups[deviceName] ?? []
+          let thinningFactor = max(1, deviceRecords.count / 10)
+
+          ForEach(
+            Array(deviceRecords.enumerated().filter { $0.offset % thinningFactor == 0 }),
+            id: \.element.id
+          ) { _, pointRecord in
+            PointMark(
+              x: .value(
+                String(localized: "date", table: "Common"),
+                Calendar.current.startOfDay(for: pointRecord.logDate),
+                unit: unit.calendarComponent),
+              y: .value(
+                String(localized: "cycle_count", table: "Analytics"),
+                pointRecord.cycleCount)
+            )
+            .foregroundStyle(
+              by: .value(
+                String(localized: "device_name", table: "Common"), pointRecord.deviceName)
+            )
+            .symbol(.circle)
+            .symbolSize(40)
+          }
+        }
+      }
+    }
+    .chartForegroundStyleScale(
+      domain: sortedAllDeviceNames,
+      range: ChartAxisHelper.stableDeviceColors(for: sortedAllDeviceNames)
+    )
+    .chartXAxis {
+      let (strideComponent, strideCount, labelFormat) =
+        ChartAxisHelper.calculateXAxisStride(
+          startDay: startDay, endDay: endDay, isCompact: horizontalSizeClass == .compact)
+
+      AxisMarks(values: .stride(by: strideComponent, count: strideCount)) { value in
+        AxisGridLine()
+          .foregroundStyle(.white.opacity(0.95))
+
+        AxisValueLabel {
+          if let date = value.as(Date.self) {
+            switch labelFormat {
+            case .monthDay:
+              Text(date.formatted(.dateTime.month(.defaultDigits).day()))
+            case .monthOnly:
+              Text(date.formatted(.dateTime.month(.defaultDigits)))
+            case .yearOnly:
+              Text(date.formatted(.dateTime.year()))
+            }
+          }
+        }
+      }
+    }
+    .chartYScale(
+      domain: 0...(Double(visibleRecords.map { $0.cycleCount }.max() ?? 10) * 1.15)
+    )
+    .chartXScale(
+      domain: {
+        let cal = Calendar.current
+        let days = cal.dateComponents([.day], from: startDay, to: endDay).day ?? 0
+        if days < 7 {
+          return startDay...(cal.date(byAdding: .day, value: 7, to: startDay) ?? endDay)
+        }
+        return startDay...endDay
+      }()
+    )
+    .chartPlotStyle { plotArea in
+      plotArea
+        .clipped()
+        .padding(.trailing, 24)
+    }
+    .drawingGroup()
+    .frame(height: horizontalSizeClass == .regular ? 280 : 200)
   }
 }
 
