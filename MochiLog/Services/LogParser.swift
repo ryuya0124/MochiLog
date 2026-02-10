@@ -146,7 +146,7 @@ struct LogParser {
       let msg = batObj.message
     else {
 
-      let msg = "バッテリーデータが見つかりませんでした"
+      let msg = String(localized: "log_parse_error_no_battery_data", table: "Support")
       // デバッグログは常に保存
       ErrorLogStore.shared.saveLog(message: msg, rawText: text)
       NotificationCenter.default.post(name: NSNotification.Name("ParseErrorSaved"), object: nil)
@@ -249,7 +249,8 @@ struct LogParser {
     }
     if result.rawCapacity == nil || result.rawCapacity == 0 { missingFields.append("rawCapacity") }
     if !missingFields.isEmpty {
-      let message = "Parse missing fields: \(missingFields.joined(separator: ", "))"
+      let format = String(localized: "log_parse_error_missing_fields", table: "Support")
+      let message = String(format: format, missingFields.joined(separator: ", "))
       ErrorLogStore.shared.saveLog(message: message, rawText: text)
       NotificationCenter.default.post(name: NSNotification.Name("ParseErrorSaved"), object: nil)
       result.hasErrorSaved = true

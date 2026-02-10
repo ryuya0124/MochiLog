@@ -468,6 +468,38 @@
           }
         }
       }
+    },
+    "log_parse_error_missing_fields" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Parse missing fields: %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析に必要なフィールドが不足しています: %@"
+          }
+        }
+      }
+    },
+    "log_parse_error_no_battery_data" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Battery data not found"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バッテリーデータが見つかりませんでした"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"
