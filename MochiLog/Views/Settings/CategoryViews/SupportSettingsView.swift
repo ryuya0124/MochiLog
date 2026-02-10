@@ -24,7 +24,7 @@ struct SupportSettingsView: View {
                 .font(.headline)
                 .foregroundStyle(.primary)
 
-              Text("基本操作や設定の流れを確認できます")
+              Text(String(localized: "tutorial_description", table: "Settings"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             }
@@ -57,7 +57,7 @@ struct SupportSettingsView: View {
                 .font(.headline)
                 .foregroundStyle(.primary)
 
-              Text("バグ報告や機能リクエストをお寄せください")
+              Text(String(localized: "contact_support_description", table: "Settings"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             }
@@ -90,7 +90,7 @@ struct SupportSettingsView: View {
                 .font(.headline)
                 .foregroundStyle(.primary)
 
-              Text("開発を応援していただけると嬉しいです")
+              Text(String(localized: "donation_description_short", table: "Settings"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             }

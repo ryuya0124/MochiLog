@@ -52,7 +52,7 @@ struct GeneralSettingsView: View {
             )
             .font(.headline)
 
-            Text("デバイス間でバッテリーログを自動同期します")
+            Text(String(localized: "icloud_sync_description", table: "Settings"))
               .font(.subheadline)
               .foregroundStyle(.secondary)
 
@@ -94,7 +94,7 @@ struct GeneralSettingsView: View {
               .pickerStyle(.menu)
             }
 
-            Text("アプリ全体のテーマカラーを設定します")
+            Text(String(localized: "accent_color_description", table: "Settings"))
               .font(.subheadline)
               .foregroundStyle(.secondary)
           }
@@ -119,7 +119,7 @@ struct GeneralSettingsView: View {
                 .font(.headline)
                 .foregroundStyle(.primary)
 
-              Text("サンプルデータで機能を確認できます")
+              Text(String(localized: "sample_data_description", table: "Settings"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             }

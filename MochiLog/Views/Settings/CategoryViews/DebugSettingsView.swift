@@ -21,7 +21,7 @@ struct DebugSettingsView: View {
             )
             .font(.headline)
 
-            Text("アプリ起動時にデバッグポップアップを表示")
+            Text(String(localized: "debug_popup_description", table: "Settings"))
               .font(.subheadline)
               .foregroundStyle(.secondary)
           }
@@ -43,7 +43,7 @@ struct DebugSettingsView: View {
                 .font(.headline)
                 .foregroundStyle(.primary)
 
-              Text("アプリのエラーログを確認します")
+              Text(String(localized: "error_logs_description", table: "Settings"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             }

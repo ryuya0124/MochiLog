@@ -53,7 +53,7 @@ struct DataManagementSettingsView: View {
             .pickerStyle(.menu)
           }
 
-          Text("特定デバイスの全データを削除します")
+          Text(String(localized: "delete_device_data_description", table: "Settings"))
             .font(.subheadline)
             .foregroundStyle(.secondary)
         }
@@ -79,7 +79,7 @@ struct DataManagementSettingsView: View {
               .font(.headline)
               .foregroundStyle(.red)
 
-            Text("選択したデバイスのデータを完全に削除します")
+            Text(String(localized: "delete_selected_device_description", table: "Settings"))
               .font(.subheadline)
               .foregroundStyle(.secondary)
           }
@@ -110,7 +110,7 @@ struct DataManagementSettingsView: View {
               .font(.headline)
               .foregroundStyle(.red)
 
-            Text("すべてのバッテリーログを完全に削除します（復元不可）")
+            Text(String(localized: "delete_all_data_description", table: "Settings"))
               .font(.subheadline)
               .foregroundStyle(.secondary)
           }

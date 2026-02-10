@@ -50,7 +50,7 @@ struct AboutSettingsView: View {
                 .font(.headline)
                 .foregroundStyle(.primary)
 
-              Text("利用規約を確認できます")
+              Text(String(localized: "terms_of_use_description", table: "Settings"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             }
@@ -81,7 +81,7 @@ struct AboutSettingsView: View {
                 .font(.headline)
                 .foregroundStyle(.primary)
 
-              Text("プライバシーに関する内容を確認")
+              Text(String(localized: "privacy_policy_description", table: "Settings"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             }
@@ -112,7 +112,7 @@ struct AboutSettingsView: View {
                 .font(.headline)
                 .foregroundStyle(.primary)
 
-              Text("利用しているライブラリの情報")
+              Text(String(localized: "licenses_description", table: "Settings"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             }
@@ -143,7 +143,7 @@ struct AboutSettingsView: View {
                 .font(.headline)
                 .foregroundStyle(.primary)
 
-              Text("GitHubでソースを見る")
+              Text(String(localized: "github_description", table: "Settings"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             }

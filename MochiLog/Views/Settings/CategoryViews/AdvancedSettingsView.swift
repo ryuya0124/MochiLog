@@ -44,7 +44,7 @@ struct AdvancedSettingsView: View {
           }
           .pickerStyle(.segmented)
 
-          Text("グラフと統計の計算に使用するデータソース")
+          Text(String(localized: "analysis_source_description", table: "Settings"))
             .font(.subheadline)
             .foregroundStyle(.secondary)
         }
@@ -172,7 +172,7 @@ struct AdvancedSettingsView: View {
             .font(.headline)
 
           HStack {
-            Text("しきい値")
+            Text(String(localized: "threshold_label", table: "Settings"))
               .font(.subheadline)
             Spacer()
             Text(String(format: "%.0f MB", appSettings.iCloudStorageThresholdMB))
@@ -187,7 +187,7 @@ struct AdvancedSettingsView: View {
               .foregroundColor(.red)
           }
 
-          Text("iCloud同期のストレージ上限を設定します")
+          Text(String(localized: "icloud_storage_description", table: "Settings"))
             .font(.subheadline)
             .foregroundStyle(.secondary)
         }
