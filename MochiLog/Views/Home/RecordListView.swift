@@ -153,18 +153,12 @@ struct RecordListView<Header: View>: View {
                   sectionRecords: sectionRecords
                 )
               } label: {
-                let parts = splitDeviceName(section.displayName)
-                VStack(alignment: .leading, spacing: 2) {
-                  Text(parts.primary)
-                    .font(.title3)
-                    .bold()
-                    .foregroundColor(.primary)
-                  if let secondary = parts.secondary {
-                    Text(secondary)
-                      .font(.subheadline)
-                      .foregroundColor(.secondary)
-                  }
-                }
+                Text(section.displayName)
+                  .font(.title3)
+                  .bold()
+                  .foregroundColor(.primary)
+                  .lineLimit(1)
+                  .fixedSize(horizontal: true, vertical: false)
               }
               .animation(.snappy, value: collapsedSections)
               .padding()
