@@ -150,7 +150,7 @@ struct RecordDetailView: View {
               // 健康リング（動的コンテンツなのでCachedView削除）
               ZStack {
                 Circle()
-                  .stroke(Color(uiColor: .systemGray5), lineWidth: 8)
+                  .stroke(Color(uiColor: .systemGray5), lineWidth: 10)
                   .frame(width: 120, height: 120)
                 Circle()
                   .trim(
@@ -163,10 +163,7 @@ struct RecordDetailView: View {
                       / 100.0
                   )
                   .stroke(
-                    AngularGradient(
-                      gradient: Gradient(colors: [
-                        AppSettings.shared.accentColor.color, Color.green,
-                      ]), center: .center),
+                    AppSettings.shared.accentColor.color,
                     style: StrokeStyle(lineWidth: 8, lineCap: .round)
                   )
                   .rotationEffect(.degrees(-90))
