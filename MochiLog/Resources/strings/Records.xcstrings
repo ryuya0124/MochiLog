@@ -119,13 +119,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "⚠️ Replace Recommended (<80%)"
+            "value" : "⚠️ Replace Recommended"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "⚠️ 交換推奨（80%未満）"
+            "value" : "⚠️ 交換推奨"
           }
         }
       }
@@ -135,13 +135,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ℹ️ Slightly Degraded (<90%)"
+            "value" : "ℹ️ Slightly Degraded"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ℹ️ やや劣化（90%未満）"
+            "value" : "ℹ️ やや劣化"
           }
         }
       }
