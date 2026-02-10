@@ -187,7 +187,7 @@ struct ChartWindowNavigator {
   }
 
   /// 指定期間の前後1点ずつを含めたレコードを抽出（グラフの連続性を保つため）
-  /// ウィンドウ内にデータがない場合も、前後の最寄りデータを返して補間描画を可能にする
+  /// 各デバイスごとにウィンドウの前後にある最寄りデータを含めて補間描画を可能にする
   static func visibleRecordsWithContext(
     in records: [BatteryRecord],
     start: Date,
@@ -197,35 +197,36 @@ struct ChartWindowNavigator {
     let startDay = cal.startOfDay(for: start)
     let endDay = cal.startOfDay(for: end)
 
-    // 期間内のデータを特定（インデックスを保持）
-    let recordInfos = records.enumerated().map {
-      (index: $0.offset, date: cal.startOfDay(for: $0.element.logDate))
-    }
-    let visibleIndices = recordInfos.filter { $0.date >= startDay && $0.date <= endDay }.map {
-      $0.index
+    // デバイスごとにグループ化
+    let deviceGroups = Dictionary(grouping: records) { $0.deviceName }
+    var result: [BatteryRecord] = []
+
+    for (_, deviceRecords) in deviceGroups {
+      // このデバイスのウィンドウ内のレコード
+      let visibleRecords = deviceRecords.filter {
+        let d = cal.startOfDay(for: $0.logDate)
+        return d >= startDay && d <= endDay
+      }
+
+      // ウィンドウ内のレコードを追加
+      result.append(contentsOf: visibleRecords)
+
+      // このデバイスのウィンドウ前の最寄りデータ
+      if let beforeRecord = deviceRecords.last(where: {
+        cal.startOfDay(for: $0.logDate) < startDay
+      }) {
+        result.append(beforeRecord)
+      }
+
+      // このデバイスのウィンドウ後の最寄りデータ
+      if let afterRecord = deviceRecords.first(where: {
+        cal.startOfDay(for: $0.logDate) > endDay
+      }) {
+        result.append(afterRecord)
+      }
     }
 
-    if let firstVisibleIndex = visibleIndices.min(),
-      let lastVisibleIndex = visibleIndices.max()
-    {
-      // 期間内にデータあり：前後に1点ずつバッファを持たせる
-      let startIndex = max(0, firstVisibleIndex - 1)
-      let endIndex = min(records.count - 1, lastVisibleIndex + 1)
-      return Array(records[startIndex...endIndex])
-    }
-
-    // 期間内にデータなし：前後の最寄りデータポイントを返して補間描画を可能にする
-    let beforeIndex = recordInfos.last { $0.date < startDay }?.index
-    let afterIndex = recordInfos.first { $0.date > endDay }?.index
-
-    var contextRecords: [BatteryRecord] = []
-    if let before = beforeIndex {
-      contextRecords.append(records[before])
-    }
-    if let after = afterIndex {
-      contextRecords.append(records[after])
-    }
-    return contextRecords
+    return result.sorted { $0.logDate < $1.logDate }
   }
 
   // MARK: - 日付計算ヘルパー

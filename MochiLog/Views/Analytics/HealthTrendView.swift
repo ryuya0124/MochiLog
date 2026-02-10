@@ -166,16 +166,15 @@ struct HealthTrendView: View {
             }
           }
         }
-        // X軸ドメインを設定（データ範囲ぴったりに表示）
+        // X軸ドメインを設定（選択レンジに固定、コンテキストレコードからの補間線はドメイン通過部分のみ描画）
         .chartXScale(
           domain: {
-            let days = Calendar.current.dateComponents([.day], from: startDay, to: endDay).day ?? 0
+            let cal = Calendar.current
+            let days = cal.dateComponents([.day], from: startDay, to: endDay).day ?? 0
             if days < 7 {
               // 最低1週間分の幅を確保
-              return
-                startDay...(Calendar.current.date(byAdding: .day, value: 7, to: startDay) ?? endDay)
+              return startDay...(cal.date(byAdding: .day, value: 7, to: startDay) ?? endDay)
             }
-            // カレンダー境界に合わせて表示
             return startDay...endDay
           }()
         )

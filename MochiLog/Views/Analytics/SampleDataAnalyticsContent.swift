@@ -81,6 +81,13 @@ struct SampleDataAnalyticsContent: View {
         return d >= startDay && d <= endDay
       }
 
+      // チャート用：ウィンドウ外の前後コンテキストレコードを含む（補間線描画用）
+      let chartRecords = ChartWindowNavigator.visibleRecordsWithContext(
+        in: filteredRecords,
+        start: startDay,
+        end: endDay
+      )
+
       let unit = window.unit
 
       let _ = {
@@ -96,7 +103,7 @@ struct SampleDataAnalyticsContent: View {
           HStack(alignment: .top, spacing: 20) {
             // ヘルス推移グラフ
             HealthTrendView(
-              visibleRecords: visibleRecords,
+              visibleRecords: chartRecords,
               startDay: startDay,
               endDay: endDay,
               unit: unit,
@@ -123,7 +130,7 @@ struct SampleDataAnalyticsContent: View {
         // iPhone向け1列レイアウト
         // ヘルス推移グラフ
         HealthTrendView(
-          visibleRecords: visibleRecords,
+          visibleRecords: chartRecords,
           startDay: startDay,
           endDay: endDay,
           unit: unit,

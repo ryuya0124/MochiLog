@@ -31,7 +31,7 @@ struct CycleTrendView: View {
   }
 
   private var windowEnd: Date {
-    sharedWindowEnd?.wrappedValue ?? localWindowEnd
+    sharedWindowEndValue ?? localWindowEnd
   }
 
   // 現在のウィンドウに含まれるレコードを計算
@@ -86,9 +86,9 @@ struct CycleTrendView: View {
   }
 
   private var effectiveLocalWindowEnd: Date {
-    // sharedWindowEnd がある場合は親の値を使う（iPhone 連動用）
+    // sharedWindowEndValue がある場合は親の値を使う（iPhone 連動用）
     let rangeToUse = sharedSelectedRange != nil ? selectedRange : localSelectedRange
-    let windowEndToUse = sharedWindowEnd != nil ? windowEnd : localWindowEnd
+    let windowEndToUse = sharedWindowEndValue ?? localWindowEnd
     guard rangeToUse == .auto else { return windowEndToUse }
     let now = Date()
     if windowEndToUse <= now { return windowEndToUse }
@@ -285,16 +285,15 @@ struct CycleTrendView: View {
         }
         // Y軸ドメインを設定（最大値に余白を追加してポイントが見切れないように）
         .chartYScale(domain: 0...(Double(visibleRecords.map { $0.cycleCount }.max() ?? 10) * 1.15))
-        // X軸ドメインを設定（データ範囲ぴったりに表示）
+        // X軸ドメインを設定（選択レンジに固定、コンテキストレコードからの補間線はドメイン通過部分のみ描画）
         .chartXScale(
           domain: {
-            let days = Calendar.current.dateComponents([.day], from: startDay, to: endDay).day ?? 0
+            let cal = Calendar.current
+            let days = cal.dateComponents([.day], from: startDay, to: endDay).day ?? 0
             if days < 7 {
               // 最低1週間分の幅を確保
-              return
-                startDay...(Calendar.current.date(byAdding: .day, value: 7, to: startDay) ?? endDay)
+              return startDay...(cal.date(byAdding: .day, value: 7, to: startDay) ?? endDay)
             }
-            // カレンダー境界に合わせて表示
             return startDay...endDay
           }()
         )

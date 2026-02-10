@@ -53,9 +53,17 @@ struct ChartAxisHelper {
 
     let calendar = Calendar.current
     var buckets: [String: [Int: BatteryRecord]] = [:]
+    var contextRecords: [BatteryRecord] = []  // ウィンドウ外のコンテキストレコード
 
     for record in records {
       let day = calendar.startOfDay(for: record.logDate)
+
+      // ウィンドウ外のレコードはコンテキストとして保持（補間線描画用）
+      if day < startDay || day > endDay {
+        contextRecords.append(record)
+        continue
+      }
+
       let diff = calendar.dateComponents([.day], from: startDay, to: day).day ?? 0
       let bucket = diff / intervalDays
       var deviceBuckets = buckets[record.deviceName] ?? [:]
@@ -65,12 +73,15 @@ struct ChartAxisHelper {
       buckets[record.deviceName] = deviceBuckets
     }
 
-    return buckets
+    let downsampledRecords = buckets
       .values
       .flatMap { deviceBuckets in
         deviceBuckets.keys.sorted().compactMap { deviceBuckets[$0] }
       }
       .sorted { $0.logDate < $1.logDate }
+
+    // コンテキストレコードとダウンサンプリング済みレコードを結合
+    return (contextRecords + downsampledRecords).sorted { $0.logDate < $1.logDate }
   }
 
   /// 期間に応じてデータポイントのインデックスを間引く
