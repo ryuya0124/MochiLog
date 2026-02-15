@@ -180,6 +180,22 @@
         }
       }
     },
+    "load_more" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Load More"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "もっと読み込む"
+          }
+        }
+      }
+    },
     "log_saved" : {
       "localizations" : {
         "en" : {
@@ -208,22 +224,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "解析エラーのログを保存しました。サポートの「エラーログを表示」から確認できます。"
-          }
-        }
-      }
-    },
-    "load_more" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Load More"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "もっと読み込む"
           }
         }
       }
@@ -464,23 +464,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "チュートリアルを見る"
-          }
-        }
-      }
-    },
-    "watch_selection_required" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Watch device not registered; manual selection required."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Apple Watchの登録が必要です。手動でデバイスを選択してください。"
           }
         }
       }

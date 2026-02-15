@@ -225,23 +225,6 @@
         }
       }
     },
-    "change_watch" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Change Watch"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Watchを変更"
-          }
-        }
-      }
-    },
     "contact_support_description" : {
       "localizations" : {
         "en" : {
@@ -566,6 +549,86 @@
         }
       }
     },
+    "export_data" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export Data"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データをエクスポート"
+          }
+        }
+      }
+    },
+    "export_data_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export all battery records in YAML format"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全てのバッテリーレコードをYAML形式でエクスポートします"
+          }
+        }
+      }
+    },
+    "export_encode_error" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to encode data"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データのエンコードに失敗しました"
+          }
+        }
+      }
+    },
+    "export_error_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export Error"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "エクスポートエラー"
+          }
+        }
+      }
+    },
+    "export_write_error" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to write file"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ファイルの書き込みに失敗しました"
+          }
+        }
+      }
+    },
     "general" : {
       "localizations" : {
         "en" : {
@@ -726,6 +789,198 @@
         }
       }
     },
+    "import_data" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import Data"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データをインポート"
+          }
+        }
+      }
+    },
+    "import_data_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import battery records from YAML file"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YAMLファイルからバッテリーレコードをインポートします"
+          }
+        }
+      }
+    },
+    "import_decode_error" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to decode YAML data"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YAMLデータのデコードに失敗しました"
+          }
+        }
+      }
+    },
+    "import_error" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import Error"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "インポートエラー"
+          }
+        }
+      }
+    },
+    "import_file_read_error" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to read import file"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "インポートファイルの読み込みに失敗しました"
+          }
+        }
+      }
+    },
+    "import_invalid_data" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid data format"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不正なデータ形式です"
+          }
+        }
+      }
+    },
+    "import_no_records" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No records found in file"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ファイルにレコードが見つかりませんでした"
+          }
+        }
+      }
+    },
+    "import_partial_success" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imported {imported} records, skipped {skipped} duplicates, {errors} errors"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "{imported}件をインポート、{skipped}件の重複をスキップ、{errors}件のエラー"
+          }
+        }
+      }
+    },
+    "import_result_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import Result"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "インポート結果"
+          }
+        }
+      }
+    },
+    "import_success" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Successfully imported {count} records"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "{count}件のレコードをインポートしました"
+          }
+        }
+      }
+    },
+    "import_success_with_duplicates" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imported {imported} records, skipped {skipped} duplicates"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "{imported}件をインポート、{skipped}件の重複をスキップしました"
+          }
+        }
+      }
+    },
+    "import_unsupported_version" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unsupported file format version: {version}"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サポートされていないファイル形式バージョン: {version}"
+          }
+        }
+      }
+    },
     "licenses" : {
       "localizations" : {
         "en" : {
@@ -854,23 +1109,6 @@
         }
       }
     },
-    "no_devices_available" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No devices available to delete"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "削除可能なデバイスがありません"
-          }
-        }
-      }
-    },
     "not_registered" : {
       "localizations" : {
         "en" : {
@@ -947,23 +1185,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "購入処理中にエラーが発生しました。もう一度お試しください。"
-          }
-        }
-      }
-    },
-    "register_watch" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Register Watch"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Watchを登録"
           }
         }
       }
@@ -1192,23 +1413,6 @@
         }
       }
     },
-    "settings" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Settings"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "設定"
-          }
-        }
-      }
-    },
     "settings_title" : {
       "localizations" : {
         "en" : {
@@ -1269,40 +1473,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "解析データを開くショートカットをインストールします"
-          }
-        }
-      }
-    },
-    "shortcut_not_found_message" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Please create a shortcut named \"解析データを開く\" first.\n\n1. Open Shortcuts app\n2. Create new shortcut\n3. Add \"Open URLs\" action\n4. Set URL: prefs:root=Privacy&path=PROBLEM_REPORTING/DIAGNOSTIC_USAGE_DATA\n5. Name it: 解析データを開く"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "先に「解析データを開く」という名前のショートカットを作成してください。\n\n【作成手順】\n1. ショートカットアプリを開く\n2. 新規ショートカットを作成\n3. 「URLを開く」アクションを追加\n4. URL欄に以下を入力：\n   prefs:root=Privacy&path=PROBLEM_REPORTING/DIAGNOSTIC_USAGE_DATA\n5. 名前を「解析データを開く」に設定して保存"
-          }
-        }
-      }
-    },
-    "shortcut_not_found_title" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Shortcut Not Found"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ショートカットが見つかりません"
           }
         }
       }

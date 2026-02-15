@@ -249,7 +249,9 @@ struct SettingsView: View {
                     showingDeleteDeviceConfirmation: $showingDeleteDeviceConfirmation,
                     deletingDeviceId: $deletingDeviceId,
                     appSettings: appSettings,
-                    availableDevices: availableDevices
+                    availableDevices: availableDevices,
+                    records: records,
+                    modelContext: modelContext
                   )
                 case .support:
                   SupportSettingsView()

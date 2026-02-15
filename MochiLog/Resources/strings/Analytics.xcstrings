@@ -49,23 +49,6 @@
         }
       }
     },
-    "battery_health" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Battery Health"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バッテリー実容量"
-          }
-        }
-      }
-    },
     "chart_range" : {
       "comment" : "Label for the range picker",
       "localizations" : {
@@ -159,57 +142,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "設計容量"
-          }
-        }
-      }
-    },
-    "health" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Health"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ヘルス"
-          }
-        }
-      }
-    },
-    "health_trend_actual" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Actual Capacity Trend"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "実測容量推移"
-          }
-        }
-      }
-    },
-    "health_trend_nominal" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nominal Capacity Trend"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "公称容量推移"
           }
         }
       }
@@ -505,74 +437,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "グラフと統計を絞り込むデバイスを選んでください。"
-          }
-        }
-      }
-    },
-    "stat_average_actual" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Average Actual Capacity"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "平均実測容量"
-          }
-        }
-      }
-    },
-    "stat_average_nominal" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Average Battery Capacity"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "平均バッテリー容量"
-          }
-        }
-      }
-    },
-    "stat_latest_actual" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Latest Actual Capacity"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最新実測容量"
-          }
-        }
-      }
-    },
-    "stat_latest_nominal" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Latest Battery Capacity"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最新バッテリー容量"
           }
         }
       }

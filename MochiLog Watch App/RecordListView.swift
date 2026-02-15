@@ -78,7 +78,7 @@ struct RecordRow: View {
 
       // 診断結果
       if !record.diagnosticResult.isEmpty {
-        Text(record.diagnosticResult)
+        Text(record.localizedDiagnosticResult)
           .font(.caption2)
           .foregroundStyle(.secondary)
           .lineLimit(1)

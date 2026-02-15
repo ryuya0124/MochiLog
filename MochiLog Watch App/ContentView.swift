@@ -240,7 +240,7 @@ struct DeviceCard: View {
             .font(.caption)
             .foregroundStyle(.secondary)
 
-          Text("\(device.latestCycleCount)回")
+          Text("\(device.latestCycleCount)\(String(localized: "cycles_suffix"))")
             .font(.subheadline)
             .foregroundStyle(.secondary)
         }
