@@ -201,6 +201,8 @@ struct MochiLogApp: App {
   private func handleShortcutCallback(_ url: URL) {
     switch url.host {
     case "shortcut-success":
+      // 注: 現在はx-successコールバックを使用していないため、このケースは呼ばれない
+      // ショートカット成功時はアプリに戻らず、解析データ画面に留まるようにするため
       print("✅ ショートカット実行成功")
       DispatchQueue.main.async {
         AppSettings.shared.isShortcutInstalled = true

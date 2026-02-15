@@ -6,7 +6,7 @@ import UIKit
 /// 設定アプリへのリダイレクト処理を提供する
 enum SettingsRedirectHelper {
   /// ショートカット名（固定）
-  private static let shortcutName = "解析データを開く"
+  private static let shortcutName = "解析データを開く(MochiLog) ver.1"
 
   /// iCloudショートカットリンク
   private static let shortcutURL =
@@ -34,10 +34,10 @@ enum SettingsRedirectHelper {
     }
 
     // x-callback-urlでショートカットを実行
+    // 成功時はアプリに戻らず、エラー時のみアプリに戻る
     let urlString =
       "shortcuts://x-callback-url/run-shortcut?"
       + "name=\(encoded)&"
-      + "x-success=mochilog://shortcut-success&"
       + "x-error=mochilog://shortcut-error"
 
     if let url = URL(string: urlString) {

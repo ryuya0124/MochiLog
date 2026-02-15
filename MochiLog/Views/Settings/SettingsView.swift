@@ -338,29 +338,6 @@ struct SettingsView: View {
       } label: {
         Label(String(localized: "view_sample_data", table: "Home"), systemImage: "eye")
       }
-
-      // ショートカット未インストール時のみ表示
-      if !appSettings.isShortcutInstalled {
-        Button(action: {
-          SettingsRedirectHelper.openShortcutSetup()
-        }) {
-          Label(
-            String(localized: "setup_shortcut", table: "Settings"),
-            systemImage: "arrow.down.circle"
-          )
-          .foregroundStyle(.blue)
-        }
-      }
-
-      Button(action: {
-        SettingsRedirectHelper.openAnalyticsViaShortcut()
-      }) {
-        Label(
-          String(localized: "view_analytics_data", table: "Settings"),
-          systemImage: "doc.text.magnifyingglass"
-        )
-        .foregroundStyle(.primary)
-      }
     }
 
     // MARK: - Apple Watch 設定
@@ -453,6 +430,29 @@ struct SettingsView: View {
       Button(action: { showingTutorial = true }) {
         Label(String(localized: "view_tutorial", table: "Home"), systemImage: "book.fill")
           .foregroundStyle(.primary)
+      }
+
+      // ショートカット未インストール時のみ表示
+      if !appSettings.isShortcutInstalled {
+        Button(action: {
+          SettingsRedirectHelper.openShortcutSetup()
+        }) {
+          Label(
+            String(localized: "setup_shortcut", table: "Settings"),
+            systemImage: "arrow.down.circle"
+          )
+          .foregroundStyle(.blue)
+        }
+      }
+
+      Button(action: {
+        SettingsRedirectHelper.openAnalyticsViaShortcut()
+      }) {
+        Label(
+          String(localized: "view_analytics_data", table: "Settings"),
+          systemImage: "doc.text.magnifyingglass"
+        )
+        .foregroundStyle(.primary)
       }
 
       Button(action: { showingSupportForm = true }) {
