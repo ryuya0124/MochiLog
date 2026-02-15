@@ -130,6 +130,38 @@
         }
       }
     },
+    "health_trend_actual" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actual Health Trend"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "実測容量推移"
+          }
+        }
+      }
+    },
+    "health_trend_nominal" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nominal Health Trend"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "公称容量推移"
+          }
+        }
+      }
+    },
     "design_capacity" : {
       "localizations" : {
         "en" : {
@@ -437,6 +469,70 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "グラフと統計を絞り込むデバイスを選んでください。"
+          }
+        }
+      }
+    },
+    "stat_average_actual" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Average Actual Health"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平均実測容量"
+          }
+        }
+      }
+    },
+    "stat_average_nominal" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Average Nominal Health"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平均公称容量"
+          }
+        }
+      }
+    },
+    "stat_latest_actual" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Latest Actual Health"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最新実測容量"
+          }
+        }
+      }
+    },
+    "stat_latest_nominal" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Latest Nominal Health"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最新公称容量"
           }
         }
       }
