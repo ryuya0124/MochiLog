@@ -2,38 +2,6 @@ import SwiftData
 import SwiftUI
 import UniformTypeIdentifiers
 
-// YAML DocumentType
-struct YAMLDocument: FileDocument {
-  static var readableContentTypes: [UTType] { [.yaml] }
-
-  var yaml: String
-
-  init(yaml: String) {
-    self.yaml = yaml
-  }
-
-  init(configuration: ReadConfiguration) throws {
-    guard let data = configuration.file.regularFileContents,
-      let string = String(data: data, encoding: .utf8)
-    else {
-      throw CocoaError(.fileReadCorruptFile)
-    }
-    yaml = string
-  }
-
-  func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
-    let data = yaml.data(using: .utf8)!
-    return .init(regularFileWithContents: data)
-  }
-}
-
-// UTType extension for YAML
-extension UTType {
-  static var yaml: UTType {
-    UTType(importedAs: "public.yaml")
-  }
-}
-
 // MARK: - データ管理設定ビュー
 struct DataManagementSettingsView: View {
   @Binding var showingDeleteAllConfirmation: Bool
@@ -293,6 +261,23 @@ struct DataManagementSettingsView: View {
       guard let url = urls.first else { return }
 
       Task {
+        // セキュリティスコープ付きリソースへのアクセスを開始
+        guard url.startAccessingSecurityScopedResource() else {
+          await MainActor.run {
+            importResultMessage =
+              String(
+                localized: "import_error",
+                table: "Settings"
+              ) + ": ファイルへのアクセス権限がありません"
+            showingImportAlert = true
+          }
+          return
+        }
+
+        defer {
+          url.stopAccessingSecurityScopedResource()
+        }
+
         do {
           let importResult = try DataImportService.importFromYAML(
             url: url,

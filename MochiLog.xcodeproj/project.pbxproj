@@ -55,6 +55,16 @@
 		4EFB3E562F2CE3CA001F2930 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.2.sdk/System/Library/Frameworks/WatchConnectivity.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		4EFB3AC32F2CD92C001F2930 /* Exceptions for "MochiLog Watch App" folder in "MochiLog Watch App" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 4EFB3AB72F2CD92B001F2930 /* MochiLog Watch App */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		4E0CF1412EF9542800307800 /* MochiLog */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
@@ -64,17 +74,10 @@
 		4EFB3AB92F2CD92B001F2930 /* MochiLog Watch App */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				4EFB3AC32F2CD92C001F2930 /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
+				4EFB3AC32F2CD92C001F2930 /* Exceptions for "MochiLog Watch App" folder in "MochiLog Watch App" target */,
 			);
 			path = "MochiLog Watch App";
 			sourceTree = "<group>";
-		};
-		4EFB3AC32F2CD92C001F2930 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = 4EFB3AB72F2CD92B001F2930 /* MochiLog Watch App */;
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
