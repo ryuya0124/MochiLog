@@ -45,6 +45,17 @@ struct Migration_v1_iPhone16e_AvgTemp: Migration {
       }
 
       // 2. iPhone 16eの設計容量修正（常に実行）
+      // 注: designCapacityを更新すると、以下が自動的に再計算されます:
+      //   【計算プロパティ】
+      //     - nominalHealthPercent (公称容量 / 設計容量)
+      //     - healthPercent (実測容量 / 設計容量)
+      //   【UI側で動的計算】
+      //     - rawRatio (実測容量 / 設計容量) - HomeView等で使用
+      //     - nominalRatio (公称容量 / 設計容量)
+      //     - lowRateRatio (低レート容量 / 設計容量)
+      //   【再計算不要】
+      //     - deflator (公称 / 実測) - 設計容量とは無関係
+      //     - lowRateCapacity - 生の値（比率ではない）
       if record.deviceName == "iPhone 16e", record.designCapacity == 3961 {
         record.designCapacity = 4005
         fixediPhone16eCount += 1
