@@ -5,6 +5,13 @@ import UIKit
 
 /// 設定アプリへのリダイレクト処理を提供する
 enum SettingsRedirectHelper {
+  /// ショートカット名（固定）
+  private static let shortcutName = "解析データを開く"
+
+  /// iCloudショートカットリンク
+  private static let shortcutURL =
+    "https://www.icloud.com/shortcuts/2dec4ec5fff742bbbb87c6688a922c13"
+
   /// silentインポート完了後に設定アプリ（解析・改善データ画面）にリダイレクトする
   /// 「アプリを開く」がオフの場合、ユーザーはアプリを見たくないので即座に元の画面に戻す
   static func redirectToPrivacyAnalytics() {
@@ -16,6 +23,36 @@ enum SettingsRedirectHelper {
     ]
 
     openFirstValidURL(urlStrings)
+  }
+
+  /// ショートカット経由で解析データ画面を開く（x-callback-url方式）
+  static func openAnalyticsViaShortcut() {
+    guard
+      let encoded = shortcutName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+    else {
+      return
+    }
+
+    // x-callback-urlでショートカットを実行
+    let urlString =
+      "shortcuts://x-callback-url/run-shortcut?"
+      + "name=\(encoded)&"
+      + "x-success=mochilog://shortcut-success&"
+      + "x-error=mochilog://shortcut-error"
+
+    if let url = URL(string: urlString) {
+      UIApplication.shared.open(url)
+    }
+  }
+
+  /// ショートカットのセットアップ画面を開く（iCloudリンク経由）
+  static func openShortcutSetup() {
+    // x-successでアプリに戻る
+    let callbackURL = "\(shortcutURL)?x-success=mochilog://setup-complete"
+
+    if let url = URL(string: callbackURL) {
+      UIApplication.shared.open(url)
+    }
   }
 
   /// URLリストから最初に成功するものを開く

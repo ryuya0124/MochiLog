@@ -37,6 +37,9 @@ final class AppSettings: ObservableObject {
 
     // 新規: 選択されたチャートレンジ
     static let selectedChartRange = "selectedChartRange"
+
+    // 新規: ショートカット関連
+    static let isShortcutInstalled = "isShortcutInstalled"
   }
 
   /// 容量不一致時の挙動
@@ -191,6 +194,9 @@ final class AppSettings: ObservableObject {
   /// 選択されたチャートレンジ（nil = 自動選択）
   @Published var selectedChartRange: String?
 
+  /// ショートカット「解析データを開く」がインストール済みかどうか
+  @Published var isShortcutInstalled: Bool
+
   // MARK: - Initialization
 
   private init() {
@@ -287,6 +293,9 @@ final class AppSettings: ObservableObject {
 
     // チャートレンジの初期化（nil = 自動選択）
     self.selectedChartRange = UserDefaults.standard.string(forKey: Keys.selectedChartRange)
+
+    // ショートカットインストール状態の初期化（デフォルトは false）
+    self.isShortcutInstalled = UserDefaults.standard.bool(forKey: Keys.isShortcutInstalled)
 
     // プロパティの変更を監視してUserDefaultsに保存
     setupObservers()
@@ -410,6 +419,13 @@ final class AppSettings: ObservableObject {
       .dropFirst()
       .sink { value in
         UserDefaults.standard.set(value, forKey: Keys.selectedChartRange)
+      }
+      .store(in: &cancellables)
+
+    $isShortcutInstalled
+      .dropFirst()
+      .sink { value in
+        UserDefaults.standard.set(value, forKey: Keys.isShortcutInstalled)
       }
       .store(in: &cancellables)
   }

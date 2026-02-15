@@ -58,6 +58,9 @@ struct SettingsView: View {
   @State private var showingDeviceDeleteConfirmation = false
   @State private var selectedDeviceToDelete: String?
 
+  // ショートカット関連のアラート
+  @State private var showingShortcutNotFoundAlert = false
+
   // 大画面レイアウト用: 選択されたカテゴリ
   @State private var selectedCategory: SettingsCategory = .general
 
@@ -65,7 +68,10 @@ struct SettingsView: View {
     NavigationStack {
       settingsList
         .navigationTitle(String(localized: "settings_title", table: "Settings"))
-        .onAppear { localICloudToggle = appSettings.iCloudSyncEnabled }
+        .onAppear {
+          localICloudToggle = appSettings.iCloudSyncEnabled
+          setupShortcutNotification()
+        }
         .sheet(isPresented: $showingWatchPicker) {
           HierarchicalDevicePickerView(initialCategory: .watch, lockCategory: true) {
             name, identifier in
@@ -163,6 +169,14 @@ struct SettingsView: View {
                 deviceName
               ))
           }
+        }
+        .alert(
+          String(localized: "shortcut_not_found_title", table: "Settings"),
+          isPresented: $showingShortcutNotFoundAlert
+        ) {
+          Button(String(localized: "ok", table: "Common"), role: .cancel) {}
+        } message: {
+          Text(String(localized: "shortcut_not_found_message", table: "Settings"))
         }
     }
   }
@@ -426,6 +440,29 @@ struct SettingsView: View {
         Label(String(localized: "donation_title", table: "Settings"), systemImage: "heart.fill")
           .foregroundStyle(.primary)
       }
+
+      // ショートカット未インストール時のみ表示
+      if !appSettings.isShortcutInstalled {
+        Button(action: {
+          SettingsRedirectHelper.openShortcutSetup()
+        }) {
+          Label(
+            String(localized: "setup_shortcut", table: "Settings"),
+            systemImage: "arrow.down.circle"
+          )
+          .foregroundStyle(.blue)
+        }
+      }
+
+      Button(action: {
+        SettingsRedirectHelper.openAnalyticsViaShortcut()
+      }) {
+        Label(
+          String(localized: "view_analytics_data", table: "Settings"),
+          systemImage: "doc.text.magnifyingglass"
+        )
+        .foregroundStyle(.primary)
+      }
     }
 
     // MARK: - デバッグ
@@ -582,6 +619,16 @@ struct SettingsView: View {
     // Notify other components (HomeView etc.) to clear transient UI state
     NotificationCenter.default.post(
       name: NSNotification.Name("DeleteAllDataPerformed"), object: nil)
+  }
+
+  private func setupShortcutNotification() {
+    NotificationCenter.default.addObserver(
+      forName: NSNotification.Name("ShortcutNotFound"),
+      object: nil,
+      queue: .main
+    ) { _ in
+      showingShortcutNotFoundAlert = true
+    }
   }
 }
 

@@ -460,7 +460,7 @@ struct DeviceLibrary {
     "iPhone Air": 3149,
     "iPhone 17 Pro": 4252,
     "iPhone 17": 3692,
-    "iPhone 16e": 3961,
+    "iPhone 16e": 4005,
     "iPhone 16 Pro Max": 4685,
     "iPhone 16 Plus": 4674,
     "iPhone 16 Pro": 3582,

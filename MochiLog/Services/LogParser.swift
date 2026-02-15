@@ -207,8 +207,8 @@ struct LogParser {
       result.deflator = (Double(nominal) / Double(raw)) * 100
     }
 
-    // 温度 (10で割る)
-    if let avgT = msg.last_value_AverageTemperature { result.avgTemp = avgT / 10.0 }  // 平均も10で割る場合が多いが、生値による
+    // 温度 (maxとminは10で割る、avgは生値を使用)
+    if let avgT = msg.last_value_AverageTemperature { result.avgTemp = avgT }
     if let maxT = msg.last_value_MaximumTemperature { result.maxTemp = maxT / 10.0 }
     if let minT = msg.last_value_MinimumTemperature { result.minTemp = minT / 10.0 }
 

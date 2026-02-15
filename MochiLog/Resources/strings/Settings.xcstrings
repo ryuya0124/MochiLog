@@ -1432,6 +1432,102 @@
           }
         }
       }
+    },
+    "view_analytics_data" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View Analytics Data"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析データを確認"
+          }
+        }
+      }
+    },
+    "view_analytics_data_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open iOS diagnostic and usage data settings"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iOSの診断・使用状況データ画面を開きます"
+          }
+        }
+      }
+    },
+    "shortcut_not_found_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shortcut Not Found"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ショートカットが見つかりません"
+          }
+        }
+      }
+    },
+    "shortcut_not_found_message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please create a shortcut named \"解析データを開く\" first.\n\n1. Open Shortcuts app\n2. Create new shortcut\n3. Add \"Open URLs\" action\n4. Set URL: prefs:root=Privacy&path=PROBLEM_REPORTING/DIAGNOSTIC_USAGE_DATA\n5. Name it: 解析データを開く"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "先に「解析データを開く」という名前のショートカットを作成してください。\n\n【作成手順】\n1. ショートカットアプリを開く\n2. 新規ショートカットを作成\n3. 「URLを開く」アクションを追加\n4. URL欄に以下を入力：\n   prefs:root=Privacy&path=PROBLEM_REPORTING/DIAGNOSTIC_USAGE_DATA\n5. 名前を「解析データを開く」に設定して保存"
+          }
+        }
+      }
+    },
+    "setup_shortcut" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Setup Shortcut"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ショートカットをセットアップ"
+          }
+        }
+      }
+    },
+    "setup_shortcut_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Install the shortcut to open analytics data"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析データを開くショートカットをインストールします"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"

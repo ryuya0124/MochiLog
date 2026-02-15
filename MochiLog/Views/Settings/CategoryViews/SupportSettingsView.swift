@@ -2,9 +2,11 @@ import SwiftUI
 
 // MARK: - サポート設定ビュー
 struct SupportSettingsView: View {
+  @StateObject private var appSettings = AppSettings.shared
   @State private var showingSupportForm = false
   @State private var showingTutorial = false
   @State private var showingDonation = false
+  @State private var showingShortcutNotFoundAlert = false
 
   var body: some View {
     VStack(spacing: 16) {
@@ -107,8 +109,80 @@ struct SupportSettingsView: View {
         .buttonStyle(.plain)
       }
 
+      // ショートカットをセットアップ（未インストール時のみ表示）
+      if !appSettings.isShortcutInstalled {
+        GroupBox {
+          Button(
+            action: { SettingsRedirectHelper.openShortcutSetup() },
+            label: {
+              HStack(spacing: 20) {
+                Image(systemName: "arrow.down.circle")
+                  .font(.system(size: 32))
+                  .foregroundStyle(.blue)
+                  .frame(width: 60)
+
+                VStack(alignment: .leading, spacing: 4) {
+                  Text(String(localized: "setup_shortcut", table: "Settings"))
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+
+                  Text(String(localized: "setup_shortcut_description", table: "Settings"))
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                  .foregroundStyle(.secondary)
+              }
+              .frame(maxWidth: .infinity, alignment: .leading)
+              .contentShape(Rectangle())
+              .padding(.vertical, 8)
+            }
+          )
+          .buttonStyle(.plain)
+        }
+      }
+
+      // 解析データを確認
+      GroupBox {
+        Button {
+          SettingsRedirectHelper.openAnalyticsViaShortcut()
+        } label: {
+          HStack(spacing: 20) {
+            Image(systemName: "doc.text.magnifyingglass")
+              .font(.system(size: 32))
+              .foregroundStyle(.blue)
+              .frame(width: 60)
+
+            VStack(alignment: .leading, spacing: 4) {
+              Text(String(localized: "view_analytics_data", table: "Settings"))
+                .font(.headline)
+                .foregroundStyle(.primary)
+
+              Text(String(localized: "view_analytics_data_description", table: "Settings"))
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+              .foregroundStyle(.secondary)
+          }
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .contentShape(Rectangle())
+          .padding(.vertical, 8)
+        }
+        .buttonStyle(.plain)
+      }
+
     }
     .padding(.horizontal)
+    .onAppear {
+      setupShortcutNotification()
+    }
     .sheet(isPresented: $showingSupportForm) {
       SupportFormView()
     }
@@ -117,6 +191,24 @@ struct SupportSettingsView: View {
     }
     .sheet(isPresented: $showingDonation) {
       DonationView()
+    }
+    .alert(
+      String(localized: "shortcut_not_found_title", table: "Settings"),
+      isPresented: $showingShortcutNotFoundAlert
+    ) {
+      Button(String(localized: "ok", table: "Common"), role: .cancel) {}
+    } message: {
+      Text(String(localized: "shortcut_not_found_message", table: "Settings"))
+    }
+  }
+
+  private func setupShortcutNotification() {
+    NotificationCenter.default.addObserver(
+      forName: NSNotification.Name("ShortcutNotFound"),
+      object: nil,
+      queue: .main
+    ) { _ in
+      showingShortcutNotFoundAlert = true
     }
   }
 }

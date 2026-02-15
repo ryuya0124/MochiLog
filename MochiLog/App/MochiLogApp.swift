@@ -87,6 +87,12 @@ struct MochiLogApp: App {
   private func handleOpenURL(_ url: URL) {
     print("Opened via URL: \(url)")
 
+    // ショートカットコールバックの処理
+    if url.scheme == "mochilog" {
+      handleShortcutCallback(url)
+      return
+    }
+
     // 5秒以内の同じURL処理をスキップ
     let now = Date()
     if let lastURL = MochiLogApp.lastProcessedURL,
@@ -190,6 +196,38 @@ struct MochiLogApp: App {
       try? FileManager.default.removeItem(at: url)
     }
   }
+
+  // ショートカットコールバックの処理
+  private func handleShortcutCallback(_ url: URL) {
+    switch url.host {
+    case "shortcut-success":
+      print("✅ ショートカット実行成功")
+      DispatchQueue.main.async {
+        AppSettings.shared.isShortcutInstalled = true
+      }
+
+    case "shortcut-error":
+      print("❌ ショートカットが存在しないか、エラー発生")
+      DispatchQueue.main.async {
+        AppSettings.shared.isShortcutInstalled = false
+        // エラー通知を送信
+        NotificationCenter.default.post(
+          name: NSNotification.Name("ShortcutNotFound"), object: nil)
+      }
+
+    case "setup-complete":
+      print("✅ ショートカットセットアップ完了")
+      DispatchQueue.main.async {
+        AppSettings.shared.isShortcutInstalled = true
+        // セットアップ完了通知を送信
+        NotificationCenter.default.post(
+          name: NSNotification.Name("ShortcutSetupComplete"), object: nil)
+      }
+
+    default:
+      break
+    }
+  }
 }
 
 /// アプリのルートビュー。iCloud設定に応じてModelContainerを動的に切り替える責務を持つ。
@@ -219,6 +257,10 @@ struct MochiLogRootView: View {
           .allowsHitTesting(!isReloading)  // リロード中は操作無効（見た目は変えない）
           .blur(radius: isReloading ? 1.5 : 0)  // 少しぼかす
           .animation(.easeInOut(duration: 0.5), value: isReloading)  // ぼかしのアニメーション
+          .task {
+            // アプリ起動時にマイグレーションを実行
+            MigrationManager.runPendingMigrations(modelContext: container.mainContext)
+          }
       }
 
       // ローディングオーバーレイ
