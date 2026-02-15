@@ -130,7 +130,24 @@
         }
       }
     },
+    "design_capacity" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Design Capacity"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設計容量"
+          }
+        }
+      }
+    },
     "health_trend_actual" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -147,6 +164,7 @@
       }
     },
     "health_trend_nominal" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -158,22 +176,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "公称容量推移"
-          }
-        }
-      }
-    },
-    "design_capacity" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Design Capacity"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "設計容量"
           }
         }
       }
@@ -474,6 +476,7 @@
       }
     },
     "stat_average_actual" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -490,6 +493,7 @@
       }
     },
     "stat_average_nominal" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -506,6 +510,7 @@
       }
     },
     "stat_latest_actual" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -522,6 +527,7 @@
       }
     },
     "stat_latest_nominal" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
