@@ -84,8 +84,25 @@ struct HealthTrendView: View {
 
         // 遅延レンダリング: タブ切り替え時はプレースホルダーを表示し、次フレームでChart描画
         if isChartReady {
-          healthChartView(chartRecords: chartRecords)
-            .transition(.opacity.animation(.easeOut(duration: 0.3)))
+          // 表示されているデバイス名とその色のマッピングを計算
+          let visibleDeviceNames = Array(Set(chartRecords.map { $0.deviceName })).sorted()
+          let visibleDeviceColors = visibleDeviceNames.map { deviceName -> Color in
+            if let index = allDeviceNames.firstIndex(of: deviceName) {
+              return ChartAxisHelper.deviceColorPalette[
+                index % ChartAxisHelper.deviceColorPalette.count]
+            }
+            // フォールバック: allDeviceNamesにない場合はデバイス名のハッシュから色を選択
+            print(
+              "[Warning] Device '\(deviceName)' not found in allDeviceNames, using fallback color")
+            let fallbackIndex = abs(deviceName.hashValue) % ChartAxisHelper.deviceColorPalette.count
+            return ChartAxisHelper.deviceColorPalette[fallbackIndex]
+          }
+
+          healthChartView(
+            chartRecords: chartRecords, visibleDeviceNames: visibleDeviceNames,
+            visibleDeviceColors: visibleDeviceColors
+          )
+          .transition(.opacity.animation(.easeOut(duration: 0.3)))
         }
         // チャート領域の高さを常に確保（プレースホルダー兼用）
         Color.clear
@@ -117,7 +134,9 @@ struct HealthTrendView: View {
 
   // MARK: - チャートビュー（bodyから分離してコンパイラの型チェック負荷を軽減）
   @ViewBuilder
-  private func healthChartView(chartRecords: [BatteryRecord]) -> some View {
+  private func healthChartView(
+    chartRecords: [BatteryRecord], visibleDeviceNames: [String], visibleDeviceColors: [Color]
+  ) -> some View {
     Chart {
       ForEach(chartRecords) { record in
         LineMark(
@@ -167,8 +186,8 @@ struct HealthTrendView: View {
       }
     }
     .chartForegroundStyleScale(
-      domain: allDeviceNames,
-      range: ChartAxisHelper.stableDeviceColors(for: allDeviceNames)
+      domain: visibleDeviceNames,
+      range: visibleDeviceColors
     )
     .chartYScale(domain: 68...107)
     .chartXAxis {
