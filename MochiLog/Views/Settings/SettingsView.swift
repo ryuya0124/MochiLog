@@ -196,14 +196,22 @@ struct SettingsView: View {
           contentType: .yaml,
           defaultFilename: DataExportService.generateFileName()
         ) { result in
+          print("[SettingsView] fileExporter callback called")
           handleExportResult(result)
+        }
+        .onChange(of: showingExportSheet) { oldValue, newValue in
+          print("[SettingsView] showingExportSheet changed from \(oldValue) to \(newValue)")
         }
         .fileImporter(
           isPresented: $showingImportSheet,
           allowedContentTypes: [.yaml],
           allowsMultipleSelection: false
         ) { result in
+          print("[SettingsView] fileImporter callback called")
           handleImportResult(result)
+        }
+        .onChange(of: showingImportSheet) { oldValue, newValue in
+          print("[SettingsView] showingImportSheet changed from \(oldValue) to \(newValue)")
         }
         .alert(
           String(localized: "import_result_title", table: "Settings"),
@@ -291,7 +299,13 @@ struct SettingsView: View {
                     appSettings: appSettings,
                     availableDevices: availableDevices,
                     records: records,
-                    modelContext: modelContext
+                    modelContext: modelContext,
+                    showingExportSheet: $showingExportSheet,
+                    showingImportSheet: $showingImportSheet,
+                    showingImportAlert: $showingImportAlert,
+                    importResultMessage: $importResultMessage,
+                    showingExportError: $showingExportError,
+                    exportErrorMessage: $exportErrorMessage
                   )
                 case .support:
                   SupportSettingsView()
