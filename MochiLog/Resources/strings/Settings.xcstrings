@@ -1528,6 +1528,54 @@
           }
         }
       }
+    },
+    "shortcut_required_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shortcut Required"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ショートカットが必要です"
+          }
+        }
+      }
+    },
+    "shortcut_required_message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please set up the shortcut first to view analytics data."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析データを確認するには、先にショートカットをセットアップしてください。"
+          }
+        }
+      }
+    },
+    "setup_now" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Setup Now"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今すぐセットアップ"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"

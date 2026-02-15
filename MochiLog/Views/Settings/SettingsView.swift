@@ -59,7 +59,7 @@ struct SettingsView: View {
   @State private var selectedDeviceToDelete: String?
 
   // ショートカット関連のアラート
-  @State private var showingShortcutNotFoundAlert = false
+  @State private var showingShortcutSetupPrompt = false
 
   // 大画面レイアウト用: 選択されたカテゴリ
   @State private var selectedCategory: SettingsCategory = .general
@@ -171,12 +171,15 @@ struct SettingsView: View {
           }
         }
         .alert(
-          String(localized: "shortcut_not_found_title", table: "Settings"),
-          isPresented: $showingShortcutNotFoundAlert
+          String(localized: "shortcut_required_title", table: "Settings"),
+          isPresented: $showingShortcutSetupPrompt
         ) {
-          Button(String(localized: "ok", table: "Common"), role: .cancel) {}
+          Button(String(localized: "setup_now", table: "Settings"), role: .none) {
+            SettingsRedirectHelper.openShortcutSetup()
+          }
+          Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
         } message: {
-          Text(String(localized: "shortcut_not_found_message", table: "Settings"))
+          Text(String(localized: "shortcut_required_message", table: "Settings"))
         }
     }
   }
@@ -335,6 +338,29 @@ struct SettingsView: View {
       } label: {
         Label(String(localized: "view_sample_data", table: "Home"), systemImage: "eye")
       }
+
+      // ショートカット未インストール時のみ表示
+      if !appSettings.isShortcutInstalled {
+        Button(action: {
+          SettingsRedirectHelper.openShortcutSetup()
+        }) {
+          Label(
+            String(localized: "setup_shortcut", table: "Settings"),
+            systemImage: "arrow.down.circle"
+          )
+          .foregroundStyle(.blue)
+        }
+      }
+
+      Button(action: {
+        SettingsRedirectHelper.openAnalyticsViaShortcut()
+      }) {
+        Label(
+          String(localized: "view_analytics_data", table: "Settings"),
+          systemImage: "doc.text.magnifyingglass"
+        )
+        .foregroundStyle(.primary)
+      }
     }
 
     // MARK: - Apple Watch 設定
@@ -439,29 +465,6 @@ struct SettingsView: View {
       Button(action: { showingDonation = true }) {
         Label(String(localized: "donation_title", table: "Settings"), systemImage: "heart.fill")
           .foregroundStyle(.primary)
-      }
-
-      // ショートカット未インストール時のみ表示
-      if !appSettings.isShortcutInstalled {
-        Button(action: {
-          SettingsRedirectHelper.openShortcutSetup()
-        }) {
-          Label(
-            String(localized: "setup_shortcut", table: "Settings"),
-            systemImage: "arrow.down.circle"
-          )
-          .foregroundStyle(.blue)
-        }
-      }
-
-      Button(action: {
-        SettingsRedirectHelper.openAnalyticsViaShortcut()
-      }) {
-        Label(
-          String(localized: "view_analytics_data", table: "Settings"),
-          systemImage: "doc.text.magnifyingglass"
-        )
-        .foregroundStyle(.primary)
       }
     }
 
@@ -627,7 +630,8 @@ struct SettingsView: View {
       object: nil,
       queue: .main
     ) { _ in
-      showingShortcutNotFoundAlert = true
+      // ショートカットが見つからない場合はセットアップ誘導アラートを表示
+      showingShortcutSetupPrompt = true
     }
   }
 }
