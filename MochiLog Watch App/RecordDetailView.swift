@@ -56,7 +56,7 @@ struct RecordDetailView: View {
                   .font(.caption2)
                   .foregroundStyle(.secondary)
 
-                Text(record.diagnosticResult)
+                Text(record.localizedDiagnosticResult)
                   .font(.subheadline)
                   .fontWeight(.medium)
               }
@@ -197,7 +197,7 @@ struct MetricRow: View {
         cycleCount: 120,
         nominalHealthPercent: 95,
         healthPercent: 95,
-        diagnosticResult: "正常"
+        diagnosticResult: "✅ 正常"
       )
     )
   }

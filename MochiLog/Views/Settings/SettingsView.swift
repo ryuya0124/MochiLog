@@ -1,5 +1,6 @@
 import SwiftData
 import SwiftUI
+import UniformTypeIdentifiers
 
 // MARK: - 設定ビュー
 struct SettingsView: View {
@@ -60,6 +61,14 @@ struct SettingsView: View {
 
   // ショートカット関連のアラート
   @State private var showingShortcutSetupPrompt = false
+
+  // エクスポート/インポート関連
+  @State private var showingExportSheet = false
+  @State private var showingImportSheet = false
+  @State private var showingImportAlert = false
+  @State private var importResultMessage = ""
+  @State private var showingExportError = false
+  @State private var exportErrorMessage = ""
 
   // 大画面レイアウト用: 選択されたカテゴリ
   @State private var selectedCategory: SettingsCategory = .general
@@ -181,6 +190,45 @@ struct SettingsView: View {
         } message: {
           Text(String(localized: "shortcut_required_message", table: "Settings"))
         }
+        .fileExporter(
+          isPresented: $showingExportSheet,
+          document: YAMLDocument(yaml: generateExportYAML()),
+          contentType: .yaml,
+          defaultFilename: DataExportService.generateFileName()
+        ) { result in
+          print("[SettingsView] fileExporter callback called")
+          handleExportResult(result)
+        }
+        .onChange(of: showingExportSheet) { oldValue, newValue in
+          print("[SettingsView] showingExportSheet changed from \(oldValue) to \(newValue)")
+        }
+        .fileImporter(
+          isPresented: $showingImportSheet,
+          allowedContentTypes: [.yaml],
+          allowsMultipleSelection: false
+        ) { result in
+          print("[SettingsView] fileImporter callback called")
+          handleImportResult(result)
+        }
+        .onChange(of: showingImportSheet) { oldValue, newValue in
+          print("[SettingsView] showingImportSheet changed from \(oldValue) to \(newValue)")
+        }
+        .alert(
+          String(localized: "import_result_title", table: "Settings"),
+          isPresented: $showingImportAlert
+        ) {
+          Button("OK", role: .cancel) {}
+        } message: {
+          Text(importResultMessage)
+        }
+        .alert(
+          String(localized: "export_error_title", table: "Settings"),
+          isPresented: $showingExportError
+        ) {
+          Button("OK", role: .cancel) {}
+        } message: {
+          Text(exportErrorMessage)
+        }
     }
   }
 
@@ -249,7 +297,15 @@ struct SettingsView: View {
                     showingDeleteDeviceConfirmation: $showingDeleteDeviceConfirmation,
                     deletingDeviceId: $deletingDeviceId,
                     appSettings: appSettings,
-                    availableDevices: availableDevices
+                    availableDevices: availableDevices,
+                    records: records,
+                    modelContext: modelContext,
+                    showingExportSheet: $showingExportSheet,
+                    showingImportSheet: $showingImportSheet,
+                    showingImportAlert: $showingImportAlert,
+                    importResultMessage: $importResultMessage,
+                    showingExportError: $showingExportError,
+                    exportErrorMessage: $exportErrorMessage
                   )
                 case .support:
                   SupportSettingsView()
@@ -398,6 +454,40 @@ struct SettingsView: View {
 
     // MARK: - データ管理
     Section(String(localized: "data_management", table: "Settings")) {
+      // エクスポート
+      Button {
+        showingExportSheet = true
+      } label: {
+        Label(
+          String(localized: "export_data", table: "Settings"),
+          systemImage: "square.and.arrow.up"
+        )
+        .foregroundStyle(.primary)
+      }
+
+      // インポート
+      Button {
+        showingImportSheet = true
+      } label: {
+        Label(
+          String(localized: "import_data", table: "Settings"),
+          systemImage: "square.and.arrow.down"
+        )
+        .foregroundStyle(.primary)
+      }
+
+      Button(role: .destructive) {
+        if availableDevices.isEmpty {
+          showingNoDataToDeleteAlert = true
+        } else {
+          showingDeviceDeletePicker = true
+        }
+      } label: {
+        Label(String(localized: "delete_device_data", table: "Settings"), systemImage: "trash")
+          .foregroundStyle(.red)
+      }
+      .tint(.red)
+
       Button(role: .destructive) {
         if records.isEmpty {
           showingNoDataToDeleteAlert = true
@@ -409,18 +499,6 @@ struct SettingsView: View {
           String(localized: "delete_all_data", table: "Settings"), systemImage: "trash.fill"
         )
         .foregroundStyle(.red)
-      }
-      .tint(.red)
-
-      Button(role: .destructive) {
-        if availableDevices.isEmpty {
-          showingNoDataToDeleteAlert = true
-        } else {
-          showingDeviceDeletePicker = true
-        }
-      } label: {
-        Label(String(localized: "delete_device_data", table: "Settings"), systemImage: "trash")
-          .foregroundStyle(.red)
       }
       .tint(.red)
     }
@@ -632,6 +710,105 @@ struct SettingsView: View {
     ) { _ in
       // ショートカットが見つからない場合はセットアップ誘導アラートを表示
       showingShortcutSetupPrompt = true
+    }
+  }
+
+  // MARK: - エクスポート/インポート処理
+
+  /// エクスポート用YAMLを生成
+  private func generateExportYAML() -> String {
+    do {
+      return try DataExportService.exportToYAML(records: records)
+    } catch {
+      return "# Export failed: \(error.localizedDescription)"
+    }
+  }
+
+  /// エクスポート結果を処理
+  private func handleExportResult(_ result: Result<URL, Error>) {
+    switch result {
+    case .success:
+      // 成功時は特に何もしない（システムが保存完了を通知）
+      break
+    case .failure(let error):
+      exportErrorMessage = error.localizedDescription
+      showingExportError = true
+    }
+  }
+
+  /// インポート結果を処理
+  private func handleImportResult(_ result: Result<[URL], Error>) {
+    switch result {
+    case .success(let urls):
+      guard let url = urls.first else { return }
+
+      Task {
+        // セキュリティスコープ付きリソースへのアクセスを開始
+        guard url.startAccessingSecurityScopedResource() else {
+          await MainActor.run {
+            importResultMessage =
+              String(
+                localized: "import_error",
+                table: "Settings"
+              ) + ": ファイルへのアクセス権限がありません"
+            showingImportAlert = true
+          }
+          return
+        }
+
+        defer {
+          url.stopAccessingSecurityScopedResource()
+        }
+
+        do {
+          let importResult = try DataImportService.importFromYAML(
+            url: url,
+            modelContext: modelContext,
+            existingRecords: records,
+            allowDuplicates: appSettings.allowDuplicateRecords
+          )
+
+          await MainActor.run {
+            if importResult.hasErrors {
+              importResultMessage = String(
+                localized: "import_partial_success",
+                table: "Settings"
+              ).replacingOccurrences(of: "{imported}", with: "\(importResult.importedRecords)")
+                .replacingOccurrences(of: "{skipped}", with: "\(importResult.skippedDuplicates)")
+                .replacingOccurrences(of: "{errors}", with: "\(importResult.errors.count)")
+            } else if importResult.skippedDuplicates > 0 {
+              importResultMessage = String(
+                localized: "import_success_with_duplicates",
+                table: "Settings"
+              ).replacingOccurrences(of: "{imported}", with: "\(importResult.importedRecords)")
+                .replacingOccurrences(of: "{skipped}", with: "\(importResult.skippedDuplicates)")
+            } else {
+              importResultMessage = String(
+                localized: "import_success",
+                table: "Settings"
+              ).replacingOccurrences(of: "{count}", with: "\(importResult.importedRecords)")
+            }
+            showingImportAlert = true
+          }
+        } catch {
+          await MainActor.run {
+            importResultMessage =
+              String(
+                localized: "import_error",
+                table: "Settings"
+              ) + ": \(error.localizedDescription)"
+            showingImportAlert = true
+          }
+        }
+      }
+
+    case .failure(let error):
+      importResultMessage =
+        String(
+          localized: "import_error",
+          table: "Settings"
+        ) + ": \(error.localizedDescription)"
+      showingImportAlert = true
     }
   }
 }

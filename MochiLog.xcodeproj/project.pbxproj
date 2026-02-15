@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		4E0CF2BE2EFC23F300307800 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 4E0CF2BD2EFC23F300307800 /* ZIPFoundation */; };
 		4E15D8EB2F024BC000D6C3FE /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 4E15D8EA2F024BBF00D6C3FE /* LICENSE */; };
+		4E2E3D712F41D3910041E83C /* Yams in Frameworks */ = {isa = PBXBuildFile; productRef = 4E2E3D702F41D3910041E83C /* Yams */; };
 		4EFB3E572F2CE3CA001F2930 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EFB3E562F2CE3CA001F2930 /* WatchConnectivity.framework */; };
 		4EFB42BB2F2CF31B001F2930 /* MochiLog Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 4EFB3AB82F2CD92B001F2930 /* MochiLog Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
@@ -54,6 +55,16 @@
 		4EFB3E562F2CE3CA001F2930 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.2.sdk/System/Library/Frameworks/WatchConnectivity.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		4EFB3AC32F2CD92C001F2930 /* Exceptions for "MochiLog Watch App" folder in "MochiLog Watch App" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 4EFB3AB72F2CD92B001F2930 /* MochiLog Watch App */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		4E0CF1412EF9542800307800 /* MochiLog */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
@@ -62,6 +73,9 @@
 		};
 		4EFB3AB92F2CD92B001F2930 /* MochiLog Watch App */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				4EFB3AC32F2CD92C001F2930 /* Exceptions for "MochiLog Watch App" folder in "MochiLog Watch App" target */,
+			);
 			path = "MochiLog Watch App";
 			sourceTree = "<group>";
 		};
@@ -72,6 +86,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4E2E3D712F41D3910041E83C /* Yams in Frameworks */,
 				4E0CF2BE2EFC23F300307800 /* ZIPFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -139,6 +154,7 @@
 			name = MochiLog;
 			packageProductDependencies = (
 				4E0CF2BD2EFC23F300307800 /* ZIPFoundation */,
+				4E2E3D702F41D3910041E83C /* Yams */,
 			);
 			productName = MochiLog;
 			productReference = 4E0CF13F2EF9542800307800 /* MochiLog.app */;
@@ -196,6 +212,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				4E0CF2BC2EFC23F300307800 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
+				4E2E3D6F2F41D18D0041E83C /* XCRemoteSwiftPackageReference "Yams" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 4E0CF1402EF9542800307800 /* Products */;
@@ -490,7 +507,8 @@
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=watchos*]" = FZ35ZF3CZV;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "MochiLog Watch App/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = MochiLog;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "net.ryuya-dev.MochiLog";
@@ -528,7 +546,8 @@
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=watchos*]" = FZ35ZF3CZV;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "MochiLog Watch App/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = MochiLog;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "net.ryuya-dev.MochiLog";
@@ -596,6 +615,14 @@
 				minimumVersion = 0.9.20;
 			};
 		};
+		4E2E3D6F2F41D18D0041E83C /* XCRemoteSwiftPackageReference "Yams" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/jpsim/Yams";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.2.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -603,6 +630,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 4E0CF2BC2EFC23F300307800 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
 			productName = ZIPFoundation;
+		};
+		4E2E3D702F41D3910041E83C /* Yams */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4E2E3D6F2F41D18D0041E83C /* XCRemoteSwiftPackageReference "Yams" */;
+			productName = Yams;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

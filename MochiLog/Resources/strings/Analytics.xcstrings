@@ -49,23 +49,6 @@
         }
       }
     },
-    "battery_health" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Battery Health"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バッテリー実容量"
-          }
-        }
-      }
-    },
     "chart_range" : {
       "comment" : "Label for the range picker",
       "localizations" : {
@@ -163,30 +146,13 @@
         }
       }
     },
-    "health" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Health"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ヘルス"
-          }
-        }
-      }
-    },
     "health_trend_actual" : {
       "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Actual Capacity Trend"
+            "value" : "Actual Health Trend"
           }
         },
         "ja" : {
@@ -203,7 +169,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nominal Capacity Trend"
+            "value" : "Nominal Health Trend"
           }
         },
         "ja" : {
@@ -515,7 +481,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Average Actual Capacity"
+            "value" : "Average Actual Health"
           }
         },
         "ja" : {
@@ -532,13 +498,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Average Battery Capacity"
+            "value" : "Average Nominal Health"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "平均バッテリー容量"
+            "value" : "平均公称容量"
           }
         }
       }
@@ -549,7 +515,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Latest Actual Capacity"
+            "value" : "Latest Actual Health"
           }
         },
         "ja" : {
@@ -566,13 +532,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Latest Battery Capacity"
+            "value" : "Latest Nominal Health"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最新バッテリー容量"
+            "value" : "最新公称容量"
           }
         }
       }

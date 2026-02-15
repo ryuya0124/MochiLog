@@ -527,40 +527,6 @@
         }
       }
     },
-    "tutorial_go_to_settings_top_description" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Navigate to the Settings top page."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "設定のトップページに移動してください。"
-          }
-        }
-      }
-    },
-    "tutorial_go_to_settings_top_title" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Go to Settings Top"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "設定のトップに移動"
-          }
-        }
-      }
-    },
     "tutorial_log_selection_description" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -625,40 +591,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "重要: ログ生成のタイミング"
-          }
-        }
-      }
-    },
-    "tutorial_open_settings_description" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Open Settings > Privacy & Security > Analytics & Improvements"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "設定 > プライバシーとセキュリティ > 解析と改善\nを開きます。"
-          }
-        }
-      }
-    },
-    "tutorial_open_settings_title" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Open Settings"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "設定を開く"
           }
         }
       }
@@ -744,74 +676,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "解析を共有: ON"
-          }
-        }
-      }
-    },
-    "tutorial_share_title" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Share with MochiLog"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "MochiLogに共有"
-          }
-        }
-      }
-    },
-    "tutorial_video_unavailable" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tutorial video is not available"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "チュートリアル動画が利用できません"
-          }
-        }
-      }
-    },
-    "tutorial_welcome" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Welcome to MochiLog"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "MochiLogへようこそ"
-          }
-        }
-      }
-    },
-    "tutorial_welcome_description" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "MochiLog reads your device's analytics logs to show detailed battery health information. Let's get started!"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "MochiLogは端末の解析ログを読み取って、バッテリーの詳細な状態を表示します。さっそく始めましょう！"
           }
         }
       }

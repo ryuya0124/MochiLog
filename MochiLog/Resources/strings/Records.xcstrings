@@ -178,23 +178,6 @@
         }
       }
     },
-    "export_log" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Export Log"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ログをエクスポート"
-          }
-        }
-      }
-    },
     "first_use_date" : {
       "localizations" : {
         "en" : {
@@ -463,23 +446,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "\n#MochiLog"
-          }
-        }
-      }
-    },
-    "share_status" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Status"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "状態"
           }
         }
       }

@@ -1,5 +1,6 @@
 import SwiftData
 import SwiftUI
+import UniformTypeIdentifiers
 
 // MARK: - データ管理設定ビュー
 struct DataManagementSettingsView: View {
@@ -8,9 +9,21 @@ struct DataManagementSettingsView: View {
   @Binding var deletingDeviceId: String?
   @ObservedObject var appSettings: AppSettings
   let availableDevices: [String]  // 外部から受け取る
+  let records: [BatteryRecord]  // エクスポート用
+  let modelContext: ModelContext  // インポート用
+
+  @Binding var showingExportSheet: Bool
+  @Binding var showingImportSheet: Bool
+  @Binding var showingImportAlert: Bool
+  @Binding var importResultMessage: String
+  @Binding var showingExportError: Bool
+  @Binding var exportErrorMessage: String
 
   var body: some View {
     VStack(spacing: 16) {
+      exportSection
+      importSection
+
       deviceSelectionSection
 
       if deletingDeviceId != nil {
@@ -20,6 +33,74 @@ struct DataManagementSettingsView: View {
       deleteAllSection
     }
     .padding(.horizontal)
+  }
+
+  // MARK: - エクスポートセクション
+  private var exportSection: some View {
+    GroupBox {
+      Button {
+        print("[DataManagementSettingsView] Export button tapped")
+        showingExportSheet = true
+        print("[DataManagementSettingsView] showingExportSheet set to: \(showingExportSheet)")
+      } label: {
+        HStack(spacing: 20) {
+          Image(systemName: "square.and.arrow.up.fill")
+            .font(.system(size: 36))
+            .foregroundStyle(.blue)
+            .frame(width: 60)
+
+          VStack(alignment: .leading, spacing: 4) {
+            Text(String(localized: "export_data", table: "Settings"))
+              .font(.headline)
+              .foregroundStyle(.primary)
+
+            Text(String(localized: "export_data_description", table: "Settings"))
+              .font(.subheadline)
+              .foregroundStyle(.secondary)
+          }
+
+          Spacer()
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
+        .padding(.vertical, 8)
+      }
+      .buttonStyle(.plain)
+    }
+  }
+
+  // MARK: - インポートセクション
+  private var importSection: some View {
+    GroupBox {
+      Button {
+        print("[DataManagementSettingsView] Import button tapped")
+        showingImportSheet = true
+        print("[DataManagementSettingsView] showingImportSheet set to: \(showingImportSheet)")
+      } label: {
+        HStack(spacing: 20) {
+          Image(systemName: "square.and.arrow.down.fill")
+            .font(.system(size: 36))
+            .foregroundStyle(.green)
+            .frame(width: 60)
+
+          VStack(alignment: .leading, spacing: 4) {
+            Text(String(localized: "import_data", table: "Settings"))
+              .font(.headline)
+              .foregroundStyle(.primary)
+
+            Text(String(localized: "import_data_description", table: "Settings"))
+              .font(.subheadline)
+              .foregroundStyle(.secondary)
+          }
+
+          Spacer()
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
+        .padding(.vertical, 8)
+      }
+      .buttonStyle(.plain)
+    }
   }
 
   // MARK: - デバイス選択セクション

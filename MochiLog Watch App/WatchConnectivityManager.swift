@@ -61,7 +61,7 @@ final class WatchConnectivityManager: NSObject, ObservableObject {
       session.activationState == .activated,
       session.isReachable
     else {
-      syncError = "iPhoneに接続できません"
+      syncError = "Cannot connect to iPhone"
       return
     }
 
@@ -82,7 +82,7 @@ final class WatchConnectivityManager: NSObject, ObservableObject {
       errorHandler: { [weak self] error in
         Task { @MainActor in
           self?.isSyncing = false
-          self?.syncError = "同期エラー: \(error.localizedDescription)"
+          self?.syncError = "Sync error: \(error.localizedDescription)"
           print("[WatchConnectivity] データリクエストエラー: \(error)")
         }
       }
@@ -118,7 +118,7 @@ final class WatchConnectivityManager: NSObject, ObservableObject {
       syncError = nil
       print("[WatchConnectivity] \(decodedRecords.count)件のレコードを受信しました（サンプルモード: \(isSampleMode)）")
     } catch {
-      syncError = "データの読み込みに失敗しました"
+      syncError = "Failed to load data"
       print("[WatchConnectivity] データのデコードに失敗: \(error)")
     }
   }
@@ -134,7 +134,7 @@ extension WatchConnectivityManager: WCSessionDelegate {
   ) {
     Task { @MainActor in
       if let error = error {
-        syncError = "接続エラー: \(error.localizedDescription)"
+        syncError = "Connection error: \(error.localizedDescription)"
         print("[WatchConnectivity] アクティベーション失敗: \(error)")
         return
       }
