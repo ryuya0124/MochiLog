@@ -1748,6 +1748,38 @@
           }
         }
       }
+    },
+    "join_discord" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Join Discord"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Discordに参加"
+          }
+        }
+      }
+    },
+    "join_discord_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Join our community to ask questions and share feedback"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "コミュニティに参加して質問や要望を共有しましょう"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"

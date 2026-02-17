@@ -540,6 +540,18 @@ struct SettingsView: View {
         .foregroundStyle(.primary)
       }
 
+      Button(action: {
+        if let url = URL(string: "https://discord.com/invite/8u3SJXxQZ") {
+          UIApplication.shared.open(url)
+        }
+      }) {
+        Label(
+          String(localized: "join_discord", table: "Settings"),
+          systemImage: "bubble.left.and.bubble.right.fill"
+        )
+        .foregroundStyle(.primary)
+      }
+
       Button(action: { showingDonation = true }) {
         Label(String(localized: "donation_title", table: "Settings"), systemImage: "heart.fill")
           .foregroundStyle(.primary)
