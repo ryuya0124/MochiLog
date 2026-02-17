@@ -8,7 +8,7 @@ final class AppSettings: ObservableObject {
   static let shared = AppSettings()
 
   // MARK: - UserDefaults Keys
-  private enum Keys {
+  enum Keys {
     static let registeredWatchModel = "registeredWatchModel"
     static let registeredWatches = "registeredWatches"
     static let hasCompletedTutorial = "hasCompletedTutorial"
@@ -40,6 +40,22 @@ final class AppSettings: ObservableObject {
 
     // 新規: ショートカット関連
     static let isShortcutInstalled = "isShortcutInstalled"
+
+    // 新規: バージョン管理（マイグレーションと統一）
+    static let lastSeenVersion = "LastKnownAppVersion"  // マイグレーションと同じキーを使用
+
+    // 新規: 開発者オプションの表示状態
+    static let showingDeveloperOptions = "showingDeveloperOptions"
+  }
+
+  // MARK: - Constants
+
+  /// DiscordサーバーのURL
+  static let discordURL = "https://discord.com/invite/8u3SJXxQZ"
+
+  /// 現在のアプリバージョンを取得
+  static var currentAppVersion: String? {
+    Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
   }
 
   /// 容量不一致時の挙動
@@ -197,6 +213,10 @@ final class AppSettings: ObservableObject {
   /// ショートカット「解析データを開く」がインストール済みかどうか
   @Published var isShortcutInstalled: Bool
 
+  /// 最後に確認したアプリバージョン（アップデート検知用）
+  @Published var lastSeenVersion: String?
+  @Published var showingDeveloperOptions: Bool
+
   // MARK: - Initialization
 
   private init() {
@@ -296,6 +316,10 @@ final class AppSettings: ObservableObject {
 
     // ショートカットインストール状態の初期化（デフォルトは false）
     self.isShortcutInstalled = UserDefaults.standard.bool(forKey: Keys.isShortcutInstalled)
+
+    // 最後に確認したバージョンの初期化
+    self.lastSeenVersion = UserDefaults.standard.string(forKey: Keys.lastSeenVersion)
+    self.showingDeveloperOptions = UserDefaults.standard.bool(forKey: Keys.showingDeveloperOptions)
 
     // プロパティの変更を監視してUserDefaultsに保存
     setupObservers()
@@ -426,6 +450,20 @@ final class AppSettings: ObservableObject {
       .dropFirst()
       .sink { value in
         UserDefaults.standard.set(value, forKey: Keys.isShortcutInstalled)
+      }
+      .store(in: &cancellables)
+
+    $lastSeenVersion
+      .dropFirst()
+      .sink { value in
+        UserDefaults.standard.set(value, forKey: Keys.lastSeenVersion)
+      }
+      .store(in: &cancellables)
+
+    $showingDeveloperOptions
+      .dropFirst()
+      .sink { value in
+        UserDefaults.standard.set(value, forKey: Keys.showingDeveloperOptions)
       }
       .store(in: &cancellables)
   }

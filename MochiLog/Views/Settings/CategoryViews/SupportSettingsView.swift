@@ -148,7 +148,7 @@ struct SupportSettingsView: View {
       // Discord
       GroupBox {
         Button {
-          if let url = URL(string: "https://discord.com/invite/8u3SJXxQZ") {
+          if let url = URL(string: AppSettings.discordURL) {
             UIApplication.shared.open(url)
           }
         } label: {
