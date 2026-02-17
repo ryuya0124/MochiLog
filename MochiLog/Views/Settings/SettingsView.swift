@@ -458,23 +458,29 @@ struct SettingsView: View {
       Button {
         showingExportSheet = true
       } label: {
-        Label(
-          String(localized: "export_data", table: "Settings"),
-          systemImage: "square.and.arrow.up"
-        )
-        .foregroundStyle(.primary)
+        Label {
+          Text(String(localized: "export_data", table: "Settings"))
+            .foregroundStyle(.primary)
+        } icon: {
+          Image(systemName: "square.and.arrow.up.fill")
+            .foregroundStyle(.blue)
+        }
       }
+      .buttonStyle(.plain)
 
       // インポート
       Button {
         showingImportSheet = true
       } label: {
-        Label(
-          String(localized: "import_data", table: "Settings"),
-          systemImage: "square.and.arrow.down"
-        )
-        .foregroundStyle(.primary)
+        Label {
+          Text(String(localized: "import_data", table: "Settings"))
+            .foregroundStyle(.primary)
+        } icon: {
+          Image(systemName: "square.and.arrow.down.fill")
+            .foregroundStyle(.green)
+        }
       }
+      .buttonStyle(.plain)
 
       Button(role: .destructive) {
         if availableDevices.isEmpty {
@@ -506,56 +512,80 @@ struct SettingsView: View {
     // MARK: - サポート
     Section(String(localized: "support", table: "Settings")) {
       Button(action: { showingTutorial = true }) {
-        Label(String(localized: "view_tutorial", table: "Home"), systemImage: "book.fill")
-          .foregroundStyle(.primary)
+        Label {
+          Text(String(localized: "view_tutorial", table: "Home"))
+            .foregroundStyle(.primary)
+        } icon: {
+          Image(systemName: "lightbulb.fill")
+            .foregroundStyle(.yellow)
+        }
       }
+      .buttonStyle(.plain)
 
       // ショートカット未インストール時のみ表示
       if !appSettings.isShortcutInstalled {
         Button(action: {
           SettingsRedirectHelper.openShortcutSetup()
         }) {
-          Label(
-            String(localized: "setup_shortcut", table: "Settings"),
-            systemImage: "arrow.down.circle"
-          )
-          .foregroundStyle(.blue)
+          Label {
+            Text(String(localized: "setup_shortcut", table: "Settings"))
+              .foregroundStyle(.primary)
+          } icon: {
+            Image(systemName: "arrow.down.circle")
+              .foregroundStyle(.blue)
+          }
         }
+        .buttonStyle(.plain)
       }
 
       Button(action: {
         SettingsRedirectHelper.openAnalyticsViaShortcut()
       }) {
-        Label(
-          String(localized: "view_analytics_data", table: "Settings"),
-          systemImage: "doc.text.magnifyingglass"
-        )
-        .foregroundStyle(.primary)
+        Label {
+          Text(String(localized: "view_analytics_data", table: "Settings"))
+            .foregroundStyle(.primary)
+        } icon: {
+          Image(systemName: "doc.text.magnifyingglass")
+            .foregroundStyle(.blue)
+        }
       }
+      .buttonStyle(.plain)
 
       Button(action: { showingSupportForm = true }) {
-        Label(
-          String(localized: "contact_support", table: "Support"), systemImage: "envelope.fill"
-        )
-        .foregroundStyle(.primary)
+        Label {
+          Text(String(localized: "contact_support", table: "Support"))
+            .foregroundStyle(.primary)
+        } icon: {
+          Image(systemName: "envelope.fill")
+        }
       }
+      .buttonStyle(.plain)
 
       Button(action: {
         if let url = URL(string: "https://discord.com/invite/8u3SJXxQZ") {
           UIApplication.shared.open(url)
         }
       }) {
-        Label(
-          String(localized: "join_discord", table: "Settings"),
-          systemImage: "bubble.left.and.bubble.right.fill"
-        )
-        .foregroundStyle(.primary)
+        Label {
+          Text(String(localized: "join_discord", table: "Settings"))
+            .foregroundStyle(.primary)
+        } icon: {
+          Image(systemName: "bubble.left.and.bubble.right.fill")
+            .foregroundStyle(.indigo)
+        }
       }
+      .buttonStyle(.plain)
 
       Button(action: { showingDonation = true }) {
-        Label(String(localized: "donation_title", table: "Settings"), systemImage: "heart.fill")
-          .foregroundStyle(.primary)
+        Label {
+          Text(String(localized: "donation_title", table: "Settings"))
+            .foregroundStyle(.primary)
+        } icon: {
+          Image(systemName: "heart.fill")
+            .foregroundStyle(.red)
+        }
       }
+      .buttonStyle(.plain)
     }
 
     // MARK: - デバッグ
