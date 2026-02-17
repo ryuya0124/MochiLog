@@ -21,6 +21,7 @@ struct DeviceReorderView: View {
           Button(String(localized: "cancel", table: "Common")) {
             dismiss()
           }
+          .tint(.primary)
         }
         ToolbarItem(placement: .navigationBarTrailing) {
           Button(String(localized: "save", table: "Common")) {
