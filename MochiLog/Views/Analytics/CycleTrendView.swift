@@ -134,7 +134,6 @@ struct CycleTrendView: View {
   }
 
   var body: some View {
-    let bodyStartTime = CFAbsoluteTimeGetCurrent()
     let _ = print(
       "[Performance] CycleTrendView.body構築開始 - allRecords: \(allRecords.count)件, visible: \(visibleRecords.count)件"
     )

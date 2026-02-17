@@ -275,6 +275,10 @@ struct AnalyticsContentView: View {
     // 全デバイス名を全レコードから計算（色を固定するため、フィルタ前のデータを使用）
     let allDeviceNamesSnapshot = Array(Set(records.map { $0.deviceName })).sorted()
 
+    // フィルタ済みレコードをUncheckedSendableでラップ（バックグラウンドクロージャでのキャプチャ用）
+    // 注意: filteredSnapshotはメインスレッドでのみアクセスすること
+    let snapshotBox = UncheckedSendable(filteredSnapshot)
+
     // ウィンドウ計算はMainActorで実行（軽量）
     let windowStartTime = CFAbsoluteTimeGetCurrent()
     let result = computeWindow(
@@ -307,16 +311,19 @@ struct AnalyticsContentView: View {
       DispatchQueue.main.async {
         let uiUpdateStartTime = CFAbsoluteTimeGetCurrent()
 
+        // ボックスから取り出し
+        let snapshot = snapshotBox.value
+
         // スナップショットの結果を常に適用（クラッシュ防止のため）
         let visibleStart = result.startDay
         let visibleEnd = result.endDay
 
         // 統計用（スナップショットを使用）
-        cachedVisibleRecords = visibleIndexes.map { filteredSnapshot[$0] }
+        cachedVisibleRecords = visibleIndexes.map { snapshot[$0] }
 
         // チャート描画用（スナップショットを使用）
         cachedChartRecords = ChartWindowNavigator.visibleRecordsWithContext(
-          in: filteredSnapshot,
+          in: snapshot,
           start: visibleStart,
           end: visibleEnd
         )
@@ -360,6 +367,12 @@ struct AnalyticsContentView: View {
         }
       }
     }
+  }
+
+  // MARK: - Sendable Helper
+  private final class UncheckedSendable<T>: @unchecked Sendable {
+    let value: T
+    init(_ value: T) { self.value = value }
   }
 
   @MainActor

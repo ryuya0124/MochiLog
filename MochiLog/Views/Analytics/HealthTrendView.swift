@@ -20,7 +20,6 @@ struct HealthTrendView: View {
   @State private var analysisDataSource = AppSettings.shared.analysisDataSource
 
   var body: some View {
-    let bodyStartTime = CFAbsoluteTimeGetCurrent()
     let _ = print(
       "[Performance] HealthTrendView.body構築開始 - visibleRecords: \(visibleRecords.count)件")
 
