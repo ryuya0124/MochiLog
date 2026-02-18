@@ -1818,13 +1818,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Device is automatically detected from the log file"
+            "value" : "Automatically detected from the device used to import the log"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ログファイルからデバイスを自動で判別します"
+            "value" : "読み込みに使用した端末の情報から自動で判別します"
           }
         }
       }
