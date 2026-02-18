@@ -137,6 +137,26 @@ extension HomeView {
     logDate: Date,
     silent: Bool
   ) -> BatteryRecord? {
+    let selectionMode = AppSettings.shared.deviceSelectionMode
+
+    // 手動モードの場合: ユーザーにデバイス選択を促す
+    if selectionMode != .automatic && !silent {
+      pendingParseResult = result
+      if selectionMode == .preRegistered {
+        // 登録済みデバイスがある場合はそこから選択、なければフルリストから選択
+        if AppSettings.shared.registeredDevices.isEmpty {
+          showingDeviceSelectionFullList = true
+        } else {
+          showingDeviceSelectionFromRegistered = true
+        }
+      } else {
+        // fullManual: 全端末リストから選択
+        showingDeviceSelectionFullList = true
+      }
+      return nil
+    }
+
+    // 自動モード or サイレントモード: 従来の処理
     // 重複チェック（設定に応じて）
     if !AppSettings.shared.allowDuplicateRecords,
       hasDuplicateRecord(on: logDate, deviceName: deviceName)
@@ -169,6 +189,58 @@ extension HomeView {
     saveRecord(newRecord, deviceName: deviceName)
 
     return newRecord
+  }
+
+  /// デバイス選択後にレコードを作成・保存する共通処理
+  func completeRecordWithSelectedDevice(name: String, identifier: String?) {
+    guard let result = pendingParseResult else { return }
+    let logDate = result.logDate ?? Date()
+
+    // 重複チェック
+    if !AppSettings.shared.allowDuplicateRecords,
+      hasDuplicateRecord(on: logDate, deviceName: name)
+    {
+      DispatchQueue.main.async {
+        NotificationCenter.default.post(
+          name: NSNotification.Name("ShowImportError"),
+          object: nil,
+          userInfo: ["errorMessage": String(localized: "duplicate_record", table: "Home")]
+        )
+      }
+      pendingParseResult = nil
+      return
+    }
+
+    let modelCode = identifier ?? DeviceLibrary.getIdentifierForDeviceName(name)
+    let record = createRecord(
+      from: result,
+      deviceName: name,
+      deviceModelCodeOverride: modelCode,
+      designCapacityOverride: DeviceLibrary.getCapacity(for: name)
+    )
+
+    withAnimation(.snappy) {
+      modelContext.insert(record)
+    }
+    Task.detached(priority: .userInitiated) {
+      await MainActor.run {
+        try? self.modelContext.save()
+      }
+    }
+
+    // 詳細画面を表示
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+      NotificationCenter.default.post(
+        name: NSNotification.Name("ShowRecordDetail"),
+        object: nil,
+        userInfo: [
+          "logDate": record.logDate,
+          "deviceName": record.deviceName,
+        ]
+      )
+    }
+
+    pendingParseResult = nil
   }
 }
 

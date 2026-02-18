@@ -297,6 +297,10 @@ struct HomeView: View {
   @State private var showingReorderSheet = false
   @State private var showingTutorial = false
 
+  // デバイス手動選択モード用
+  @State var showingDeviceSelectionFromRegistered = false
+  @State var showingDeviceSelectionFullList = false
+
   @State private var showingSampleData = AppSettings.shared.showingSampleData
   @State private var showPopupOnLoad = AppSettings.shared.showPopupOnLoad
   @State private var registeredWatches = AppSettings.shared.registeredWatches
@@ -473,6 +477,8 @@ struct HomeView: View {
         showingWatchSelection = false
         showingManualDevicePicker = false
         showingRegisterWatchAlert = false
+        showingDeviceSelectionFromRegistered = false
+        showingDeviceSelectionFullList = false
       }
       .onReceive(
         NotificationCenter.default.publisher(for: NSNotification.Name("ParseErrorSaved"))
@@ -670,6 +676,22 @@ struct HomeView: View {
               showingRegisterWatchAlert = true
             }
           }
+        }
+      }
+      // MARK: - デバイス手動選択モード用シート
+      .sheet(isPresented: $showingDeviceSelectionFromRegistered) {
+        // 登録済みデバイスから選択
+        RegisteredDeviceSelectSheet { selectedDevice in
+          completeRecordWithSelectedDevice(
+            name: selectedDevice,
+            identifier: DeviceLibrary.getIdentifierForDeviceName(selectedDevice)
+          )
+        }
+      }
+      .sheet(isPresented: $showingDeviceSelectionFullList) {
+        // 全端末リストから選択（iPhone/iPadのみ）
+        HierarchicalDevicePickerView { name, identifier in
+          completeRecordWithSelectedDevice(name: name, identifier: identifier)
         }
       }
     }
