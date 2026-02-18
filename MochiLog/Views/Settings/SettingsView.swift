@@ -465,6 +465,8 @@ struct SettingsView: View {
           Image(systemName: "square.and.arrow.up.fill")
             .foregroundStyle(.blue)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
       }
       .buttonStyle(.plain)
 
@@ -479,6 +481,8 @@ struct SettingsView: View {
           Image(systemName: "square.and.arrow.down.fill")
             .foregroundStyle(.green)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
       }
       .buttonStyle(.plain)
 
@@ -519,6 +523,8 @@ struct SettingsView: View {
           Image(systemName: "lightbulb.fill")
             .foregroundStyle(.yellow)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
       }
       .buttonStyle(.plain)
 
@@ -534,6 +540,8 @@ struct SettingsView: View {
             Image(systemName: "arrow.down.circle")
               .foregroundStyle(.blue)
           }
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
       }
@@ -548,6 +556,8 @@ struct SettingsView: View {
           Image(systemName: "doc.text.magnifyingglass")
             .foregroundStyle(.blue)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
       }
       .buttonStyle(.plain)
 
@@ -558,6 +568,8 @@ struct SettingsView: View {
         } icon: {
           Image(systemName: "envelope.fill")
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
       }
       .buttonStyle(.plain)
 
@@ -573,6 +585,8 @@ struct SettingsView: View {
           Image(systemName: "bubble.left.and.bubble.right.fill")
             .foregroundStyle(.indigo)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
       }
       .buttonStyle(.plain)
 
@@ -584,6 +598,8 @@ struct SettingsView: View {
           Image(systemName: "heart.fill")
             .foregroundStyle(.red)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
       }
       .buttonStyle(.plain)
     }

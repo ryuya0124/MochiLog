@@ -26,6 +26,8 @@ struct AboutView: View {
             Image(systemName: "doc.plaintext")
               .foregroundStyle(.purple)
           }
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
 
@@ -37,6 +39,8 @@ struct AboutView: View {
             Image(systemName: "hand.raised.fill")
               .foregroundStyle(.orange)
           }
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
 
@@ -48,6 +52,8 @@ struct AboutView: View {
             Image(systemName: "doc.text")
               .foregroundStyle(.teal)
           }
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
       }
@@ -95,6 +101,8 @@ struct AboutView: View {
             Image(systemName: "link")
               .foregroundStyle(.blue)
           }
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
       }
@@ -105,14 +113,19 @@ struct AboutView: View {
           NavigationLink {
             DeveloperOptionsView()
           } label: {
-            Label {
-              Text("開発者オプション")
-                .foregroundStyle(.primary)
-            } icon: {
-              Image(systemName: "wrench.and.screwdriver.fill")
-                .foregroundStyle(.red)
+            HStack {
+              Label {
+                Text("開発者オプション")
+                  .foregroundStyle(.primary)
+              } icon: {
+                Image(systemName: "wrench.and.screwdriver.fill")
+                  .foregroundStyle(.red)
+              }
+              Spacer()
             }
+            .contentShape(Rectangle())
           }
+          .buttonStyle(.plain)
         } header: {
           Text("デバッグ")
         }
