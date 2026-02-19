@@ -47,10 +47,6 @@ struct SettingsView: View {
   @State private var showingDonation = false
   @State private var showingDeleteDeviceConfirmation = false
   @State private var deletingDeviceId: String? = nil
-  @State private var isAdvancedExpanded = false
-
-  // デバイス選択設定用
-  @State private var showingDevicePickerForRegistration = false
 
   // iCloud トグル用ローカル状態とエラー表示
   @State private var localICloudToggle: Bool = false
@@ -88,11 +84,6 @@ struct SettingsView: View {
           HierarchicalDevicePickerView(initialCategory: .watch, lockCategory: true) {
             name, identifier in
             appSettings.registerWatch(model: name)
-          }
-        }
-        .sheet(isPresented: $showingDevicePickerForRegistration) {
-          HierarchicalDevicePickerView(allowedCategories: [.iphone, .ipad]) { name, identifier in
-            appSettings.registerDevice(name: name)
           }
         }
         .sheet(isPresented: $showingTutorial) {
@@ -281,16 +272,6 @@ struct SettingsView: View {
           }
           .frame(maxHeight: .infinity)
           .clipped()
-        } else if selectedCategory == .deviceSelection {
-          VStack(spacing: 0) {
-            Divider()  // ヘッダーとの境界線
-            DeviceSelectionSettingsView(
-              showingDevicePicker: $showingDevicePickerForRegistration,
-              appSettings: appSettings
-            )
-          }
-          .frame(maxHeight: .infinity)
-          .clipped()
         } else {
           VStack(spacing: 0) {
             Divider()  // ヘッダーとの境界線
@@ -307,11 +288,6 @@ struct SettingsView: View {
                 case .appleWatch:
                   AppleWatchSettingsView(
                     showingWatchPicker: $showingWatchPicker,
-                    appSettings: appSettings
-                  )
-                case .deviceSelection:
-                  DeviceSelectionSettingsView(
-                    showingDevicePicker: $showingDevicePickerForRegistration,
                     appSettings: appSettings
                   )
                 case .dataManagement:
@@ -417,61 +393,6 @@ struct SettingsView: View {
       } label: {
         Label(String(localized: "view_sample_data", table: "Home"), systemImage: "eye")
       }
-    }
-
-    // MARK: - デバイス選択設定
-    Section {
-      // モード表示・選択
-      Picker(
-        String(localized: "device_selection_mode", table: "Settings"),
-        selection: $appSettings.deviceSelectionMode
-      ) {
-        ForEach(AppSettings.DeviceSelectionMode.allCases) { mode in
-          Text(mode.localizedName).tag(mode)
-        }
-      }
-      .pickerStyle(.menu)
-
-      // preRegisteredモードの場合: 登録済みデバイス表示
-      if appSettings.deviceSelectionMode == .preRegistered {
-        if appSettings.registeredDevices.isEmpty {
-          HStack {
-            Label(
-              String(localized: "registered_device", table: "Settings"),
-              systemImage: "iphone.gen3"
-            )
-            Spacer()
-            Text(String(localized: "not_registered", table: "Settings"))
-              .foregroundStyle(.secondary)
-          }
-        } else {
-          ForEach(appSettings.registeredDevices, id: \.self) { deviceName in
-            HStack {
-              let icon = deviceName.contains("iPad") ? "ipad.gen2" : "iphone.gen3"
-              Label(deviceName, systemImage: icon)
-            }
-            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-              Button(role: .destructive) {
-                appSettings.removeDevice(name: deviceName)
-              } label: {
-                Label(String(localized: "remove", table: "Common"), systemImage: "trash")
-              }
-              .tint(.red)
-            }
-          }
-        }
-
-        Button(action: { showingDevicePickerForRegistration = true }) {
-          Label(
-            String(localized: "add_device", table: "Settings"),
-            systemImage: "plus.circle"
-          )
-        }
-      }
-    } header: {
-      Text(String(localized: "device_selection_settings", table: "Settings"))
-    } footer: {
-      Text(appSettings.deviceSelectionMode.description)
     }
 
     // MARK: - Apple Watch 設定
@@ -697,103 +618,13 @@ struct SettingsView: View {
 
     // MARK: - 高度な設定
     Section {
-      DisclosureGroup(
-        String(localized: "advanced_settings", table: "Settings"),
-        isExpanded: $isAdvancedExpanded
+      NavigationLink(
+        destination: AdvancedSettingsDetailView(appSettings: appSettings)
       ) {
-        VStack(spacing: 16) {
-          // 分析データの計算基準
-          Picker(
-            String(localized: "analysis_source", table: "Settings"),
-            selection: $appSettings.analysisDataSource
-          ) {
-            ForEach(AppSettings.AnalysisDataSource.allCases) { source in
-              Text(source.localizedName).tag(source)
-            }
-          }
-          .pickerStyle(.menu)
-          .padding(.top, 4)
-
-          Divider()
-
-          // 共有インポート時にアプリを開くかどうか
-          Toggle(
-            String(localized: "open_app_after_share_import", table: "Settings"),
-            isOn: $appSettings.openAppAfterShareImport
-          )
-          .padding(.top, 8)
-
-          Text(String(localized: "open_app_after_share_import_description", table: "Settings"))
-            .font(.caption)
-            .foregroundStyle(.secondary)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.bottom, 8)
-
-          Toggle(
-            String(localized: "enable_capacity_validation", table: "Settings"),
-            isOn: $appSettings.enableCapacityValidation
-          )
-
-          if appSettings.enableCapacityValidation {
-            VStack(alignment: .leading, spacing: 8) {
-              HStack {
-                Text(String(localized: "validation_threshold", table: "Settings"))
-                Spacer()
-                Text(String(format: "%.1f x", appSettings.capacityValidationThreshold))
-                  .monospacedDigit()
-                  .foregroundStyle(.secondary)
-              }
-              Slider(value: $appSettings.capacityValidationThreshold, in: 2...20, step: 0.5)
-            }
-
-            Picker(
-              String(localized: "mismatch_behavior", table: "Settings"),
-              selection: $appSettings.mismatchBehavior
-            ) {
-              ForEach(AppSettings.MismatchBehavior.allCases) { behavior in
-                Text(behavior.localizedName).tag(behavior)
-              }
-            }
-          }
-
-          Text(String(localized: "validation_threshold_description", table: "Settings"))
-            .font(.caption)
-            .foregroundStyle(.secondary)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.bottom, 8)
-
-          Divider()
-
-          // 重複したログの記録を許可
-          Toggle(
-            String(localized: "allow_duplicate_records", table: "Settings"),
-            isOn: $appSettings.allowDuplicateRecords
-          )
-          .padding(.top, 8)
-
-          Text(String(localized: "allow_duplicate_records_description", table: "Settings"))
-            .font(.caption)
-            .foregroundStyle(.secondary)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.bottom, 8)
-
-          VStack(alignment: .leading, spacing: 8) {
-            HStack {
-              Text(String(localized: "icloud_storage_threshold", table: "Settings"))
-              Spacer()
-              Text(String(format: "%.0f MB", appSettings.iCloudStorageThresholdMB))
-                .foregroundStyle(.secondary)
-            }
-            Slider(value: $appSettings.iCloudStorageThresholdMB, in: 10...1024, step: 10)
-          }
-
-          if let blocked = appSettings.iCloudSyncBlockedReason {
-            Text(blocked)
-              .font(.caption)
-              .foregroundColor(.red)
-              .frame(maxWidth: .infinity, alignment: .leading)
-          }
-        }
+        Label(
+          String(localized: "advanced_settings", table: "Settings"),
+          systemImage: "gearshape.2.fill"
+        )
       }
     }
 

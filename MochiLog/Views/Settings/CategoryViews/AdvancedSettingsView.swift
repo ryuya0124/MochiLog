@@ -4,8 +4,13 @@ import SwiftUI
 struct AdvancedSettingsView: View {
   @ObservedObject var appSettings: AppSettings
 
+  @State private var showingDevicePickerForRegistration = false
+
   var body: some View {
     VStack(spacing: 16) {
+      // デバイス選択設定
+      deviceSelectionSection
+
       // 分析データの計算基準
       analysisSourceSection
 
@@ -22,6 +27,133 @@ struct AdvancedSettingsView: View {
       iCloudStorageSection
     }
     .padding(.horizontal)
+    .sheet(isPresented: $showingDevicePickerForRegistration) {
+      HierarchicalDevicePickerView(allowedCategories: [.iphone, .ipad]) { name, _ in
+        appSettings.registerDevice(name: name)
+      }
+    }
+  }
+
+  // MARK: - デバイス選択設定
+  private var deviceSelectionSection: some View {
+    GroupBox {
+      VStack(alignment: .leading, spacing: 12) {
+        Label(
+          String(localized: "device_selection_settings", table: "Settings"),
+          systemImage: "iphone.gen3"
+        )
+        .font(.headline)
+
+        VStack(spacing: 6) {
+          ForEach(AppSettings.DeviceSelectionMode.allCases) { mode in
+            modeSelectionCard(mode)
+          }
+        }
+
+        if appSettings.deviceSelectionMode == .preRegistered {
+          Divider()
+          registeredDevicesBlock
+        }
+      }
+      .padding(.vertical, 4)
+    }
+  }
+
+  @ViewBuilder
+  private func modeSelectionCard(_ mode: AppSettings.DeviceSelectionMode) -> some View {
+    let isSelected = appSettings.deviceSelectionMode == mode
+    Button {
+      withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+        appSettings.deviceSelectionMode = mode
+      }
+    } label: {
+      HStack(spacing: 12) {
+        Image(systemName: mode.iconName)
+          .font(.title3)
+          .foregroundStyle(isSelected ? appSettings.accentColor.color : .secondary)
+          .frame(width: 26)
+
+        VStack(alignment: .leading, spacing: 2) {
+          Text(mode.localizedName)
+            .fontWeight(isSelected ? .semibold : .regular)
+            .foregroundStyle(.primary)
+          Text(mode.description)
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .lineLimit(2)
+        }
+
+        Spacer()
+
+        if isSelected {
+          Image(systemName: "checkmark.circle.fill")
+            .foregroundStyle(appSettings.accentColor.color)
+        }
+      }
+      .padding(.horizontal, 12)
+      .padding(.vertical, 10)
+      .background(
+        isSelected
+          ? appSettings.accentColor.color.opacity(0.12)
+          : Color.primary.opacity(0.05)
+      )
+      .clipShape(RoundedRectangle(cornerRadius: 10))
+    }
+    .buttonStyle(.plain)
+  }
+
+  private var registeredDevicesBlock: some View {
+    VStack(alignment: .leading, spacing: 8) {
+      Text(String(localized: "registered_devices", table: "Settings"))
+        .font(.subheadline)
+        .fontWeight(.medium)
+        .foregroundStyle(.secondary)
+
+      if appSettings.registeredDevices.isEmpty {
+        Text(String(localized: "registered_devices_empty_footer", table: "Settings"))
+          .font(.caption)
+          .foregroundStyle(.secondary)
+          .padding(.vertical, 4)
+      } else {
+        VStack(spacing: 0) {
+          ForEach(appSettings.registeredDevices, id: \.self) { deviceName in
+            HStack(spacing: 10) {
+              let icon = deviceName.contains("iPad") ? "ipad.gen2" : "iphone.gen3"
+              Image(systemName: icon)
+                .foregroundStyle(appSettings.accentColor.color)
+                .frame(width: 20)
+              Text(deviceName)
+                .foregroundStyle(.primary)
+              Spacer()
+              Button {
+                appSettings.removeDevice(name: deviceName)
+              } label: {
+                Image(systemName: "minus.circle.fill")
+                  .foregroundStyle(.red)
+              }
+              .buttonStyle(.plain)
+            }
+            .padding(.vertical, 8)
+
+            if deviceName != appSettings.registeredDevices.last {
+              Divider()
+            }
+          }
+        }
+      }
+
+      Button {
+        showingDevicePickerForRegistration = true
+      } label: {
+        Label(
+          String(localized: "add_device", table: "Settings"),
+          systemImage: "plus.circle.fill"
+        )
+        .font(.subheadline)
+        .foregroundStyle(appSettings.accentColor.color)
+      }
+      .buttonStyle(.plain)
+    }
   }
 
   // MARK: - 分析データの計算基準

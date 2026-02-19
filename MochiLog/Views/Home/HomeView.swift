@@ -229,8 +229,8 @@ struct MainTabView: View {
 
     // 配列の長さを揃える
     let maxLength = max(versionComponents.count, targetComponents.count)
-    var v = versionComponents + Array(repeating: 0, count: maxLength - versionComponents.count)
-    var t = targetComponents + Array(repeating: 0, count: maxLength - targetComponents.count)
+    let v = versionComponents + Array(repeating: 0, count: maxLength - versionComponents.count)
+    let t = targetComponents + Array(repeating: 0, count: maxLength - targetComponents.count)
 
     // 各要素を比較
     for i in 0..<maxLength {
@@ -690,7 +690,7 @@ struct HomeView: View {
       }
       .sheet(isPresented: $showingDeviceSelectionFullList) {
         // 全端末リストから選択（iPhone/iPadのみ）
-        HierarchicalDevicePickerView { name, identifier in
+        HierarchicalDevicePickerView(allowedCategories: [.iphone, .ipad]) { name, identifier in
           completeRecordWithSelectedDevice(name: name, identifier: identifier)
         }
       }
