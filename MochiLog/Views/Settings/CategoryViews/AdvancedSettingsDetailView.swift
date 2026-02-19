@@ -32,10 +32,9 @@ struct AdvancedSettingsDetailView: View {
         Section {
           if appSettings.registeredDevices.isEmpty {
             HStack {
-              let icon = "iphone.gen3"
               Label(
                 String(localized: "registered_devices", table: "Settings"),
-                systemImage: icon
+                systemImage: "iphone.gen3"
               )
               Spacer()
               Text(String(localized: "not_registered", table: "Settings"))

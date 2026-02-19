@@ -109,50 +109,18 @@ struct AdvancedSettingsView: View {
         .fontWeight(.medium)
         .foregroundStyle(.secondary)
 
-      if appSettings.registeredDevices.isEmpty {
-        Text(String(localized: "registered_devices_empty_footer", table: "Settings"))
-          .font(.caption)
-          .foregroundStyle(.secondary)
-          .padding(.vertical, 4)
-      } else {
-        VStack(spacing: 0) {
-          ForEach(appSettings.registeredDevices, id: \.self) { deviceName in
-            HStack(spacing: 10) {
-              let icon = deviceName.contains("iPad") ? "ipad.gen2" : "iphone.gen3"
-              Image(systemName: icon)
-                .foregroundStyle(appSettings.accentColor.color)
-                .frame(width: 20)
-              Text(deviceName)
-                .foregroundStyle(.primary)
-              Spacer()
-              Button {
-                appSettings.removeDevice(name: deviceName)
-              } label: {
-                Image(systemName: "minus.circle.fill")
-                  .foregroundStyle(.red)
-              }
-              .buttonStyle(.plain)
-            }
-            .padding(.vertical, 8)
+      RegisteredDevicesBlockView(
+        appSettings: appSettings,
+        onAddDevice: { showingDevicePickerForRegistration = true }
+      )
 
-            if deviceName != appSettings.registeredDevices.last {
-              Divider()
-            }
-          }
-        }
-      }
-
-      Button {
-        showingDevicePickerForRegistration = true
-      } label: {
-        Label(
-          String(localized: "add_device", table: "Settings"),
-          systemImage: "plus.circle.fill"
-        )
-        .font(.subheadline)
-        .foregroundStyle(appSettings.accentColor.color)
-      }
-      .buttonStyle(.plain)
+      Text(
+        appSettings.registeredDevices.isEmpty
+          ? String(localized: "registered_devices_empty_footer", table: "Settings")
+          : String(localized: "registered_devices_footer", table: "Settings")
+      )
+      .font(.caption)
+      .foregroundStyle(.secondary)
     }
   }
 
