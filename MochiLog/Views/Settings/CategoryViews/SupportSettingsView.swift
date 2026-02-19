@@ -145,6 +145,41 @@ struct SupportSettingsView: View {
         .buttonStyle(.plain)
       }
 
+      // Discord
+      GroupBox {
+        Button {
+          if let url = URL(string: AppSettings.discordURL) {
+            UIApplication.shared.open(url)
+          }
+        } label: {
+          HStack(spacing: 20) {
+            Image(systemName: "bubble.left.and.bubble.right.fill")
+              .font(.system(size: 32))
+              .foregroundStyle(.indigo)
+              .frame(width: 60)
+
+            VStack(alignment: .leading, spacing: 4) {
+              Text(String(localized: "join_discord", table: "Settings"))
+                .font(.headline)
+                .foregroundStyle(.primary)
+
+              Text(String(localized: "join_discord_description", table: "Settings"))
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Image(systemName: "arrow.up.right.square")
+              .foregroundStyle(.secondary)
+          }
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .contentShape(Rectangle())
+          .padding(.vertical, 8)
+        }
+        .buttonStyle(.plain)
+      }
+
       // 支援
       GroupBox {
         Button {

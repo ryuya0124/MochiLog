@@ -8,7 +8,7 @@ final class AppSettings: ObservableObject {
   static let shared = AppSettings()
 
   // MARK: - UserDefaults Keys
-  private enum Keys {
+  enum Keys {
     static let registeredWatchModel = "registeredWatchModel"
     static let registeredWatches = "registeredWatches"
     static let hasCompletedTutorial = "hasCompletedTutorial"
@@ -40,6 +40,60 @@ final class AppSettings: ObservableObject {
 
     // 新規: ショートカット関連
     static let isShortcutInstalled = "isShortcutInstalled"
+
+    // 新規: バージョン管理（マイグレーションと統一）
+    static let lastSeenVersion = "LastKnownAppVersion"  // マイグレーションと同じキーを使用
+
+    // 新規: 開発者オプションの表示状態
+    static let showingDeveloperOptions = "showingDeveloperOptions"
+
+    // 新規: デバイス選択モード
+    static let deviceSelectionMode = "deviceSelectionMode"
+    static let registeredDevices = "registeredDevices"
+  }
+
+  // MARK: - Constants
+
+  /// DiscordサーバーのURL
+  static let discordURL = "https://discord.com/invite/8u3SJXxQZ"
+
+  /// 現在のアプリバージョンを取得
+  static var currentAppVersion: String? {
+    Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+  }
+
+  /// iPhone/iPadのデバイス選択モード
+  enum DeviceSelectionMode: String, CaseIterable, Identifiable {
+    case automatic = "automatic"
+    case preRegistered = "preRegistered"
+    case fullManual = "fullManual"
+
+    var id: String { self.rawValue }
+
+    var localizedName: String {
+      switch self {
+      case .automatic: return String(localized: "device_mode_automatic", table: "Settings")
+      case .preRegistered: return String(localized: "device_mode_pre_registered", table: "Settings")
+      case .fullManual: return String(localized: "device_mode_full_manual", table: "Settings")
+      }
+    }
+
+    var description: String {
+      switch self {
+      case .automatic: return String(localized: "device_mode_automatic_desc", table: "Settings")
+      case .preRegistered:
+        return String(localized: "device_mode_pre_registered_desc", table: "Settings")
+      case .fullManual: return String(localized: "device_mode_full_manual_desc", table: "Settings")
+      }
+    }
+
+    var iconName: String {
+      switch self {
+      case .automatic: return "iphone.gen3"
+      case .preRegistered: return "star.fill"
+      case .fullManual: return "list.bullet"
+      }
+    }
   }
 
   /// 容量不一致時の挙動
@@ -197,6 +251,16 @@ final class AppSettings: ObservableObject {
   /// ショートカット「解析データを開く」がインストール済みかどうか
   @Published var isShortcutInstalled: Bool
 
+  /// 最後に確認したアプリバージョン（アップデート検知用）
+  @Published var lastSeenVersion: String?
+  @Published var showingDeveloperOptions: Bool
+
+  /// iPhone/iPadのデバイス選択モード
+  @Published var deviceSelectionMode: DeviceSelectionMode
+
+  /// 登録済みのiPhone/iPadデバイス名のリスト（preRegisteredモード用）
+  @Published var registeredDevices: [String] = []
+
   // MARK: - Initialization
 
   private init() {
@@ -296,6 +360,22 @@ final class AppSettings: ObservableObject {
 
     // ショートカットインストール状態の初期化（デフォルトは false）
     self.isShortcutInstalled = UserDefaults.standard.bool(forKey: Keys.isShortcutInstalled)
+
+    // 最後に確認したバージョンの初期化
+    self.lastSeenVersion = UserDefaults.standard.string(forKey: Keys.lastSeenVersion)
+    self.showingDeveloperOptions = UserDefaults.standard.bool(forKey: Keys.showingDeveloperOptions)
+
+    // デバイス選択モードの初期化
+    if let modeString = UserDefaults.standard.string(forKey: Keys.deviceSelectionMode),
+      let mode = DeviceSelectionMode(rawValue: modeString)
+    {
+      self.deviceSelectionMode = mode
+    } else {
+      self.deviceSelectionMode = .automatic
+    }
+
+    // 登録済みデバイスの読み込み
+    self.registeredDevices = UserDefaults.standard.stringArray(forKey: Keys.registeredDevices) ?? []
 
     // プロパティの変更を監視してUserDefaultsに保存
     setupObservers()
@@ -428,6 +508,34 @@ final class AppSettings: ObservableObject {
         UserDefaults.standard.set(value, forKey: Keys.isShortcutInstalled)
       }
       .store(in: &cancellables)
+
+    $lastSeenVersion
+      .dropFirst()
+      .sink { value in
+        UserDefaults.standard.set(value, forKey: Keys.lastSeenVersion)
+      }
+      .store(in: &cancellables)
+
+    $showingDeveloperOptions
+      .dropFirst()
+      .sink { value in
+        UserDefaults.standard.set(value, forKey: Keys.showingDeveloperOptions)
+      }
+      .store(in: &cancellables)
+
+    $deviceSelectionMode
+      .dropFirst()
+      .sink { value in
+        UserDefaults.standard.set(value.rawValue, forKey: Keys.deviceSelectionMode)
+      }
+      .store(in: &cancellables)
+
+    $registeredDevices
+      .dropFirst()
+      .sink { value in
+        UserDefaults.standard.set(value, forKey: Keys.registeredDevices)
+      }
+      .store(in: &cancellables)
   }
 
   // MARK: - Methods
@@ -455,6 +563,22 @@ final class AppSettings: ObservableObject {
     if !registeredWatches.isEmpty {
       registeredWatches.removeFirst()
     }
+  }
+
+  /// iPhone/iPadデバイスを登録（preRegisteredモード用）
+  func registerDevice(name: String) {
+    guard !registeredDevices.contains(name) else { return }
+    registeredDevices.append(name)
+  }
+
+  /// 特定のiPhone/iPadデバイスを登録解除
+  func removeDevice(name: String) {
+    registeredDevices.removeAll { $0 == name }
+  }
+
+  /// すべてのiPhone/iPad登録を解除
+  func unregisterAllDevices() {
+    registeredDevices.removeAll()
   }
 
   /// チュートリアル完了を記録

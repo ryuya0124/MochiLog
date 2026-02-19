@@ -5,6 +5,9 @@ struct AboutSettingsView: View {
   @State private var showingPrivacyPolicy = false
   @State private var showingTermsOfUse = false
   @State private var showingLicenses = false
+  @State private var showingDeveloperOptions = false
+  @StateObject private var appSettings = AppSettings.shared
+  @State private var tapCount: Int = 0
 
   private var appVersion: String {
     let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
@@ -16,24 +19,82 @@ struct AboutSettingsView: View {
     VStack(spacing: 16) {
       // アプリ情報
       GroupBox {
-        HStack(spacing: 20) {
-          Image(systemName: "info.circle.fill")
-            .font(.system(size: 32))
-            .foregroundStyle(.blue)
-            .frame(width: 60)
-
-          VStack(alignment: .leading, spacing: 4) {
-            Text(String(localized: "app_version", table: "Settings"))
-              .font(.headline)
-
-            Text(appVersion)
-              .font(.subheadline)
-              .foregroundStyle(.secondary)
+        Button {
+          if !appSettings.showingDeveloperOptions {
+            tapCount += 1
+            if tapCount >= 7 {
+              appSettings.showingDeveloperOptions = true
+              tapCount = 0
+            }
           }
+        } label: {
+          HStack(spacing: 20) {
+            Image(systemName: "info.circle.fill")
+              .font(.system(size: 32))
+              .foregroundStyle(.blue)
+              .frame(width: 60)
 
-          Spacer()
+            VStack(alignment: .leading, spacing: 4) {
+              Text(String(localized: "app_version", table: "Settings"))
+                .font(.headline)
+
+              Text(appVersion)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            if tapCount > 0 && !appSettings.showingDeveloperOptions {
+              Text("\(tapCount)")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(Color.secondary.opacity(0.2))
+                .clipShape(Capsule())
+            }
+          }
+          .padding(.vertical, 8)
+          .frame(maxWidth: .infinity)
+          .contentShape(Rectangle())
         }
-        .padding(.vertical, 8)
+        .buttonStyle(.plain)
+      }
+
+      // 開発者オプション（7回タップで表示）
+      if appSettings.showingDeveloperOptions {
+        GroupBox {
+          Button {
+            showingDeveloperOptions = true
+          } label: {
+            HStack(spacing: 20) {
+              Image(systemName: "wrench.and.screwdriver.fill")
+                .font(.system(size: 32))
+                .foregroundStyle(.red)
+                .frame(width: 60)
+
+              VStack(alignment: .leading, spacing: 4) {
+                Text("開発者オプション")
+                  .font(.headline)
+                  .foregroundStyle(.primary)
+
+                Text("デバッグ用の設定とツール")
+                  .font(.subheadline)
+                  .foregroundStyle(.secondary)
+              }
+
+              Spacer()
+
+              Image(systemName: "chevron.right")
+                .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
+            .padding(.vertical, 8)
+          }
+          .buttonStyle(.plain)
+        }
       }
 
       // 利用規約
@@ -167,6 +228,11 @@ struct AboutSettingsView: View {
     }
     .sheet(isPresented: $showingLicenses) {
       LicenseView()
+    }
+    .sheet(isPresented: $showingDeveloperOptions) {
+      NavigationStack {
+        DeveloperOptionsView()
+      }
     }
   }
 }

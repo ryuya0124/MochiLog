@@ -6,6 +6,7 @@ struct DevicePickerView: View {
 
   @State private var isShowingDevicePicker: Bool = false
   @State private var deviceSearchQuery: String = ""
+  @StateObject private var appSettings = AppSettings.shared
 
   var body: some View {
     VStack(alignment: .leading, spacing: 8) {
@@ -48,10 +49,11 @@ struct DevicePickerView: View {
               } label: {
                 HStack {
                   Text(String(localized: "all_devices", table: "Common"))
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(appSettings.accentColor.color)
                   Spacer()
                   if selectedDevice == nil {
                     Image(systemName: "checkmark")
+                      .foregroundStyle(appSettings.accentColor.color)
                   }
                 }
               }
@@ -68,13 +70,14 @@ struct DevicePickerView: View {
                 } label: {
                   HStack {
                     Text(device)
-                      .foregroundStyle(.primary)
                     Spacer()
                     if selectedDevice == device {
                       Image(systemName: "checkmark")
+                        .foregroundStyle(appSettings.accentColor.color)
                     }
                   }
                 }
+                .foregroundStyle(.primary)
               }
             }
             .searchable(text: $deviceSearchQuery)
@@ -84,6 +87,7 @@ struct DevicePickerView: View {
                 Button(String(localized: "cancel", table: "Common")) {
                   isShowingDevicePicker = false
                 }
+                .tint(.primary)
               }
             }
           }

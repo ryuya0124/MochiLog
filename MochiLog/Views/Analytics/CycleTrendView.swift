@@ -7,6 +7,7 @@ struct CycleTrendView: View {
   @State private var animateChart: Bool = false
   @State private var isChartReady: Bool = false  // 遅延レンダリング用
   var initialRange: RangePreset = .oneMonth  // 初期レンジ（サンプルモード用）
+  var allDeviceNames: [String]?  // 全デバイス名（色固定用、nilの場合はallRecordsから計算）
 
   // iPhone用：親から渡される期間情報（Bindingがある場合は親と同期）
   var sharedSelectedRange: Binding<RangePreset>?
@@ -56,7 +57,7 @@ struct CycleTrendView: View {
 
   /// 全レコードのデバイス名（ソート済み）— 色の安定割り当て用
   private var sortedAllDeviceNames: [String] {
-    Array(Set(allRecords.map { $0.deviceName })).sorted()
+    allDeviceNames ?? Array(Set(allRecords.map { $0.deviceName })).sorted()
   }
 
   // ウィンドウ計算ヘルパー
@@ -133,7 +134,6 @@ struct CycleTrendView: View {
   }
 
   var body: some View {
-    let bodyStartTime = CFAbsoluteTimeGetCurrent()
     let _ = print(
       "[Performance] CycleTrendView.body構築開始 - allRecords: \(allRecords.count)件, visible: \(visibleRecords.count)件"
     )
@@ -204,8 +204,26 @@ struct CycleTrendView: View {
 
         // 遅延レンダリング: タブ切り替え時はプレースホルダーを表示し、次フレームでChart描画
         if isChartReady {
-          cycleChartView(chartRecords: chartRecords)
-            .transition(.opacity.animation(.easeOut(duration: 0.3)))
+          // 表示されているデバイス名とその色のマッピングを計算
+          let visibleDeviceNames = Array(Set(chartRecords.map { $0.deviceName })).sorted()
+          let visibleDeviceColors = visibleDeviceNames.map { deviceName -> Color in
+            if let index = sortedAllDeviceNames.firstIndex(of: deviceName) {
+              return ChartAxisHelper.deviceColorPalette[
+                index % ChartAxisHelper.deviceColorPalette.count]
+            }
+            // フォールバック: sortedAllDeviceNamesにない場合はデバイス名のハッシュから色を選択
+            print(
+              "[Warning] Device '\(deviceName)' not found in sortedAllDeviceNames, using fallback color"
+            )
+            let fallbackIndex = abs(deviceName.hashValue) % ChartAxisHelper.deviceColorPalette.count
+            return ChartAxisHelper.deviceColorPalette[fallbackIndex]
+          }
+
+          cycleChartView(
+            chartRecords: chartRecords, visibleDeviceNames: visibleDeviceNames,
+            visibleDeviceColors: visibleDeviceColors
+          )
+          .transition(.opacity.animation(.easeOut(duration: 0.3)))
         }
         // チャート領域の高さを常に確保（プレースホルダー兼用）
         Color.clear
@@ -269,7 +287,9 @@ struct CycleTrendView: View {
 
   // MARK: - チャートビュー（bodyから分離してコンパイラの型チェック負荷を軽減）
   @ViewBuilder
-  private func cycleChartView(chartRecords: [BatteryRecord]) -> some View {
+  private func cycleChartView(
+    chartRecords: [BatteryRecord], visibleDeviceNames: [String], visibleDeviceColors: [Color]
+  ) -> some View {
     Chart {
       ForEach(chartRecords) { record in
         LineMark(
@@ -317,8 +337,8 @@ struct CycleTrendView: View {
       }
     }
     .chartForegroundStyleScale(
-      domain: sortedAllDeviceNames,
-      range: ChartAxisHelper.stableDeviceColors(for: sortedAllDeviceNames)
+      domain: visibleDeviceNames,
+      range: visibleDeviceColors
     )
     .chartXAxis {
       let (strideComponent, strideCount, labelFormat) =

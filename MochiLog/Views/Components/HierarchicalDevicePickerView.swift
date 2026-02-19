@@ -4,6 +4,8 @@ struct HierarchicalDevicePickerView: View {
   @Environment(\.dismiss) private var dismiss
   let initialCategory: DeviceLibrary.Category?
   let lockCategory: Bool
+  /// nilの場合は全カテゴリを表示。指定した場合はそのカテゴリのみ表示する
+  let allowedCategories: [DeviceLibrary.Category]?
   let onSelect: (String, String) -> Void  // (deviceName, identifier)
 
   @State private var selectedCategory: DeviceLibrary.Category?
@@ -12,12 +14,21 @@ struct HierarchicalDevicePickerView: View {
   init(
     initialCategory: DeviceLibrary.Category? = nil,
     lockCategory: Bool = false,
+    allowedCategories: [DeviceLibrary.Category]? = nil,
     onSelect: @escaping (String, String) -> Void
   ) {
     self.initialCategory = initialCategory
     self.lockCategory = lockCategory
+    self.allowedCategories = allowedCategories
     self.onSelect = onSelect
     self._selectedCategory = State(initialValue: initialCategory)
+  }
+
+  private var displayCategories: [DeviceLibrary.Category] {
+    if let allowed = allowedCategories {
+      return DeviceLibrary.Category.allCases.filter { allowed.contains($0) }
+    }
+    return DeviceLibrary.Category.allCases
   }
 
   var body: some View {
@@ -25,7 +36,7 @@ struct HierarchicalDevicePickerView: View {
       List {
         if selectedCategory == nil {
           Section(String(localized: "select_category", table: "Common")) {
-            ForEach(DeviceLibrary.Category.allCases) { category in
+            ForEach(displayCategories) { category in
               Button {
                 withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
                   selectedCategory = category
@@ -62,7 +73,9 @@ struct HierarchicalDevicePickerView: View {
                 }
               } label: {
                 HStack {
-                  Text(series == "Standard" ? String(localized: "standard_models", table: "Common") : series)
+                  Text(
+                    series == "Standard"
+                      ? String(localized: "standard_models", table: "Common") : series)
                   Spacer()
                   Image(systemName: "chevron.right")
                     .font(.caption)

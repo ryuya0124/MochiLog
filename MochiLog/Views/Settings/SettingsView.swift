@@ -47,7 +47,6 @@ struct SettingsView: View {
   @State private var showingDonation = false
   @State private var showingDeleteDeviceConfirmation = false
   @State private var deletingDeviceId: String? = nil
-  @State private var isAdvancedExpanded = false
 
   // iCloud トグル用ローカル状態とエラー表示
   @State private var localICloudToggle: Bool = false
@@ -262,7 +261,7 @@ struct SettingsView: View {
 
         Divider()
 
-        // 右側：選択されたカテゴリの詳細（Apple WatchのみList表示）
+        // 右側：選択されたカテゴリの詳細（Apple Watch・高度な設定はList表示）
         if selectedCategory == .appleWatch {
           VStack(spacing: 0) {
             Divider()  // ヘッダーとの境界線
@@ -270,6 +269,13 @@ struct SettingsView: View {
               showingWatchPicker: $showingWatchPicker,
               appSettings: appSettings
             )
+          }
+          .frame(maxHeight: .infinity)
+          .clipped()
+        } else if selectedCategory == .advanced {
+          VStack(spacing: 0) {
+            Divider()  // ヘッダーとの境界線
+            AdvancedSettingsView(appSettings: appSettings)
           }
           .frame(maxHeight: .infinity)
           .clipped()
@@ -314,7 +320,7 @@ struct SettingsView: View {
                 case .debug:
                   DebugSettingsView(appSettings: appSettings)
                 case .advanced:
-                  AdvancedSettingsView(appSettings: appSettings)
+                  EmptyView()
                 }
               }
               .padding(.top)
@@ -458,23 +464,33 @@ struct SettingsView: View {
       Button {
         showingExportSheet = true
       } label: {
-        Label(
-          String(localized: "export_data", table: "Settings"),
-          systemImage: "square.and.arrow.up"
-        )
-        .foregroundStyle(.primary)
+        Label {
+          Text(String(localized: "export_data", table: "Settings"))
+            .foregroundStyle(.primary)
+        } icon: {
+          Image(systemName: "square.and.arrow.up.fill")
+            .foregroundStyle(.blue)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
       }
+      .buttonStyle(.plain)
 
       // インポート
       Button {
         showingImportSheet = true
       } label: {
-        Label(
-          String(localized: "import_data", table: "Settings"),
-          systemImage: "square.and.arrow.down"
-        )
-        .foregroundStyle(.primary)
+        Label {
+          Text(String(localized: "import_data", table: "Settings"))
+            .foregroundStyle(.primary)
+        } icon: {
+          Image(systemName: "square.and.arrow.down.fill")
+            .foregroundStyle(.green)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
       }
+      .buttonStyle(.plain)
 
       Button(role: .destructive) {
         if availableDevices.isEmpty {
@@ -506,44 +522,92 @@ struct SettingsView: View {
     // MARK: - サポート
     Section(String(localized: "support", table: "Settings")) {
       Button(action: { showingTutorial = true }) {
-        Label(String(localized: "view_tutorial", table: "Home"), systemImage: "book.fill")
-          .foregroundStyle(.primary)
+        Label {
+          Text(String(localized: "view_tutorial", table: "Home"))
+            .foregroundStyle(.primary)
+        } icon: {
+          Image(systemName: "lightbulb.fill")
+            .foregroundStyle(.yellow)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
       }
+      .buttonStyle(.plain)
 
       // ショートカット未インストール時のみ表示
       if !appSettings.isShortcutInstalled {
         Button(action: {
           SettingsRedirectHelper.openShortcutSetup()
         }) {
-          Label(
-            String(localized: "setup_shortcut", table: "Settings"),
-            systemImage: "arrow.down.circle"
-          )
-          .foregroundStyle(.blue)
+          Label {
+            Text(String(localized: "setup_shortcut", table: "Settings"))
+              .foregroundStyle(.primary)
+          } icon: {
+            Image(systemName: "arrow.down.circle")
+              .foregroundStyle(.blue)
+          }
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .contentShape(Rectangle())
         }
+        .buttonStyle(.plain)
       }
 
       Button(action: {
         SettingsRedirectHelper.openAnalyticsViaShortcut()
       }) {
-        Label(
-          String(localized: "view_analytics_data", table: "Settings"),
-          systemImage: "doc.text.magnifyingglass"
-        )
-        .foregroundStyle(.primary)
+        Label {
+          Text(String(localized: "view_analytics_data", table: "Settings"))
+            .foregroundStyle(.primary)
+        } icon: {
+          Image(systemName: "doc.text.magnifyingglass")
+            .foregroundStyle(.blue)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
       }
+      .buttonStyle(.plain)
 
       Button(action: { showingSupportForm = true }) {
-        Label(
-          String(localized: "contact_support", table: "Support"), systemImage: "envelope.fill"
-        )
-        .foregroundStyle(.primary)
+        Label {
+          Text(String(localized: "contact_support", table: "Support"))
+            .foregroundStyle(.primary)
+        } icon: {
+          Image(systemName: "envelope.fill")
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
       }
+      .buttonStyle(.plain)
+
+      Button(action: {
+        if let url = URL(string: AppSettings.discordURL) {
+          UIApplication.shared.open(url)
+        }
+      }) {
+        Label {
+          Text(String(localized: "join_discord", table: "Settings"))
+            .foregroundStyle(.primary)
+        } icon: {
+          Image(systemName: "bubble.left.and.bubble.right.fill")
+            .foregroundStyle(.indigo)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
+      }
+      .buttonStyle(.plain)
 
       Button(action: { showingDonation = true }) {
-        Label(String(localized: "donation_title", table: "Settings"), systemImage: "heart.fill")
-          .foregroundStyle(.primary)
+        Label {
+          Text(String(localized: "donation_title", table: "Settings"))
+            .foregroundStyle(.primary)
+        } icon: {
+          Image(systemName: "heart.fill")
+            .foregroundStyle(.red)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
       }
+      .buttonStyle(.plain)
     }
 
     // MARK: - デバッグ
@@ -561,103 +625,13 @@ struct SettingsView: View {
 
     // MARK: - 高度な設定
     Section {
-      DisclosureGroup(
-        String(localized: "advanced_settings", table: "Settings"),
-        isExpanded: $isAdvancedExpanded
+      NavigationLink(
+        destination: AdvancedSettingsDetailView(appSettings: appSettings)
       ) {
-        VStack(spacing: 16) {
-          // 分析データの計算基準
-          Picker(
-            String(localized: "analysis_source", table: "Settings"),
-            selection: $appSettings.analysisDataSource
-          ) {
-            ForEach(AppSettings.AnalysisDataSource.allCases) { source in
-              Text(source.localizedName).tag(source)
-            }
-          }
-          .pickerStyle(.menu)
-          .padding(.top, 4)
-
-          Divider()
-
-          // 共有インポート時にアプリを開くかどうか
-          Toggle(
-            String(localized: "open_app_after_share_import", table: "Settings"),
-            isOn: $appSettings.openAppAfterShareImport
-          )
-          .padding(.top, 8)
-
-          Text(String(localized: "open_app_after_share_import_description", table: "Settings"))
-            .font(.caption)
-            .foregroundStyle(.secondary)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.bottom, 8)
-
-          Toggle(
-            String(localized: "enable_capacity_validation", table: "Settings"),
-            isOn: $appSettings.enableCapacityValidation
-          )
-
-          if appSettings.enableCapacityValidation {
-            VStack(alignment: .leading, spacing: 8) {
-              HStack {
-                Text(String(localized: "validation_threshold", table: "Settings"))
-                Spacer()
-                Text(String(format: "%.1f x", appSettings.capacityValidationThreshold))
-                  .monospacedDigit()
-                  .foregroundStyle(.secondary)
-              }
-              Slider(value: $appSettings.capacityValidationThreshold, in: 2...20, step: 0.5)
-            }
-
-            Picker(
-              String(localized: "mismatch_behavior", table: "Settings"),
-              selection: $appSettings.mismatchBehavior
-            ) {
-              ForEach(AppSettings.MismatchBehavior.allCases) { behavior in
-                Text(behavior.localizedName).tag(behavior)
-              }
-            }
-          }
-
-          Text(String(localized: "validation_threshold_description", table: "Settings"))
-            .font(.caption)
-            .foregroundStyle(.secondary)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.bottom, 8)
-
-          Divider()
-
-          // 重複したログの記録を許可
-          Toggle(
-            String(localized: "allow_duplicate_records", table: "Settings"),
-            isOn: $appSettings.allowDuplicateRecords
-          )
-          .padding(.top, 8)
-
-          Text(String(localized: "allow_duplicate_records_description", table: "Settings"))
-            .font(.caption)
-            .foregroundStyle(.secondary)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.bottom, 8)
-
-          VStack(alignment: .leading, spacing: 8) {
-            HStack {
-              Text(String(localized: "icloud_storage_threshold", table: "Settings"))
-              Spacer()
-              Text(String(format: "%.0f MB", appSettings.iCloudStorageThresholdMB))
-                .foregroundStyle(.secondary)
-            }
-            Slider(value: $appSettings.iCloudStorageThresholdMB, in: 10...1024, step: 10)
-          }
-
-          if let blocked = appSettings.iCloudSyncBlockedReason {
-            Text(blocked)
-              .font(.caption)
-              .foregroundColor(.red)
-              .frame(maxWidth: .infinity, alignment: .leading)
-          }
-        }
+        Label(
+          String(localized: "advanced_settings", table: "Settings"),
+          systemImage: "gearshape.2.fill"
+        )
       }
     }
 

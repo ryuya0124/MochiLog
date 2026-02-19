@@ -9,9 +9,9 @@ struct Migration_v1_iPhone16e_AvgTemp: Migration {
   static func migrate(modelContext: ModelContext) throws {
     print("[Migration \(version)] Starting migration: \(description)")
 
-    // アプリのバージョンを取得
-    let currentVersion = getCurrentAppVersion()
-    let previousVersion = getPreviousAppVersion()
+    // アプリのバージョンを取得（AppSettings経由で統一）
+    let currentVersion = AppSettings.currentAppVersion
+    let previousVersion = UserDefaults.standard.string(forKey: AppSettings.Keys.lastSeenVersion)
 
     print(
       "[Migration \(version)] Previous version: \(previousVersion ?? "none"), Current version: \(currentVersion ?? "unknown")"
@@ -19,7 +19,7 @@ struct Migration_v1_iPhone16e_AvgTemp: Migration {
 
     // 現在のバージョンをUserDefaultsに保存（次回起動時のため）
     if let currentVersion = currentVersion {
-      UserDefaults.standard.set(currentVersion, forKey: "LastKnownAppVersion")
+      UserDefaults.standard.set(currentVersion, forKey: AppSettings.Keys.lastSeenVersion)
     }
 
     // 全てのBatteryRecordを取得
@@ -76,16 +76,6 @@ struct Migration_v1_iPhone16e_AvgTemp: Migration {
   }
 
   // MARK: - Private Helper Methods
-
-  /// 現在のアプリバージョンを取得
-  private static func getCurrentAppVersion() -> String? {
-    return Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
-  }
-
-  /// 以前のアプリバージョンを取得（UserDefaultsから）
-  private static func getPreviousAppVersion() -> String? {
-    return UserDefaults.standard.string(forKey: "LastKnownAppVersion")
-  }
 
   /// avgTempマイグレーションを実行すべきか判定
   /// - Parameters:

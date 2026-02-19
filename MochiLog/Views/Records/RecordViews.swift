@@ -33,7 +33,7 @@ struct RecordRowView: View {
         Text("\(String(format: "%.1f", health))%")
           .font(.title2)
           .bold()
-          .foregroundColor(healthColor(health))
+          .foregroundStyle(healthColor(health))
         // 動的に計算した診断結果を表示（分析基準に応じて切り替え）
         Text(record.cachedDiagnostic)
           .font(.caption2)
@@ -46,7 +46,7 @@ struct RecordRowView: View {
   private func healthColor(_ percent: Double) -> Color {
     if percent < 80 { return .red }
     if percent < 90 { return .orange }
-    return appSettings.accentColor.color
+    return .green
   }
 }
 // MARK: - Previews ✅
@@ -175,6 +175,7 @@ struct RecordDetailView: View {
                   Text("\(String(format: "%.0f", health))%")
                     .font(.title)
                     .bold()
+                    .foregroundStyle(healthColorLocal(health))
                 }
               }
               .padding(10)
@@ -867,13 +868,13 @@ struct RecordDetailView: View {
   private func healthColorLocal(_ percent: Double) -> Color {
     if percent < 80 { return .red }
     if percent < 90 { return .orange }
-    return AppSettings.shared.accentColor.color
+    return .green
   }
 
   private func healthColor(_ percent: Double) -> Color {
     if percent < 80 { return .red }
     if percent < 90 { return .orange }
-    return AppSettings.shared.accentColor.color
+    return .green
   }
 
   private func settingsDisplayDiagnosticMessage(_ percent: Int?) -> String? {

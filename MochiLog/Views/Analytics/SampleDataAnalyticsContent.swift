@@ -118,7 +118,8 @@ struct SampleDataAnalyticsContent: View {
             CycleTrendView(
               allRecords: filteredRecords,
               unit: unit,
-              initialRange: selectedRange
+              initialRange: selectedRange,
+              allDeviceNames: sortedAllDeviceNames
             )
           }
 
@@ -146,6 +147,7 @@ struct SampleDataAnalyticsContent: View {
           allRecords: filteredRecords,
           unit: unit,
           initialRange: selectedRange,
+          allDeviceNames: sortedAllDeviceNames,
           sharedSelectedRange: $selectedRange,
           sharedWindowEnd: $windowEnd,
           sharedCanMoveNext: canMoveNext,

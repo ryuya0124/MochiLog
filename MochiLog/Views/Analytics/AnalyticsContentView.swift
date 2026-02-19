@@ -17,6 +17,7 @@ struct AnalyticsContentView: View {
   @State private var cachedFilteredRecords: [BatteryRecord] = []
   @State private var cachedVisibleRecords: [BatteryRecord] = []  // 統計用（期間内のみ）
   @State private var cachedChartRecords: [BatteryRecord] = []  // グラフ用（前後バッファ付き）
+  @State private var cachedAllDeviceNames: [String] = []  // チャート用デバイス名（cachedChartRecordsと同期）
   @State private var cachedStartDay: Date = Date()
   @State private var cachedEndDay: Date = Date()
   @State private var cachedUnit: AppSettings.ChartUnit = .day
@@ -28,11 +29,6 @@ struct AnalyticsContentView: View {
   // MARK: - フィルタ済みレコード
   private var filteredRecords: [BatteryRecord] {
     cachedFilteredRecords
-  }
-
-  /// 全デバイス名（ソート済み）— チャートの色安定割り当て用
-  private var sortedAllDeviceNames: [String] {
-    Array(Set(cachedFilteredRecords.map { $0.deviceName })).sorted()
   }
 
   // MARK: - ナビゲーション
@@ -117,14 +113,15 @@ struct AnalyticsContentView: View {
                     canMoveNext: canMoveNext,
                     canMovePrevious: canMovePrevious,
                     shiftWindow: shiftWindow,
-                    allDeviceNames: sortedAllDeviceNames
+                    allDeviceNames: cachedAllDeviceNames
                   )
 
                   // サイクル推移グラフ
                   CycleTrendView(
                     allRecords: cachedFilteredRecords,
                     unit: cachedUnit,
-                    initialRange: selectedRange
+                    initialRange: selectedRange,
+                    allDeviceNames: cachedAllDeviceNames
                   )
                 }
 
@@ -146,14 +143,14 @@ struct AnalyticsContentView: View {
                 canMoveNext: canMoveNext,
                 canMovePrevious: canMovePrevious,
                 shiftWindow: shiftWindow,
-                allDeviceNames: sortedAllDeviceNames
+                allDeviceNames: cachedAllDeviceNames
               )
 
               // サイクル推移グラフ（iPhoneでは親と期間を共有）
               CycleTrendView(
                 allRecords: cachedFilteredRecords,
                 unit: cachedUnit,
-                initialRange: selectedRange,
+                initialRange: selectedRange, allDeviceNames: cachedAllDeviceNames,
                 sharedSelectedRange: $selectedRange,
                 sharedWindowEnd: $windowEnd,
                 sharedCanMoveNext: canMoveNext,
@@ -269,10 +266,18 @@ struct AnalyticsContentView: View {
     isPreparingChartData = true
     isLoading = true
 
-    // 日付配列を抽出（Sendable対応）
-    let recordDates = cachedFilteredRecords.map { $0.logDate }
+    // スナップショットを取得（デバイス切り替え時のクラッシュ防止）
+    let filteredSnapshot = cachedFilteredRecords
+    let recordDates = filteredSnapshot.map { $0.logDate }
     let currentWindowEnd = windowEnd
     let currentRange = selectedRange
+
+    // 全デバイス名を全レコードから計算（色を固定するため、フィルタ前のデータを使用）
+    let allDeviceNamesSnapshot = Array(Set(records.map { $0.deviceName })).sorted()
+
+    // フィルタ済みレコードをUncheckedSendableでラップ（バックグラウンドクロージャでのキャプチャ用）
+    // 注意: filteredSnapshotはメインスレッドでのみアクセスすること
+    let snapshotBox = UncheckedSendable(filteredSnapshot)
 
     // ウィンドウ計算はMainActorで実行（軽量）
     let windowStartTime = CFAbsoluteTimeGetCurrent()
@@ -306,15 +311,19 @@ struct AnalyticsContentView: View {
       DispatchQueue.main.async {
         let uiUpdateStartTime = CFAbsoluteTimeGetCurrent()
 
+        // ボックスから取り出し
+        let snapshot = snapshotBox.value
+
+        // スナップショットの結果を常に適用（クラッシュ防止のため）
         let visibleStart = result.startDay
         let visibleEnd = result.endDay
 
-        // 統計用
-        cachedVisibleRecords = visibleIndexes.map { cachedFilteredRecords[$0] }
+        // 統計用（スナップショットを使用）
+        cachedVisibleRecords = visibleIndexes.map { snapshot[$0] }
 
-        // チャート描画用
+        // チャート描画用（スナップショットを使用）
         cachedChartRecords = ChartWindowNavigator.visibleRecordsWithContext(
-          in: cachedFilteredRecords,
+          in: snapshot,
           start: visibleStart,
           end: visibleEnd
         )
@@ -322,8 +331,8 @@ struct AnalyticsContentView: View {
         cachedStartDay = visibleStart
         cachedEndDay = visibleEnd
         cachedUnit = result.unit
+        cachedAllDeviceNames = allDeviceNamesSnapshot  // 全デバイス名（フィルタ前）を使用
         lastParametersHash = parametersHash
-        isPreparingChartData = false
 
         let uiUpdateElapsed = (CFAbsoluteTimeGetCurrent() - uiUpdateStartTime) * 1000
         let totalElapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
@@ -331,22 +340,39 @@ struct AnalyticsContentView: View {
           "[Performance] prepareChartDataIfNeeded - UI更新: \(String(format: "%.2f", uiUpdateElapsed))ms"
         )
         print(
-          "[Performance] prepareChartDataIfNeeded完了（合計）: \(String(format: "%.2f", totalElapsed))ms")
+          "[Performance] prepareChartDataIfNeeded完了（合計）: \(String(format: "%.2f", totalElapsed))ms"
+        )
         print("[Performance] isLoadingをfalseに設定")
 
         isLoading = false
+        isPreparingChartData = false
 
-        if let pending = pendingParametersHash {
+        // 現在のパラメータハッシュと比較し、変更があれば再実行
+        var currentHasher = Hasher()
+        for record in cachedFilteredRecords {
+          currentHasher.combine(record.logDate)
+          currentHasher.combine(record.deviceName)
+        }
+        currentHasher.combine(windowEnd)
+        currentHasher.combine(selectedRange)
+        currentHasher.combine(selectedDevice)
+        let currentParametersHash = currentHasher.finalize()
+
+        if parametersHash != currentParametersHash || pendingParametersHash != nil {
           pendingParametersHash = nil
-          if pending != parametersHash {
-            print("[Performance] prepareChartDataIfNeeded - 保留中の処理を再実行")
-            DispatchQueue.main.async {
-              prepareChartDataIfNeeded()
-            }
+          print("[Performance] prepareChartDataIfNeeded - パラメータ変更検出、再実行")
+          DispatchQueue.main.async {
+            prepareChartDataIfNeeded()
           }
         }
       }
     }
+  }
+
+  // MARK: - Sendable Helper
+  private final class UncheckedSendable<T>: @unchecked Sendable {
+    let value: T
+    init(_ value: T) { self.value = value }
   }
 
   @MainActor

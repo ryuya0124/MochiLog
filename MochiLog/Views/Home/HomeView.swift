@@ -11,6 +11,7 @@ struct MainTabView: View {
   private let appSettings = AppSettings.shared
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @State private var showingTutorial = false
+  @State private var showingDiscordAnnouncement = false
   @State private var selectedTab: AppTab
   @State private var accentColor: AppSettings.ThemeColor
 
@@ -67,9 +68,21 @@ struct MainTabView: View {
       let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
       print("[Performance] MainTabView.body構築完了: \(String(format: "%.2f", elapsed))ms")
 
-      // 初回起動時にチュートリアルを表示
+      // 初回起動時にチュートリアルを表示（データがない場合のみ）
+      let hasRecords = !RecordDataManager.shared.recordsDescending.isEmpty
+
       if !appSettings.hasCompletedTutorial {
-        showingTutorial = true
+        if hasRecords {
+          // データが既に存在する場合はチュートリアルをスキップし、完了済みにする
+          appSettings.hasCompletedTutorial = true
+          checkAndShowDiscordAnnouncement()
+        } else {
+          // データがない場合のみチュートリアルを表示
+          showingTutorial = true
+        }
+      } else {
+        // チュートリアル完了済みの場合、アップデート後のDiscord案内をチェック
+        checkAndShowDiscordAnnouncement()
       }
     }
     .onChange(of: selectedTab) { oldValue, newValue in
@@ -77,6 +90,9 @@ struct MainTabView: View {
     }
     .sheet(isPresented: $showingTutorial) {
       TutorialView()
+    }
+    .sheet(isPresented: $showingDiscordAnnouncement) {
+      DiscordAnnouncementView()
     }
     // AppSettings.selectedTabIndexの変更を監視してselectedTabに反映
     .onReceive(appSettings.$selectedTabIndex.removeDuplicates()) { newValue in
@@ -175,6 +191,59 @@ struct MainTabView: View {
     }
     .tint(accentColor.color)
   }
+
+  // MARK: - Helper Methods
+
+  /// アップデート検知：前回起動時のバージョンと現在のバージョンを比較し、Discord案内を表示
+  private func checkAndShowDiscordAnnouncement() {
+    guard let currentVersion = AppSettings.currentAppVersion else {
+      return
+    }
+
+    let lastVersion = appSettings.lastSeenVersion
+
+    // 初回起動（lastVersion == nil）の場合は表示しない
+    // アップデート時（lastVersion != nil かつ 2.1.0以下 -> 現在のバージョン）の場合のみ表示
+    if let lastVersion = lastVersion, lastVersion != currentVersion {
+      // 2.1.0以下からのアップデートかチェック
+      if compareVersion(lastVersion, lessThanOrEqual: "2.1.0") {
+        print("[MainTabView] アップデート検知（2.1.0以下から）: \(lastVersion) -> \(currentVersion)")
+        showingDiscordAnnouncement = true
+      }
+      // バージョンを更新（次回以降は表示しない）
+      appSettings.lastSeenVersion = currentVersion
+    } else if lastVersion == nil {
+      // 初回起動時はバージョンを記録するだけ（チュートリアル後なので通常ここには来ない）
+      appSettings.lastSeenVersion = currentVersion
+    }
+  }
+
+  /// バージョン番号を比較する
+  /// - Parameters:
+  ///   - version: 比較元のバージョン（例: "2.0.5"）
+  ///   - target: 比較対象のバージョン（例: "2.1.0"）
+  /// - Returns: version <= target の場合 true
+  private func compareVersion(_ version: String, lessThanOrEqual target: String) -> Bool {
+    let versionComponents = version.split(separator: ".").compactMap { Int($0) }
+    let targetComponents = target.split(separator: ".").compactMap { Int($0) }
+
+    // 配列の長さを揃える
+    let maxLength = max(versionComponents.count, targetComponents.count)
+    let v = versionComponents + Array(repeating: 0, count: maxLength - versionComponents.count)
+    let t = targetComponents + Array(repeating: 0, count: maxLength - targetComponents.count)
+
+    // 各要素を比較
+    for i in 0..<maxLength {
+      if v[i] < t[i] {
+        return true
+      } else if v[i] > t[i] {
+        return false
+      }
+    }
+
+    // 完全に一致した場合も true（以下）
+    return true
+  }
 }
 
 // MARK: - SwiftDataレコード監視（MainTabViewの再描画抑制用）
@@ -227,6 +296,10 @@ struct HomeView: View {
   @State private var showingDebugLogsSheet = false
   @State private var showingReorderSheet = false
   @State private var showingTutorial = false
+
+  // デバイス手動選択モード用
+  @State var showingDeviceSelectionFromRegistered = false
+  @State var showingDeviceSelectionFullList = false
 
   @State private var showingSampleData = AppSettings.shared.showingSampleData
   @State private var showPopupOnLoad = AppSettings.shared.showPopupOnLoad
@@ -404,6 +477,8 @@ struct HomeView: View {
         showingWatchSelection = false
         showingManualDevicePicker = false
         showingRegisterWatchAlert = false
+        showingDeviceSelectionFromRegistered = false
+        showingDeviceSelectionFullList = false
       }
       .onReceive(
         NotificationCenter.default.publisher(for: NSNotification.Name("ParseErrorSaved"))
@@ -601,6 +676,22 @@ struct HomeView: View {
               showingRegisterWatchAlert = true
             }
           }
+        }
+      }
+      // MARK: - デバイス手動選択モード用シート
+      .sheet(isPresented: $showingDeviceSelectionFromRegistered) {
+        // 登録済みデバイスから選択
+        RegisteredDeviceSelectSheet { selectedDevice in
+          completeRecordWithSelectedDevice(
+            name: selectedDevice,
+            identifier: DeviceLibrary.getIdentifierForDeviceName(selectedDevice)
+          )
+        }
+      }
+      .sheet(isPresented: $showingDeviceSelectionFullList) {
+        // 全端末リストから選択（iPhone/iPadのみ）
+        HierarchicalDevicePickerView(allowedCategories: [.iphone, .ipad]) { name, identifier in
+          completeRecordWithSelectedDevice(name: name, identifier: identifier)
         }
       }
     }
