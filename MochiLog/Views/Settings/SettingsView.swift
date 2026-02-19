@@ -261,7 +261,7 @@ struct SettingsView: View {
 
         Divider()
 
-        // 右側：選択されたカテゴリの詳細（Apple WatchのみList表示）
+        // 右側：選択されたカテゴリの詳細（Apple Watch・高度な設定はList表示）
         if selectedCategory == .appleWatch {
           VStack(spacing: 0) {
             Divider()  // ヘッダーとの境界線
@@ -269,6 +269,13 @@ struct SettingsView: View {
               showingWatchPicker: $showingWatchPicker,
               appSettings: appSettings
             )
+          }
+          .frame(maxHeight: .infinity)
+          .clipped()
+        } else if selectedCategory == .advanced {
+          VStack(spacing: 0) {
+            Divider()  // ヘッダーとの境界線
+            AdvancedSettingsView(appSettings: appSettings)
           }
           .frame(maxHeight: .infinity)
           .clipped()
@@ -313,7 +320,7 @@ struct SettingsView: View {
                 case .debug:
                   DebugSettingsView(appSettings: appSettings)
                 case .advanced:
-                  AdvancedSettingsView(appSettings: appSettings)
+                  EmptyView()
                 }
               }
               .padding(.top)
