@@ -1,8 +1,9 @@
 import Foundation
-import SwiftData
 
 /// レコードデータを一元管理し、複数のビュー間でデータを共有するマネージャー
 /// タブ切り替え時のパフォーマンス向上のため、@Queryを一箇所に集約
+/// 注: DataStoreに置き換え済み。互換性のため残存。
+@available(iOS 17, *)
 @Observable
 class RecordDataManager {
   /// シングルトンインスタンス

@@ -164,7 +164,6 @@ struct DonationView: View {
           dismiss()
         }
         .presentationDetents([.large])
-        .presentationCornerRadius(28)
         .presentationDragIndicator(.visible)
       }
       .overlay {

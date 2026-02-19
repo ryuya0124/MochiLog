@@ -1,6 +1,5 @@
 import Charts
 import Combine
-import SwiftData
 // HomeView.swift
 // 別ファイルへ分離
 import SwiftUI
@@ -8,6 +7,7 @@ import UniformTypeIdentifiers
 
 // MARK: - メインタブビュー
 struct MainTabView: View {
+  @EnvironmentObject var dataStore: DataStore
   private let appSettings = AppSettings.shared
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @State private var showingTutorial = false
@@ -69,7 +69,7 @@ struct MainTabView: View {
       print("[Performance] MainTabView.body構築完了: \(String(format: "%.2f", elapsed))ms")
 
       // 初回起動時にチュートリアルを表示（データがない場合のみ）
-      let hasRecords = !RecordDataManager.shared.recordsDescending.isEmpty
+      let hasRecords = !dataStore.recordsDescending.isEmpty
 
       if !appSettings.hasCompletedTutorial {
         if hasRecords {
@@ -85,8 +85,8 @@ struct MainTabView: View {
         checkAndShowDiscordAnnouncement()
       }
     }
-    .onChange(of: selectedTab) { oldValue, newValue in
-      print("[Performance] タブ切り替え: \(oldValue.rawValue) -> \(newValue.rawValue)")
+    .onChange(of: selectedTab) { newValue in
+      print("[Performance] タブ切り替え: -> \(newValue.rawValue)")
     }
     .sheet(isPresented: $showingTutorial) {
       TutorialView()
@@ -104,7 +104,7 @@ struct MainTabView: View {
       accentColor = newValue
     }
     // selectedTabの変更をselectedTabIndexに反映
-    .onChange(of: selectedTab) { _, newValue in
+    .onChange(of: selectedTab) { newValue in
       if appSettings.selectedTabIndex != newValue.rawValue {
         appSettings.selectedTabIndex = newValue.rawValue
       }
@@ -246,37 +246,26 @@ struct MainTabView: View {
   }
 }
 
-// MARK: - SwiftDataレコード監視（MainTabViewの再描画抑制用）
+// MARK: - DataStoreレコード監視（MainTabViewの再描画抑制用）
 private struct RecordsObserverView: View {
-  private let recordDataManager = RecordDataManager.shared
-
-  /// SwiftDataから全レコードを取得（降順：最新が先頭）
-  @Query(sort: \BatteryRecord.logDate, order: .reverse)
-  private var records: [BatteryRecord]
+  @EnvironmentObject private var dataStore: DataStore
 
   var body: some View {
     Color.clear
       .frame(width: 0, height: 0)
       .allowsHitTesting(false)
-      .onAppear {
-        recordDataManager.updateRecords(records)
-      }
-      .onChange(of: records) { _, newRecords in
-        recordDataManager.updateRecords(newRecords)
-      }
   }
 }
 
 // MARK: - ホームビュー本体
 struct HomeView: View {
-  @Environment(\.modelContext) var modelContext
+  @EnvironmentObject var dataStore: DataStore
   @Environment(\.horizontalSizeClass) var horizontalSizeClass
   let appSettings = AppSettings.shared
-  @State private var recordDataManager = RecordDataManager.shared
 
-  /// RecordDataManagerからレコードを取得（キャッシュ済み）
+  /// DataStoreからレコードを取得（キャッシュ済み）
   var records: [BatteryRecord] {
-    recordDataManager.recordsDescending
+    dataStore.recordsDescending
   }
 
   @State private var showingFilePicker = false
@@ -390,8 +379,15 @@ struct HomeView: View {
           RecordDetailView(record: record)
         }
       }
-      .navigationDestination(item: $navigatingRecord) { record in
-        RecordDetailView(record: record)
+      .navigationDestination(
+        isPresented: Binding(
+          get: { navigatingRecord != nil },
+          set: { if !$0 { navigatingRecord = nil } }
+        )
+      ) {
+        if let record = navigatingRecord {
+          RecordDetailView(record: record)
+        }
       }
       .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ProcessSharedLog")))
       {
@@ -520,11 +516,11 @@ struct HomeView: View {
         // Apple WatchにデータをNシンク
         syncRecordsToWatch()
       }
-      .onChange(of: records.count) { _, _ in
+      .onChange(of: records.count) { _ in
         // レコード数が変更されたらWatchに同期
         syncRecordsToWatch()
       }
-      .onChange(of: showingSampleData) { _, newValue in
+      .onChange(of: showingSampleData) { newValue in
         // サンプルモードが変更されたらWatchに同期
         syncRecordsToWatch()
 
@@ -566,12 +562,12 @@ struct HomeView: View {
               designCapacityOverride: DeviceLibrary.getCapacity(for: name)
             )
             withAnimation(.snappy) {
-              modelContext.insert(record)
+              dataStore.insert(record)
             }
             // 保存はアニメーション外で行う
             Task.detached(priority: .userInitiated) {
               await MainActor.run {
-                try? self.modelContext.save()
+                self.dataStore.save()
               }
             }
             selectedRecord = nil
@@ -612,12 +608,12 @@ struct HomeView: View {
               designCapacityOverride: DeviceLibrary.getCapacity(for: selectedWatch)
             )
             withAnimation(.snappy) {
-              modelContext.insert(record)
+              dataStore.insert(record)
             }
             // 保存はアニメーション外で行う
             Task.detached(priority: .userInitiated) {
               await MainActor.run {
-                try? self.modelContext.save()
+                self.dataStore.save()
               }
             }
             selectedRecord = nil
@@ -659,12 +655,12 @@ struct HomeView: View {
             designCapacityOverride: DeviceLibrary.getCapacity(for: name)
           )
           withAnimation(.snappy) {
-            modelContext.insert(record)
+            dataStore.insert(record)
           }
           // 保存はアニメーション外で行う
           Task.detached(priority: .userInitiated) {
             await MainActor.run {
-              try? self.modelContext.save()
+              self.dataStore.save()
             }
           }
           selectedRecord = nil
@@ -727,11 +723,17 @@ struct HomeView: View {
   private var noDataView: some View {
     GeometryReader { geo in
       ScrollView {
-        ContentUnavailableView {
-          Label(String(localized: "no_data", table: "Home"), systemImage: "battery.0")
-        } description: {
+        VStack(spacing: 12) {
+          Image(systemName: "battery.0")
+            .font(.system(size: 48))
+            .foregroundColor(.secondary)
+          Text(String(localized: "no_data", table: "Home"))
+            .font(.title2)
+            .fontWeight(.semibold)
           Text(String(localized: "no_data_description", table: "Home"))
-        } actions: {
+            .font(.subheadline)
+            .foregroundColor(.secondary)
+            .multilineTextAlignment(.center)
           VStack(spacing: 12) {
             Button {
               showingTutorial = true
@@ -752,11 +754,11 @@ struct HomeView: View {
         // 「実スクロール」を作らないため、viewportより 1pt 小さくする
         .frame(minHeight: max(0, viewportHeight - 1))
       }
-      .scrollBounceBehavior(.always)  // バウンスは常に有効
+      .modifier(ScrollBounceBehaviorModifier())
       .onAppear {
         viewportHeight = geo.size.height
       }
-      .onChange(of: geo.size.height) { oldValue, newValue in
+      .onChange(of: geo.size.height) { newValue in
         // 回転など「大きい変化」だけ追従。Large Title の伸縮由来の揺れは無視。
         if abs(newValue - viewportHeight) > 80 {
           viewportHeight = newValue

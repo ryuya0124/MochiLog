@@ -1,6 +1,5 @@
 // HomeView+Utilities.swift
 // ユーティリティメソッドをHomeViewから分離
-import SwiftData
 import SwiftUI
 import UIKit  // for UIImage in Bundle extension
 
@@ -76,16 +75,16 @@ extension HomeView {
     withAnimation(.snappy) {
       for item in items {
         // 選択中のレコードが削除対象なら先に選択を解除
-        if let selected = selectedRecord, selected === item {
+        if let selected = selectedRecord, selected.id == item.id {
           selectedRecord = nil
         }
-        modelContext.delete(item)
+        dataStore.delete(item)
       }
     }
     // 保存はアニメーション外で行う
     Task.detached(priority: .userInitiated) {
       await MainActor.run {
-        try? self.modelContext.save()
+        self.dataStore.save()
       }
     }
   }
@@ -190,7 +189,7 @@ extension HomeView {
       needsSave = true
     }
     if needsSave {
-      try? modelContext.save()
+      try? dataStore.save()
     }
   }
 
@@ -241,6 +240,6 @@ extension HomeView {
         needsSave = true
       }
     }
-    if needsSave { try? modelContext.save() }
+    if needsSave { try? dataStore.save() }
   }
 }

@@ -174,7 +174,7 @@ struct SampleDataAnalyticsContent: View {
         selectedRange = autoRange
       }
     }
-    .onChange(of: selectedRange) { _, newValue in
+    .onChange(of: selectedRange) { newValue in
       windowEnd = ChartWindowNavigator.adjustedWindowEndForRangeChange(
         range: newValue,
         currentEnd: windowEnd,

@@ -1,6 +1,5 @@
 import Combine
 import Foundation
-import SwiftData
 import WatchConnectivity
 
 /// iPhoneからApple Watchへデータを送信するためのWatch Connectivity Manager

@@ -1,12 +1,11 @@
 import Combine
-import SwiftData
 import SwiftUI
 
 // MARK: - 分析ビュー
 struct AnalyticsView: View {
   @State private var selectedDevice: String?
   private let appSettings = AppSettings.shared
-  @State private var recordDataManager = RecordDataManager.shared
+  @EnvironmentObject private var dataStore: DataStore
 
   @State private var selectedRange: RangePreset = .oneMonth
   // 表示ウィンドウの終了日時（endDate）。範囲を前後に移動すると変更される。デフォルトは現在時刻。
@@ -20,14 +19,14 @@ struct AnalyticsView: View {
   @State private var savedRangeBeforeSample: RangePreset?
   @State private var savedWindowEndBeforeSample: Date?
 
-  /// RecordDataManagerからレコードを取得（キャッシュ済み、昇順）
+  /// DataStoreからレコードを取得（キャッシュ済み、昇順）
   private var records: [BatteryRecord] {
-    recordDataManager.recordsAscending
+    dataStore.recordsAscending
   }
 
-  /// RecordDataManagerからデバイス名リストを取得（キャッシュ済み）
+  /// DataStoreからデバイス名リストを取得（キャッシュ済み）
   private var cachedDeviceNames: [String] {
-    recordDataManager.deviceNames
+    dataStore.deviceNames
   }
 
   /// データの分布に基づいて初期レンジを決定する（短い期間しかなければ小さいレンジを選ぶ）
@@ -91,10 +90,10 @@ struct AnalyticsView: View {
             "[Performance] AnalyticsView.onAppear完了: \(String(format: "%.2f", appearElapsed))ms")
           print("[Performance] AnalyticsView 合計初期化時間: \(String(format: "%.2f", totalElapsed))ms")
         }
-        .onChange(of: selectedDevice) {
+        .onChange(of: selectedDevice) { _ in
           handleDeviceChange()
         }
-        .onChange(of: selectedRange) { _, newValue in
+        .onChange(of: selectedRange) { newValue in
           print("[Redraw] selectedRange onChange: \(newValue.rawValue)")
           // サンプルモード中は保存・ウィンドウ更新を行わない
           guard !showingSampleData else {
@@ -120,7 +119,7 @@ struct AnalyticsView: View {
             records: filteredRecords
           )
         }
-        .onChange(of: showingSampleData) { _, newValue in
+        .onChange(of: showingSampleData) { newValue in
           print("[Redraw] showingSampleData onChange: \(newValue)")
           if newValue {
             saveRangeBeforeSampleIfNeeded()
@@ -188,13 +187,17 @@ struct AnalyticsView: View {
   private func noDataView(geometry: GeometryProxy) -> some View {
     GeometryReader { geo in
       ScrollView {
-        ContentUnavailableView {
-          Label(
-            String(localized: "no_data", table: "Home"),
-            systemImage: "chart.line.uptrend.xyaxis")
-        } description: {
+        VStack(spacing: 16) {
+          Image(systemName: "chart.line.uptrend.xyaxis")
+            .font(.system(size: 48))
+            .foregroundStyle(.secondary)
+          Text(String(localized: "no_data", table: "Home"))
+            .font(.title3)
+            .fontWeight(.semibold)
           Text(String(localized: "no_data_description", table: "Home"))
-        } actions: {
+            .font(.subheadline)
+            .foregroundStyle(.secondary)
+            .multilineTextAlignment(.center)
           VStack(spacing: 12) {
             Button {
               showingTutorial = true
@@ -216,11 +219,11 @@ struct AnalyticsView: View {
         // 「実スクロール」を作らないため、viewportより 1pt 小さくする
         .frame(minHeight: max(0, viewportHeight - 1))
       }
-      .scrollBounceBehavior(.always)  // バウンスは常に有効
+      .modifier(ScrollBounceBehaviorModifier())  // バウンスは常に有効（iOS 16.4+）
       .onAppear {
         viewportHeight = geo.size.height
       }
-      .onChange(of: geo.size.height) { oldValue, newValue in
+      .onChange(of: geo.size.height) { newValue in
         // 回転など「大きい変化」だけ追従。Large Title の伸縮由来の揺れは無視。
         if abs(newValue - viewportHeight) > 80 {
           viewportHeight = newValue
@@ -331,7 +334,18 @@ struct AnalyticsView: View {
   }
 }
 
+// MARK: - ScrollBounceBehavior iOS 16.4+ 互換モディファイア
+struct ScrollBounceBehaviorModifier: ViewModifier {
+  func body(content: Content) -> some View {
+    if #available(iOS 16.4, *) {
+      content.scrollBounceBehavior(.always)
+    } else {
+      content
+    }
+  }
+}
+
 #Preview {
   AnalyticsView()
-    .modelContainer(for: BatteryRecord.self, inMemory: true)
+    .environmentObject(DataStore.create(iCloudEnabled: false))
 }

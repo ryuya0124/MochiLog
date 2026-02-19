@@ -253,7 +253,7 @@ struct CycleTrendView: View {
       // タブ切り替え時にリセット → 次回表示時に遅延レンダリングが再度有効になる
       isChartReady = false
     }
-    .onChange(of: selectedRange) {
+    .onChange(of: selectedRange) { _ in
       // レンジ変更時のみアニメーション実行
       animateChart = false
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
@@ -262,7 +262,7 @@ struct CycleTrendView: View {
         }
       }
     }
-    .onChange(of: windowEnd) {
+    .onChange(of: windowEnd) { _ in
       // iPhone での連動：親の windowEnd が変わったらアニメーション実行
       // （戻る・進むボタンで期間移動した時）
       if sharedWindowEnd != nil {
@@ -274,7 +274,7 @@ struct CycleTrendView: View {
         }
       }
     }
-    .onChange(of: initialRange) {
+    .onChange(of: initialRange) { _ in
       // iPad独立モードで、ユーザー操作がまだない場合は initialRange の変更に追従
       // （サンプルモード開始時などに外部から3年レンジを設定できるようにする）
       if !isUserInteracted && sharedSelectedRange == nil {

@@ -1,22 +1,20 @@
-import SwiftData
 import SwiftUI
 import UniformTypeIdentifiers
 
 // MARK: - 設定ビュー
 struct SettingsView: View {
-  @Environment(\.modelContext) private var modelContext
+  @EnvironmentObject private var dataStore: DataStore
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
   @StateObject private var appSettings = AppSettings.shared
-  @State private var recordDataManager = RecordDataManager.shared
 
-  /// RecordDataManagerからレコードを取得（キャッシュ済み）
+  /// DataStoreからレコードを取得（キャッシュ済み）
   private var records: [BatteryRecord] {
-    recordDataManager.recordsDescending
+    dataStore.recordsDescending
   }
 
   /// 利用可能なデバイス名リスト（ソート済み）
   private var availableDevices: [String] {
-    let deviceNames = recordDataManager.deviceNames
+    let deviceNames = dataStore.deviceNames
 
     // AppSettings.deviceSortOrderでソート
     if appSettings.deviceSortOrder.isEmpty {
@@ -198,8 +196,8 @@ struct SettingsView: View {
           print("[SettingsView] fileExporter callback called")
           handleExportResult(result)
         }
-        .onChange(of: showingExportSheet) { oldValue, newValue in
-          print("[SettingsView] showingExportSheet changed from \(oldValue) to \(newValue)")
+        .onChange(of: showingExportSheet) { _ in
+          print("[SettingsView] showingExportSheet changed")
         }
         .fileImporter(
           isPresented: $showingImportSheet,
@@ -209,8 +207,8 @@ struct SettingsView: View {
           print("[SettingsView] fileImporter callback called")
           handleImportResult(result)
         }
-        .onChange(of: showingImportSheet) { oldValue, newValue in
-          print("[SettingsView] showingImportSheet changed from \(oldValue) to \(newValue)")
+        .onChange(of: showingImportSheet) { _ in
+          print("[SettingsView] showingImportSheet changed")
         }
         .alert(
           String(localized: "import_result_title", table: "Settings"),
@@ -305,7 +303,7 @@ struct SettingsView: View {
                     appSettings: appSettings,
                     availableDevices: availableDevices,
                     records: records,
-                    modelContext: modelContext,
+                    dataStore: dataStore,
                     showingExportSheet: $showingExportSheet,
                     showingImportSheet: $showingImportSheet,
                     showingImportAlert: $showingImportAlert,
@@ -346,35 +344,38 @@ struct SettingsView: View {
   private var settingsContent: some View {
     // MARK: - 一般
     Section(String(localized: "general", table: "Settings")) {
-      Toggle(
-        String(localized: "enable_icloud_sync", table: "Settings"),
-        isOn: Binding(
-          get: {
-            localICloudToggle
-          },
-          set: { newValue in
-            localICloudToggle = newValue
-            Task {
-              let result = await appSettings.attemptSetICloudSyncAsync(newValue)
-              await MainActor.run {
-                switch result {
-                case .success:
-                  break
-                case .failure(let err):
-                  localICloudToggle = appSettings.iCloudSyncEnabled
-                  iCloudErrorMessage =
-                    err.errorDescription
-                    ?? String(localized: "icloud_sync_failed", table: "Settings")
-                  showingICloudErrorAlert = true
+      // iCloud同期はiOS 17以降のみ（SwiftData + CloudKit）
+      if #available(iOS 17, *) {
+        Toggle(
+          String(localized: "enable_icloud_sync", table: "Settings"),
+          isOn: Binding(
+            get: {
+              localICloudToggle
+            },
+            set: { newValue in
+              localICloudToggle = newValue
+              Task {
+                let result = await appSettings.attemptSetICloudSyncAsync(newValue)
+                await MainActor.run {
+                  switch result {
+                  case .success:
+                    break
+                  case .failure(let err):
+                    localICloudToggle = appSettings.iCloudSyncEnabled
+                    iCloudErrorMessage =
+                      err.errorDescription
+                      ?? String(localized: "icloud_sync_failed", table: "Settings")
+                    showingICloudErrorAlert = true
+                  }
                 }
               }
-            }
-          }))
+            }))
 
-      if let blocked = appSettings.iCloudSyncBlockedReason {
-        Text(blocked)
-          .font(.caption)
-          .foregroundColor(.red)
+        if let blocked = appSettings.iCloudSyncBlockedReason {
+          Text(blocked)
+            .font(.caption)
+            .foregroundColor(.red)
+        }
       }
 
       Picker(
@@ -644,13 +645,8 @@ struct SettingsView: View {
   }
 
   private func deleteAllRecords() {
-    // modelContextから直接フェッチして削除
-    let descriptor = FetchDescriptor<BatteryRecord>()
-    guard let allRecords = try? modelContext.fetch(descriptor) else { return }
-    for record in allRecords {
-      modelContext.delete(record)
-    }
-    try? modelContext.save()
+    dataStore.deleteAll()
+    dataStore.save()
 
     // Remove any persisted shared log fallback
     UserDefaults.standard.removeObject(forKey: "PendingSharedLogText")
@@ -662,14 +658,8 @@ struct SettingsView: View {
   }
 
   private func deleteRecordsForDevice(_ deviceName: String) {
-    // modelContextから直接フェッチして削除
-    let descriptor = FetchDescriptor<BatteryRecord>(
-      predicate: #Predicate { $0.deviceName == deviceName })
-    guard let recordsToDelete = try? modelContext.fetch(descriptor) else { return }
-    for record in recordsToDelete {
-      modelContext.delete(record)
-    }
-    try? modelContext.save()
+    dataStore.deleteRecords(for: deviceName)
+    dataStore.save()
 
     // Notify other components (HomeView etc.) to clear transient UI state
     NotificationCenter.default.post(
@@ -737,7 +727,7 @@ struct SettingsView: View {
         do {
           let importResult = try DataImportService.importFromYAML(
             url: url,
-            modelContext: modelContext,
+            dataStore: dataStore,
             existingRecords: records,
             allowDuplicates: appSettings.allowDuplicateRecords
           )
@@ -803,5 +793,5 @@ private struct SettingsCardGroupBoxStyle: GroupBoxStyle {
 
 #Preview {
   SettingsView()
-    .modelContainer(for: BatteryRecord.self, inMemory: true)
+    .environmentObject(DataStore.create(iCloudEnabled: false))
 }

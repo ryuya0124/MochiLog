@@ -1,10 +1,8 @@
-import SwiftData
 import SwiftUI
 
 /// 開発者向けデバッグオプション
 struct DeveloperOptionsView: View {
   @Environment(\.dismiss) private var dismiss
-  @Environment(\.modelContext) private var modelContext
   @StateObject private var appSettings = AppSettings.shared
 
   @State private var lastSeenVersionInput: String = ""
@@ -157,7 +155,9 @@ struct DeveloperOptionsView: View {
       .alert("マイグレーションをリセット", isPresented: $showingMigrationResetAlert) {
         Button("キャンセル", role: .cancel) {}
         Button("リセット", role: .destructive) {
-          MigrationManager.resetAllMigrations()
+          if #available(iOS 17, *) {
+            MigrationManager.resetAllMigrations()
+          }
         }
       } message: {
         Text("全てのマイグレーションフラグをリセットします。次回起動時に再実行されます。")

@@ -1,6 +1,5 @@
 import Charts
 import Foundation
-import SwiftData
 // RecordViews.swift
 // 一覧行ビューと詳細ビュー
 import SwiftUI
@@ -129,7 +128,7 @@ struct RecordDetailView: View {
   @Environment(\.displayScale) private var displayScale
   @Environment(\.colorScheme) private var colorScheme
 
-  @Environment(\.modelContext) private var modelContext
+  @EnvironmentObject private var dataStore: DataStore
   @State private var shareImage: Image?
   @State private var isShowingSharingSheet = false
   @State private var shareItems: [Any] = []
@@ -723,11 +722,7 @@ struct RecordDetailView: View {
   @MainActor
   private func generateChartImageAsync() async -> UIImage? {
     let deviceName = record.deviceName
-    let descriptor = FetchDescriptor<BatteryRecord>(
-      predicate: #Predicate { $0.deviceName == deviceName },
-      sortBy: [SortDescriptor(\.logDate)]
-    )
-    let deviceRecords = (try? modelContext.fetch(descriptor)) ?? []
+    let deviceRecords = dataStore.fetchRecords(for: deviceName)
 
     guard !deviceRecords.isEmpty else { return nil }
 

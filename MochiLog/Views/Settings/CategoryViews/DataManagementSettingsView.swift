@@ -1,4 +1,3 @@
-import SwiftData
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -10,7 +9,7 @@ struct DataManagementSettingsView: View {
   @ObservedObject var appSettings: AppSettings
   let availableDevices: [String]  // 外部から受け取る
   let records: [BatteryRecord]  // エクスポート用
-  let modelContext: ModelContext  // インポート用
+  let dataStore: DataStore  // インポート用
 
   @Binding var showingExportSheet: Bool
   @Binding var showingImportSheet: Bool

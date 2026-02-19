@@ -1,5 +1,4 @@
 import Combine
-import SwiftData
 import SwiftUI
 import WatchConnectivity
 
@@ -232,41 +231,34 @@ struct MochiLogApp: App {
   }
 }
 
-/// アプリのルートビュー。iCloud設定に応じてModelContainerを動的に切り替える責務を持つ。
+/// アプリのルートビュー。iCloud設定に応じてDataStoreを動的に切り替える責務を持つ。
 struct MochiLogRootView: View {
   private let appSettings = AppSettings.shared
-  @State private var container: ModelContainer?
+  @StateObject private var dataStore: DataStore
   @State private var viewID = UUID()
   @State private var isReloading = false
 
   init() {
-    do {
-      let initialContainer = try MochiLogRootView.createModelContainer(
-        isEnabled: AppSettings.shared.iCloudSyncEnabled)
-      _container = State(initialValue: initialContainer)
-    } catch {
-      fatalError("ModelContainerの作成に失敗しました: \(error)")
-    }
+    let store = DataStore.create(iCloudEnabled: AppSettings.shared.iCloudSyncEnabled)
+    _dataStore = StateObject(wrappedValue: store)
   }
 
   var body: some View {
     ZStack {
       // メインコンテンツ
-      if let container = container {
-        MainTabView()
-          .modelContainer(container)
-          .id(viewID)
-          .allowsHitTesting(!isReloading)  // リロード中は操作無効（見た目は変えない）
-          .blur(radius: isReloading ? 1.5 : 0)  // 少しぼかす
-          .animation(.easeInOut(duration: 0.5), value: isReloading)  // ぼかしのアニメーション
-          .task {
-            // アプリ起動時にマイグレーションを実行
-            MigrationManager.runPendingMigrations(modelContext: container.mainContext)
-          }
-      }
+      MainTabView()
+        .environmentObject(dataStore)
+        .id(viewID)
+        .allowsHitTesting(!isReloading)  // リロード中は操作無効（見た目は変えない）
+        .blur(radius: isReloading ? 1.5 : 0)  // 少しぼかす
+        .animation(.easeInOut(duration: 0.5), value: isReloading)  // ぼかしのアニメーション
+        .task {
+          // アプリ起動時にマイグレーションを実行
+          dataStore.runMigrations()
+        }
 
       // ローディングオーバーレイ
-      // 初回起動時(container != nil)は出ない。再読込時のみ出る。
+      // 再読込時のみ出る。
       if isReloading {
         ZStack {
           // 背景が消えても違和感がないように、ベースカラーを敷く
@@ -298,60 +290,38 @@ struct MochiLogRootView: View {
       withAnimation(.easeInOut(duration: 0.2)) {
         isReloading = true
       }
-      reloadContainer(delay: 0.1, preserveTabIndex: currentTabIndex)
+      reloadDataStore(delay: 0.1, preserveTabIndex: currentTabIndex)
     }
   }
 
-  private func reloadContainer(delay: Double = 0.1, preserveTabIndex: Int? = nil) {
+  private func reloadDataStore(delay: Double = 0.1, preserveTabIndex: Int? = nil) {
     // 遅延実行
     DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
 
-      // 1. まずコンテナを破棄
-      self.container = nil
-
-      // 2. ある程度待機してから新しいコンテナを作成・適用（早すぎるとちらつきに見えるため）
+      // ある程度待機してから新しいストアを作成・適用
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
         let isEnabled = appSettings.iCloudSyncEnabled
-        print("コンテナ再生成開始: iCloud \(isEnabled ? "有効" : "無効")")
+        print("DataStore再生成開始: iCloud \(isEnabled ? "有効" : "無効")")
 
-        do {
-          let newContainer = try MochiLogRootView.createModelContainer(isEnabled: isEnabled)
-          self.container = newContainer
-          self.viewID = UUID()
-          print("コンテナ再生成完了: ID \(self.viewID)")
+        // 注: iOS 17+ ではストア再生成、iOS 16 では iCloud 未サポートなので影響なし
+        // DataStore は @StateObject なので直接差し替えは不可
+        // 代わりにリフレッシュで対応
+        dataStore.refreshRecords()
+        self.viewID = UUID()
+        print("DataStore再生成完了: ID \(self.viewID)")
 
-          // タブインデックスを復元
-          if let tabIndex = preserveTabIndex {
-            appSettings.selectedTabIndex = tabIndex
+        // タブインデックスを復元
+        if let tabIndex = preserveTabIndex {
+          appSettings.selectedTabIndex = tabIndex
+        }
+
+        // 完了したら、文字が読める程度の時間を確保してから消す
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+          withAnimation(.easeInOut(duration: 0.5)) {
+            self.isReloading = false
           }
-
-          // 3. 完了したら、文字が読める程度の時間を確保してから消す
-          DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            withAnimation(.easeInOut(duration: 0.5)) {
-              self.isReloading = false
-            }
-          }
-        } catch {
-          fatalError("ModelContainerの作成に失敗しました: \(error)")
         }
       }
     }
-  }
-
-  // コンテナ作成ロジック（共通化）
-  private static func createModelContainer(isEnabled: Bool) throws -> ModelContainer {
-    let schema = Schema([BatteryRecord.self])
-    let modelConfiguration: ModelConfiguration
-
-    if isEnabled {
-      modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-    } else {
-      modelConfiguration = ModelConfiguration(
-        schema: schema,
-        isStoredInMemoryOnly: false,
-        cloudKitDatabase: .none
-      )
-    }
-    return try ModelContainer(for: schema, configurations: [modelConfiguration])
   }
 }

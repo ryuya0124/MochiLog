@@ -54,11 +54,11 @@ struct CachedView<Content: View, ID: Hashable>: View {
         }
       )
       .id(id)
-      .onChange(of: id) {
+      .onChange(of: id) { _ in
         cachedImage = nil
         renderAsync()
       }
-      .onChange(of: colorScheme) {
+      .onChange(of: colorScheme) { _ in
         cachedImage = nil
         renderAsync()
       }

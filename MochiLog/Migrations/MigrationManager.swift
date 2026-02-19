@@ -3,6 +3,7 @@ import SwiftData
 
 /// マイグレーション管理クラス
 /// 全てのマイグレーションを実行し、実行済みマイグレーションを追跡します
+@available(iOS 17, *)
 struct MigrationManager {
   /// 実行済みマイグレーションを保存するキーのプレフィックス
   private static let migrationKeyPrefix = "Migration_Completed_"

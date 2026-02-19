@@ -191,16 +191,16 @@ struct AnalyticsContentView: View {
       let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
       print("[Performance] AnalyticsContentView.onAppear完了: \(String(format: "%.2f", elapsed))ms")
     }
-    .onChange(of: records) {
+    .onChange(of: records) { _ in
       prepareFilteredRecordsIfNeeded()
     }
-    .onChange(of: selectedDevice) {
+    .onChange(of: selectedDevice) { _ in
       prepareFilteredRecordsIfNeeded()
     }
-    .onChange(of: windowEnd) {
+    .onChange(of: windowEnd) { _ in
       prepareChartDataIfNeeded()
     }
-    .onChange(of: selectedRange) {
+    .onChange(of: selectedRange) { _ in
       prepareChartDataIfNeeded()
     }
   }

@@ -1,8 +1,10 @@
 import Foundation
-import SwiftData
 
-@Model
-final class BatteryRecord {
+/// バッテリーレコード（永続化レイヤーに依存しないプレーンなモデルクラス）
+/// iOS 17+: SwiftData (CurrentBatterySchema.BatteryRecord) で永続化
+/// iOS 16:  CoreData (CDBatteryRecord) で永続化
+final class BatteryRecord: Identifiable, Hashable {
+  let id: UUID
   // --- 基本情報 ---
   // Default values added to satisfy CloudKit requirements (attributes must be optional or have defaults)
   var logDate: Date = Date()  // ログファイルの日付
@@ -41,7 +43,16 @@ final class BatteryRecord {
 
   var createdAt: Date = Date()
 
+  // MARK: - Hashable
+  static func == (lhs: BatteryRecord, rhs: BatteryRecord) -> Bool {
+    lhs.id == rhs.id
+  }
+  func hash(into hasher: inout Hasher) {
+    hasher.combine(id)
+  }
+
   init(
+    id: UUID = UUID(),
     logDate: Date,
     deviceName: String,
     deviceModelCode: String? = nil,
@@ -66,6 +77,7 @@ final class BatteryRecord {
     minSoC: Int? = nil,
     maxSoC: Int? = nil
   ) {
+    self.id = id
     self.logDate = logDate
     self.deviceName = deviceName
     self.deviceModelCode = deviceModelCode

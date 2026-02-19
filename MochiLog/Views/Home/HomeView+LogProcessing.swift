@@ -1,6 +1,5 @@
 // HomeView+LogProcessing.swift
 // ログ処理関連のメソッドをHomeViewから分離
-import SwiftData
 import SwiftUI
 
 // MARK: - 共通処理メソッド
@@ -38,13 +37,13 @@ extension HomeView {
 
     // UIアニメーションとデータ挿入
     withAnimation(.snappy) {
-      modelContext.insert(record)
+      dataStore.insert(record)
     }
 
     // 保存はアニメーション外で行う
     Task.detached(priority: .userInitiated) {
       await MainActor.run {
-        try? self.modelContext.save()
+        self.dataStore.save()
       }
     }
   }
@@ -220,11 +219,11 @@ extension HomeView {
     )
 
     withAnimation(.snappy) {
-      modelContext.insert(record)
+      dataStore.insert(record)
     }
     Task.detached(priority: .userInitiated) {
       await MainActor.run {
-        try? self.modelContext.save()
+        self.dataStore.save()
       }
     }
 

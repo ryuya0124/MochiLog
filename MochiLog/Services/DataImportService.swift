@@ -1,5 +1,4 @@
 import Foundation
-import SwiftData
 import Yams
 
 /// YAMLファイルからバッテリーレコードをインポートするサービス
@@ -49,14 +48,14 @@ struct DataImportService {
   /// YAMLファイルからデータをインポート
   /// - Parameters:
   ///   - url: YAMLファイルのURL
-  ///   - modelContext: SwiftDataのモデルコンテキスト
+  ///   - dataStore: データストア
   ///   - existingRecords: 既存のレコード（重複チェック用）
   ///   - allowDuplicates: 重複を許可するかどうか
   /// - Returns: インポート結果
   /// - Throws: ImportError
   static func importFromYAML(
     url: URL,
-    modelContext: ModelContext,
+    dataStore: DataStore,
     existingRecords: [BatteryRecord],
     allowDuplicates: Bool
   ) throws -> ImportResult {
@@ -110,7 +109,7 @@ struct DataImportService {
         }
 
         // レコードを追加
-        modelContext.insert(batteryRecord)
+        dataStore.insert(batteryRecord)
         importedCount += 1
 
       } catch {
@@ -120,7 +119,7 @@ struct DataImportService {
 
     // 保存
     if importedCount > 0 {
-      try? modelContext.save()
+      dataStore.save()
     }
 
     return ImportResult(
