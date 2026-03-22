@@ -55,7 +55,7 @@ final class AppSettings: ObservableObject {
   // MARK: - Constants
 
   /// DiscordサーバーのURL
-  static let discordURL = "https://discord.com/invite/8u3SJXxQZ"
+  static let discordURL = "https://discord.gg/fbdmX7EHKA"
 
   /// 現在のアプリバージョンを取得
   static var currentAppVersion: String? {

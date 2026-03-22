@@ -237,16 +237,13 @@ struct AnalyticsContentView: View {
   private func prepareChartDataIfNeeded() {
     let startTime = CFAbsoluteTimeGetCurrent()
 
-    // パラメータのハッシュを計算
-    var hasher = Hasher()
-    for record in cachedFilteredRecords {
-      hasher.combine(record.logDate)
-      hasher.combine(record.deviceName)
-    }
-    hasher.combine(windowEnd)
-    hasher.combine(selectedRange)
-    hasher.combine(selectedDevice)
-    let parametersHash = hasher.finalize()
+    // パラメータの同値チェック（Hasherを1インスタンスで完結させることでiOS 16の再現性を保証）
+    let parametersHash = Self.makeParametersHash(
+      records: cachedFilteredRecords,
+      windowEnd: windowEnd,
+      selectedRange: selectedRange,
+      selectedDevice: selectedDevice
+    )
 
     // 変更がなければスキップ
     if parametersHash == lastParametersHash {
@@ -271,13 +268,10 @@ struct AnalyticsContentView: View {
     let recordDates = filteredSnapshot.map { $0.logDate }
     let currentWindowEnd = windowEnd
     let currentRange = selectedRange
+    let capturedSelectedDevice = selectedDevice
 
     // 全デバイス名を全レコードから計算（色を固定するため、フィルタ前のデータを使用）
     let allDeviceNamesSnapshot = Array(Set(records.map { $0.deviceName })).sorted()
-
-    // フィルタ済みレコードをUncheckedSendableでラップ（バックグラウンドクロージャでのキャプチャ用）
-    // 注意: filteredSnapshotはメインスレッドでのみアクセスすること
-    let snapshotBox = UncheckedSendable(filteredSnapshot)
 
     // ウィンドウ計算はMainActorで実行（軽量）
     let windowStartTime = CFAbsoluteTimeGetCurrent()
@@ -291,14 +285,15 @@ struct AnalyticsContentView: View {
       "[Performance] prepareChartDataIfNeeded - ウィンドウ計算: \(String(format: "%.2f", windowElapsed))ms"
     )
 
-    DispatchQueue.global(qos: .userInitiated).async {
+    // Task.detached で非同期実行（DispatchQueue + @MainActor の混在を排除）
+    Task.detached(priority: .userInitiated) {
       let bgStartTime = CFAbsoluteTimeGetCurrent()
 
       // 可視インデックスをバックグラウンドで計算
       let calendar = Calendar.current
       let startDay = result.startDay
       let endDay = result.endDay
-      let visibleIndexes = recordDates.enumerated().compactMap { index, date in
+      let visibleIndexes = recordDates.enumerated().compactMap { index, date -> Int? in
         let d = calendar.startOfDay(for: date)
         return (d >= startDay && d <= endDay) ? index : nil
       }
@@ -308,22 +303,19 @@ struct AnalyticsContentView: View {
         "[Performance] prepareChartDataIfNeeded - バックグラウンド処理: \(String(format: "%.2f", bgElapsed))ms, 可視レコード: \(visibleIndexes.count)件"
       )
 
-      DispatchQueue.main.async {
+      // MainActor に戻って UI 更新
+      await MainActor.run {
         let uiUpdateStartTime = CFAbsoluteTimeGetCurrent()
 
-        // ボックスから取り出し
-        let snapshot = snapshotBox.value
-
-        // スナップショットの結果を常に適用（クラッシュ防止のため）
         let visibleStart = result.startDay
         let visibleEnd = result.endDay
 
-        // 統計用（スナップショットを使用）
-        cachedVisibleRecords = visibleIndexes.map { snapshot[$0] }
+        // 統計用
+        cachedVisibleRecords = visibleIndexes.map { filteredSnapshot[$0] }
 
-        // チャート描画用（スナップショットを使用）
+        // チャート描画用
         cachedChartRecords = ChartWindowNavigator.visibleRecordsWithContext(
-          in: snapshot,
+          in: filteredSnapshot,
           start: visibleStart,
           end: visibleEnd
         )
@@ -331,7 +323,7 @@ struct AnalyticsContentView: View {
         cachedStartDay = visibleStart
         cachedEndDay = visibleEnd
         cachedUnit = result.unit
-        cachedAllDeviceNames = allDeviceNamesSnapshot  // 全デバイス名（フィルタ前）を使用
+        cachedAllDeviceNames = allDeviceNamesSnapshot
         lastParametersHash = parametersHash
 
         let uiUpdateElapsed = (CFAbsoluteTimeGetCurrent() - uiUpdateStartTime) * 1000
@@ -347,32 +339,38 @@ struct AnalyticsContentView: View {
         isLoading = false
         isPreparingChartData = false
 
-        // 現在のパラメータハッシュと比較し、変更があれば再実行
-        var currentHasher = Hasher()
-        for record in cachedFilteredRecords {
-          currentHasher.combine(record.logDate)
-          currentHasher.combine(record.deviceName)
-        }
-        currentHasher.combine(windowEnd)
-        currentHasher.combine(selectedRange)
-        currentHasher.combine(selectedDevice)
-        let currentParametersHash = currentHasher.finalize()
+        // 完了後に現在値を同じハッシュ関数で再計算し、変化があれば再実行
+        let currentHash = Self.makeParametersHash(
+          records: cachedFilteredRecords,
+          windowEnd: windowEnd,
+          selectedRange: selectedRange,
+          selectedDevice: capturedSelectedDevice
+        )
 
-        if parametersHash != currentParametersHash || pendingParametersHash != nil {
+        if parametersHash != currentHash || pendingParametersHash != nil {
           pendingParametersHash = nil
           print("[Performance] prepareChartDataIfNeeded - パラメータ変更検出、再実行")
-          DispatchQueue.main.async {
-            prepareChartDataIfNeeded()
-          }
+          prepareChartDataIfNeeded()
         }
       }
     }
   }
 
-  // MARK: - Sendable Helper
-  private final class UncheckedSendable<T>: @unchecked Sendable {
-    let value: T
-    init(_ value: T) { self.value = value }
+  /// パラメータハッシュを計算（同一入力で常に同じ値を返す安定ハッシュ）
+  private static func makeParametersHash(
+    records: [BatteryRecord],
+    windowEnd: Date,
+    selectedRange: RangePreset,
+    selectedDevice: String?
+  ) -> Int {
+    var hasher = Hasher()
+    hasher.combine(records.count)
+    hasher.combine(records.first?.logDate)
+    hasher.combine(records.last?.logDate)
+    hasher.combine(windowEnd)
+    hasher.combine(selectedRange)
+    hasher.combine(selectedDevice)
+    return hasher.finalize()
   }
 
   @MainActor

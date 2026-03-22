@@ -145,10 +145,14 @@ final class BatteryRecord: Identifiable, Hashable {
 
   // 公称容量ベースのヘルス（%）(Nominal / Design)
   var nominalHealthPercent: Double {
-    if designCapacity > 0 {
+    if designCapacity > 0 && nominalCapacity > 0 {
       return (Double(nominalCapacity) / Double(designCapacity)) * 100.0
     }
-    return 0.0
+    // designCapacity が不明な場合：settingsDisplayPercent → healthPercent の順にフォールバック
+    if let s = settingsDisplayPercent, s > 0 {
+      return Double(s)
+    }
+    return healthPercent
   }
 
   // 設計容量ベースのヘルス（%）(Raw / Design)
