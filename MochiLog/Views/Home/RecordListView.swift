@@ -120,55 +120,65 @@ struct RecordListView<Header: View>: View {
         let minSectionWidth: CGFloat = 340
         let maxColumns = max(1, Int(availableWidth / minSectionWidth))
         let columnsCount = min(cachedSections.count, maxColumns)
-        let outerColumns = Array(
-          repeating: GridItem(.flexible(), spacing: 24, alignment: .top),
-          count: max(1, columnsCount))
 
-        LazyVGrid(columns: outerColumns, alignment: .leading, spacing: 24) {
-          ForEach(cachedSections, id: \.id) { section in
-            let sectionRecords = recordsForSection(section)
-            VStack(alignment: .leading, spacing: 12) {
-              // DisclosureGroupで折りたたみ可能に
-              DisclosureGroup(
-                isExpanded: Binding(
-                  get: { !collapsedSections.contains(section.id) },
-                  set: { isExpanded in
-                    withAnimation(.snappy) {
-                      allowSectionAnimation = true
-                      if isExpanded {
-                        collapsedSections.remove(section.id)
-                      } else {
-                        collapsedSections.insert(section.id)
+        // LazyVGridは「行内の最大高さに全セルを揃える」ため、
+        // セルの高さが異なると空白が発生する。
+        // HStack(alignment: .top) を使うことで各カラムが完全独立し、
+        // 互いの高さに引っ張られなくなる。
+        HStack(alignment: .top, spacing: 24) {
+          ForEach(0..<columnsCount, id: \.self) { columnIndex in
+            // カラムに属するセクションを振り分け（2列なら偶数/奇数インデックス）
+            let columnSections = cachedSections.indices
+              .filter { $0 % columnsCount == columnIndex }
+              .map { cachedSections[$0] }
+            VStack(alignment: .leading, spacing: 24) {
+              ForEach(columnSections, id: \.id) { section in
+                let sectionRecords = recordsForSection(section)
+                VStack(alignment: .leading, spacing: 12) {
+                  // DisclosureGroupで折りたたみ可能に
+                  DisclosureGroup(
+                    isExpanded: Binding(
+                      get: { !collapsedSections.contains(section.id) },
+                      set: { isExpanded in
+                        withAnimation(.snappy) {
+                          allowSectionAnimation = true
+                          if isExpanded {
+                            collapsedSections.remove(section.id)
+                          } else {
+                            collapsedSections.insert(section.id)
+                          }
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                          allowSectionAnimation = false
+                        }
                       }
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-                      allowSectionAnimation = false
-                    }
+                    )
+                  ) {
+                    iPadDeviceSectionContent(
+                      section: section,
+                      sectionRecords: sectionRecords
+                    )
+                  } label: {
+                    Text(section.displayName)
+                      .font(.title3)
+                      .bold()
+                      .foregroundColor(.primary)
+                      .lineLimit(1)
+                      .fixedSize(horizontal: true, vertical: false)
                   }
-                )
-              ) {
-                iPadDeviceSectionContent(
-                  section: section,
-                  sectionRecords: sectionRecords
-                )
-              } label: {
-                Text(section.displayName)
-                  .font(.title3)
-                  .bold()
-                  .foregroundColor(.primary)
-                  .lineLimit(1)
-                  .fixedSize(horizontal: true, vertical: false)
+                  .animation(.snappy, value: collapsedSections)
+                  .padding()
+                  .background(Color(uiColor: .secondarySystemGroupedBackground))
+                  .clipShape(RoundedRectangle(cornerRadius: 16))
+                }
+                .transition(
+                  .asymmetric(
+                    insertion: .move(edge: .top).combined(with: .opacity),
+                    removal: .move(edge: .top).combined(with: .opacity)
+                  ))
               }
-              .animation(.snappy, value: collapsedSections)
-              .padding()
-              .background(Color(uiColor: .secondarySystemGroupedBackground))
-              .clipShape(RoundedRectangle(cornerRadius: 16))
             }
-            .transition(
-              .asymmetric(
-                insertion: .move(edge: .top).combined(with: .opacity),
-                removal: .move(edge: .top).combined(with: .opacity)
-              ))
+            .frame(maxWidth: .infinity)
           }
         }
         .padding(20)
@@ -267,34 +277,21 @@ struct RecordListView<Header: View>: View {
     section: DeviceSection,
     sectionRecords: [BatteryRecord]
   ) -> some View {
-    // Inner Grid: Cards within the device section
-    LazyVGrid(
-      columns: [GridItem(.adaptive(minimum: 280), spacing: 16)], spacing: 16
-    ) {
-      ForEach(sectionRecords, id: \.logDate) { record in
-        NavigationLink(destination: RecordDetailView(record: record)) {
-          RecordRowView(record: record)
-            .padding()
-            .background(Color(uiColor: .secondarySystemGroupedBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-        }
-        .contextMenu {
-          if showContextMenu, let onDelete = onRecordDelete {
-            Button(role: .destructive) {
-              onDelete(record)
-            } label: {
-              Label {
-                Text(String(localized: "delete", table: "Common"))
-              } icon: {
-                Image(
-                  uiImage: UIImage(systemName: "trash")?
-                    .withTintColor(.red, renderingMode: .alwaysOriginal)
-                    ?? UIImage())
-              }
-            }
+    // LazyVGridはDisclosureGroup内で幅制約が正しく伝わらず、
+    // 途中の行でも空セルが発生する。
+    // VStack + HStack の手動ペアレイアウトで、空セルなしの2列グリッドを実現する。
+    VStack(spacing: 8) {
+      ForEach(Array(stride(from: 0, to: sectionRecords.count, by: 2)), id: \.self) { i in
+        HStack(alignment: .top, spacing: 16) {
+          // 左カード
+          iPadRecordCard(record: sectionRecords[i], section: section)
+          // 右カード（存在する場合のみ。なければ同幅の透明ビューで列幅を保持）
+          if i + 1 < sectionRecords.count {
+            iPadRecordCard(record: sectionRecords[i + 1], section: section)
+          } else {
+            Color.clear.frame(maxWidth: .infinity)
           }
         }
-        .animation(.snappy, value: collapsedSections)
       }
     }
 
@@ -321,6 +318,35 @@ struct RecordListView<Header: View>: View {
       .buttonStyle(.plain)
       .padding(.top, 8)
     }
+  }
+
+  /// iPad用個別レコードカード
+  @ViewBuilder
+  private func iPadRecordCard(record: BatteryRecord, section: DeviceSection) -> some View {
+    NavigationLink(destination: RecordDetailView(record: record)) {
+      RecordRowView(record: record)
+        .padding()
+        .background(Color(uiColor: .secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .frame(maxWidth: .infinity)
+    }
+    .contextMenu {
+      if showContextMenu, let onDelete = onRecordDelete {
+        Button(role: .destructive) {
+          onDelete(record)
+        } label: {
+          Label {
+            Text(String(localized: "delete", table: "Common"))
+          } icon: {
+            Image(
+              uiImage: UIImage(systemName: "trash")?
+                .withTintColor(.red, renderingMode: .alwaysOriginal)
+                ?? UIImage())
+          }
+        }
+      }
+    }
+    .animation(.snappy, value: collapsedSections)
   }
 
   // MARK: - デバイス名表示ヘルパー（iPad用）
