@@ -43,8 +43,6 @@ struct SettingsView: View {
   @State private var showingTutorial = false
   @State private var showingSupportForm = false
   @State private var showingDonation = false
-  @State private var showingDeleteDeviceConfirmation = false
-  @State private var deletingDeviceId: String? = nil
 
   // iCloud トグル用ローカル状態とエラー表示
   @State private var localICloudToggle: Bool = false
@@ -165,6 +163,8 @@ struct SettingsView: View {
           Button(String(localized: "delete", table: "Common"), role: .destructive) {
             if let deviceName = selectedDeviceToDelete {
               deleteRecordsForDevice(deviceName)
+              // 削除後はデバイス選択をリセット（再選択を促す）
+              selectedDeviceToDelete = nil
             }
           }
         } message: {
@@ -298,8 +298,8 @@ struct SettingsView: View {
                 case .dataManagement:
                   DataManagementSettingsView(
                     showingDeleteAllConfirmation: $showingDeleteConfirmation,
-                    showingDeleteDeviceConfirmation: $showingDeleteDeviceConfirmation,
-                    deletingDeviceId: $deletingDeviceId,
+                    showingDeleteDeviceConfirmation: $showingDeviceDeleteConfirmation,
+                    deletingDeviceId: $selectedDeviceToDelete,
                     appSettings: appSettings,
                     availableDevices: availableDevices,
                     records: records,
