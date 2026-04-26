@@ -1,6 +1,278 @@
 {
   "sourceLanguage" : "ja",
   "strings" : {
+    "hint_cycle_count" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The number of times the battery has gone through a complete charge cycle (0→100%). Higher counts generally indicate more wear."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バッテリーが完全な充放電サイクル（0→100%）を繰り返した回数です。回数が多いほど劣化が進んでいる傾向があります。"
+          }
+        }
+      }
+    },
+    "hint_design_capacity" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The original battery capacity when the device was manufactured (mAh). This is used as the 100% baseline for health calculations."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "製造時のバッテリー容量（mAh）です。バッテリー健康状態を100%とした際の基準値として使用されます。"
+          }
+        }
+      }
+    },
+    "hint_nominal_capacity" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The capacity Apple's firmware reports as the current maximum. This value is smoothed by the OS and may differ slightly from the raw measurement."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appleのファームウェアが現在の最大容量として報告する値です。OSによって平滑化されており、実測値と若干異なる場合があります。"
+          }
+        }
+      }
+    },
+    "hint_raw_capacity" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The unfiltered capacity measured directly from the battery hardware. This can fluctuate more than the nominal value."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バッテリーハードウェアから直接測定した生の容量値です。公称容量よりも変動しやすい場合があります。"
+          }
+        }
+      }
+    },
+    "hint_low_rate_capacity" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The capacity measured under a low discharge rate condition. This typically shows a higher value than normal usage measurements."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "低放電レート条件下で測定した容量です。通常使用時の測定値より高い値になる傾向があります。"
+          }
+        }
+      }
+    },
+    "hint_os_display" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The battery health percentage shown in iOS Settings → Battery → Battery Health. This is Apple's official display value, capped at 100%."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iOSの「設定 → バッテリー → バッテリーの状態と充電」に表示されるバッテリー健康状態の割合です。最大100%で表示されます。"
+          }
+        }
+      }
+    },
+    "hint_deflator" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A correction factor Apple applies to the raw capacity to calculate the nominal capacity. A higher deflator means Apple is adjusting the value more significantly."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appleが実測容量から公称容量を算出する際に適用する補正係数です。値が大きいほど、Appleが値を大きく調整していることを意味します。"
+          }
+        }
+      }
+    },
+    "hint_diagnostic_result" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An estimated condition based on the calculated health percentage.\n\n✅ Normal: 90% or above\nℹ️ Slightly Degraded: 80–90%\n⚠️ Replace Recommended: below 80%\n\nThese are estimates, not Apple's official assessment."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "計算されたバッテリー健康状態のパーセントに基づく推定的な診断です。\n\n✅ 正常: 90%以上\nℹ️ やや劣化: 80〜90%\n⚠️ 交換推奨: 80%未満\n\nApple公式の評価ではありません。"
+          }
+        }
+      }
+    },
+    "hint_settings_display_diagnostic" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A comment based on the iOS Settings display value. The Settings value and the calculated health may differ due to Apple's calibration logic."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iOSの設定に表示される値に基づくコメントです。Appleの校正ロジックにより、設定の表示値と計算されたヘルス値が異なる場合があります。"
+          }
+        }
+      }
+    },
+    "hint_first_use_date" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The date the device was first activated. Used to calculate how long the battery has been in use."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスが初めてアクティベートされた日付です。バッテリーの使用期間を算出するために使用します。"
+          }
+        }
+      }
+    },
+    "hint_temperature" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The battery temperature recorded during the day. Temperatures below 0°C or above 35°C can accelerate battery wear."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "その日に記録されたバッテリーの温度です。0°C以下または35°C以上の温度はバッテリーの劣化を加速させる可能性があります。"
+          }
+        }
+      }
+    },
+    "hint_voltage" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The battery voltage recorded during the day (mV). Normal voltage typically ranges from about 3,200 mV (empty) to 4,200 mV (full)."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "その日に記録されたバッテリーの電圧（mV）です。通常、約3,200 mV（空）から4,200 mV（満充電）の範囲になります。"
+          }
+        }
+      }
+    },
+    "hint_charge_range" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The range of charge levels (State of Charge) during the day. Frequently charging from 0% to 100% accelerates battery wear."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "その日の充電レベル（SoC）の範囲です。0%→100%の充放電を頻繁に行うとバッテリーの劣化が加速します。"
+          }
+        }
+      }
+    },
+    "hint_soc" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "System on a Chip — the processor chip used in this device (e.g. A18 Pro, M4). It integrates the CPU, GPU, Neural Engine, and other components."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "System on a Chip — このデバイスに搭載されているチップ（例: A18 Pro、M4）です。CPU・GPU・Neural Engineなどが1つのチップに統合されています。"
+          }
+        }
+      }
+    },
+    "hint_model_code" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The internal model identifier for this device (e.g. iPhone16,2). This uniquely identifies the hardware variant."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスの内部モデル識別子（例: iPhone16,2）です。ハードウェアのバリアントを一意に識別します。"
+          }
+        }
+      }
+    },
+    "hint_storage" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The total internal storage capacity of the device."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスの内部ストレージの総容量です。"
+          }
+        }
+      }
+    },
+    "hint_ram" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The amount of RAM (working memory) in this device."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスのRAM（作業メモリ）の容量です。"
+          }
+        }
+      }
+    },
     "battery_health" : {
       "localizations" : {
         "en" : {

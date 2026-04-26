@@ -4,6 +4,191 @@ import Foundation
 // 一覧行ビューと詳細ビュー
 import SwiftUI
 
+// MARK: - ⓘボタン付きLabeledContentラッパー
+/// ラベルの横にⓘボタンを表示し、タップでポップオーバーを表示するコンポーネント
+/// iPad / iPhone どちらも吹き出しスタイルで表示（UIKitブリッジ使用）
+struct InfoLabeledContent<V: View>: View {
+  let label: String
+  let hint: String
+  let valueContent: V
+
+  @State private var isShowingInfo = false
+
+  init(_ label: String, hint: String, @ViewBuilder value: () -> V) {
+    self.label = label
+    self.hint = hint
+    self.valueContent = value()
+  }
+
+  var body: some View {
+    LabeledContent {
+      valueContent
+    } label: {
+      HStack(spacing: 4) {
+        Text(label)
+        // UIKitポップオーバーのアンカービューとボタンを重ねる
+        ZStack {
+          InfoPopoverAnchor(isPresented: $isShowingInfo, title: label, hint: hint)
+            .frame(width: 32, height: 32)
+          Button {
+            isShowingInfo = true
+          } label: {
+            // 当たり判定を広げるためフレームで透明タップ領域を確保
+            Image(systemName: "info.circle")
+              .font(.caption)
+              .foregroundStyle(.secondary)
+              .frame(width: 32, height: 32)
+              .contentShape(Rectangle())
+          }
+          .buttonStyle(.plain)
+        }
+        .frame(width: 32, height: 32)
+      }
+    }
+  }
+}
+
+/// Stringバリューを直接渡せるオーバーロード
+extension InfoLabeledContent where V == Text {
+  init(_ label: String, hint: String, value: String) {
+    self.init(label, hint: hint) { Text(value) }
+  }
+}
+
+// MARK: - UIKitブリッジポップオーバーアンカー
+/// UIPopoverPresentationControllerを使ってiPhone/iPad両方で吹き出しポップオーバーを表示する
+private struct InfoPopoverAnchor: UIViewRepresentable {
+  @Binding var isPresented: Bool
+  let title: String
+  let hint: String
+
+  func makeUIView(context: Context) -> UIView {
+    let view = UIView()
+    view.backgroundColor = .clear
+    return view
+  }
+
+  func updateUIView(_ uiView: UIView, context: Context) {
+    if isPresented && !context.coordinator.isShowing {
+      showPopover(from: uiView, context: context)
+    } else if !isPresented && context.coordinator.isShowing {
+      context.coordinator.dismissPopover()
+    }
+  }
+
+  func makeCoordinator() -> Coordinator {
+    Coordinator(isPresented: $isPresented)
+  }
+
+  private func showPopover(from uiView: UIView, context: Context) {
+    guard let windowScene = uiView.window?.windowScene,
+      let root = windowScene.windows.first(where: { $0.isKeyWindow })?.rootViewController
+    else { return }
+
+    // 最前面のViewControllerを取得
+    var topVC = root
+    while let presented = topVC.presentedViewController {
+      topVC = presented
+    }
+
+    // ポップオーバーコンテンツのビュー
+    let contentView = InfoPopoverContent(title: title, hint: hint)
+    let hostingVC = UIHostingController(rootView: contentView)
+    hostingVC.modalPresentationStyle = .popover
+
+    // 幅300でレイアウトしたときの自然な高さを計算してサイズを決定
+    hostingVC.view.translatesAutoresizingMaskIntoConstraints = false
+    let fittingSize = hostingVC.view.systemLayoutSizeFitting(
+      CGSize(width: 300, height: UIView.layoutFittingCompressedSize.height),
+      withHorizontalFittingPriority: .required,
+      verticalFittingPriority: .fittingSizeLevel
+    )
+    // 画面の半分を超えないようキャップする
+    let maxHeight = UIScreen.main.bounds.height * 0.5
+    hostingVC.preferredContentSize = CGSize(width: 300, height: min(fittingSize.height, maxHeight))
+
+    if let pop = hostingVC.popoverPresentationController {
+      pop.sourceView = uiView
+      pop.sourceRect = uiView.bounds
+      pop.permittedArrowDirections = [.up, .down, .left, .right]
+      pop.delegate = context.coordinator
+    }
+
+    context.coordinator.isShowing = true
+    context.coordinator.presentedVC = hostingVC
+    topVC.present(hostingVC, animated: true)
+  }
+
+  // MARK: - Coordinator
+  class Coordinator: NSObject, UIPopoverPresentationControllerDelegate {
+    @Binding var isPresented: Bool
+    var isShowing = false
+    weak var presentedVC: UIViewController?
+
+    init(isPresented: Binding<Bool>) {
+      self._isPresented = isPresented
+    }
+
+    /// iPhoneでもシートに変換せずポップオーバーのまま表示する
+    func adaptivePresentationStyle(
+      for controller: UIPresentationController,
+      traitCollection: UITraitCollection
+    ) -> UIModalPresentationStyle {
+      return .none
+    }
+
+    /// ドラッグやタップ外で閉じたとき状態を同期
+    func popoverPresentationControllerDidDismissPopover(
+      _ popoverPresentationController: UIPopoverPresentationController
+    ) {
+      isPresented = false
+      isShowing = false
+    }
+
+    func dismissPopover() {
+      presentedVC?.dismiss(animated: true) { [weak self] in
+        self?.isShowing = false
+      }
+    }
+  }
+}
+
+// MARK: - ポップオーバー内コンテンツ
+/// ポップオーバー吹き出し内に表示するビュー（UIKitのUIHostingControllerで表示）
+private struct InfoPopoverContent: View {
+  let title: String
+  let hint: String
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 0) {
+      // ── ヘッダー ──
+      HStack(alignment: .center, spacing: 8) {
+        Image(systemName: "info.circle.fill")
+          .font(.callout)
+          .foregroundStyle(.tint)
+        Text(title)
+          .font(.subheadline)
+          .fontWeight(.semibold)
+          .foregroundStyle(.primary)
+      }
+      .padding(.horizontal, 16)
+      .padding(.top, 16)
+      .padding(.bottom, 10)
+
+      Divider()
+
+      // ── 説明文 ──
+      Text(hint)
+        .font(.callout)
+        .foregroundStyle(.primary)
+        .lineSpacing(4)
+        .fixedSize(horizontal: false, vertical: true)
+        .padding(16)
+    }
+    .frame(width: 300)
+  }
+}
+
 struct RecordRowView: View {
   let record: BatteryRecord
   @StateObject private var appSettings = AppSettings.shared
@@ -248,25 +433,39 @@ struct RecordDetailView: View {
                 LabeledContent(
                   String(localized: "device_name", table: "Common"), value: record.deviceName)
                 if let soc = record.soc {
-                  LabeledContent(String(localized: "soc", table: "Records"), value: soc)
+                  InfoLabeledContent(
+                    String(localized: "soc", table: "Records"),
+                    hint: String(localized: "hint_soc", table: "Records"),
+                    value: soc)
                 }
                 if let modelCode = record.deviceModelCode {
-                  LabeledContent(
-                    String(localized: "model_code", table: "Records"), value: modelCode)
+                  InfoLabeledContent(
+                    String(localized: "model_code", table: "Records"),
+                    hint: String(localized: "hint_model_code", table: "Records"),
+                    value: modelCode)
                 }
                 if record.storage != nil, let formatted = record.formattedStorage {
-                  LabeledContent(String(localized: "storage", table: "Records"), value: formatted)
+                  InfoLabeledContent(
+                    String(localized: "storage", table: "Records"),
+                    hint: String(localized: "hint_storage", table: "Records"),
+                    value: formatted)
                 }
                 if record.ram != nil, let formattedRam = record.formattedRAM {
-                  LabeledContent(String(localized: "ram", table: "Records"), value: formattedRam)
+                  InfoLabeledContent(
+                    String(localized: "ram", table: "Records"),
+                    hint: String(localized: "hint_ram", table: "Records"),
+                    value: formattedRam)
                 }
                 LabeledContent(
                   String(localized: "log_date", table: "Records"), value: record.logDate,
                   format: .dateTime.year().month().day())
                 if let firstUse = record.firstUseDate {
-                  LabeledContent(
-                    String(localized: "first_use_date", table: "Records"), value: firstUse,
-                    format: .dateTime.year().month().day())
+                  InfoLabeledContent(
+                    String(localized: "first_use_date", table: "Records"),
+                    hint: String(localized: "hint_first_use_date", table: "Records")
+                  ) {
+                    Text(firstUse, format: .dateTime.year().month().day())
+                  }
                 }
               }
               .padding(.vertical, 4)
@@ -278,21 +477,27 @@ struct RecordDetailView: View {
               systemImage: "battery.100"
             ) {
               VStack(alignment: .leading, spacing: 8) {
-                LabeledContent(
+                InfoLabeledContent(
                   String(localized: "cycle_count", table: "Analytics"),
+                  hint: String(localized: "hint_cycle_count", table: "Records"),
                   value: String(
                     format: String(localized: "cycle_count_format", table: "Analytics"),
                     record.cycleCount))
                 if record.designCapacity > 0 {
-                  LabeledContent(
+                  InfoLabeledContent(
                     String(localized: "design_capacity", table: "Analytics"),
+                    hint: String(localized: "hint_design_capacity", table: "Records"),
                     value: "\(record.designCapacity) mAh (100%)")
                 } else {
-                  LabeledContent(
+                  InfoLabeledContent(
                     String(localized: "design_capacity", table: "Analytics"),
+                    hint: String(localized: "hint_design_capacity", table: "Records"),
                     value: String(localized: "unknown", table: "Common"))
                 }
-                LabeledContent(String(localized: "nominal_capacity", table: "Analytics")) {
+                InfoLabeledContent(
+                  String(localized: "nominal_capacity", table: "Analytics"),
+                  hint: String(localized: "hint_nominal_capacity", table: "Records")
+                ) {
                   HStack(spacing: 8) {
                     Text("\(record.nominalCapacity) mAh")
                     let nominalPercent =
@@ -303,10 +508,12 @@ struct RecordDetailView: View {
                       .foregroundStyle(healthColorLocal(nominalPercent))
                   }
                 }
-                LabeledContent(String(localized: "raw_capacity", table: "Analytics")) {
+                InfoLabeledContent(
+                  String(localized: "raw_capacity", table: "Analytics"),
+                  hint: String(localized: "hint_raw_capacity", table: "Records")
+                ) {
                   HStack(spacing: 8) {
                     Text("\(record.rawCapacity) mAh")
-                    // 分析基準に応じたヘルス値で色付け
                     let health =
                       appSettings.analysisDataSource == .nominal
                       ? record.nominalHealthPercent : record.healthPercent
@@ -315,35 +522,39 @@ struct RecordDetailView: View {
                   }
                 }
                 if let lowRate = record.lowRateCapacity {
-                  LabeledContent(
+                  InfoLabeledContent(
                     String(localized: "low_rate_capacity", table: "Records"),
+                    hint: String(localized: "hint_low_rate_capacity", table: "Records"),
                     value:
                       "\(lowRate) mAh (\(String(format: "%.1f%%", record.designCapacity > 0 ? (Double(lowRate) / Double(record.designCapacity)) * 100.0 : 0.0)))"
                   )
                 }
                 if let display = record.settingsDisplayPercent {
-                  LabeledContent(
+                  InfoLabeledContent(
                     String(localized: "os_display", table: "Records"),
+                    hint: String(localized: "hint_os_display", table: "Records"),
                     value: "\(min(display, 100))%")
                 }
 
                 Divider().padding(.vertical, 6)
 
                 if let deflator = record.deflator {
-                  LabeledContent(
+                  InfoLabeledContent(
                     String(localized: "deflator", table: "Records"),
+                    hint: String(localized: "hint_deflator", table: "Records"),
                     value: String(format: "%.1f%%", deflator)
                   )
                 }
-                // 動的に計算した診断結果を表示（分析基準に応じて切り替え）
-                LabeledContent(
+                InfoLabeledContent(
                   String(localized: "diagnostic_result", table: "Records"),
+                  hint: String(localized: "hint_diagnostic_result", table: "Records"),
                   value: record.cachedDiagnostic)
                 if let displayDiagnostic = settingsDisplayDiagnosticMessage(
                   record.settingsDisplayPercent)
                 {
-                  LabeledContent(
+                  InfoLabeledContent(
                     String(localized: "settings_display_diagnostic", table: "Records"),
+                    hint: String(localized: "hint_settings_display_diagnostic", table: "Records"),
                     value: displayDiagnostic
                   )
                 }
@@ -368,18 +579,21 @@ struct RecordDetailView: View {
                 ) {
                   VStack(alignment: .leading, spacing: 8) {
                     if let avg = record.avgTemp {
-                      LabeledContent(
+                      InfoLabeledContent(
                         String(localized: "average", table: "Analytics"),
+                        hint: String(localized: "hint_temperature", table: "Records"),
                         value: String(format: "%.1f°C", avg))
                     }
                     if let max = record.maxTemp {
-                      LabeledContent(
+                      InfoLabeledContent(
                         String(localized: "maximum", table: "Analytics"),
+                        hint: String(localized: "hint_temperature", table: "Records"),
                         value: String(format: "%.1f°C", max))
                     }
                     if let min = record.minTemp {
-                      LabeledContent(
+                      InfoLabeledContent(
                         String(localized: "minimum", table: "Analytics"),
+                        hint: String(localized: "hint_temperature", table: "Records"),
                         value: String(format: "%.1f°C", min))
                     }
                   }
@@ -394,13 +608,15 @@ struct RecordDetailView: View {
                 ) {
                   VStack(alignment: .leading, spacing: 8) {
                     if let max = record.maxVoltage {
-                      LabeledContent(
+                      InfoLabeledContent(
                         String(localized: "maximum", table: "Analytics"),
+                        hint: String(localized: "hint_voltage", table: "Records"),
                         value: String(format: "%.0f mV", max))
                     }
                     if let min = record.minVoltage {
-                      LabeledContent(
+                      InfoLabeledContent(
                         String(localized: "minimum", table: "Analytics"),
+                        hint: String(localized: "hint_voltage", table: "Records"),
                         value: String(format: "%.0f mV", min))
                     }
                   }
@@ -416,12 +632,16 @@ struct RecordDetailView: View {
                 ) {
                   VStack(alignment: .leading, spacing: 8) {
                     if let max = record.maxSoC {
-                      LabeledContent(
-                        String(localized: "max_soc", table: "Records"), value: "\(max)%")
+                      InfoLabeledContent(
+                        String(localized: "max_soc", table: "Records"),
+                        hint: String(localized: "hint_charge_range", table: "Records"),
+                        value: "\(max)%")
                     }
                     if let min = record.minSoC {
-                      LabeledContent(
-                        String(localized: "min_soc", table: "Records"), value: "\(min)%")
+                      InfoLabeledContent(
+                        String(localized: "min_soc", table: "Records"),
+                        hint: String(localized: "hint_charge_range", table: "Records"),
+                        value: "\(min)%")
                     }
                   }
                   .padding(.vertical, 4)
@@ -442,44 +662,64 @@ struct RecordDetailView: View {
             LabeledContent(
               String(localized: "device_name", table: "Common"), value: record.deviceName)
             if let soc = record.soc {
-              LabeledContent(String(localized: "soc", table: "Records"), value: soc)
+              InfoLabeledContent(
+                String(localized: "soc", table: "Records"),
+                hint: String(localized: "hint_soc", table: "Records"),
+                value: soc)
             }
             if let modelCode = record.deviceModelCode {
-              LabeledContent(String(localized: "model_code", table: "Records"), value: modelCode)
+              InfoLabeledContent(
+                String(localized: "model_code", table: "Records"),
+                hint: String(localized: "hint_model_code", table: "Records"),
+                value: modelCode)
             }
             if record.storage != nil, let formatted = record.formattedStorage {
-              LabeledContent(String(localized: "storage", table: "Records"), value: formatted)
+              InfoLabeledContent(
+                String(localized: "storage", table: "Records"),
+                hint: String(localized: "hint_storage", table: "Records"),
+                value: formatted)
             }
             if record.ram != nil, let formattedRam = record.formattedRAM {
-              LabeledContent(String(localized: "ram", table: "Records"), value: formattedRam)
+              InfoLabeledContent(
+                String(localized: "ram", table: "Records"),
+                hint: String(localized: "hint_ram", table: "Records"),
+                value: formattedRam)
             }
             LabeledContent(
               String(localized: "log_date", table: "Records"), value: record.logDate,
               format: .dateTime.year().month().day())
             if let firstUse = record.firstUseDate {
-              LabeledContent(
-                String(localized: "first_use_date", table: "Records"), value: firstUse,
-                format: .dateTime.year().month().day())
+              InfoLabeledContent(
+                String(localized: "first_use_date", table: "Records"),
+                hint: String(localized: "hint_first_use_date", table: "Records")
+              ) {
+                Text(firstUse, format: .dateTime.year().month().day())
+              }
             }
           }
 
           Section(String(localized: "battery_capacity", table: "Analytics")) {
-            LabeledContent(
+            InfoLabeledContent(
               String(localized: "cycle_count", table: "Analytics"),
+              hint: String(localized: "hint_cycle_count", table: "Records"),
               value: String(
                 format: String(localized: "cycle_count_format", table: "Analytics"),
                 record.cycleCount))
             if record.designCapacity > 0 {
-              LabeledContent(
+              InfoLabeledContent(
                 String(localized: "design_capacity", table: "Analytics"),
-                value: "\(record.designCapacity) mAh (100%)"
-              )
+                hint: String(localized: "hint_design_capacity", table: "Records"),
+                value: "\(record.designCapacity) mAh (100%)")
             } else {
-              LabeledContent(
+              InfoLabeledContent(
                 String(localized: "design_capacity", table: "Analytics"),
+                hint: String(localized: "hint_design_capacity", table: "Records"),
                 value: String(localized: "unknown", table: "Common"))
             }
-            LabeledContent(String(localized: "nominal_capacity", table: "Analytics")) {
+            InfoLabeledContent(
+              String(localized: "nominal_capacity", table: "Analytics"),
+              hint: String(localized: "hint_nominal_capacity", table: "Records")
+            ) {
               HStack(spacing: 8) {
                 Text("\(record.nominalCapacity) mAh")
                 let nominalPercent =
@@ -490,10 +730,12 @@ struct RecordDetailView: View {
                   .foregroundStyle(healthColorLocal(nominalPercent))
               }
             }
-            LabeledContent(String(localized: "raw_capacity", table: "Analytics")) {
+            InfoLabeledContent(
+              String(localized: "raw_capacity", table: "Analytics"),
+              hint: String(localized: "hint_raw_capacity", table: "Records")
+            ) {
               HStack(spacing: 8) {
                 Text("\(record.rawCapacity) mAh")
-                // 分析基準に応じたヘルス値で色付け
                 let health =
                   appSettings.analysisDataSource == .nominal
                   ? record.nominalHealthPercent : record.healthPercent
@@ -502,31 +744,36 @@ struct RecordDetailView: View {
               }
             }
             if let lowRate = record.lowRateCapacity {
-              LabeledContent(
+              InfoLabeledContent(
                 String(localized: "low_rate_capacity", table: "Records"),
+                hint: String(localized: "hint_low_rate_capacity", table: "Records"),
                 value:
                   "\(lowRate) mAh (\(String(format: "%.1f%%", record.designCapacity > 0 ? (Double(lowRate) / Double(record.designCapacity)) * 100.0 : 0.0)))"
               )
             }
             if let display = record.settingsDisplayPercent {
-              LabeledContent(
-                String(localized: "os_display", table: "Records"), value: "\(min(display, 100))%")
+              InfoLabeledContent(
+                String(localized: "os_display", table: "Records"),
+                hint: String(localized: "hint_os_display", table: "Records"),
+                value: "\(min(display, 100))%")
             }
 
             if let deflator = record.deflator {
-              LabeledContent(
+              InfoLabeledContent(
                 String(localized: "deflator", table: "Records"),
+                hint: String(localized: "hint_deflator", table: "Records"),
                 value: String(format: "%.1f%%", deflator))
             }
-            // 動的に計算した診断結果を表示（分析基準に応じて切り替え）
-            LabeledContent(
+            InfoLabeledContent(
               String(localized: "diagnostic_result", table: "Records"),
+              hint: String(localized: "hint_diagnostic_result", table: "Records"),
               value: record.dynamicDiagnosticResult)
             if let displayDiagnostic = settingsDisplayDiagnosticMessage(
               record.settingsDisplayPercent)
             {
-              LabeledContent(
+              InfoLabeledContent(
                 String(localized: "settings_display_diagnostic", table: "Records"),
+                hint: String(localized: "hint_settings_display_diagnostic", table: "Records"),
                 value: displayDiagnostic)
             }
             Text(String(localized: "not_official_note", table: "Records"))
@@ -537,18 +784,21 @@ struct RecordDetailView: View {
           if record.avgTemp != nil || record.maxTemp != nil || record.minTemp != nil {
             Section(String(localized: "temperature_daily", table: "Records")) {
               if let avg = record.avgTemp {
-                LabeledContent(
+                InfoLabeledContent(
                   String(localized: "average", table: "Analytics"),
+                  hint: String(localized: "hint_temperature", table: "Records"),
                   value: String(format: "%.1f°C", avg))
               }
               if let max = record.maxTemp {
-                LabeledContent(
+                InfoLabeledContent(
                   String(localized: "maximum", table: "Analytics"),
+                  hint: String(localized: "hint_temperature", table: "Records"),
                   value: String(format: "%.1f°C", max))
               }
               if let min = record.minTemp {
-                LabeledContent(
+                InfoLabeledContent(
                   String(localized: "minimum", table: "Analytics"),
+                  hint: String(localized: "hint_temperature", table: "Records"),
                   value: String(format: "%.1f°C", min))
               }
             }
@@ -557,13 +807,15 @@ struct RecordDetailView: View {
           if record.maxVoltage != nil || record.minVoltage != nil {
             Section(String(localized: "voltage", table: "Records")) {
               if let max = record.maxVoltage {
-                LabeledContent(
+                InfoLabeledContent(
                   String(localized: "maximum", table: "Analytics"),
+                  hint: String(localized: "hint_voltage", table: "Records"),
                   value: String(format: "%.0f mV", max))
               }
               if let min = record.minVoltage {
-                LabeledContent(
+                InfoLabeledContent(
                   String(localized: "minimum", table: "Analytics"),
+                  hint: String(localized: "hint_voltage", table: "Records"),
                   value: String(format: "%.0f mV", min))
               }
             }
@@ -572,10 +824,16 @@ struct RecordDetailView: View {
           if record.maxSoC != nil || record.minSoC != nil {
             Section(String(localized: "charge_range_daily", table: "Records")) {
               if let max = record.maxSoC {
-                LabeledContent(String(localized: "max_soc", table: "Records"), value: "\(max)%")
+                InfoLabeledContent(
+                  String(localized: "max_soc", table: "Records"),
+                  hint: String(localized: "hint_charge_range", table: "Records"),
+                  value: "\(max)%")
               }
               if let min = record.minSoC {
-                LabeledContent(String(localized: "min_soc", table: "Records"), value: "\(min)%")
+                InfoLabeledContent(
+                  String(localized: "min_soc", table: "Records"),
+                  hint: String(localized: "hint_charge_range", table: "Records"),
+                  value: "\(min)%")
               }
             }
           }

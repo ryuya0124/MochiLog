@@ -278,7 +278,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 64;
+				CURRENT_PROJECT_VERSION = 70;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = FZ35ZF3CZV;
 				ENABLE_APP_SANDBOX = YES;
@@ -305,7 +305,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
-				MARKETING_VERSION = 2.2.1;
+				MARKETING_VERSION = 2.2.2;
 				OTHER_LDFLAGS = (
 					"-weak_framework",
 					SwiftData,
@@ -337,7 +337,7 @@
 				CODE_SIGN_ENTITLEMENTS = MochiLog/Resources/MochiLog.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Distribution: ryuya watanabe (FZ35ZF3CZV)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 64;
+				CURRENT_PROJECT_VERSION = 70;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = FZ35ZF3CZV;
 				ENABLE_APP_SANDBOX = YES;
@@ -364,7 +364,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
-				MARKETING_VERSION = 2.2.1;
+				MARKETING_VERSION = 2.2.2;
 				OTHER_LDFLAGS = (
 					"-weak_framework",
 					SwiftData,
