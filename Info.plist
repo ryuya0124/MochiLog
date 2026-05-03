@@ -13,6 +13,13 @@
     <array>
         <string>shortcuts</string>
     </array>
+    <key>UIApplicationSupportsMultipleScenes</key>
+    <false/>
+    <key>UIApplicationSceneManifest</key>
+    <dict>
+        <key>UIApplicationSupportsMultipleScenes</key>
+        <false/>
+    </dict>
     <key>CFBundleURLTypes</key>
     <array>
         <dict>

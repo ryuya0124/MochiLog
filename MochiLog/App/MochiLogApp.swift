@@ -68,6 +68,7 @@ struct MochiLogApp: App {
           handleOpenURL(url)
         }
     }
+    .handlesExternalEvents(matching: ["*"])
   }
 
   // 重複URL処理防止
