@@ -267,7 +267,9 @@ final class SwiftDataStore: DataStore {
 
   override func runMigrations() {
     // SwiftData用のマイグレーションをModelContext経由で実行
-    SwiftDataMigrationRunner.runPendingMigrations(modelContext: modelContext)
+    SwiftDataMigrationRunner.runPendingMigrations(modelContext: modelContext) { [weak self] in
+      self?.refreshRecords()
+    }
   }
 
   // MARK: - SwiftData内部マイグレーション
@@ -277,18 +279,16 @@ final class SwiftDataStore: DataStore {
     private static let migrationKeyPrefix = "Migration_Completed_"
 
     /// SDBatteryRecord向けマイグレーション（Migration_v1_iPhone16e_AvgTemp と同等のロジック）
-    static func runPendingMigrations(modelContext: ModelContext) {
-      Task.detached(priority: .utility) {
-        await runAsync(modelContext: modelContext)
+    static func runPendingMigrations(modelContext: ModelContext, onComplete: @escaping @MainActor () -> Void = {}) {
+      Task { @MainActor in
+        runV1Migration(modelContext: modelContext)
+        runV2MagSafeMigration(modelContext: modelContext)
+        onComplete()
       }
     }
 
-    private static func runAsync(modelContext: ModelContext) async {
-      await runV1Migration(modelContext: modelContext)
-      await runV2MagSafeMigration(modelContext: modelContext)
-    }
-
-    private static func runV1Migration(modelContext: ModelContext) async {
+    @MainActor
+    private static func runV1Migration(modelContext: ModelContext) {
       let version = "v1_iPhone16e_AvgTemp"
       let key = migrationKeyPrefix + version
 
@@ -333,21 +333,14 @@ final class SwiftDataStore: DataStore {
       print("[SwiftDataMigration] \(version) completed.")
     }
 
-    private static func runV2MagSafeMigration(modelContext: ModelContext) async {
+    @MainActor
+    private static func runV2MagSafeMigration(modelContext: ModelContext) {
       let version = "v2_MagSafe_Battery"
       let key = migrationKeyPrefix + version
 
       guard !UserDefaults.standard.bool(forKey: key) else { return }
 
       print("[SwiftDataMigration] Running \(version)...")
-      let previousVersion = UserDefaults.standard.string(forKey: AppSettings.Keys.lastSeenVersion)
-
-      // 3.0.0未満からのアップデート時のみ実行
-      let shouldRun = previousVersion == nil || compareVersion(previousVersion!, lessThanOrEqual: "2.9.9")
-      if !shouldRun {
-        UserDefaults.standard.set(true, forKey: key)
-        return
-      }
 
       let descriptor = FetchDescriptor<SDBatteryRecord>(
         predicate: #Predicate { $0.deviceName == "iPhone Air" }
@@ -358,7 +351,7 @@ final class SwiftDataStore: DataStore {
       for record in airRecords {
         let isMagSafe = record.firstUseDate == nil
           && record.deflator == nil
-          && record.lowRateCapacity == 0
+          && (record.lowRateCapacity == nil || record.lowRateCapacity == 0)
           && record.rawCapacity == 0
 
         if isMagSafe {

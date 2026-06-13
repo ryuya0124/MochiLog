@@ -53,6 +53,9 @@ final class AppSettings: ObservableObject {
     
     // 新規: MagSafeバッテリー自動選択
     static let autoSelectMagSafeBattery = "autoSelectMagSafeBattery"
+    
+    // 新規: デバイス識別子の上書き（開発者用）
+    static let overrideLocalModelIdentifier = "overrideLocalModelIdentifier"
   }
 
   // MARK: - Constants
@@ -267,6 +270,9 @@ final class AppSettings: ObservableObject {
   /// MagSafeバッテリーの自動選択
   @Published var autoSelectMagSafeBattery: Bool
 
+  /// デバイス識別子の上書き（開発者用、空文字の場合はシステム値を使用）
+  @Published var overrideLocalModelIdentifier: String
+
   // MARK: - Initialization
 
   private init() {
@@ -390,6 +396,9 @@ final class AppSettings: ObservableObject {
     } else {
       self.autoSelectMagSafeBattery = UserDefaults.standard.bool(forKey: Keys.autoSelectMagSafeBattery)
     }
+
+    // デバイス識別子の上書きの初期化
+    self.overrideLocalModelIdentifier = UserDefaults.standard.string(forKey: Keys.overrideLocalModelIdentifier) ?? ""
 
     // プロパティの変更を監視してUserDefaultsに保存
     setupObservers()
@@ -555,6 +564,13 @@ final class AppSettings: ObservableObject {
       .dropFirst()
       .sink { value in
         UserDefaults.standard.set(value, forKey: Keys.autoSelectMagSafeBattery)
+      }
+      .store(in: &cancellables)
+      
+    $overrideLocalModelIdentifier
+      .dropFirst()
+      .sink { value in
+        UserDefaults.standard.set(value, forKey: Keys.overrideLocalModelIdentifier)
       }
       .store(in: &cancellables)
   }

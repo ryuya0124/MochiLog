@@ -615,6 +615,11 @@ struct DeviceLibrary {
   /// 実行中デバイスのモデル識別子を取得（hw.machine を利用）
   /// iOS/macOS 上で動作している場合に自端末の識別子（例: "iPhone13,2"）を返す
   static func localModelIdentifier() -> String? {
+    let overrideId = AppSettings.shared.overrideLocalModelIdentifier
+    if !overrideId.isEmpty {
+      return overrideId
+    }
+
     var size: Int = 0
     // 取得サイズをまず問い合わせ
     if sysctlbyname("hw.machine", nil, &size, nil, 0) != 0 {

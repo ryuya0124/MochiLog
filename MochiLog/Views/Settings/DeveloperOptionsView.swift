@@ -13,6 +13,31 @@ struct DeveloperOptionsView: View {
   var body: some View {
     NavigationStack {
       Form {
+        // デバイス識別子の上書きセクション
+        Section {
+          HStack {
+            TextField("例: iPhone16,1", text: $appSettings.overrideLocalModelIdentifier)
+              .textFieldStyle(.roundedBorder)
+              .autocorrectionDisabled()
+              .textInputAutocapitalization(.never)
+
+            if !appSettings.overrideLocalModelIdentifier.isEmpty {
+              Button(role: .destructive) {
+                appSettings.overrideLocalModelIdentifier = ""
+              } label: {
+                Image(systemName: "xmark.circle.fill")
+                  .foregroundStyle(.secondary)
+              }
+              .buttonStyle(.plain)
+            }
+          }
+        } header: {
+          Label("デバイス識別子の上書き", systemImage: "iphone.badge.play")
+        } footer: {
+          Text("自動判定時に使われる端末自体のモデル番号（hw.machine）を手動で上書きします。空にすると実際の端末の値を使用します。")
+            .font(.caption)
+        }
+
         // バージョン管理セクション
         Section {
           VStack(alignment: .leading, spacing: 8) {
@@ -158,6 +183,8 @@ struct DeveloperOptionsView: View {
           if #available(iOS 17, *) {
             MigrationManager.resetAllMigrations()
           }
+          UserDefaults.standard.removeObject(forKey: "Migration_Completed_v2_MagSafe_Battery")
+          UserDefaults.standard.removeObject(forKey: "CoreDataMigration_Completed_v2_MagSafe_Battery")
         }
       } message: {
         Text("全てのマイグレーションフラグをリセットします。次回起動時に再実行されます。")
@@ -179,7 +206,7 @@ struct DeveloperOptionsView: View {
   }
 
   private func getMigrationStatuses() -> [MigrationStatus] {
-    let migrationVersions = ["v1_iPhone16e_AvgTemp"]
+    let migrationVersions = ["v1_iPhone16e_AvgTemp", "v2_MagSafe_Battery"]
 
     return migrationVersions.map { version in
       let key = "Migration_Completed_\(version)"

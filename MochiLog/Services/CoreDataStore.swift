@@ -249,7 +249,11 @@ final class CoreDataStore: DataStore {
   // MARK: - マイグレーション
 
   override func runMigrations() {
-    CoreDataMigrationRunner.runPendingMigrations(viewContext: viewContext)
+    CoreDataMigrationRunner.runPendingMigrations(viewContext: viewContext) { [weak self] in
+      DispatchQueue.main.async {
+        self?.refreshRecords()
+      }
+    }
   }
 }
 
@@ -258,9 +262,10 @@ final class CoreDataStore: DataStore {
 struct CoreDataMigrationRunner {
   private static let migrationKeyPrefix = "CoreDataMigration_Completed_"
 
-  static func runPendingMigrations(viewContext: NSManagedObjectContext) {
+  static func runPendingMigrations(viewContext: NSManagedObjectContext, onComplete: @escaping () -> Void = {}) {
     Task.detached(priority: .utility) {
       await runAsync(viewContext: viewContext)
+      onComplete()
     }
   }
 
@@ -275,14 +280,6 @@ struct CoreDataMigrationRunner {
     guard !UserDefaults.standard.bool(forKey: key) else { return }
 
     print("[CoreDataMigration] Running \(version)...")
-    let previousVersion = UserDefaults.standard.string(forKey: AppSettings.Keys.lastSeenVersion)
-
-    // 3.0.0未満からのアップデート時のみ実行
-    let shouldRun = previousVersion == nil || compareVersion(previousVersion!, lessThanOrEqual: "2.9.9")
-    if !shouldRun {
-      UserDefaults.standard.set(true, forKey: key)
-      return
-    }
 
     await viewContext.perform {
       let request = NSFetchRequest<CDBatteryRecord>(entityName: "CDBatteryRecord")
@@ -294,7 +291,7 @@ struct CoreDataMigrationRunner {
       for record in airRecords {
         let isMagSafe = record.firstUseDate == nil
           && record.deflator == nil
-          && record.lowRateCapacity?.intValue == 0
+          && (record.lowRateCapacity == nil || record.lowRateCapacity?.intValue == 0)
           && record.rawCapacity == 0
 
         if isMagSafe {
