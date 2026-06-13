@@ -725,7 +725,7 @@ struct SettingsView: View {
         }
 
         do {
-          let importResult = try DataImportService.importFromYAML(
+          let importResult = try await DataImportService.importFromYAML(
             url: url,
             dataStore: dataStore,
             existingRecords: records,

@@ -58,7 +58,7 @@ struct DataImportService {
     dataStore: DataStore,
     existingRecords: [BatteryRecord],
     allowDuplicates: Bool
-  ) throws -> ImportResult {
+  ) async throws -> ImportResult {
     // ファイルを読み込み
     let yamlString: String
     do {
@@ -86,62 +86,66 @@ struct DataImportService {
     try validateFormatVersion(exportData.exportFormatVersion)
 
     // インポート処理
-    var importedCount = 0
-    var skippedCount = 0
-    var errors: [String] = []
+    let result = await MainActor.run {
+      var importedCount = 0
+      var skippedCount = 0
+      var errors: [String] = []
 
-    for exportRecord in exportData.records {
-      do {
-        let batteryRecord = try convertToBatteryRecord(exportRecord)
+      for exportRecord in exportData.records {
+        do {
+          let batteryRecord = try convertToBatteryRecord(exportRecord)
 
-        // 3.0.0より古いデータの場合、iPhone Air MagSafeバッテリーのマイグレーションを実施
-        if compareVersion(exportData.appVersion, lessThan: "3.0.0") {
-          if batteryRecord.deviceName == "iPhone Air" {
-            let isMagSafe = batteryRecord.firstUseDate == nil
-              && batteryRecord.deflator == nil
-              && (batteryRecord.lowRateCapacity == nil || batteryRecord.lowRateCapacity == 0)
-              && batteryRecord.rawCapacity == 0
+          // 3.0.0より古いデータの場合、iPhone Air MagSafeバッテリーのマイグレーションを実施
+          if compareVersion(exportData.appVersion, lessThan: "3.0.0") {
+            if batteryRecord.deviceName == "iPhone Air" {
+              let isMagSafe = batteryRecord.firstUseDate == nil
+                && batteryRecord.deflator == nil
+                && (batteryRecord.lowRateCapacity == nil || batteryRecord.lowRateCapacity == 0)
+                && batteryRecord.rawCapacity == 0
 
-            if isMagSafe {
-              batteryRecord.deviceName = "iPhone Air MagSafeバッテリー"
-              batteryRecord.deviceModelCode = "A3385"
+              if isMagSafe {
+                batteryRecord.deviceName = "iPhone Air MagSafeバッテリー"
+                batteryRecord.deviceModelCode = "A3385"
+              }
             }
           }
-        }
 
-        // 重複チェック
-        if !allowDuplicates {
-          let isDuplicate = existingRecords.contains { existing in
-            let sameDate = Calendar.current.isDate(
-              existing.logDate, inSameDayAs: batteryRecord.logDate)
-            return sameDate && existing.deviceName == batteryRecord.deviceName
+          // 重複チェック
+          if !allowDuplicates {
+            let isDuplicate = existingRecords.contains { existing in
+              let sameDate = Calendar.current.isDate(
+                existing.logDate, inSameDayAs: batteryRecord.logDate)
+              return sameDate && existing.deviceName == batteryRecord.deviceName
+            }
+
+            if isDuplicate {
+              skippedCount += 1
+              continue
+            }
           }
 
-          if isDuplicate {
-            skippedCount += 1
-            continue
-          }
+          // レコードを追加
+          dataStore.insert(batteryRecord)
+          importedCount += 1
+
+        } catch {
+          errors.append("Failed to import record: \(error.localizedDescription)")
         }
-
-        // レコードを追加
-        dataStore.insert(batteryRecord)
-        importedCount += 1
-
-      } catch {
-        errors.append("Failed to import record: \(error.localizedDescription)")
       }
-    }
 
-    // 保存
-    if importedCount > 0 {
-      dataStore.save()
+      // 保存
+      if importedCount > 0 {
+        dataStore.save()
+      }
+
+      return (importedCount, skippedCount, errors)
     }
 
     return ImportResult(
       totalRecords: exportData.records.count,
-      importedRecords: importedCount,
-      skippedDuplicates: skippedCount,
-      errors: errors
+      importedRecords: result.0,
+      skippedDuplicates: result.1,
+      errors: result.2
     )
   }
 
