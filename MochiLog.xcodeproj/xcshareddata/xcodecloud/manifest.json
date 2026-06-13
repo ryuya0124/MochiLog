@@ -1,0 +1,9 @@
+{
+  "id" : "174d9331-5e66-430e-a5f6-5d336394bdf8",
+  "targets" : [
+    {
+      "id" : "DF7B6846-986E-488F-9A6F-F5DCA6DD36CD",
+      "name" : "MochiLog"
+    }
+  ]
+}
