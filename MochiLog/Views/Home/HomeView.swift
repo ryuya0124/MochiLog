@@ -713,7 +713,17 @@ struct HomeView: View {
       }
       // MARK: - バッチインポート結果シート
       .sheet(isPresented: $showingBatchResults) {
-        BatchImportResultView(results: $batchImportResults) {
+        BatchImportResultView(results: $batchImportResults) { result in
+          // 1. シートを閉じる
+          showingBatchResults = false
+
+          // 2. 少し待ってから、選択されたファイルの手動インポートを開始
+          if let text = result.rawText {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+              processLogTextAsync(text, silent: false, contentHash: text.hashValue)
+            }
+          }
+        } onDismiss: {
           showingBatchResults = false
         }
       }

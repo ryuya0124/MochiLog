@@ -83,12 +83,24 @@ struct MochiLogApp: App {
   /// デバウンス用ワークアイテム
   private static var queueFlushWorkItem: DispatchWorkItem?
 
+  // デバッグ用: onOpenURL呼び出しのカウンター
+  private static var openURLCallCount = 0
+
   // 開かれたURLを確認して処理（Document Types経由）
   private func handleOpenURL(_ url: URL) {
-    print("Opened via URL: \(url)")
+    MochiLogApp.openURLCallCount += 1
+    let callIndex = MochiLogApp.openURLCallCount
+
+    // ① iOSが何回呼び出したか確認するためのログ
+    print("")
+    print("[デバッグ] === onOpenURL #\(callIndex) ===")
+    print("[デバッグ] URL: \(url.lastPathComponent)")
+    print("[デバッグ] フルパス: \(url.path)")
+    print("[デバッグ] scheme=\(url.scheme ?? "nil")  isFileURL=\(url.isFileURL)")
 
     // ショートカットコールバックの処理
     if url.scheme == "mochilog" {
+      print("[デバッグ] → mochilog://スキームなのでショートカットコールバック処理")
       handleShortcutCallback(url)
       return
     }
@@ -100,16 +112,22 @@ struct MochiLogApp: App {
       lastURL == url,
       now.timeIntervalSince(lastTime) < 5.0
     {
-      print("[MochiLogApp] Skipping duplicate URL (within 5 seconds)")
+      // ② URL重複ブロック: iPadの複数シーンが同一URLを送ってきた
+      print("[デバッグ] → ✖ 5秒以内の同一URL → スキップ (elapsed=\(String(format: "%.2f", now.timeIntervalSince(lastTime)))s)")
       return
     }
     MochiLogApp.lastProcessedURL = url
     MochiLogApp.lastProcessedURLTime = now
+    print("[デバッグ] → URL重複チェック: 通過")
 
-    guard url.isFileURL else { return }
+    guard url.isFileURL else {
+      print("[デバッグ] → ✖ fileURLでないのでスキップ")
+      return
+    }
 
     // ファイルへのアクセス権を要求（共有シートからのファイルはInboxにコピーされる）
     let secure = url.startAccessingSecurityScopedResource()
+    print("[デバッグ] → startAccessingSecurityScopedResource: \(secure)")
     defer {
       if secure { url.stopAccessingSecurityScopedResource() }
       // 処理後にInboxのファイルを削除
@@ -125,6 +143,13 @@ struct MochiLogApp: App {
       let s = String(data: data, encoding: .shiftJIS) { text = s }
     if text == nil, let s = try? String(contentsOf: url) { text = s }
 
+    // ③ 読み込み結果
+    if let text = text {
+      print("[デバッグ] → ✓ 読み込み成功: \(text.count)文字")
+    } else {
+      print("[デバッグ] → ✖ 読み込み失敗 (text=nil)")
+    }
+
     // 読み込み結果をキューに追加してデバウンス送信
     let silent = !AppSettings.shared.openAppAfterShareImport
     enqueueAndFlush(
@@ -136,7 +161,9 @@ struct MochiLogApp: App {
   /// ※ onOpenURL は常にメインスレッドで呼ばれるため、ロック不要
   private func enqueueAndFlush(entry: SharedFileEntry) {
     MochiLogApp.pendingSharedQueue.append(entry)
-    print("[MochiLogApp] キューに追加: \(entry.filename) (合計\(MochiLogApp.pendingSharedQueue.count)件)")
+
+    // ④ キューの現在状態
+    print("[デバッグ] → キュー追加: \(entry.filename) [キュー内: \(MochiLogApp.pendingSharedQueue.map(\.filename).joined(separator: ", "))]")
 
     // 既存のタイマーをキャンセルして再スケジュール（デバウンス）
     MochiLogApp.queueFlushWorkItem?.cancel()
@@ -146,7 +173,14 @@ struct MochiLogApp: App {
       MochiLogApp.queueFlushWorkItem = nil
 
       guard !queue.isEmpty else { return }
-      print("[MochiLogApp] \(queue.count)件をまとめて送信")
+
+      // ⑤ デバウンス後の実際に処理する件数
+      print("")
+      print("[デバッグ] === デバウンスフラッシュ ===")
+      print("[デバッグ] ProcessSharedLogQueue 送信: \(queue.count)件")
+      queue.enumerated().forEach { i, e in
+        print("[デバッグ]   [\(i)] \(e.filename) text=\(e.text != nil ? "\(e.text!.count)文字" : "nil")")
+      }
 
       // [[String: Any]] に変換してNotificationで送信
       let entries: [[String: Any]] = queue.map { entry in

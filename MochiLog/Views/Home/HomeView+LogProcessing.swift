@@ -435,6 +435,27 @@ extension HomeView {
     let total = entries.count
     guard total > 0 else { return }
 
+    // 1件のみ → 従来の単ファイルフロー（詳細画面を開く）
+    if total == 1 {
+      let entry = entries[0]
+      guard let text = entry["text"] as? String, !text.isEmpty else {
+        // テキスト読み込み失敗：エラーアラートを表示
+        await MainActor.run {
+          errorMessage = "ファイルの読み込みに失敗しました。"
+          showingErrorAlert = true
+        }
+        return
+      }
+      let silent = entry["silent"] as? Bool ?? false
+      // 既存の単ファイル処理（解析→詳細画面）を再利用
+      await MainActor.run {
+        processLogTextAsync(text, silent: silent, contentHash: text.hashValue)
+      }
+      return
+    }
+
+    // 2件以上 → バッチUI（並列処理＋リアルタイム結果シート）
+
     // ファイル名とテキストを先に抽出（Sendable な型として TaskGroup に渡すため）
     let filenames: [String] = entries.map { $0["filename"] as? String ?? "不明" }
     let texts: [String?] = entries.map { $0["text"] as? String }
@@ -450,6 +471,7 @@ extension HomeView {
           filename: filenames[index],
           parsedDate: nil,
           deviceName: nil,
+          rawText: texts[index],
           status: .processing,
           errorMessage: nil
         )
@@ -472,6 +494,7 @@ extension HomeView {
                 filename: filename,
                 parsedDate: nil,
                 deviceName: nil,
+                rawText: nil,
                 status: .error,
                 errorMessage: "ファイルの読み込みに失敗しました。文字エンコーディングを確認してください。"
               )
@@ -497,7 +520,8 @@ extension HomeView {
             let itemResult = processBatchItem(
               id: index,
               parseResult: parseResult,
-              filename: filename
+              filename: filename,
+              rawText: text
             )
             batchImportResults[index] = itemResult
           }
@@ -514,7 +538,8 @@ extension HomeView {
   private func processBatchItem(
     id: Int,
     parseResult: LogParser.ParseResult,
-    filename: String
+    filename: String,
+    rawText: String
   ) -> FileImportResult {
 
     // 基本バリデーション（必須フィールドの確認）
@@ -528,6 +553,7 @@ extension HomeView {
         filename: filename,
         parsedDate: parseResult.logDate,
         deviceName: nil,
+        rawText: rawText,
         status: .error,
         errorMessage: String(localized: "parse_error", table: "Home")
       )
@@ -540,6 +566,7 @@ extension HomeView {
         filename: filename,
         parsedDate: logDate,
         deviceName: nil,
+        rawText: rawText,
         status: .error,
         errorMessage: String(localized: "capacity_mismatch_error", table: "Home")
       )
@@ -550,10 +577,21 @@ extension HomeView {
     var actualDeviceName = deviceName
     var actualModelCode = modelCode
 
-    // Apple Watch の処理（バッチモードでは登録済み1台目を自動使用）
+    // Apple Watch の処理
     if isWatchDevice(parseResult: parseResult, deviceName: deviceName) {
       let registeredWatches = AppSettings.shared.registeredWatches
-      if let firstWatch = registeredWatches.first {
+      if registeredWatches.count > 1 {
+        // Watchが複数登録されている場合はユーザーに選ばせるため手動インポートへ
+        return FileImportResult(
+          id: id,
+          filename: filename,
+          parsedDate: logDate,
+          deviceName: deviceName,
+          rawText: rawText,
+          status: .needsReview,
+          errorMessage: nil
+        )
+      } else if let firstWatch = registeredWatches.first {
         actualDeviceName = firstWatch
         actualModelCode = DeviceLibrary.getIdentifierForDeviceName(firstWatch) ?? modelCode
       } else {
@@ -562,8 +600,24 @@ extension HomeView {
           filename: filename,
           parsedDate: logDate,
           deviceName: deviceName,
+          rawText: rawText,
           status: .error,
           errorMessage: "Apple Watchが登録されていません。設定から登録してください。"
+        )
+      }
+    } else {
+      // iPhone/iPad など通常デバイスの処理
+      let selectionMode = AppSettings.shared.deviceSelectionMode
+      if selectionMode != .automatic {
+        // 手動選択モードの場合はユーザーに選ばせるため手動インポートへ
+        return FileImportResult(
+          id: id,
+          filename: filename,
+          parsedDate: logDate,
+          deviceName: deviceName,
+          rawText: rawText,
+          status: .needsReview,
+          errorMessage: nil
         )
       }
     }
@@ -577,6 +631,7 @@ extension HomeView {
         filename: filename,
         parsedDate: logDate,
         deviceName: actualDeviceName,
+        rawText: rawText,
         status: .duplicate,
         errorMessage: nil
       )
@@ -597,6 +652,7 @@ extension HomeView {
       filename: filename,
       parsedDate: logDate,
       deviceName: actualDeviceName,
+      rawText: rawText,
       status: .success,
       errorMessage: nil
     )

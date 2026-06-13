@@ -14,6 +14,8 @@ struct FileImportResult: Identifiable {
   let parsedDate: Date?
   /// 解決されたデバイス名
   let deviceName: String?
+  /// ログの生テキスト（手動インポートフォールバック用）
+  let rawText: String?
   /// 処理ステータス
   let status: ImportStatus
   /// エラーメッセージ（status == .error の場合のみ）
@@ -24,32 +26,36 @@ struct FileImportResult: Identifiable {
     case processing  // パース中（スピナー表示）
     case success     // 保存成功
     case duplicate   // 重複スキップ
+    case needsReview // 手動選択が必要（Watch複数・手動デバイスモード）
     case error       // 解析・保存エラー
 
     var iconName: String {
       switch self {
-      case .processing: return "ellipsis.circle.fill"
-      case .success:    return "checkmark.circle.fill"
-      case .duplicate:  return "arrow.triangle.2.circlepath.circle.fill"
-      case .error:      return "xmark.circle.fill"
+      case .processing:  return "ellipsis.circle.fill"
+      case .success:     return "checkmark.circle.fill"
+      case .duplicate:   return "arrow.triangle.2.circlepath.circle.fill"
+      case .needsReview: return "hand.raised.fill"
+      case .error:       return "xmark.circle.fill"
       }
     }
 
     var color: Color {
       switch self {
-      case .processing: return Color(uiColor: .secondaryLabel)
-      case .success:    return Color(red: 0.18, green: 0.73, blue: 0.44)
-      case .duplicate:  return Color(red: 0.98, green: 0.62, blue: 0.12)
-      case .error:      return Color(red: 0.92, green: 0.27, blue: 0.27)
+      case .processing:  return Color(uiColor: .secondaryLabel)
+      case .success:     return Color(red: 0.18, green: 0.73, blue: 0.44)
+      case .duplicate:   return Color(red: 0.98, green: 0.62, blue: 0.12)
+      case .needsReview: return Color(red: 0.35, green: 0.37, blue: 0.90)
+      case .error:       return Color(red: 0.92, green: 0.27, blue: 0.27)
       }
     }
 
     var label: String {
       switch self {
-      case .processing: return "処理中"
-      case .success:    return "保存完了"
-      case .duplicate:  return "重複スキップ"
-      case .error:      return "エラー"
+      case .processing:  return "処理中"
+      case .success:     return "保存完了"
+      case .duplicate:   return "重複スキップ"
+      case .needsReview: return "手動選択必要"
+      case .error:       return "エラー"
       }
     }
 
@@ -65,15 +71,17 @@ struct FileImportResult: Identifiable {
 /// results はリアルタイムで更新される @Binding を受け取る
 struct BatchImportResultView: View {
   @Binding var results: [FileImportResult]
+  let onResolve: (FileImportResult) -> Void
   let onDismiss: () -> Void
 
   // MARK: - 集計値（処理完了済みのみカウント）
 
   private var completedCount: Int   { results.filter { $0.status.isCompleted }.count }
-  private var processingCount: Int  { results.filter { $0.status == .processing }.count }
-  private var successCount: Int     { results.filter { $0.status == .success   }.count }
-  private var duplicateCount: Int   { results.filter { $0.status == .duplicate }.count }
-  private var errorCount: Int       { results.filter { $0.status == .error     }.count }
+  private var processingCount: Int  { results.filter { $0.status == .processing   }.count }
+  private var successCount: Int     { results.filter { $0.status == .success      }.count }
+  private var duplicateCount: Int   { results.filter { $0.status == .duplicate    }.count }
+  private var needsReviewCount: Int { results.filter { $0.status == .needsReview  }.count }
+  private var errorCount: Int       { results.filter { $0.status == .error        }.count }
   private var isAllDone: Bool       { processingCount == 0 }
 
   // MARK: - Body
@@ -128,7 +136,7 @@ struct BatchImportResultView: View {
         }
       }
 
-      // 成功 / 重複 / エラー バッジ行
+      // 成功 / 重複 / 要手動選択 / エラー バッジ行
       HStack(spacing: 0) {
         summaryBadge(
           count: successCount,
@@ -142,6 +150,13 @@ struct BatchImportResultView: View {
           label: "重複",
           color: FileImportResult.ImportStatus.duplicate.color,
           icon: "arrow.triangle.2.circlepath.circle.fill"
+        )
+        Divider().frame(height: 40)
+        summaryBadge(
+          count: needsReviewCount,
+          label: "手動選択",
+          color: FileImportResult.ImportStatus.needsReview.color,
+          icon: "hand.raised.fill"
         )
         Divider().frame(height: 40)
         summaryBadge(
@@ -183,7 +198,9 @@ struct BatchImportResultView: View {
   private var resultList: some View {
     LazyVStack(spacing: 0) {
       ForEach(results) { result in
-        ResultRowView(result: result)
+        ResultRowView(result: result, onResolve: {
+          onResolve(result)
+        })
           .transition(
             .asymmetric(
               insertion: .opacity.combined(with: .move(edge: .top)),
@@ -207,6 +224,7 @@ struct BatchImportResultView: View {
 /// 1件分の結果行
 private struct ResultRowView: View {
   let result: FileImportResult
+  let onResolve: () -> Void
 
   var body: some View {
     HStack(alignment: .top, spacing: 14) {
@@ -288,16 +306,34 @@ private struct ResultRowView: View {
 
       Spacer(minLength: 0)
 
-      // ステータスラベル（右端）
-      Text(result.status.label)
-        .font(.caption2.weight(.medium))
-        .foregroundStyle(result.status.color)
-        .padding(.horizontal, 8)
-        .padding(.vertical, 4)
-        .background(result.status.color.opacity(0.15))
-        .clipShape(Capsule())
-        .padding(.top, 3)
-        .animation(.spring(duration: 0.4), value: result.status)
+      // ステータスラベルとアクションボタン（右端）
+      VStack(alignment: .trailing, spacing: 6) {
+        Text(result.status.label)
+          .font(.caption2.weight(.medium))
+          .foregroundStyle(result.status.color)
+          .padding(.horizontal, 8)
+          .padding(.vertical, 4)
+          .background(result.status.color.opacity(0.15))
+          .clipShape(Capsule())
+          .animation(.spring(duration: 0.4), value: result.status)
+
+        if result.status == .needsReview {
+          Button {
+            onResolve()
+          } label: {
+            Text("手動追加")
+              .font(.caption2.weight(.bold))
+              .foregroundColor(.white)
+              .padding(.horizontal, 10)
+              .padding(.vertical, 5)
+              .background(Color(red: 0.35, green: 0.37, blue: 0.90))
+              .clipShape(Capsule())
+          }
+          .buttonStyle(.plain)
+          .transition(.scale.combined(with: .opacity))
+        }
+      }
+      .padding(.top, 3)
     }
     .padding(.horizontal, 16)
     .padding(.vertical, 14)
