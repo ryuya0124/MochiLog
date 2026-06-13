@@ -134,43 +134,76 @@ struct RecordListView<Header: View>: View {
             VStack(alignment: .leading, spacing: 24) {
               ForEach(columnSections, id: \.id) { section in
                 let sectionRecords = recordsForSection(section)
-                VStack(alignment: .leading, spacing: 12) {
-                  // DisclosureGroupで折りたたみ可能に
-                  DisclosureGroup(
-                    isExpanded: Binding(
-                      get: { !collapsedSections.contains(section.id) },
-                      set: { isExpanded in
-                        withAnimation(.snappy) {
-                          allowSectionAnimation = true
-                          if isExpanded {
-                            collapsedSections.remove(section.id)
-                          } else {
-                            collapsedSections.insert(section.id)
-                          }
-                        }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-                          allowSectionAnimation = false
+                VStack(alignment: .leading, spacing: 16) {
+                  // カスタムヘッダーでリッチなセクション表示
+                  Button {
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                      allowSectionAnimation = true
+                      if collapsedSections.contains(section.id) {
+                        collapsedSections.remove(section.id)
+                      } else {
+                        collapsedSections.insert(section.id)
+                      }
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                      allowSectionAnimation = false
+                    }
+                  } label: {
+                    HStack(spacing: 12) {
+                      let splitName = splitDeviceName(section.displayName)
+                      
+                      // エレガントなアイコン表示
+                      ZStack {
+                        Circle()
+                          .fill(appSettings.accentColor.color.opacity(0.12))
+                          .frame(width: 40, height: 40)
+                        Image(systemName: splitName.primary.contains("Watch") ? "applewatch" : (splitName.primary.contains("iPad") ? "ipad" : "iphone"))
+                          .foregroundStyle(appSettings.accentColor.color)
+                          .font(.system(size: 18, weight: .semibold))
+                      }
+                      
+                      VStack(alignment: .leading, spacing: 2) {
+                        Text(splitName.primary)
+                          .font(.title3)
+                          .fontWeight(.bold)
+                          .foregroundColor(.primary)
+                        if let secondary = splitName.secondary {
+                          Text(secondary)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                         }
                       }
-                    )
-                  ) {
+                      
+                      Spacer()
+                      
+                      ZStack {
+                        Circle()
+                          .fill(Color(uiColor: .tertiarySystemGroupedBackground))
+                          .frame(width: 32, height: 32)
+                        Image(systemName: "chevron.up")
+                          .foregroundStyle(.secondary)
+                          .font(.system(size: 14, weight: .bold))
+                          .rotationEffect(.degrees(collapsedSections.contains(section.id) ? 180 : 0))
+                      }
+                    }
+                    .contentShape(Rectangle())
+                  }
+                  .buttonStyle(.plain)
+                  
+                  if !collapsedSections.contains(section.id) {
                     iPadDeviceSectionContent(
                       section: section,
                       sectionRecords: sectionRecords
                     )
-                  } label: {
-                    Text(section.displayName)
-                      .font(.title3)
-                      .bold()
-                      .foregroundColor(.primary)
-                      .lineLimit(1)
-                      .fixedSize(horizontal: true, vertical: false)
                   }
-                  .animation(.snappy, value: collapsedSections)
-                  .padding()
-                  .background(Color(uiColor: .secondarySystemGroupedBackground))
-                  .clipShape(RoundedRectangle(cornerRadius: 16))
                 }
+                .animation(.spring(response: 0.4, dampingFraction: 0.8), value: collapsedSections)
+                .padding(20)
+                .background(
+                  Color(uiColor: .secondarySystemGroupedBackground)
+                    .shadow(color: Color.black.opacity(0.04), radius: 12, x: 0, y: 6)
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 24))
                 .transition(
                   .asymmetric(
                     insertion: .move(edge: .top).combined(with: .opacity),
@@ -277,23 +310,13 @@ struct RecordListView<Header: View>: View {
     section: DeviceSection,
     sectionRecords: [BatteryRecord]
   ) -> some View {
-    // LazyVGridはDisclosureGroup内で幅制約が正しく伝わらず、
-    // 途中の行でも空セルが発生する。
-    // VStack + HStack の手動ペアレイアウトで、空セルなしの2列グリッドを実現する。
-    VStack(spacing: 8) {
-      ForEach(Array(stride(from: 0, to: sectionRecords.count, by: 2)), id: \.self) { i in
-        HStack(alignment: .top, spacing: 16) {
-          // 左カード
-          iPadRecordCard(record: sectionRecords[i], section: section)
-          // 右カード（存在する場合のみ。なければ同幅の透明ビューで列幅を保持）
-          if i + 1 < sectionRecords.count {
-            iPadRecordCard(record: sectionRecords[i + 1], section: section)
-          } else {
-            Color.clear.frame(maxWidth: .infinity)
-          }
-        }
+    // DisclosureGroupを廃止したため、LazyVGridが自然なレイアウトで動作します
+    LazyVGrid(columns: [GridItem(.adaptive(minimum: 280), spacing: 16)], spacing: 12) {
+      ForEach(sectionRecords, id: \.logDate) { record in
+        iPadRecordCard(record: record, section: section)
       }
     }
+    .padding(.top, 8)
 
     // もっと読み込むボタン
     if hasMoreRecords(section) {
@@ -324,10 +347,17 @@ struct RecordListView<Header: View>: View {
   @ViewBuilder
   private func iPadRecordCard(record: BatteryRecord, section: DeviceSection) -> some View {
     NavigationLink(destination: RecordDetailView(record: record)) {
-      RecordRowView(record: record)
-        .padding()
-        .background(Color(uiColor: .secondarySystemGroupedBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+      ModerniPadRecordCard(record: record)
+        .padding(16)
+        .background(
+          Color(uiColor: .tertiarySystemGroupedBackground)
+            .shadow(color: Color.black.opacity(0.02), radius: 5, x: 0, y: 2)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .overlay(
+          RoundedRectangle(cornerRadius: 16)
+            .stroke(Color(uiColor: .separator).opacity(0.1), lineWidth: 1)
+        )
         .frame(maxWidth: .infinity)
     }
     .contextMenu {
@@ -381,5 +411,77 @@ struct RecordListView<Header: View>: View {
     static func == (lhs: DeviceSection, rhs: DeviceSection) -> Bool {
       lhs.id == rhs.id && lhs.recordIDs == rhs.recordIDs
     }
+  }
+}
+
+// MARK: - Modern iPad Record Card
+private struct ModerniPadRecordCard: View {
+  let record: BatteryRecord
+  @StateObject private var appSettings = AppSettings.shared
+
+  var body: some View {
+    HStack(alignment: .center, spacing: 16) {
+      // 左側: 日付と基本情報
+      VStack(alignment: .leading, spacing: 8) {
+        HStack(spacing: 6) {
+          Image(systemName: "calendar")
+            .foregroundStyle(appSettings.accentColor.color)
+            .font(.caption)
+          Text(record.logDate, style: .date)
+            .font(.subheadline)
+            .fontWeight(.semibold)
+            .foregroundColor(.primary)
+        }
+        
+        HStack(spacing: 12) {
+          Label(
+            String(format: String(localized: "cycle_count_format", table: "Analytics"), record.cycleCount),
+            systemImage: "arrow.3.path.circle"
+          )
+          .font(.caption)
+          .foregroundStyle(.secondary)
+          
+          Label("\(record.nominalCapacity) mAh", systemImage: "battery.100")
+            .font(.caption)
+            .foregroundStyle(.secondary)
+        }
+        
+        Text(record.cachedDiagnostic)
+          .font(.caption2)
+          .foregroundColor(.secondary)
+          .lineLimit(1)
+      }
+      
+      Spacer(minLength: 8)
+      
+      // 右側: 健康度リング
+      let health = appSettings.analysisDataSource == .nominal ? record.nominalHealthPercent : record.healthPercent
+      
+      ZStack {
+        Circle()
+          .stroke(Color(uiColor: .systemGray5), lineWidth: 5)
+          .frame(width: 52, height: 52)
+        
+        Circle()
+          .trim(from: 0, to: CGFloat(min(max(health, 0), 100)) / 100.0)
+          .stroke(
+            healthColor(health),
+            style: StrokeStyle(lineWidth: 5, lineCap: .round)
+          )
+          .rotationEffect(.degrees(-90))
+          .frame(width: 52, height: 52)
+          
+        Text("\(String(format: "%.0f", health))%")
+          .font(.caption2)
+          .fontWeight(.bold)
+          .foregroundStyle(healthColor(health))
+      }
+    }
+  }
+  
+  private func healthColor(_ percent: Double) -> Color {
+    if percent < 80 { return .red }
+    if percent < 90 { return .orange }
+    return .green
   }
 }
