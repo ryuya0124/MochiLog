@@ -279,6 +279,12 @@ struct HomeView: View {
   @State var isProcessing = false
   @State var showingMismatchAlert = false
   @State private var showingManualDevicePicker = false
+
+  // MARK: - バッチインポート（共有メニューからの複数ファイル処理）用
+  /// バッチ処理の結果（リアルタイム更新対象）
+  @State var batchImportResults: [FileImportResult] = []
+  /// バッチ結果シートの表示フラグ
+  @State var showingBatchResults = false
   @State private var showingRegisterWatchAlert = false
   @State private var watchNameToRegister = ""
   @State private var showingParseErrorSavedAlert = false
@@ -434,6 +440,21 @@ struct HomeView: View {
           "[HomeView] Instance \(instanceID) processing shared log, silent=\(silent), hash=\(String(describing: contentHash))"
         )
         processLogTextAsync(text, silent: silent, contentHash: contentHash)
+      }
+      // MARK: - 共有メニューからの複数ファイルバッチ処理
+      .onReceive(
+        NotificationCenter.default.publisher(for: NSNotification.Name("ProcessSharedLogQueue"))
+      ) { notification in
+        guard let entries = notification.userInfo?["entries"] as? [[String: Any]],
+          !entries.isEmpty
+        else {
+          print("[HomeView] ProcessSharedLogQueue: エントリなし")
+          return
+        }
+        print("[HomeView] \(entries.count)件のバッチ処理を開始")
+        Task {
+          await processSharedLogQueue(entries)
+        }
       }
       .onReceive(
         NotificationCenter.default.publisher(for: NSNotification.Name("ShowRecordDetail"))
@@ -688,6 +709,12 @@ struct HomeView: View {
         // 全端末リストから選択（iPhone/iPadのみ）
         HierarchicalDevicePickerView(allowedCategories: [.iphone, .ipad]) { name, identifier in
           completeRecordWithSelectedDevice(name: name, identifier: identifier)
+        }
+      }
+      // MARK: - バッチインポート結果シート
+      .sheet(isPresented: $showingBatchResults) {
+        BatchImportResultView(results: $batchImportResults) {
+          showingBatchResults = false
         }
       }
     }

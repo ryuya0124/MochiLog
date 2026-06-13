@@ -419,3 +419,187 @@ extension HomeView {
     )
   }
 }
+
+// MARK: - 共有メニューバッチ処理（並列）
+extension HomeView {
+
+  /// 共有メニューからの複数ファイルキューを並列処理する
+  ///
+  /// 処理フロー:
+  /// 1. 全ファイルを「処理中」状態で結果シートをすぐに開く
+  /// 2. withTaskGroup で全ファイルを同時にパース
+  /// 3. パース完了次第、即座に対応する行を更新（リアルタイム）
+  ///
+  /// - Parameter entries: MochiLogAppから受け取ったエントリ配列（[[String: Any]]）
+  func processSharedLogQueue(_ entries: [[String: Any]]) async {
+    let total = entries.count
+    guard total > 0 else { return }
+
+    // ファイル名とテキストを先に抽出（Sendable な型として TaskGroup に渡すため）
+    let filenames: [String] = entries.map { $0["filename"] as? String ?? "不明" }
+    let texts: [String?] = entries.map { $0["text"] as? String }
+
+    let enableValidation = AppSettings.shared.enableCapacityValidation
+    let threshold = AppSettings.shared.capacityValidationThreshold
+
+    // Step 1: 全件を「処理中」状態でプレースホルダーを作り、即シートを開く
+    await MainActor.run {
+      batchImportResults = (0..<total).map { index in
+        FileImportResult(
+          id: index,
+          filename: filenames[index],
+          parsedDate: nil,
+          deviceName: nil,
+          status: .processing,
+          errorMessage: nil
+        )
+      }
+      showingBatchResults = true
+    }
+
+    // Step 2: 全ファイルを並列でパース、完了次第 UI を更新
+    await withTaskGroup(of: Void.self) { group in
+      for index in 0..<total {
+        let filename = filenames[index]
+        let text = texts[index]
+
+        group.addTask(priority: .userInitiated) {
+          // テキストが存在しない（読み込み失敗）ケース
+          guard let text = text, !text.isEmpty else {
+            await MainActor.run {
+              batchImportResults[index] = FileImportResult(
+                id: index,
+                filename: filename,
+                parsedDate: nil,
+                deviceName: nil,
+                status: .error,
+                errorMessage: "ファイルの読み込みに失敗しました。文字エンコーディングを確認してください。"
+              )
+            }
+            return
+          }
+
+          // バックグラウンドでログをパース
+          // LogParser.parse は同期関数なので DispatchQueue でラップ
+          let parseResult: LogParser.ParseResult = await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+              let result = LogParser.parse(
+                text: text,
+                enableValidation: enableValidation,
+                validationThreshold: threshold
+              )
+              continuation.resume(returning: result)
+            }
+          }
+
+          // パース完了 → メインスレッドで判定・保存・UI更新
+          await MainActor.run {
+            let itemResult = processBatchItem(
+              id: index,
+              parseResult: parseResult,
+              filename: filename
+            )
+            batchImportResults[index] = itemResult
+          }
+        }
+      }
+
+      // 全タスクの完了を待つ（withTaskGroup は暗黙的に待機）
+    }
+  }
+
+  /// バッチ処理の1件を判定・保存して FileImportResult を返す
+  /// UIモーダル（アラート・シート）は一切出さない
+  @MainActor
+  private func processBatchItem(
+    id: Int,
+    parseResult: LogParser.ParseResult,
+    filename: String
+  ) -> FileImportResult {
+
+    // 基本バリデーション（必須フィールドの確認）
+    guard let logDate = parseResult.logDate,
+      parseResult.cycleCount != nil,
+      parseResult.nominalCapacity != nil,
+      parseResult.rawCapacity != nil
+    else {
+      return FileImportResult(
+        id: id,
+        filename: filename,
+        parsedDate: parseResult.logDate,
+        deviceName: nil,
+        status: .error,
+        errorMessage: String(localized: "parse_error", table: "Home")
+      )
+    }
+
+    // 容量不一致チェック（エラーモード時のみブロック）
+    if parseResult.isCapacityMismatch && AppSettings.shared.mismatchBehavior == .error {
+      return FileImportResult(
+        id: id,
+        filename: filename,
+        parsedDate: logDate,
+        deviceName: nil,
+        status: .error,
+        errorMessage: String(localized: "capacity_mismatch_error", table: "Home")
+      )
+    }
+
+    // デバイス名解決
+    let (deviceName, modelCode) = resolveDeviceName(from: parseResult)
+    var actualDeviceName = deviceName
+    var actualModelCode = modelCode
+
+    // Apple Watch の処理（バッチモードでは登録済み1台目を自動使用）
+    if isWatchDevice(parseResult: parseResult, deviceName: deviceName) {
+      let registeredWatches = AppSettings.shared.registeredWatches
+      if let firstWatch = registeredWatches.first {
+        actualDeviceName = firstWatch
+        actualModelCode = DeviceLibrary.getIdentifierForDeviceName(firstWatch) ?? modelCode
+      } else {
+        return FileImportResult(
+          id: id,
+          filename: filename,
+          parsedDate: logDate,
+          deviceName: deviceName,
+          status: .error,
+          errorMessage: "Apple Watchが登録されていません。設定から登録してください。"
+        )
+      }
+    }
+
+    // 重複チェック
+    if !AppSettings.shared.allowDuplicateRecords,
+      hasDuplicateRecord(on: logDate, deviceName: actualDeviceName)
+    {
+      return FileImportResult(
+        id: id,
+        filename: filename,
+        parsedDate: logDate,
+        deviceName: actualDeviceName,
+        status: .duplicate,
+        errorMessage: nil
+      )
+    }
+
+    // レコード作成・保存
+    let designCap = DeviceLibrary.getCapacity(for: actualDeviceName)
+    let record = createRecord(
+      from: parseResult,
+      deviceName: actualDeviceName,
+      deviceModelCodeOverride: actualModelCode,
+      designCapacityOverride: designCap
+    )
+    saveRecord(record, deviceName: actualDeviceName)
+
+    return FileImportResult(
+      id: id,
+      filename: filename,
+      parsedDate: logDate,
+      deviceName: actualDeviceName,
+      status: .success,
+      errorMessage: nil
+    )
+  }
+}
+

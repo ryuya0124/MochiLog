@@ -12,7 +12,7 @@ struct MochiLogApp: App {
     // Watch Connectivityセッションを開始
     WatchConnectivityManager.shared.startSession()
 
-    // 処理完了通知を受け取ってフラグをリセットする
+    // ファイルピッカー経由の単一ファイル処理完了通知（ログのみ）
     NotificationCenter.default.addObserver(
       forName: NSNotification.Name("SharedLogProcessingCompleted"),
       object: nil,
@@ -20,17 +20,7 @@ struct MochiLogApp: App {
     ) { notification in
       let hash = notification.userInfo?["contentHash"] as? Int
       print(
-        "[MochiLogApp] Processing completed, resetting flags. Hash: \(String(describing: hash))")
-
-      // 処理完了時刻を記録（直後のファントム再リクエスト対策）
-      if let hash = hash {
-        MochiLogApp.lastProcessedContentHash = hash
-        MochiLogApp.lastProcessedContentTime = Date()
-      }
-
-      // 処理中フラグをリセット
-      MochiLogApp.isProcessingSharedLog = false
-      MochiLogApp.processingContentHash = nil
+        "[MochiLogApp] Single file processing completed. Hash: \(String(describing: hash))")
     }
   }
 
@@ -75,17 +65,23 @@ struct MochiLogApp: App {
     .handlesExternalEvents(matching: ["*"])
   }
 
-  // 重複URL処理防止
+  // 重複URL処理防止（iPadの複数シーン対策）
   private static var lastProcessedURL: URL?
   private static var lastProcessedURLTime: Date?
-  // 重複コンテンツ処理防止（iPadでの異なるURLパスによる多重起動対策）
-  private static var lastProcessedContentHash: Int?
-  private static var lastProcessedContentTime: Date?
 
-  /// 処理中フラグ（アトミックに多重処理を防歐）
-  private static var isProcessingSharedLog = false
-  /// 処理中のコンテンツハッシュ
-  private static var processingContentHash: Int?
+  // MARK: - 共有ファイルキュー（複数ファイル順次処理用）
+
+  /// 共有ファイルのキューエントリ（テキスト読み込み済み）
+  private struct SharedFileEntry {
+    let text: String?   // nil = 読み込み失敗
+    let filename: String
+    let silent: Bool
+  }
+
+  /// 処理待ちキュー（onOpenURLが複数回呼ばれた分をまとめる）
+  private static var pendingSharedQueue: [SharedFileEntry] = []
+  /// デバウンス用ワークアイテム
+  private static var queueFlushWorkItem: DispatchWorkItem?
 
   // 開かれたURLを確認して処理（Document Types経由）
   private func handleOpenURL(_ url: URL) {
@@ -120,77 +116,58 @@ struct MochiLogApp: App {
       cleanupInboxFile(url)
     }
 
-    // Try common encodings to be resilient to sharing sources
+    // 複数エンコーディングを順番に試してテキストを読み込む
     var text: String? = nil
-    // 1. UTF-8
     if let s = try? String(contentsOf: url, encoding: .utf8) { text = s }
-    // 2. UTF-16
     if text == nil, let s = try? String(contentsOf: url, encoding: .utf16) { text = s }
-    // 3. ISO Latin 1
     if text == nil, let s = try? String(contentsOf: url, encoding: .isoLatin1) { text = s }
-    // 4. Shift-JIS (Japanese logs sometimes encoded in Shift-JIS)
     if text == nil, let data = try? Data(contentsOf: url),
-      let s = String(data: data, encoding: .shiftJIS)
-    {
-      text = s
-    }
-    // 5. Fallback to platform default initializer
+      let s = String(data: data, encoding: .shiftJIS) { text = s }
     if text == nil, let s = try? String(contentsOf: url) { text = s }
 
-    if let text = text {
-      let contentHash = text.hashValue
-      let now = Date()
+    // 読み込み結果をキューに追加してデバウンス送信
+    let silent = !AppSettings.shared.openAppAfterShareImport
+    enqueueAndFlush(
+      entry: SharedFileEntry(text: text, filename: url.lastPathComponent, silent: silent)
+    )
+  }
 
-      // 1. 現在処理中のコンテンツと同じなら即座に無視（アトミックガード）
-      if MochiLogApp.isProcessingSharedLog && MochiLogApp.processingContentHash == contentHash {
-        print("[MochiLogApp] Already processing this content, skipping")
-        return
+  /// 共有ファイルをキューに追加し、0.5秒デバウンス後にまとめて通知する
+  /// ※ onOpenURL は常にメインスレッドで呼ばれるため、ロック不要
+  private func enqueueAndFlush(entry: SharedFileEntry) {
+    MochiLogApp.pendingSharedQueue.append(entry)
+    print("[MochiLogApp] キューに追加: \(entry.filename) (合計\(MochiLogApp.pendingSharedQueue.count)件)")
+
+    // 既存のタイマーをキャンセルして再スケジュール（デバウンス）
+    MochiLogApp.queueFlushWorkItem?.cancel()
+    let workItem = DispatchWorkItem {
+      let queue = MochiLogApp.pendingSharedQueue
+      MochiLogApp.pendingSharedQueue = []
+      MochiLogApp.queueFlushWorkItem = nil
+
+      guard !queue.isEmpty else { return }
+      print("[MochiLogApp] \(queue.count)件をまとめて送信")
+
+      // [[String: Any]] に変換してNotificationで送信
+      let entries: [[String: Any]] = queue.map { entry in
+        var dict: [String: Any] = [
+          "filename": entry.filename,
+          "silent": entry.silent,
+        ]
+        if let text = entry.text {
+          dict["text"] = text
+        }
+        return dict
       }
 
-      // 2. 直近の重複コンテンツをブロック（完了後のファントム再リクエスト対策）
-      if let lastHash = MochiLogApp.lastProcessedContentHash,
-        let lastTime = MochiLogApp.lastProcessedContentTime,
-        lastHash == contentHash,
-        now.timeIntervalSince(lastTime) < 5.0
-      {
-        print("[MochiLogApp] Skipping duplicate content (within 5.0s of completion)")
-        return
-      }
-
-      // 3. 処理開始をマーク
-      MochiLogApp.isProcessingSharedLog = true
-      MochiLogApp.processingContentHash = contentHash
-
-      DispatchQueue.main.async {
-        let silent = !AppSettings.shared.openAppAfterShareImport
-
-        // Notificationのみ送信（UserDefaultsフォールバックは廃止）
-        // HomeViewが処理完了時にフラグをリセットする
-        NotificationCenter.default.post(
-          name: NSNotification.Name("ProcessSharedLog"),
-          object: nil,
-          userInfo: [
-            "text": text,
-            "silent": silent,
-            "contentHash": contentHash,
-          ]
-        )
-      }
-
-    } else {
-      print("ファイルの読み込み失敗（対応する文字エンコーディングが見つかりません）: \(url)")
-      DispatchQueue.main.async {
-        let silent = !AppSettings.shared.openAppAfterShareImport
-        NotificationCenter.default.post(
-          name: NSNotification.Name("ProcessSharedLog"),
-          object: nil,
-          userInfo: ["text": "", "silent": silent]
-        )
-        // Avoid persisting an empty string; notify via UserDefaults that read failed
-        UserDefaults.standard.removeObject(forKey: "PendingSharedLogText")
-        UserDefaults.standard.removeObject(forKey: "PendingSharedLogSilent")
-      }
+      NotificationCenter.default.post(
+        name: NSNotification.Name("ProcessSharedLogQueue"),
+        object: nil,
+        userInfo: ["entries": entries]
+      )
     }
+    MochiLogApp.queueFlushWorkItem = workItem
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: workItem)
   }
 
   // iPadで複数シーンが生成される場合に、先頭の1つだけ残して閉じる
