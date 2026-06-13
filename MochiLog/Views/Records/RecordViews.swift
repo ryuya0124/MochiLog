@@ -26,23 +26,22 @@ struct InfoLabeledContent<V: View>: View {
     } label: {
       HStack(spacing: 4) {
         Text(label)
-        // UIKitポップオーバーのアンカービューとボタンを重ねる
-        ZStack {
-          InfoPopoverAnchor(isPresented: $isShowingInfo, title: label, hint: hint)
-            .frame(width: 32, height: 32)
-          Button {
-            isShowingInfo = true
-          } label: {
-            // 当たり判定を広げるためフレームで透明タップ領域を確保
-            Image(systemName: "info.circle")
-              .font(.caption)
-              .foregroundStyle(.secondary)
-              .frame(width: 32, height: 32)
-              .contentShape(Rectangle())
-          }
-          .buttonStyle(.plain)
+        Button {
+          isShowingInfo = true
+        } label: {
+          // 当たり判定を広げるためフレームで透明タップ領域を確保
+          Image(systemName: "info.circle")
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .frame(width: 44, height: 44)
+            .contentShape(Rectangle())
         }
-        .frame(width: 32, height: 32)
+        .buttonStyle(.borderless)
+        .background {
+          // UIKitポップオーバーのアンカービューを背面に配置してタップを妨げないようにする
+          InfoPopoverAnchor(isPresented: $isShowingInfo, title: label, hint: hint)
+            .allowsHitTesting(false)
+        }
       }
     }
   }

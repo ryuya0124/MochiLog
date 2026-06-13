@@ -436,7 +436,7 @@ private struct ModerniPadRecordCard: View {
         HStack(spacing: 12) {
           Label(
             String(format: String(localized: "cycle_count_format", table: "Analytics"), record.cycleCount),
-            systemImage: "arrow.3.path.circle"
+            systemImage: "arrow.triangle.2.circlepath"
           )
           .font(.caption)
           .foregroundStyle(.secondary)
