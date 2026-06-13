@@ -322,6 +322,10 @@ struct RecordDetailView: View {
 
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
+  private var isMagSafe: Bool {
+    record.deviceName == "iPhone Air MagSafeバッテリー"
+  }
+
   var body: some View {
 
     Group {
@@ -432,30 +436,38 @@ struct RecordDetailView: View {
               VStack(alignment: .leading, spacing: 8) {
                 LabeledContent(
                   String(localized: "device_name", table: "Common"), value: record.deviceName)
-                if let soc = record.soc {
-                  InfoLabeledContent(
-                    String(localized: "soc", table: "Records"),
-                    hint: String(localized: "hint_soc", table: "Records"),
-                    value: soc)
+
+                if !isMagSafe {
+                  if let soc = record.soc {
+                    InfoLabeledContent(
+                      String(localized: "soc", table: "Records"),
+                      hint: String(localized: "hint_soc", table: "Records"),
+                      value: soc)
+                  }
                 }
+                
                 if let modelCode = record.deviceModelCode {
                   InfoLabeledContent(
                     String(localized: "model_code", table: "Records"),
                     hint: String(localized: "hint_model_code", table: "Records"),
                     value: modelCode)
                 }
-                if record.storage != nil, let formatted = record.formattedStorage {
-                  InfoLabeledContent(
-                    String(localized: "storage", table: "Records"),
-                    hint: String(localized: "hint_storage", table: "Records"),
-                    value: formatted)
+                
+                if !isMagSafe {
+                  if record.storage != nil, let formatted = record.formattedStorage {
+                    InfoLabeledContent(
+                      String(localized: "storage", table: "Records"),
+                      hint: String(localized: "hint_storage", table: "Records"),
+                      value: formatted)
+                  }
+                  if record.ram != nil, let formattedRam = record.formattedRAM {
+                    InfoLabeledContent(
+                      String(localized: "ram", table: "Records"),
+                      hint: String(localized: "hint_ram", table: "Records"),
+                      value: formattedRam)
+                  }
                 }
-                if record.ram != nil, let formattedRam = record.formattedRAM {
-                  InfoLabeledContent(
-                    String(localized: "ram", table: "Records"),
-                    hint: String(localized: "hint_ram", table: "Records"),
-                    value: formattedRam)
-                }
+                
                 LabeledContent(
                   String(localized: "log_date", table: "Records"), value: record.logDate,
                   format: .dateTime.year().month().day())
@@ -508,32 +520,34 @@ struct RecordDetailView: View {
                       .foregroundStyle(healthColorLocal(nominalPercent))
                   }
                 }
-                InfoLabeledContent(
-                  String(localized: "raw_capacity", table: "Analytics"),
-                  hint: String(localized: "hint_raw_capacity", table: "Records")
-                ) {
-                  HStack(spacing: 8) {
-                    Text("\(record.rawCapacity) mAh")
-                    let health =
-                      appSettings.analysisDataSource == .nominal
-                      ? record.nominalHealthPercent : record.healthPercent
-                    Text("(\(String(format: "%.1f%%", record.healthPercent)))")
-                      .foregroundStyle(healthColorLocal(health))
+                if !isMagSafe {
+                  InfoLabeledContent(
+                    String(localized: "raw_capacity", table: "Analytics"),
+                    hint: String(localized: "hint_raw_capacity", table: "Records")
+                  ) {
+                    HStack(spacing: 8) {
+                      Text("\(record.rawCapacity) mAh")
+                      let health =
+                        appSettings.analysisDataSource == .nominal
+                        ? record.nominalHealthPercent : record.healthPercent
+                      Text("(\(String(format: "%.1f%%", record.healthPercent)))")
+                        .foregroundStyle(healthColorLocal(health))
+                    }
                   }
-                }
-                if let lowRate = record.lowRateCapacity {
-                  InfoLabeledContent(
-                    String(localized: "low_rate_capacity", table: "Records"),
-                    hint: String(localized: "hint_low_rate_capacity", table: "Records"),
-                    value:
-                      "\(lowRate) mAh (\(String(format: "%.1f%%", record.designCapacity > 0 ? (Double(lowRate) / Double(record.designCapacity)) * 100.0 : 0.0)))"
-                  )
-                }
-                if let display = record.settingsDisplayPercent {
-                  InfoLabeledContent(
-                    String(localized: "os_display", table: "Records"),
-                    hint: String(localized: "hint_os_display", table: "Records"),
-                    value: "\(min(display, 100))%")
+                  if let lowRate = record.lowRateCapacity {
+                    let lowRateRatio = record.designCapacity > 0 ? (Double(lowRate) / Double(record.designCapacity)) * 100.0 : 0.0
+                    InfoLabeledContent(
+                      String(localized: "low_rate_capacity", table: "Records"),
+                      hint: String(localized: "hint_low_rate_capacity", table: "Records"),
+                      value: "\(lowRate) mAh (\(String(format: "%.1f%%", lowRateRatio)))"
+                    )
+                  }
+                  if let display = record.settingsDisplayPercent {
+                    InfoLabeledContent(
+                      String(localized: "os_display", table: "Records"),
+                      hint: String(localized: "hint_os_display", table: "Records"),
+                      value: "\(min(display, 100))%")
+                  }
                 }
 
                 Divider().padding(.vertical, 6)
@@ -549,14 +563,16 @@ struct RecordDetailView: View {
                   String(localized: "diagnostic_result", table: "Records"),
                   hint: String(localized: "hint_diagnostic_result", table: "Records"),
                   value: record.cachedDiagnostic)
-                if let displayDiagnostic = settingsDisplayDiagnosticMessage(
-                  record.settingsDisplayPercent)
-                {
-                  InfoLabeledContent(
-                    String(localized: "settings_display_diagnostic", table: "Records"),
-                    hint: String(localized: "hint_settings_display_diagnostic", table: "Records"),
-                    value: displayDiagnostic
-                  )
+                if !isMagSafe {
+                  if let displayDiagnostic = settingsDisplayDiagnosticMessage(
+                    record.settingsDisplayPercent)
+                  {
+                    InfoLabeledContent(
+                      String(localized: "settings_display_diagnostic", table: "Records"),
+                      hint: String(localized: "hint_settings_display_diagnostic", table: "Records"),
+                      value: displayDiagnostic
+                    )
+                  }
                 }
                 Text(String(localized: "not_official_note", table: "Records"))
                   .font(.caption2)
@@ -661,30 +677,38 @@ struct RecordDetailView: View {
           Section(String(localized: "device_info", table: "Records")) {
             LabeledContent(
               String(localized: "device_name", table: "Common"), value: record.deviceName)
-            if let soc = record.soc {
-              InfoLabeledContent(
-                String(localized: "soc", table: "Records"),
-                hint: String(localized: "hint_soc", table: "Records"),
-                value: soc)
+
+            if !isMagSafe {
+              if let soc = record.soc {
+                InfoLabeledContent(
+                  String(localized: "soc", table: "Records"),
+                  hint: String(localized: "hint_soc", table: "Records"),
+                  value: soc)
+              }
             }
+            
             if let modelCode = record.deviceModelCode {
               InfoLabeledContent(
                 String(localized: "model_code", table: "Records"),
                 hint: String(localized: "hint_model_code", table: "Records"),
                 value: modelCode)
             }
-            if record.storage != nil, let formatted = record.formattedStorage {
-              InfoLabeledContent(
-                String(localized: "storage", table: "Records"),
-                hint: String(localized: "hint_storage", table: "Records"),
-                value: formatted)
+            
+            if !isMagSafe {
+              if record.storage != nil, let formatted = record.formattedStorage {
+                InfoLabeledContent(
+                  String(localized: "storage", table: "Records"),
+                  hint: String(localized: "hint_storage", table: "Records"),
+                  value: formatted)
+              }
+              if record.ram != nil, let formattedRam = record.formattedRAM {
+                InfoLabeledContent(
+                  String(localized: "ram", table: "Records"),
+                  hint: String(localized: "hint_ram", table: "Records"),
+                  value: formattedRam)
+              }
             }
-            if record.ram != nil, let formattedRam = record.formattedRAM {
-              InfoLabeledContent(
-                String(localized: "ram", table: "Records"),
-                hint: String(localized: "hint_ram", table: "Records"),
-                value: formattedRam)
-            }
+            
             LabeledContent(
               String(localized: "log_date", table: "Records"), value: record.logDate,
               format: .dateTime.year().month().day())
@@ -730,32 +754,34 @@ struct RecordDetailView: View {
                   .foregroundStyle(healthColorLocal(nominalPercent))
               }
             }
-            InfoLabeledContent(
-              String(localized: "raw_capacity", table: "Analytics"),
-              hint: String(localized: "hint_raw_capacity", table: "Records")
-            ) {
-              HStack(spacing: 8) {
-                Text("\(record.rawCapacity) mAh")
-                let health =
-                  appSettings.analysisDataSource == .nominal
-                  ? record.nominalHealthPercent : record.healthPercent
-                Text("(\(String(format: "%.1f%%", record.healthPercent)))")
-                  .foregroundStyle(healthColorLocal(health))
+            if !isMagSafe {
+              InfoLabeledContent(
+                String(localized: "raw_capacity", table: "Analytics"),
+                hint: String(localized: "hint_raw_capacity", table: "Records")
+              ) {
+                HStack(spacing: 8) {
+                  Text("\(record.rawCapacity) mAh")
+                  let health =
+                    appSettings.analysisDataSource == .nominal
+                    ? record.nominalHealthPercent : record.healthPercent
+                  Text("(\(String(format: "%.1f%%", record.healthPercent)))")
+                    .foregroundStyle(healthColorLocal(health))
+                }
               }
-            }
-            if let lowRate = record.lowRateCapacity {
-              InfoLabeledContent(
-                String(localized: "low_rate_capacity", table: "Records"),
-                hint: String(localized: "hint_low_rate_capacity", table: "Records"),
-                value:
-                  "\(lowRate) mAh (\(String(format: "%.1f%%", record.designCapacity > 0 ? (Double(lowRate) / Double(record.designCapacity)) * 100.0 : 0.0)))"
-              )
-            }
-            if let display = record.settingsDisplayPercent {
-              InfoLabeledContent(
-                String(localized: "os_display", table: "Records"),
-                hint: String(localized: "hint_os_display", table: "Records"),
-                value: "\(min(display, 100))%")
+              if let lowRate = record.lowRateCapacity {
+                let lowRateRatio = record.designCapacity > 0 ? (Double(lowRate) / Double(record.designCapacity)) * 100.0 : 0.0
+                InfoLabeledContent(
+                  String(localized: "low_rate_capacity", table: "Records"),
+                  hint: String(localized: "hint_low_rate_capacity", table: "Records"),
+                  value: "\(lowRate) mAh (\(String(format: "%.1f%%", lowRateRatio)))"
+                )
+              }
+              if let display = record.settingsDisplayPercent {
+                InfoLabeledContent(
+                  String(localized: "os_display", table: "Records"),
+                  hint: String(localized: "hint_os_display", table: "Records"),
+                  value: "\(min(display, 100))%")
+              }
             }
 
             if let deflator = record.deflator {
@@ -768,13 +794,15 @@ struct RecordDetailView: View {
               String(localized: "diagnostic_result", table: "Records"),
               hint: String(localized: "hint_diagnostic_result", table: "Records"),
               value: record.dynamicDiagnosticResult)
-            if let displayDiagnostic = settingsDisplayDiagnosticMessage(
-              record.settingsDisplayPercent)
-            {
-              InfoLabeledContent(
-                String(localized: "settings_display_diagnostic", table: "Records"),
-                hint: String(localized: "hint_settings_display_diagnostic", table: "Records"),
-                value: displayDiagnostic)
+            if !isMagSafe {
+              if let displayDiagnostic = settingsDisplayDiagnosticMessage(
+                record.settingsDisplayPercent)
+              {
+                InfoLabeledContent(
+                  String(localized: "settings_display_diagnostic", table: "Records"),
+                  hint: String(localized: "hint_settings_display_diagnostic", table: "Records"),
+                  value: displayDiagnostic)
+              }
             }
             Text(String(localized: "not_official_note", table: "Records"))
               .font(.caption2)

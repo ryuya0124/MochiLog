@@ -56,6 +56,7 @@
                 <string>public.plain-text</string>
                 <string>public.text</string>
                 <string>public.data</string>
+                <string>public.yaml</string>
             </array>
         </dict>
     </array>
@@ -83,6 +84,31 @@
                 </array>
             </dict>
         </dict>
+        <dict>
+            <key>UTTypeConformsTo</key>
+            <array>
+                <string>public.plain-text</string>
+                <string>public.text</string>
+            </array>
+            <key>UTTypeDescription</key>
+            <string>YAML Document</string>
+            <key>UTTypeIcons</key>
+            <dict/>
+            <key>UTTypeIdentifier</key>
+            <string>public.yaml</string>
+            <key>UTTypeTagSpecification</key>
+            <dict>
+                <key>public.filename-extension</key>
+                <array>
+                    <string>yaml</string>
+                    <string>yml</string>
+                </array>
+            </dict>
+        </dict>
+    </array>
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>remote-notification</string>
     </array>
 </dict>
 </plist>

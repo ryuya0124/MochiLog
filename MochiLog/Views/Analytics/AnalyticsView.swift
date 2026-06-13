@@ -253,7 +253,7 @@ struct AnalyticsView: View {
 
   /// バックグラウンドスレッドで安全に呼べるautoRange計算
   /// 未来のデータは無視して現在日時以前のデータのみを考慮
-  nonisolated private func calculateAutoRange(for records: [BatteryRecord]) -> RangePreset {
+  private func calculateAutoRange(for records: [BatteryRecord]) -> RangePreset {
     let now = Date()
     // 未来のデータを除外
     let pastRecords = records.filter { $0.logDate <= now }

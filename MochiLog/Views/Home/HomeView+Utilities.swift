@@ -115,7 +115,7 @@ extension HomeView {
         let sampleRecords = SampleDataProvider.generateSampleRecords()
         let watchRecords = sampleRecords.map { WatchBatteryRecord(from: $0) }
         Task.detached(priority: .utility) {
-          WatchConnectivityManager.shared.sendWatchRecordsToWatch(watchRecords, isSampleMode: true)
+          await WatchConnectivityManager.shared.sendWatchRecordsToWatch(watchRecords, isSampleMode: true)
           let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
           print("[Performance] syncRecordsToWatch完了（サンプルモード）: \(String(format: "%.2f", elapsed))ms")
         }
@@ -129,7 +129,7 @@ extension HomeView {
       guard !currentRecords.isEmpty else {
         // レコードがない場合はサンプルモードをオフにして空で送信
         Task.detached(priority: .utility) {
-          WatchConnectivityManager.shared.sendWatchRecordsToWatch([], isSampleMode: false)
+          await WatchConnectivityManager.shared.sendWatchRecordsToWatch([], isSampleMode: false)
           let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
           print("[Performance] syncRecordsToWatch完了（空）: \(String(format: "%.2f", elapsed))ms")
         }
@@ -139,7 +139,7 @@ extension HomeView {
       let watchRecords = currentRecords.map { WatchBatteryRecord(from: $0) }
       Task.detached(priority: .utility) {
         // 通常モードでデータを送信
-        WatchConnectivityManager.shared.sendWatchRecordsToWatch(watchRecords, isSampleMode: false)
+        await WatchConnectivityManager.shared.sendWatchRecordsToWatch(watchRecords, isSampleMode: false)
         let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
         print(
           "[Performance] syncRecordsToWatch完了（\(watchRecords.count)件）: \(String(format: "%.2f", elapsed))ms"
@@ -189,7 +189,7 @@ extension HomeView {
       needsSave = true
     }
     if needsSave {
-      try? dataStore.save()
+      dataStore.save()
     }
   }
 
@@ -240,6 +240,6 @@ extension HomeView {
         needsSave = true
       }
     }
-    if needsSave { try? dataStore.save() }
+    if needsSave { dataStore.save() }
   }
 }

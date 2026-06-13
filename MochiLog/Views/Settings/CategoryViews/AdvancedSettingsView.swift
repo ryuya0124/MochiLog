@@ -117,6 +117,13 @@ struct AdvancedSettingsView: View {
           .listRowBackground(Color.clear)
       }
 
+      // MARK: - MagSafe設定
+      Section {
+        magSafeBatteryCard
+          .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+          .listRowBackground(Color.clear)
+      }
+
       // MARK: - 容量検証設定
       Section {
         capacityValidationCard
@@ -225,6 +232,35 @@ struct AdvancedSettingsView: View {
           Text(String(localized: "open_app_after_share_import_description", table: "Settings"))
             .font(.subheadline)
             .foregroundStyle(.secondary)
+        }
+      }
+      .padding(.vertical, 8)
+    }
+  }
+
+  // MARK: - MagSafeバッテリーカード
+  private var magSafeBatteryCard: some View {
+    GroupBox {
+      HStack(spacing: 20) {
+        Image(systemName: "battery.100.bolt")
+          .font(.system(size: 36))
+          .foregroundStyle(.green)
+          .frame(width: 60)
+
+        VStack(alignment: .leading, spacing: 8) {
+          Text("iPhone Air / MagSafeバッテリー判定")
+            .font(.headline)
+
+          Picker("", selection: $appSettings.autoSelectMagSafeBattery) {
+            Text("自動で区別").tag(true)
+            Text("手動で毎回選ぶ").tag(false)
+          }
+          .pickerStyle(.segmented)
+
+          Text("iPhone Airのログにおいて、MagSafeバッテリー特有の条件に合致した場合、自動的に「iPhone Air MagSafeバッテリー」として登録するか、毎回手動で選ぶかを設定します。")
+            .font(.subheadline)
+            .foregroundStyle(.secondary)
+            .padding(.top, 4)
         }
       }
       .padding(.vertical, 8)

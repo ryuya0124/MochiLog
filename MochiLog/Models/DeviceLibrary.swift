@@ -197,6 +197,9 @@ struct DeviceLibrary {
     "Watch7,19": "Apple Watch 11 (42mm)",
     "Watch7,20": "Apple Watch 11 (46mm)",
     "Watch7,12": "Apple Watch Ultra (第3世代)",
+    
+    // Accessories
+    "A3385": "iPhone Air MagSafeバッテリー",
   ]
 
   // MARK: - Board ID から識別子へのマッピング
@@ -586,6 +589,9 @@ struct DeviceLibrary {
     "Apple Watch 3 (42mm)": 342,
     "Apple Watch 3 (38mm) Cellular": 262,
     "Apple Watch 3 (38mm)": 262,
+    
+    // Accessories
+    "iPhone Air MagSafeバッテリー": 3149,
   ]
 
   // MARK: - 旧API互換用

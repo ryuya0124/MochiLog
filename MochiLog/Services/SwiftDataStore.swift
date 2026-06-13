@@ -284,6 +284,11 @@ final class SwiftDataStore: DataStore {
     }
 
     private static func runAsync(modelContext: ModelContext) async {
+      await runV1Migration(modelContext: modelContext)
+      await runV2MagSafeMigration(modelContext: modelContext)
+    }
+
+    private static func runV1Migration(modelContext: ModelContext) async {
       let version = "v1_iPhone16e_AvgTemp"
       let key = migrationKeyPrefix + version
 
@@ -322,6 +327,50 @@ final class SwiftDataStore: DataStore {
         if needsSave {
           try? modelContext.save()
         }
+      }
+
+      UserDefaults.standard.set(true, forKey: key)
+      print("[SwiftDataMigration] \(version) completed.")
+    }
+
+    private static func runV2MagSafeMigration(modelContext: ModelContext) async {
+      let version = "v2_MagSafe_Battery"
+      let key = migrationKeyPrefix + version
+
+      guard !UserDefaults.standard.bool(forKey: key) else { return }
+
+      print("[SwiftDataMigration] Running \(version)...")
+      let previousVersion = UserDefaults.standard.string(forKey: AppSettings.Keys.lastSeenVersion)
+
+      // 3.0.0未満からのアップデート時のみ実行
+      let shouldRun = previousVersion == nil || compareVersion(previousVersion!, lessThanOrEqual: "2.9.9")
+      if !shouldRun {
+        UserDefaults.standard.set(true, forKey: key)
+        return
+      }
+
+      let descriptor = FetchDescriptor<SDBatteryRecord>(
+        predicate: #Predicate { $0.deviceName == "iPhone Air" }
+      )
+      guard let airRecords = try? modelContext.fetch(descriptor) else { return }
+
+      var modifiedCount = 0
+      for record in airRecords {
+        let isMagSafe = record.firstUseDate == nil
+          && record.deflator == nil
+          && record.lowRateCapacity == 0
+          && record.rawCapacity == 0
+
+        if isMagSafe {
+          record.deviceName = "iPhone Air MagSafeバッテリー"
+          record.deviceModelCode = "A3385"
+          modifiedCount += 1
+        }
+      }
+
+      if modifiedCount > 0 {
+        try? modelContext.save()
+        print("[SwiftDataMigration] \(version): Migrated \(modifiedCount) records to MagSafe Battery Pack.")
       }
 
       UserDefaults.standard.set(true, forKey: key)

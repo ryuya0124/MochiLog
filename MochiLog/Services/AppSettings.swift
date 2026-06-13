@@ -50,6 +50,9 @@ final class AppSettings: ObservableObject {
     // 新規: デバイス選択モード
     static let deviceSelectionMode = "deviceSelectionMode"
     static let registeredDevices = "registeredDevices"
+    
+    // 新規: MagSafeバッテリー自動選択
+    static let autoSelectMagSafeBattery = "autoSelectMagSafeBattery"
   }
 
   // MARK: - Constants
@@ -261,6 +264,9 @@ final class AppSettings: ObservableObject {
   /// 登録済みのiPhone/iPadデバイス名のリスト（preRegisteredモード用）
   @Published var registeredDevices: [String] = []
 
+  /// MagSafeバッテリーの自動選択
+  @Published var autoSelectMagSafeBattery: Bool
+
   // MARK: - Initialization
 
   private init() {
@@ -376,6 +382,14 @@ final class AppSettings: ObservableObject {
 
     // 登録済みデバイスの読み込み
     self.registeredDevices = UserDefaults.standard.stringArray(forKey: Keys.registeredDevices) ?? []
+
+    // MagSafeバッテリー自動選択の初期化（デフォルトは true: 自動判定）
+    if UserDefaults.standard.object(forKey: Keys.autoSelectMagSafeBattery) == nil {
+      self.autoSelectMagSafeBattery = true
+      UserDefaults.standard.set(true, forKey: Keys.autoSelectMagSafeBattery)
+    } else {
+      self.autoSelectMagSafeBattery = UserDefaults.standard.bool(forKey: Keys.autoSelectMagSafeBattery)
+    }
 
     // プロパティの変更を監視してUserDefaultsに保存
     setupObservers()
@@ -534,6 +548,13 @@ final class AppSettings: ObservableObject {
       .dropFirst()
       .sink { value in
         UserDefaults.standard.set(value, forKey: Keys.registeredDevices)
+      }
+      .store(in: &cancellables)
+      
+    $autoSelectMagSafeBattery
+      .dropFirst()
+      .sink { value in
+        UserDefaults.standard.set(value, forKey: Keys.autoSelectMagSafeBattery)
       }
       .store(in: &cancellables)
   }

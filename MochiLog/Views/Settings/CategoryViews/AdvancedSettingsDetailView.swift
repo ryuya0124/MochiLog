@@ -108,6 +108,21 @@ struct AdvancedSettingsDetailView: View {
         Text(String(localized: "open_app_after_share_import_description", table: "Settings"))
       }
 
+      // MARK: - MagSafe設定
+      Section {
+        VStack(alignment: .leading, spacing: 8) {
+          Text("iPhone Air / MagSafeバッテリー判定")
+          Picker("", selection: $appSettings.autoSelectMagSafeBattery) {
+            Text("自動で区別").tag(true)
+            Text("手動で毎回選ぶ").tag(false)
+          }
+          .pickerStyle(.segmented)
+        }
+        .padding(.vertical, 4)
+      } footer: {
+        Text("iPhone Airのログにおいて、MagSafeバッテリー特有の条件に合致した場合、自動的に「iPhone Air MagSafeバッテリー」として登録するか、毎回手動で選ぶかを設定します。")
+      }
+
       // MARK: - 容量検証設定
       Section {
         Toggle(

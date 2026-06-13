@@ -279,6 +279,7 @@ struct HomeView: View {
   @State var isProcessing = false
   @State var showingMismatchAlert = false
   @State private var showingManualDevicePicker = false
+  @State var showingMagSafeSelection = false
 
   // MARK: - バッチインポート（共有メニューからの複数ファイル処理）用
   /// バッチ処理の結果（リアルタイム更新対象）
@@ -665,6 +666,22 @@ struct HomeView: View {
         }
       } message: {
         Text(String(localized: "mismatch_warning_message", table: "Home"))
+      }
+      .alert(
+        "デバイスの選択",
+        isPresented: $showingMagSafeSelection
+      ) {
+        Button("iPhone Air") {
+          completeRecordWithSelectedDevice(name: "iPhone Air", identifier: "iPhone18,4")
+        }
+        Button("iPhone Air MagSafeバッテリー") {
+          completeRecordWithSelectedDevice(name: "iPhone Air MagSafeバッテリー", identifier: "A3385")
+        }
+        Button(String(localized: "cancel", table: "Common"), role: .cancel) {
+          pendingParseResult = nil
+        }
+      } message: {
+        Text("このログはiPhone Airのものですか、それともiPhone Air MagSafeバッテリーのものですか？")
       }
       .sheet(isPresented: $showingManualDevicePicker) {
         HierarchicalDevicePickerView { name, identifier in

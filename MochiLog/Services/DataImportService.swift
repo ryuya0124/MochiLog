@@ -94,6 +94,21 @@ struct DataImportService {
       do {
         let batteryRecord = try convertToBatteryRecord(exportRecord)
 
+        // 3.0.0より古いデータの場合、iPhone Air MagSafeバッテリーのマイグレーションを実施
+        if compareVersion(exportData.appVersion, lessThan: "3.0.0") {
+          if batteryRecord.deviceName == "iPhone Air" {
+            let isMagSafe = batteryRecord.firstUseDate == nil
+              && batteryRecord.deflator == nil
+              && (batteryRecord.lowRateCapacity == nil || batteryRecord.lowRateCapacity == 0)
+              && batteryRecord.rawCapacity == 0
+
+            if isMagSafe {
+              batteryRecord.deviceName = "iPhone Air MagSafeバッテリー"
+              batteryRecord.deviceModelCode = "A3385"
+            }
+          }
+        }
+
         // 重複チェック
         if !allowDuplicates {
           let isDuplicate = existingRecords.contains { existing in
@@ -192,8 +207,26 @@ struct DataImportService {
     // 例:
     // if version == "1.0" {
     //   // バージョン1.0からのマイグレーション処理
-    // } else if version == "2.0" {
+    // else if version == "2.0" {
     //   // バージョン2.0からのマイグレーション処理
     // }
+  }
+
+  /// バージョン文字列を比較する（v1 < v2 なら true）
+  private static func compareVersion(_ version: String, lessThan target: String) -> Bool {
+    // "unknown" 等の場合は古いとみなすか、ここでは false にするか
+    // 確実に 3.0.0 より古いと判定できる場合のみ true にする
+    if version == "unknown" { return true }
+    
+    let v1 = version.split(separator: ".").compactMap { Int($0) }
+    let v2 = target.split(separator: ".").compactMap { Int($0) }
+    let maxCount = max(v1.count, v2.count)
+    for i in 0..<maxCount {
+      let a = i < v1.count ? v1[i] : 0
+      let b = i < v2.count ? v2[i] : 0
+      if a < b { return true }
+      if a > b { return false }
+    }
+    return false // 同じバージョンの場合は false
   }
 }

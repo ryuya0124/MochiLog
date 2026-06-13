@@ -29,6 +29,38 @@ extension HomeView {
     return (deviceName, deviceModelCodeToUse)
   }
 
+  /// MagSafeバッテリーの条件に合致するか判定し、必要に応じてデバイス名とモデルコードを更新する
+  private func checkAndApplyMagSafeBattery(
+    from result: LogParser.ParseResult,
+    deviceName: String,
+    modelCode: String?,
+    silent: Bool = false
+  ) -> (deviceName: String, modelCode: String?, needsManualSelection: Bool) {
+    var updatedDeviceName = deviceName
+    var updatedModelCode = modelCode
+    var needsManualSelection = false
+
+    if deviceName == "iPhone Air" {
+      let isMagSafe = result.firstUseDate == nil
+        && result.deflator == nil
+        && result.lowRateCapacity == 0
+        && result.rawCapacity == 0
+
+      if isMagSafe {
+        if AppSettings.shared.autoSelectMagSafeBattery {
+          updatedDeviceName = "iPhone Air MagSafeバッテリー"
+          updatedModelCode = "A3385"
+        } else {
+          if !silent {
+            needsManualSelection = true
+          }
+        }
+      }
+    }
+    
+    return (updatedDeviceName, updatedModelCode, needsManualSelection)
+  }
+
   /// レコードを保存する（キャッシュ追加 + データベース挿入）
   private func saveRecord(_ record: BatteryRecord, deviceName: String) {
     // キャッシュに追加（save前に行う）
@@ -137,9 +169,12 @@ extension HomeView {
     silent: Bool
   ) -> BatteryRecord? {
     let selectionMode = AppSettings.shared.deviceSelectionMode
+    
+    // iPhone Air関連は専用の判定（自動/手動）を優先するため、一般的な端末の手動選択をバイパスする
+    let isAirOrMagSafe = deviceName == "iPhone Air" || deviceName == "iPhone Air MagSafeバッテリー"
 
     // 手動モードの場合: ユーザーにデバイス選択を促す
-    if selectionMode != .automatic && !silent {
+    if selectionMode != .automatic && !silent && !isAirOrMagSafe {
       pendingParseResult = result
       if selectionMode == .preRegistered {
         // 登録済みデバイスがある場合はそこから選択、なければフルリストから選択
@@ -323,7 +358,13 @@ extension HomeView {
     }
 
     // デバイス名解決
-    let (deviceName, modelCode) = resolveDeviceName(from: parseResult)
+    let (baseDeviceName, baseModelCode) = resolveDeviceName(from: parseResult)
+    let (deviceName, modelCode, _) = checkAndApplyMagSafeBattery(
+      from: parseResult,
+      deviceName: baseDeviceName,
+      modelCode: baseModelCode,
+      silent: true
+    )
     guard let logDate = parseResult.logDate else { return }
 
     // Watch判定と処理
@@ -395,7 +436,19 @@ extension HomeView {
     }
 
     // デバイス名解決
-    let (deviceName, modelCode) = resolveDeviceName(from: result)
+    let (baseDeviceName, baseModelCode) = resolveDeviceName(from: result)
+    let (deviceName, modelCode, needsMagSafeSelection) = checkAndApplyMagSafeBattery(
+      from: result,
+      deviceName: baseDeviceName,
+      modelCode: baseModelCode,
+      silent: false
+    )
+    
+    if needsMagSafeSelection {
+      pendingParseResult = result
+      showingMagSafeSelection = true
+      return nil
+    }
 
     // Watch判定と処理
     if isWatchDevice(parseResult: result, deviceName: deviceName) {
@@ -573,12 +626,31 @@ extension HomeView {
     }
 
     // デバイス名解決
-    let (deviceName, modelCode) = resolveDeviceName(from: parseResult)
-    var actualDeviceName = deviceName
-    var actualModelCode = modelCode
+    let (baseDeviceName, baseModelCode) = resolveDeviceName(from: parseResult)
+    let (resolvedName, resolvedModelCode, needsMagSafeSelection) = checkAndApplyMagSafeBattery(
+      from: parseResult,
+      deviceName: baseDeviceName,
+      modelCode: baseModelCode,
+      silent: false // バッチ処理でもユーザーへの確認（needsReview）を行うためにfalseを指定
+    )
+    
+    if needsMagSafeSelection {
+      return FileImportResult(
+        id: id,
+        filename: filename,
+        parsedDate: logDate,
+        deviceName: baseDeviceName,
+        rawText: rawText,
+        status: .needsReview,
+        errorMessage: nil
+      )
+    }
+
+    var actualDeviceName = resolvedName
+    var actualModelCode = resolvedModelCode
 
     // Apple Watch の処理
-    if isWatchDevice(parseResult: parseResult, deviceName: deviceName) {
+    if isWatchDevice(parseResult: parseResult, deviceName: actualDeviceName) {
       let registeredWatches = AppSettings.shared.registeredWatches
       if registeredWatches.count > 1 {
         // Watchが複数登録されている場合はユーザーに選ばせるため手動インポートへ
@@ -586,20 +658,20 @@ extension HomeView {
           id: id,
           filename: filename,
           parsedDate: logDate,
-          deviceName: deviceName,
+          deviceName: actualDeviceName,
           rawText: rawText,
           status: .needsReview,
           errorMessage: nil
         )
       } else if let firstWatch = registeredWatches.first {
         actualDeviceName = firstWatch
-        actualModelCode = DeviceLibrary.getIdentifierForDeviceName(firstWatch) ?? modelCode
+        actualModelCode = DeviceLibrary.getIdentifierForDeviceName(firstWatch) ?? actualModelCode
       } else {
         return FileImportResult(
           id: id,
           filename: filename,
           parsedDate: logDate,
-          deviceName: deviceName,
+          deviceName: actualDeviceName,
           rawText: rawText,
           status: .error,
           errorMessage: "Apple Watchが登録されていません。設定から登録してください。"
@@ -614,7 +686,7 @@ extension HomeView {
           id: id,
           filename: filename,
           parsedDate: logDate,
-          deviceName: deviceName,
+          deviceName: actualDeviceName,
           rawText: rawText,
           status: .needsReview,
           errorMessage: nil
