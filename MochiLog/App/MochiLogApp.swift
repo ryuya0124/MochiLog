@@ -64,7 +64,11 @@ struct MochiLogApp: App {
   var body: some Scene {
     WindowGroup {
       MochiLogRootView()
+        .task {
+          enforceSingleScene()
+        }
         .onOpenURL { url in
+          enforceSingleScene()
           handleOpenURL(url)
         }
     }
@@ -186,6 +190,16 @@ struct MochiLogApp: App {
         UserDefaults.standard.removeObject(forKey: "PendingSharedLogText")
         UserDefaults.standard.removeObject(forKey: "PendingSharedLogSilent")
       }
+    }
+  }
+
+  // iPadで複数シーンが生成される場合に、先頭の1つだけ残して閉じる
+  private func enforceSingleScene() {
+    let scenes = UIApplication.shared.connectedScenes
+    guard scenes.count > 1 else { return }
+
+    for scene in scenes.dropFirst() {
+      UIApplication.shared.requestSceneSessionDestruction(scene.session, options: nil)
     }
   }
 

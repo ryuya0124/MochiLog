@@ -13,7 +13,7 @@
     <array>
         <string>shortcuts</string>
     </array>
-    <key>UIApplicationSupportsMultipleScenes</key>
+        <key>UIApplicationSupportsMultipleScenes</key>
     <false/>
     <key>UIApplicationSceneManifest</key>
     <dict>

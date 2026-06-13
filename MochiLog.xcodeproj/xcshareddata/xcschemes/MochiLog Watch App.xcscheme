@@ -46,7 +46,6 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4EFB3AB72F2CD92B001F2930"
             BuildableName = "MochiLog Watch App.app"
-            BlueprintName = "MochiLog Watch App"
             ReferencedContainer = "container:MochiLog.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -63,7 +62,6 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4EFB3AB72F2CD92B001F2930"
             BuildableName = "MochiLog Watch App.app"
-            BlueprintName = "MochiLog Watch App"
             ReferencedContainer = "container:MochiLog.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
