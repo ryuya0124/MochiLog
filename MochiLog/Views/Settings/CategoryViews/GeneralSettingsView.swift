@@ -44,39 +44,13 @@ struct GeneralSettingsView: View {
 
       // iCloud同期設定（iPad用）
       if #available(iOS 17, *) {
-        GroupBox {
-          Button {
-            appSettings.showingICloudSettings = true
-          } label: {
-            HStack(spacing: 20) {
-              Image(systemName: "icloud.fill")
-                .font(.system(size: 32))
-                .foregroundStyle(.blue)
-                .frame(width: 60)
-
-              VStack(alignment: .leading, spacing: 4) {
-                Text(String(localized: "icloud_sync_settings", defaultValue: "iCloud同期設定", table: "Settings"))
-                  .font(.headline)
-                  .foregroundStyle(.primary)
-
-                Text(String(localized: "icloud_sync_footer", defaultValue: "デバイス間でバッテリー記録を自動的に共有します", table: "Settings"))
-                  .font(.subheadline)
-                  .foregroundStyle(.secondary)
-              }
-
-              Spacer()
-
-              Image(systemName: "chevron.right")
-                .foregroundStyle(.secondary)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .contentShape(Rectangle())
-            .padding(.vertical, 8)
-          }
-          .buttonStyle(.plain)
-          .navigationDestination(isPresented: $appSettings.showingICloudSettings) {
-            ICloudSettingsView(appSettings: appSettings)
-          }
+        VStack(alignment: .leading, spacing: 8) {
+          Text(String(localized: "icloud_sync_settings", defaultValue: "iCloud同期設定", table: "Settings"))
+            .font(.headline)
+            .padding(.horizontal, 4)
+            .padding(.top, 8)
+          
+          ICloudSettingsContentView(appSettings: appSettings)
         }
       }
 
