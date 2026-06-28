@@ -246,7 +246,7 @@ final class BatteryRecord: Identifiable, Hashable {
     // e.g. "6GB" -> "6 GB"
     var formatted = s.replacingOccurrences(of: "gb", with: " GB", options: .caseInsensitive)
     
-    if formatted == "7.5 GB" {
+    if formatted == "7.5 GB" || formatted == "7 GB" {
       formatted = "8 GB"
     } else if formatted == "15 GB" {
       formatted = "16 GB"
