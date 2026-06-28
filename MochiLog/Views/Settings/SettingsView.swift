@@ -60,6 +60,10 @@ struct SettingsView: View {
   @State private var showingExportError = false
   @State private var exportErrorMessage = ""
 
+  // インポート進捗表示
+  @State private var isImporting = false
+  @State private var importProgress: Double = 0.0
+
   // 大画面レイアウト用: 選択されたカテゴリ
   @State private var selectedCategory: SettingsCategory = .general
 
@@ -211,6 +215,11 @@ struct SettingsView: View {
           Button("OK", role: .cancel) {}
         } message: {
           Text(exportErrorMessage)
+        }
+        // インポート中プログレスシート
+        .sheet(isPresented: $isImporting) {
+          ImportProgressSheet(progress: $importProgress)
+            .interactiveDismissDisabled(true)
         }
     }
   }
@@ -685,15 +694,26 @@ struct SettingsView: View {
           url.stopAccessingSecurityScopedResource()
         }
 
+        // プログレスシートを表示
+        await MainActor.run {
+          importProgress = 0.0
+          isImporting = true
+        }
+
         do {
           let importResult = try await DataImportService.importFromYAML(
             url: url,
             dataStore: dataStore,
             existingRecords: records,
-            allowDuplicates: appSettings.allowDuplicateRecords
+            allowDuplicates: appSettings.allowDuplicateRecords,
+            progressHandler: { @MainActor progress in
+              // @MainActorクロージャなのでState変数を直接更新可能
+              importProgress = progress
+            }
           )
 
           await MainActor.run {
+            isImporting = false
             if importResult.hasErrors {
               importResultMessage = String(
                 localized: "import_partial_success",
@@ -717,6 +737,7 @@ struct SettingsView: View {
           }
         } catch {
           await MainActor.run {
+            isImporting = false
             importResultMessage =
               String(
                 localized: "import_error",
