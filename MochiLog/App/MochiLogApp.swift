@@ -267,6 +267,8 @@ struct MochiLogRootView: View {
   init() {
     let store = DataStore.create(iCloudEnabled: AppSettings.shared.iCloudSyncEnabled)
     _dataStore = StateObject(wrappedValue: store)
+    // CloudKitのインポートイベント完了時に自動refreshできるよう登録
+    ICloudSyncManager.shared.register(dataStore: store)
   }
 
   var body: some View {

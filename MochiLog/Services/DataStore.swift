@@ -5,6 +5,11 @@ import Foundation
 /// iOS 17+: SwiftDataStore（SwiftData使用）
 /// iOS 16:  CoreDataStore（CoreData使用）
 class DataStore: ObservableObject {
+  // MARK: - Properties
+  
+  /// 内部的にiCloudが有効化されているかどうか
+  @Published private(set) var isICloudEnabled: Bool
+
   // MARK: - Published Records (キャッシュ済み)
 
   /// レコード（降順：最新が先頭）
@@ -21,6 +26,10 @@ class DataStore: ObservableObject {
 
   /// レコードが空かどうか
   var isEmpty: Bool { recordsDescending.isEmpty }
+  
+  init(isICloudEnabled: Bool = false) {
+    self.isICloudEnabled = isICloudEnabled
+  }
 
   // MARK: - CRUD (サブクラスでオーバーライド)
 

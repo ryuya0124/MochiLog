@@ -2,72 +2,10 @@ import SwiftUI
 
 // MARK: - 一般設定ビュー
 struct GeneralSettingsView: View {
-  @Binding var localICloudToggle: Bool
-  @Binding var showingICloudErrorAlert: Bool
-  @Binding var iCloudErrorMessage: String
   @ObservedObject var appSettings: AppSettings
 
   var body: some View {
     VStack(spacing: 16) {
-      // iCloud同期（iPad向けレイアウト）- iOS 17以降のみ表示
-      if #available(iOS 17, *) {
-        GroupBox {
-          HStack(spacing: 20) {
-            // アイコン
-            Image(systemName: "icloud.fill")
-              .font(.system(size: 40))
-              .foregroundStyle(
-                LinearGradient(
-                  colors: [.blue, .cyan],
-                  startPoint: .topLeading,
-                  endPoint: .bottomTrailing
-                )
-              )
-              .frame(width: 60, height: 60)
-
-            VStack(alignment: .leading, spacing: 8) {
-              Toggle(
-                String(localized: "enable_icloud_sync", table: "Settings"),
-                isOn: Binding(
-                  get: {
-                    localICloudToggle
-                  },
-                  set: { newValue in
-                    localICloudToggle = newValue
-                    Task {
-                      let result = await appSettings.attemptSetICloudSyncAsync(newValue)
-                      await MainActor.run {
-                        switch result {
-                        case .success:
-                          break
-                        case .failure(let err):
-                          localICloudToggle = appSettings.iCloudSyncEnabled
-                          iCloudErrorMessage =
-                            err.errorDescription
-                            ?? String(localized: "icloud_sync_failed", table: "Settings")
-                          showingICloudErrorAlert = true
-                        }
-                      }
-                    }
-                  })
-              )
-              .font(.headline)
-
-              Text(String(localized: "icloud_sync_description", table: "Settings"))
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-
-              if let blocked = appSettings.iCloudSyncBlockedReason {
-                Label(blocked, systemImage: "exclamationmark.triangle.fill")
-                  .font(.caption)
-                  .foregroundColor(.red)
-              }
-            }
-          }
-          .padding(.vertical, 8)
-        }
-      }
-
       // アクセントカラー
       GroupBox {
         HStack(spacing: 20) {

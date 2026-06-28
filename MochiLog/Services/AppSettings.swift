@@ -20,6 +20,7 @@ final class AppSettings: ObservableObject {
     static let defaultChartUnit = "defaultChartUnit"
     static let iCloudSyncEnabled = "iCloudSyncEnabled"
     static let iCloudStorageThresholdMB = "iCloudStorageThresholdMB"
+    static let lastICloudSyncDate = "lastICloudSyncDate"
     static let accentColor = "accentColor"
     static let showPopupOnLoad = "showPopupOnLoad"
 
@@ -219,6 +220,9 @@ final class AppSettings: ObservableObject {
   /// iCloud同期を抑制するための容量閾値（MB）
   @Published var iCloudStorageThresholdMB: Double
 
+  /// 最後に同期（強制同期など）を行った日時（timeIntervalSince1970）
+  @Published var lastICloudSyncDate: Double
+
   /// iCloud 同期がブロックされた際の説明（ユーザ表示用）
   @Published var iCloudSyncBlockedReason: String?
 
@@ -324,6 +328,8 @@ final class AppSettings: ObservableObject {
 
     let storageThreshold = UserDefaults.standard.double(forKey: Keys.iCloudStorageThresholdMB)
     self.iCloudStorageThresholdMB = storageThreshold == 0 ? 100.0 : storageThreshold
+
+    self.lastICloudSyncDate = UserDefaults.standard.double(forKey: Keys.lastICloudSyncDate)
 
     // 読み込み後すぐにポップアップを表示するか: デフォルトは false
     if UserDefaults.standard.object(forKey: Keys.showPopupOnLoad) == nil {
@@ -470,6 +476,13 @@ final class AppSettings: ObservableObject {
       .dropFirst()
       .sink { value in
         UserDefaults.standard.set(value, forKey: Keys.iCloudStorageThresholdMB)
+      }
+      .store(in: &cancellables)
+
+    $lastICloudSyncDate
+      .dropFirst()
+      .sink { value in
+        UserDefaults.standard.set(value, forKey: Keys.lastICloudSyncDate)
       }
       .store(in: &cancellables)
 

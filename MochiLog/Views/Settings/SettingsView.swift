@@ -44,11 +44,6 @@ struct SettingsView: View {
   @State private var showingSupportForm = false
   @State private var showingDonation = false
 
-  // iCloud トグル用ローカル状態とエラー表示
-  @State private var localICloudToggle: Bool = false
-  @State private var showingICloudErrorAlert = false
-  @State private var iCloudErrorMessage: String = ""
-
   // デバイスごとの削除機能用の状態
   @State private var showingDeviceDeletePicker = false
   @State private var showingDeviceDeleteConfirmation = false
@@ -73,7 +68,6 @@ struct SettingsView: View {
       settingsList
         .navigationTitle(String(localized: "settings_title", table: "Settings"))
         .onAppear {
-          localICloudToggle = appSettings.iCloudSyncEnabled
           setupShortcutNotification()
         }
         .sheet(isPresented: $showingWatchPicker) {
@@ -140,14 +134,6 @@ struct SettingsView: View {
           }
         } message: {
           Text(String(localized: "remove_all_watches_confirm", table: "Settings"))
-        }
-        .alert(
-          String(localized: "icloud_sync_failed", table: "Settings"),
-          isPresented: $showingICloudErrorAlert
-        ) {
-          Button(String(localized: "ok", table: "Common"), role: .cancel) {}
-        } message: {
-          Text(iCloudErrorMessage)
         }
         .sheet(isPresented: $showingDeviceDeletePicker) {
           DeviceDeletePickerView(availableDevices: availableDevices) { deviceName in
@@ -285,11 +271,10 @@ struct SettingsView: View {
                 switch selectedCategory {
                 case .general:
                   GeneralSettingsView(
-                    localICloudToggle: $localICloudToggle,
-                    showingICloudErrorAlert: $showingICloudErrorAlert,
-                    iCloudErrorMessage: $iCloudErrorMessage,
                     appSettings: appSettings
                   )
+                case .iCloud:
+                  ICloudSettingsView(appSettings: appSettings)
                 case .appleWatch:
                   AppleWatchSettingsView(
                     showingWatchPicker: $showingWatchPicker,
@@ -344,37 +329,13 @@ struct SettingsView: View {
   private var settingsContent: some View {
     // MARK: - 一般
     Section(String(localized: "general", table: "Settings")) {
-      // iCloud同期はiOS 17以降のみ（SwiftData + CloudKit）
+      // iCloud同期画面へのリンク
       if #available(iOS 17, *) {
-        Toggle(
-          String(localized: "enable_icloud_sync", table: "Settings"),
-          isOn: Binding(
-            get: {
-              localICloudToggle
-            },
-            set: { newValue in
-              localICloudToggle = newValue
-              Task {
-                let result = await appSettings.attemptSetICloudSyncAsync(newValue)
-                await MainActor.run {
-                  switch result {
-                  case .success:
-                    break
-                  case .failure(let err):
-                    localICloudToggle = appSettings.iCloudSyncEnabled
-                    iCloudErrorMessage =
-                      err.errorDescription
-                      ?? String(localized: "icloud_sync_failed", table: "Settings")
-                    showingICloudErrorAlert = true
-                  }
-                }
-              }
-            }))
-
-        if let blocked = appSettings.iCloudSyncBlockedReason {
-          Text(blocked)
-            .font(.caption)
-            .foregroundColor(.red)
+        NavigationLink(destination: ICloudSettingsView(appSettings: appSettings)) {
+          Label(
+            String(localized: "icloud_sync_settings", defaultValue: "iCloud同期設定", table: "Settings"),
+            systemImage: "icloud.fill"
+          )
         }
       }
 

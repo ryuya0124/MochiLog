@@ -103,7 +103,7 @@ final class CoreDataStore: DataStore {
     persistentContainer.viewContext
   }
 
-  override init() {
+  init() {
     // プログラマティックに CoreData モデルを構築
     let model = CoreDataStore.createManagedObjectModel()
     persistentContainer = NSPersistentContainer(name: "MochiLogCoreData", managedObjectModel: model)
@@ -115,7 +115,7 @@ final class CoreDataStore: DataStore {
     description.shouldMigrateStoreAutomatically = true
     persistentContainer.persistentStoreDescriptions = [description]
 
-    super.init()
+    super.init(isICloudEnabled: AppSettings.shared.iCloudSyncEnabled)
 
     persistentContainer.loadPersistentStores { _, error in
       if let error = error {
@@ -123,6 +123,7 @@ final class CoreDataStore: DataStore {
       }
     }
     persistentContainer.viewContext.automaticallyMergesChangesFromParent = true
+    persistentContainer.viewContext.mergePolicy = NSMergePolicy.error
 
     refreshRecords()
   }
@@ -210,7 +211,14 @@ final class CoreDataStore: DataStore {
     for record in all {
       viewContext.delete(record)
     }
-    try? viewContext.save()
+    do {
+      try viewContext.save()
+    } catch {
+      print("[CoreDataStore] Save failed in deleteAll: \(error)")
+      let e = error
+      Task { @MainActor in ICloudSyncManager.shared.handleSaveError(e) }
+      viewContext.rollback()
+    }
     refreshRecords()
   }
 
@@ -221,12 +229,26 @@ final class CoreDataStore: DataStore {
     for record in records {
       viewContext.delete(record)
     }
-    try? viewContext.save()
+    do {
+      try viewContext.save()
+    } catch {
+      print("[CoreDataStore] Save failed in deleteRecords: \(error)")
+      let e = error
+      Task { @MainActor in ICloudSyncManager.shared.handleSaveError(e) }
+      viewContext.rollback()
+    }
     refreshRecords()
   }
 
   override func save() {
-    try? viewContext.save()
+    do {
+      try viewContext.save()
+    } catch {
+      print("[CoreDataStore] Save failed (conflict?): \(error)")
+      let e = error
+      Task { @MainActor in ICloudSyncManager.shared.handleSaveError(e) }
+      viewContext.rollback()
+    }
     refreshRecords()
   }
 
@@ -302,8 +324,15 @@ struct CoreDataMigrationRunner {
       }
 
       if modifiedCount > 0 {
-        try? viewContext.save()
-        print("[CoreDataMigration] \(version): Migrated \(modifiedCount) records to MagSafe Battery Pack.")
+        do {
+          try viewContext.save()
+          print("[CoreDataMigration] \(version): Migrated \(modifiedCount) records to MagSafe Battery Pack.")
+        } catch {
+          print("[CoreDataMigration] Save failed in \(version): \(error)")
+          let e = error
+          Task { @MainActor in ICloudSyncManager.shared.handleSaveError(e) }
+          viewContext.rollback()
+        }
       }
 
       UserDefaults.standard.set(true, forKey: key)

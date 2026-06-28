@@ -137,6 +137,21 @@ struct DeveloperOptionsView: View {
           Text("マイグレーションをリセットすると、次回起動時に再実行されます。データ破損の可能性があるため注意してください。")
             .font(.caption)
         }
+        
+        // iCloud同期セクション
+        Section {
+          Button(action: {
+            ICloudSyncManager.shared.simulateConflict()
+          }) {
+            Label("同期コンフリクトを発生させる", systemImage: "exclamationmark.arrow.triangle.2.circlepath")
+              .foregroundColor(.red)
+          }
+        } header: {
+          Label("iCloud同期", systemImage: "icloud")
+        } footer: {
+          Text("テスト用の擬似的な競合を発生させます。その後、iCloud同期設定画面を開いて動作を確認してください。")
+            .font(.caption)
+        }
 
         // UserDefaultsセクション
         Section {

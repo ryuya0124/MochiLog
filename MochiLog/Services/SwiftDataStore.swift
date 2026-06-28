@@ -165,7 +165,7 @@ final class SwiftDataStore: DataStore {
     }
     modelContext = modelContainer.mainContext
 
-    super.init()
+    super.init(isICloudEnabled: iCloudEnabled)
     refreshRecords()
   }
 
@@ -182,7 +182,7 @@ final class SwiftDataStore: DataStore {
       fatalError("SwiftData ModelContainer (inMemory) の作成に失敗: \(error)")
     }
     modelContext = modelContainer.mainContext
-    super.init()
+    super.init(isICloudEnabled: false)
   }
 
   // MARK: - CRUD
@@ -220,7 +220,13 @@ final class SwiftDataStore: DataStore {
     for record in all {
       modelContext.delete(record)
     }
-    try? modelContext.save()
+    do {
+      try modelContext.save()
+    } catch {
+      print("[SwiftDataStore] Save failed in deleteAll (conflict?): \(error)")
+      ICloudSyncManager.shared.handleSaveError(error)
+      modelContext.rollback()
+    }
     refreshRecords()
   }
 
@@ -232,12 +238,25 @@ final class SwiftDataStore: DataStore {
     for record in records {
       modelContext.delete(record)
     }
-    try? modelContext.save()
+    do {
+      try modelContext.save()
+    } catch {
+      print("[SwiftDataStore] Save failed in deleteRecords (conflict?): \(error)")
+      ICloudSyncManager.shared.handleSaveError(error)
+      modelContext.rollback()
+    }
     refreshRecords()
   }
 
   override func save() {
-    try? modelContext.save()
+    do {
+      try modelContext.save()
+    } catch {
+      print("[SwiftDataStore] Save failed (conflict?): \(error)")
+      ICloudSyncManager.shared.handleSaveError(error)
+      // コンフリクト等のエラーでcontextがdirtyな状態のままになり、以降の保存・同期が停止するのを防ぐためrollbackする
+      modelContext.rollback()
+    }
     refreshRecords()
   }
 
@@ -258,7 +277,13 @@ final class SwiftDataStore: DataStore {
     let records = sdRecords.map { $0.toBatteryRecord() }
     // toBatteryRecord() が旧レコードに recordID を付与した場合、変更を保存
     if modelContext.hasChanges {
-      try? modelContext.save()
+      do {
+        try modelContext.save()
+      } catch {
+        print("[SwiftDataStore] Save failed in refreshRecords (conflict?): \(error)")
+        ICloudSyncManager.shared.handleSaveError(error)
+        modelContext.rollback()
+      }
     }
     updateCachedRecords(records)
   }
@@ -325,7 +350,13 @@ final class SwiftDataStore: DataStore {
         }
 
         if needsSave {
-          try? modelContext.save()
+          do {
+            try modelContext.save()
+          } catch {
+            print("[SwiftDataMigration] Save failed in v1: \(error)")
+            ICloudSyncManager.shared.handleSaveError(error)
+            modelContext.rollback()
+          }
         }
       }
 
@@ -362,8 +393,14 @@ final class SwiftDataStore: DataStore {
       }
 
       if modifiedCount > 0 {
-        try? modelContext.save()
-        print("[SwiftDataMigration] \(version): Migrated \(modifiedCount) records to MagSafe Battery Pack.")
+        do {
+          try modelContext.save()
+          print("[SwiftDataMigration] \(version): Migrated \(modifiedCount) records to MagSafe Battery Pack.")
+        } catch {
+          print("[SwiftDataMigration] Save failed in \(version): \(error)")
+          ICloudSyncManager.shared.handleSaveError(error)
+          modelContext.rollback()
+        }
       }
 
       UserDefaults.standard.set(true, forKey: key)
