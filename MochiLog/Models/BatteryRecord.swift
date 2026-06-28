@@ -244,7 +244,15 @@ final class BatteryRecord: Identifiable, Hashable {
     }
     let s = raw.replacingOccurrences(of: " ", with: "")
     // e.g. "6GB" -> "6 GB"
-    return s.replacingOccurrences(of: "gb", with: " GB", options: .caseInsensitive)
+    var formatted = s.replacingOccurrences(of: "gb", with: " GB", options: .caseInsensitive)
+    
+    if formatted == "7.5 GB" {
+      formatted = "8 GB"
+    } else if formatted == "15 GB" {
+      formatted = "16 GB"
+    }
+    
+    return formatted
   }
   var cachedDiagnostic: String {
     dynamicDiagnosticResult

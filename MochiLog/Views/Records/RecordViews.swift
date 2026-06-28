@@ -29,11 +29,12 @@ struct InfoLabeledContent<V: View>: View {
         Button {
           isShowingInfo = true
         } label: {
-          // 当たり判定を広げるためフレームで透明タップ領域を確保
+          // 当たり判定を広げる（行の高さを太らせない範囲で）
           Image(systemName: "info.circle")
             .font(.caption)
             .foregroundStyle(.secondary)
-            .frame(width: 44, height: 44)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
             .contentShape(Rectangle())
         }
         .buttonStyle(.borderless)
