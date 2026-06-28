@@ -346,11 +346,12 @@ struct SettingsView: View {
           appSettings.showingICloudSettings = true
         } label: {
           HStack {
-            Label(
-              String(localized: "icloud_sync_settings", defaultValue: "iCloud同期設定", table: "Settings"),
-              systemImage: "icloud.fill"
-            )
-            .foregroundColor(.primary)
+            HStack(spacing: 12) {
+              Image(systemName: "icloud.fill")
+                .foregroundColor(appSettings.accentColor.color)
+              Text(String(localized: "icloud_sync_settings", defaultValue: "iCloud同期設定", table: "Settings"))
+                .foregroundColor(.primary)
+            }
             
             Spacer()
             

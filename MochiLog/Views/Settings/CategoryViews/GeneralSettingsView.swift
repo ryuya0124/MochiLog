@@ -63,7 +63,7 @@ struct GeneralSettingsView: View {
           HStack(spacing: 20) {
             Image(systemName: "eye.fill")
               .font(.system(size: 32))
-              .foregroundStyle(.blue)
+              .foregroundStyle(appSettings.accentColor.color)
               .frame(width: 60)
 
             VStack(alignment: .leading, spacing: 4) {

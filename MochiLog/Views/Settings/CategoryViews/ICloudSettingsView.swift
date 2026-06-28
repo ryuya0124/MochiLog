@@ -15,10 +15,11 @@ struct ICloudSettingsContentView: View {
       GroupBox {
         VStack(alignment: .leading, spacing: 12) {
           Toggle(isOn: $appSettings.iCloudSyncEnabled) {
-            Label(
-              String(localized: "enable_icloud_sync", defaultValue: "iCloud同期を有効にする", table: "Settings"),
-              systemImage: "icloud.fill"
-            )
+            HStack(spacing: 12) {
+              Image(systemName: "icloud.fill")
+                .foregroundColor(appSettings.accentColor.color)
+              Text(String(localized: "enable_icloud_sync", defaultValue: "iCloud同期を有効にする", table: "Settings"))
+            }
           }
           .font(.headline)
           .onChange(of: appSettings.iCloudSyncEnabled) { newValue in
