@@ -249,7 +249,7 @@ struct RecordListView<Header: View>: View {
               }
             )
           ) {
-            ForEach(sectionRecords, id: \.logDate) { record in
+            ForEach(sectionRecords, id: \.id) { record in
               RecordRowView(record: record)
                 .contentShape(Rectangle())
                 .onTapGesture {
@@ -312,7 +312,7 @@ struct RecordListView<Header: View>: View {
   ) -> some View {
     // DisclosureGroupを廃止したため、LazyVGridが自然なレイアウトで動作します
     LazyVGrid(columns: [GridItem(.adaptive(minimum: 280), spacing: 16)], spacing: 12) {
-      ForEach(sectionRecords, id: \.logDate) { record in
+      ForEach(sectionRecords, id: \.id) { record in
         iPadRecordCard(record: record, section: section)
       }
     }

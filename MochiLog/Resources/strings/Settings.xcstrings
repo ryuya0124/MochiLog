@@ -894,6 +894,50 @@
         }
       }
     },
+    "force_sync_action1" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "• 未保存のローカルデータをiCloudに送信"
+          }
+        }
+      }
+    },
+    "force_sync_action2" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "• iCloudが既に受信済みのデータを画面に反映"
+          }
+        }
+      }
+    },
+    "force_sync_description" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "「強制同期」をタップすると、以下の処理を実行します："
+          }
+        }
+      }
+    },
+    "force_sync_note" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "※ 他デバイスのデータを引き出すのは Appleのサーバー任せになります。強制同期後にデータが表示されない場合は、数分待ってからアプリを再起動してください。"
+          }
+        }
+      }
+    },
     "force_sync_now" : {
       "comment" : "A button title that triggers a forced iCloud sync.",
       "extractionState" : "extracted_with_value",
@@ -987,6 +1031,17 @@
         }
       }
     },
+    "icloud_how_sync_works_title" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "同期の仕組みについて"
+          }
+        }
+      }
+    },
     "icloud_not_signed_in" : {
       "extractionState" : "extracted_with_value",
       "localizations" : {
@@ -1054,17 +1109,6 @@
         }
       }
     },
-    "icloud_sync_api_note" : {
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "※ AppleのAPI仕様上、コンフリクト（競合）が発生していない通常のデータについて、各データが現在サーバーにあるのか、ローカルにのみ存在するのかといった詳細な同期状態を直接確認することはできません。"
-          }
-        }
-      }
-    },
     "icloud_sync_blocked_low_space" : {
       "localizations" : {
         "en" : {
@@ -1122,7 +1166,51 @@
         "ja" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "同期をオンにすると、デバイス間でバッテリー記録を共有できます。強制同期はローカルデータをCloudKitへ送信し、他デバイスから受信した最新データをUIに反映します。"
+            "value" : "iCloud同期をオンにすると、同じApple IDでサインインした複数のデバイス間でバッテリー記録を自動的に共有できます。"
+          }
+        }
+      }
+    },
+    "icloud_sync_how1" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "同期はアプリ起動時やバックグラウンドで自動的に行われます"
+          }
+        }
+      }
+    },
+    "icloud_sync_how2" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "「強制同期」はローカルの変更をiCloudにプッシュし、既に受信済みのデータを表示に反映します"
+          }
+        }
+      }
+    },
+    "icloud_sync_how3" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "他デバイスのデータを引き出すタイミングはAppleのサーバーが决定します。数秒〜数分かかる場合があります"
+          }
+        }
+      }
+    },
+    "icloud_sync_how4" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "強制同期後も表示されない場合は、アプリを完全に終了（スワイプアップ）して再起動すると反映されます"
           }
         }
       }

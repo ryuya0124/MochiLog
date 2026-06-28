@@ -273,6 +273,12 @@ final class AppSettings: ObservableObject {
 
   /// MagSafeバッテリーの自動選択
   @Published var autoSelectMagSafeBattery: Bool
+  
+  // 新規: iCloud設定画面の表示状態（iPhone用）
+  @Published var showingICloudSettings: Bool = false
+  
+  // 新規: 設定画面の選択カテゴリ（iPad用）
+  @Published var selectedSettingsCategory: SettingsCategory = .general
 
   /// デバイス識別子の上書き（開発者用、空文字の場合はシステム値を使用）
   @Published var overrideLocalModelIdentifier: String

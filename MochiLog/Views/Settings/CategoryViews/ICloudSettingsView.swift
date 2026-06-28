@@ -57,7 +57,7 @@ struct ICloudSettingsView: View {
             Text(
               String(
                 localized: "icloud_sync_footer",
-                defaultValue: "同期をオンにすると、デバイス間でバッテリー記録を共有できます。強制同期はローカルデータをCloudKitへ送信し、他デバイスから受信した最新データをUIに反映します。",
+                defaultValue: "iCloud同期をオンにすると、同じApple IDでサインインした複数のデバイス間でバッテリー記録を自動的に共有できます。",
                 table: "Settings"
               )
             )
@@ -122,16 +122,54 @@ struct ICloudSettingsView: View {
                 }
               }
               
-              Text(String(localized: "icloud_sync_api_note", defaultValue: "※ AppleのAPI仕様上、コンフリクト（競合）が発生していない通常のデータについて、各データが現在サーバーにあるのか、ローカルにのみ存在するのかといった詳細な同期状態を直接確認することはできません。", table: "Settings"))
-                .font(.caption)
-                .foregroundColor(.secondary)
+              // iCloud同期の説明セクション
+              VStack(alignment: .leading, spacing: 8) {
+                Text(String(localized: "icloud_how_sync_works_title", defaultValue: "同期の仕組みについて", table: "Settings"))
+                  .font(.caption)
+                  .fontWeight(.semibold)
+                  .foregroundColor(.secondary)
+
+                VStack(alignment: .leading, spacing: 4) {
+                  Label(
+                    String(localized: "icloud_sync_how1", defaultValue: "同期はアプリ起動時やバックグラウンドで自動的に行われます", table: "Settings"),
+                    systemImage: "arrow.triangle.2.circlepath.icloud"
+                  )
+                  .font(.caption)
+                  .foregroundColor(.secondary)
+
+                  Label(
+                    String(localized: "icloud_sync_how2", defaultValue: "「強制同期」はローカルの変更をiCloudにプッシュし、既に受信済みのデータを表示に反映します", table: "Settings"),
+                    systemImage: "arrow.up.icloud"
+                  )
+                  .font(.caption)
+                  .foregroundColor(.secondary)
+
+                  Label(
+                    String(localized: "icloud_sync_how3", defaultValue: "他デバイスのデータを引き出すタイミングはAppleのサーバーが决定します。数秒〜数分かかる場合があります", table: "Settings"),
+                    systemImage: "clock"
+                  )
+                  .font(.caption)
+                  .foregroundColor(.secondary)
+
+                  Label(
+                    String(localized: "icloud_sync_how4", defaultValue: "強制同期後も表示されない場合は、アプリを完全に終了（スワイプアップ）して再起動すると反映されます", table: "Settings"),
+                    systemImage: "arrow.counterclockwise.icloud"
+                  )
+                  .font(.caption)
+                  .foregroundColor(.secondary)
+                }
+              }
+              .padding(.top, 4)
             }
 
             Divider()
 
             Button(action: forceSync) {
               HStack {
-                Text(String(localized: "force_sync_now", defaultValue: "今すぐ強制同期", table: "Settings"))
+                Label(
+                  String(localized: "force_sync_now", defaultValue: "今すぐ強制同期", table: "Settings"),
+                  systemImage: "arrow.triangle.2.circlepath.icloud.fill"
+                )
                 Spacer()
                 if isSyncing {
                   ProgressView()
@@ -140,6 +178,25 @@ struct ICloudSettingsView: View {
             }
             .disabled(!appSettings.iCloudSyncEnabled || isSyncing)
             .padding(.vertical, 4)
+
+            // 強制同期の説明
+            VStack(alignment: .leading, spacing: 4) {
+              Text(String(localized: "force_sync_description", defaultValue: "「強制同期」をタップすると、以下の処理を実行します：", table: "Settings"))
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+              Text(String(localized: "force_sync_action1", defaultValue: "• 未保存のローカルデータをiCloudに送信", table: "Settings"))
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+              Text(String(localized: "force_sync_action2", defaultValue: "• iCloudが既に受信済みのデータを画面に反映", table: "Settings"))
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+              Text(String(localized: "force_sync_note", defaultValue: "※ 他デバイスのデータを引き出すのは Appleのサーバー任せになります。強制同期後にデータが表示されない場合は、数分待ってからアプリを再起動してください。", table: "Settings"))
+                .font(.caption)
+                .foregroundColor(.secondary)
+            }
           }
           .padding(8)
         }
@@ -201,9 +258,13 @@ struct ICloudSettingsView: View {
       guard isSyncing else { return }
       switch newStatus {
       case .success, .error:
-        // 同期完了または失敗 → 処理中フラグを解除
-        let previousConflictCount = syncManager.unresolvedConflicts.count
+        // 同期完了または失敗 → UIに最新データを反映してから処理中フラグを解除
         dataStore.refreshRecords()
+        // 少し待ってからもう一度 refresh（CloudKitのimportが遅延して届く場合への対策）
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+          dataStore.refreshRecords()
+        }
+        let previousConflictCount = syncManager.unresolvedConflicts.count
         isSyncing = false
         appSettings.lastICloudSyncDate = Date().timeIntervalSince1970
         // 新たなコンフリクトが発生していたら自動表示
@@ -225,7 +286,8 @@ struct ICloudSettingsView: View {
     dataStore.refreshRecords()
     // isSyncingの解除は .onChange(of: syncManager.lastSyncStatus) で行う
     // CloudKitが同期イベントを発火しない場合（ネットワーク不通など）のフォールバック
-    DispatchQueue.main.asyncAfter(deadline: .now() + 30.0) {
+    // 15秒待ってもまだ同期中の場合は強制的に終了してrefreshする
+    DispatchQueue.main.asyncAfter(deadline: .now() + 15.0) {
       guard self.isSyncing else { return }
       self.dataStore.refreshRecords()
       self.isSyncing = false

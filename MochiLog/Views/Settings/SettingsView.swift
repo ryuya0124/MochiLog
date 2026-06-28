@@ -64,8 +64,10 @@ struct SettingsView: View {
   @State private var isImporting = false
   @State private var importProgress: Double = 0.0
 
-  // 大画面レイアウト用: 選択されたカテゴリ
-  @State private var selectedCategory: SettingsCategory = .general
+  // 大画面レイアウト用: 選択されたカテゴリ（状態維持のためAppSettingsから取得）
+  private var selectedCategory: Binding<SettingsCategory> {
+    $appSettings.selectedSettingsCategory
+  }
 
   var body: some View {
     NavigationStack {
@@ -235,13 +237,13 @@ struct SettingsView: View {
           Divider()  // ヘッダーとの境界線
           ScrollView {
             VStack(spacing: 16) {
-              ForEach(SettingsCategory.allCases) { category in
+              ForEach(SettingsCategory.allCases.filter { $0 != .iCloud }) { category in
                 CategoryCardView(
                   category: category,
-                  isSelected: selectedCategory == category
+                  isSelected: selectedCategory.wrappedValue == category
                 )
                 .onTapGesture {
-                  selectedCategory = category
+                  selectedCategory.wrappedValue = category
                 }
               }
             }
@@ -255,7 +257,7 @@ struct SettingsView: View {
         Divider()
 
         // 右側：選択されたカテゴリの詳細（Apple Watch・高度な設定はList表示）
-        if selectedCategory == .appleWatch {
+        if selectedCategory.wrappedValue == .appleWatch {
           VStack(spacing: 0) {
             Divider()  // ヘッダーとの境界線
             AppleWatchSettingsView(
@@ -265,7 +267,7 @@ struct SettingsView: View {
           }
           .frame(maxHeight: .infinity)
           .clipped()
-        } else if selectedCategory == .advanced {
+        } else if selectedCategory.wrappedValue == .advanced {
           VStack(spacing: 0) {
             Divider()  // ヘッダーとの境界線
             AdvancedSettingsView(appSettings: appSettings)
@@ -277,7 +279,7 @@ struct SettingsView: View {
             Divider()  // ヘッダーとの境界線
             ScrollView {
               VStack(spacing: 0) {
-                switch selectedCategory {
+                switch selectedCategory.wrappedValue {
                 case .general:
                   GeneralSettingsView(
                     appSettings: appSettings
@@ -340,11 +342,25 @@ struct SettingsView: View {
     Section(String(localized: "general", table: "Settings")) {
       // iCloud同期画面へのリンク
       if #available(iOS 17, *) {
-        NavigationLink(destination: ICloudSettingsView(appSettings: appSettings)) {
-          Label(
-            String(localized: "icloud_sync_settings", defaultValue: "iCloud同期設定", table: "Settings"),
-            systemImage: "icloud.fill"
-          )
+        Button {
+          appSettings.showingICloudSettings = true
+        } label: {
+          HStack {
+            Label(
+              String(localized: "icloud_sync_settings", defaultValue: "iCloud同期設定", table: "Settings"),
+              systemImage: "icloud.fill"
+            )
+            .foregroundColor(.primary)
+            
+            Spacer()
+            
+            Image(systemName: "chevron.right")
+              .font(.system(size: 14, weight: .semibold))
+              .foregroundColor(Color(UIColor.tertiaryLabel))
+          }
+        }
+        .navigationDestination(isPresented: $appSettings.showingICloudSettings) {
+          ICloudSettingsView(appSettings: appSettings)
         }
       }
 

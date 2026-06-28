@@ -1072,7 +1072,7 @@ struct RecordDetailView: View {
       await MainActor.run {
         // グラフチャート部分のみをレンダリング（ヘッダーやコントロールなし）
         let chartView = Chart {
-          ForEach(visibleRecords, id: \.logDate) { record in
+          ForEach(visibleRecords, id: \.id) { record in
             let capacity =
               dataSource == .nominal
               ? record.nominalCapacity
