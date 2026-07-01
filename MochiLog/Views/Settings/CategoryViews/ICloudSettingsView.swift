@@ -97,6 +97,11 @@ struct ICloudSettingsContentView: View {
                   Text(String(localized: "status_success", defaultValue: "成功", table: "Settings"))
                     .font(.subheadline)
                     .foregroundColor(.green)
+                case .notAuthenticated:
+                  Label("iCloudにサインインしてください", systemImage: "person.crop.circle.badge.exclamationmark")
+                    .font(.caption)
+                    .foregroundColor(.orange)
+                    .multilineTextAlignment(.trailing)
                 case .error(let message):
                   Text(message)
                     .font(.caption)
@@ -121,6 +126,44 @@ struct ICloudSettingsContentView: View {
                   .foregroundColor(.secondary)
               }
             }
+
+            // エラーログ表示（エラーが発生した場合のみ表示）
+            if let errorLog = syncManager.lastErrorLog {
+              VStack(alignment: .leading, spacing: 6) {
+                HStack {
+                  Label("エラー詳細", systemImage: "exclamationmark.triangle.fill")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.red)
+                  Spacer()
+                  Button {
+                    UIPasteboard.general.string = errorLog
+                  } label: {
+                    Label("コピー", systemImage: "doc.on.doc")
+                      .font(.caption)
+                  }
+                  .buttonStyle(.bordered)
+                  .controlSize(.mini)
+                }
+
+                ScrollView {
+                  Text(errorLog)
+                    .font(.system(.caption2, design: .monospaced))
+                    .foregroundColor(.primary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(8)
+                }
+                .frame(maxHeight: 160)
+                .background(Color(uiColor: .secondarySystemGroupedBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                Text("このエラー情報をコピーして開発者にお送りください。")
+                  .font(.caption2)
+                  .foregroundColor(.secondary)
+              }
+              .padding(.top, 4)
+            }
+
             
             // iCloud同期の説明セクション
             VStack(alignment: .leading, spacing: 8) {
@@ -254,7 +297,7 @@ struct ICloudSettingsContentView: View {
     .onChange(of: syncManager.lastSyncStatus) { newStatus in
       guard isSyncing else { return }
       switch newStatus {
-      case .success, .error:
+      case .success, .error, .notAuthenticated:
         // 同期完了または失敗 → UIに最新データを反映してから処理中フラグを解除
         dataStore.refreshRecords()
         // 少し待ってからもう一度 refresh（CloudKitのimportが遅延して届く場合への対策）

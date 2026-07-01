@@ -1,3 +1,4 @@
+import CloudKit
 import CoreData
 import Foundation
 import Combine
@@ -41,6 +42,7 @@ enum SyncStatus: Equatable {
   case syncing
   case success
   case error(String)
+  case notAuthenticated  // CKError.notAuthenticated (code 2)
 }
 
 /// iCloud同期のコンフリクト（競合）をメモリ上で管理し、手動解決をサポートするマネージャー
@@ -52,6 +54,9 @@ final class ICloudSyncManager: ObservableObject {
   
   /// 最近の同期ステータス
   @Published var lastSyncStatus: SyncStatus = .idle
+
+  /// 最後に発生したエラーの詳細ログ（UI表示・コピー用）
+  @Published var lastErrorLog: String? = nil
 
   /// インポート完了時にrefreshを呼ぶDataStore（弱参照）
   private weak var dataStore: DataStore?
@@ -76,14 +81,29 @@ final class ICloudSyncManager: ObservableObject {
     guard let event = notification.userInfo?[NSPersistentCloudKitContainer.eventNotificationUserInfoKey] as? NSPersistentCloudKitContainer.Event else {
       return
     }
-    
+
     DispatchQueue.main.async {
       if event.endDate == nil {
         // イベント終了日時がない場合は同期中
         self.lastSyncStatus = .syncing
       } else {
         if let error = event.error {
-          self.lastSyncStatus = .error(error.localizedDescription)
+          // 詳細ログ出力
+          self.logCloudKitError(error, eventType: event.type)
+
+          // CKError.notAuthenticated (rawValue=9) を個別ハンドリング
+          // ※ CKErrorDomain code 2 は partialFailure であり notAuthenticated ではない
+          if let ckError = self.extractCKError(error), ckError.code == .notAuthenticated {
+            print("[ICloudSync] ⚠️ notAuthenticated (CKError rawValue=9): iCloudにサインインしていないか、iCloud Driveが無効です")
+            self.lastSyncStatus = .notAuthenticated
+            // アカウント状態を非同期で確認してログに追記
+            Task {
+              await self.logAccountStatus()
+            }
+          } else {
+            let friendlyMessage = self.friendlyErrorMessage(error)
+            self.lastSyncStatus = .error(friendlyMessage)
+          }
         } else {
           self.lastSyncStatus = .success
           AppSettings.shared.lastICloudSyncDate = Date().timeIntervalSince1970
@@ -95,6 +115,143 @@ final class ICloudSyncManager: ObservableObject {
           }
         }
       }
+    }
+  }
+
+  // MARK: - エラー解析ヘルパー
+
+  /// NSErrorの中からCKErrorを掘り起こす（ネストされている場合も対応）
+  private func extractCKError(_ error: Error) -> CKError? {
+    if let ck = error as? CKError {
+      return ck
+    }
+    let ns = error as NSError
+    // underlyingErrorsに格納されている場合
+    if let underlying = ns.userInfo[NSUnderlyingErrorKey] as? Error {
+      return extractCKError(underlying)
+    }
+    return nil
+  }
+
+  /// CloudKit/CoreDataエラーの詳細をログ出力し、UI表示用の文字列として返す
+  @discardableResult
+  private func logCloudKitError(_ error: Error, eventType: NSPersistentCloudKitContainer.EventType) -> String {
+    let ns = error as NSError
+    let typeLabel: String
+    switch eventType {
+    case .setup:  typeLabel = "setup"
+    case .import: typeLabel = "import"
+    case .export: typeLabel = "export"
+    @unknown default: typeLabel = "unknown"
+    }
+
+    // ログ行を配列に積んでまとめて出力・保存する
+    var lines: [String] = []
+    lines.append("❌ CloudKitエラー (eventType=\(typeLabel))")
+    lines.append("   domain=\(ns.domain), code=\(ns.code)")
+    lines.append("   \(ns.localizedDescription)")
+
+    // CKError情報を展開
+    if let ckError = extractCKError(error) {
+      lines.append("   CKError.code=\(ckError.code.rawValue) (\(ckError.code))")
+      if let retryAfter = ckError.retryAfterSeconds {
+        lines.append("   retryAfter=\(Int(retryAfter))秒")
+      }
+      if let serverRecord = ckError.serverRecord {
+        lines.append("   serverRecord=\(serverRecord)")
+      }
+      // partialFailure (rawValue=2) の場合はサブエラーを個別に展開
+      if ckError.code == .partialFailure,
+         let partialErrors = ckError.userInfo[CKPartialErrorsByItemIDKey] as? [AnyHashable: Error] {
+        lines.append("   partialFailure: \(partialErrors.count)件のサブエラー")
+        for (itemID, subError) in partialErrors {
+          let sub = subError as NSError
+          lines.append("     - itemID=\(itemID): \(sub.domain) \(sub.code) — \(sub.localizedDescription)")
+        }
+      }
+    }
+
+    // userInfo全体をダンプ（NSError層）
+    if !ns.userInfo.isEmpty {
+      lines.append("   userInfo:")
+      for (key, value) in ns.userInfo {
+        if key == NSUnderlyingErrorKey, let underlyingError = value as? Error {
+          let ue = underlyingError as NSError
+          lines.append("     NSUnderlyingError: \(ue.domain) \(ue.code) — \(ue.localizedDescription)")
+          for (k2, v2) in ue.userInfo {
+            lines.append("       [\(k2)]: \(v2)")
+          }
+        } else if key == CKPartialErrorsByItemIDKey {
+          lines.append("     [CKPartialErrorsByItemIDKey]: (上記参照)")
+        } else {
+          lines.append("     [\(key)]: \(value)")
+        }
+      }
+    }
+
+    let logText = lines.joined(separator: "\n")
+
+    // Xcodeコンソールへも出力
+    for line in lines {
+      print("[ICloudSync] \(line)")
+    }
+
+    // UI表示用に保存（日時付き）
+    let timestamp = DateFormatter.localizedString(from: Date(), dateStyle: .short, timeStyle: .medium)
+    lastErrorLog = "[\(timestamp)]\n" + logText
+
+    return logText
+  }
+
+  /// CKErrorコードに応じた日本語エラーメッセージを返す
+  private func friendlyErrorMessage(_ error: Error) -> String {
+    if let ckError = extractCKError(error) {
+      switch ckError.code {
+      case .partialFailure:
+        // rawValue=2。一部レコードの保存/取得に失敗。ログを見て個別エラーを確認する
+        let count = (ckError.userInfo[CKPartialErrorsByItemIDKey] as? [AnyHashable: Error])?.count ?? 0
+        return "一部データの同期に失敗しました（\(count)件）(CKError \(ckError.code.rawValue))"
+      case .networkUnavailable, .networkFailure:
+        return "ネットワークに接続できません (CKError \(ckError.code.rawValue))"
+      case .serviceUnavailable:
+        return "iCloudサービスが一時的に利用できません (CKError \(ckError.code.rawValue))"
+      case .requestRateLimited:
+        let wait = ckError.retryAfterSeconds.map { "(\(Int($0))秒後にリトライ)" } ?? ""
+        return "リクエスト制限中です \(wait) (CKError \(ckError.code.rawValue))"
+      case .quotaExceeded:
+        return "iCloudの空き容量が不足しています (CKError \(ckError.code.rawValue))"
+      case .zoneNotFound, .unknownItem:
+        return "CloudKitのゾーンが見つかりません。iCloud同期をいったんオフにして再度オンにしてください (CKError \(ckError.code.rawValue))"
+      case .serverRecordChanged:
+        return "別デバイスとの競合が発生しました (CKError \(ckError.code.rawValue))"
+      case .notAuthenticated:
+        // rawValue=9
+        return "iCloudにサインインしていないか認証エラーが発生しました (CKError \(ckError.code.rawValue))"
+      default:
+        let ns = error as NSError
+        return "\(ns.localizedDescription) (\(ns.domain) \(ns.code))"
+      }
+    }
+    let ns = error as NSError
+    return "\(ns.localizedDescription) (\(ns.domain) \(ns.code))"
+  }
+
+  /// CKContainerのアカウント状態を非同期で取得してログ出力
+  private func logAccountStatus() async {
+    do {
+      let status = try await CKContainer.default().accountStatus()
+      let label: String
+      switch status {
+      case .available:        label = "available（正常）"
+      case .noAccount:        label = "noAccount（アカウントなし）"
+      case .restricted:       label = "restricted（制限あり）"
+      case .couldNotDetermine: label = "couldNotDetermine（不明）"
+      case .temporarilyUnavailable: label = "temporarilyUnavailable（一時的に利用不可）"
+      @unknown default:       label = "unknown"
+      }
+      print("[ICloudSync] ℹ️ CKContainer.accountStatus = \(label)")
+    } catch {
+      print("[ICloudSync] ⚠️ accountStatus取得失敗: \(error)")
     }
   }
 
