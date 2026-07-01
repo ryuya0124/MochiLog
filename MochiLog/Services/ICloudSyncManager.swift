@@ -318,13 +318,14 @@ final class ICloudSyncManager: ObservableObject {
     let database = container.privateCloudDatabase
     
     // CoreData/SwiftDataが自動生成するレコードタイプ名 (通常は CD_ + エンティティ名)
+    // SwiftDataは BatteryRecord、CoreDataは CDBatteryRecord という名前で作られている可能性あり
     let recordType = "CD_BatteryRecord"
     let recordID = CKRecord.ID(recordName: UUID().uuidString)
     let record = CKRecord(recordType: recordType, recordID: recordID)
     
-    // 必須プロパティ（スキーマに合わせて適当な値を入れる）
-    record["deviceName"] = "Diagnostic Test"
-    record["logDate"] = Date()
+    // CoreData/SwiftDataはフィールド名に CD_ をつける
+    record["CD_deviceName"] = "Diagnostic Test"
+    record["CD_logDate"] = Date()
     
     do {
       self.lastSyncStatus = .syncing
