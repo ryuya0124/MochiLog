@@ -2,6 +2,7 @@ import CloudKit
 import CoreData
 import Foundation
 import Combine
+import OSLog
 
 /// 競合（コンフリクト）した個々のレコード情報を保持するモデル
 struct SyncConflictItem: Identifiable {
@@ -82,17 +83,50 @@ final class ICloudSyncManager: ObservableObject {
       return
     }
 
+    if let error = event.error {
+      let logText = logCloudKitError(error, eventType: event.type)
+      
+      Task { @MainActor in
+        var finalLog = "[\(Date().formatted())]\n" + logText
+        
+        // 自動的にOSLogからCoreData内部エラーを抽出して末尾に追加する
+        do {
+          let store = try OSLogStore(scope: .currentProcessIdentifier)
+          let position = store.position(timeIntervalSinceEnd: -60) // 直近1分
+          let entries = try store.getEntries(at: position)
+          var coreDataLogs: [String] = []
+          for entry in entries {
+            if let logEntry = entry as? OSLogEntryLog, logEntry.subsystem == "com.apple.coredata" {
+              let msg = logEntry.composedMessage
+              if logEntry.level == .error || logEntry.level == .fault || msg.contains("fail") || msg.contains("CloudKit") {
+                coreDataLogs.append("[\(logEntry.date.formatted(date: .omitted, time: .standard))] \(msg)")
+              }
+            }
+          }
+          if !coreDataLogs.isEmpty {
+            finalLog += "\n\n=== 内部CoreDataエラー詳細 ===\n" + coreDataLogs.joined(separator: "\n")
+          }
+        } catch {
+          finalLog += "\n(内部ログ抽出失敗: \(error.localizedDescription))"
+        }
+        
+        self.lastErrorLog = finalLog
+        
+        // CKError.notAuthenticated (rawValue=9) を個別ハンドリング
+        if let ckError = self.extractCKError(error), ckError.code == .notAuthenticated {
+          self.lastSyncStatus = .notAuthenticated
+          Task { await self.logAccountStatus() }
+        } else {
+          self.lastSyncStatus = .error("同期エラー")
+        }
+      }
+      return
+    }
+
     DispatchQueue.main.async {
       if event.endDate == nil {
-        // イベント終了日時がない場合は同期中
         self.lastSyncStatus = .syncing
       } else {
-        if let error = event.error {
-          // 詳細ログ出力
-          self.logCloudKitError(error, eventType: event.type)
-
-          // CKError.notAuthenticated (rawValue=9) を個別ハンドリング
-          // ※ CKErrorDomain code 2 は partialFailure であり notAuthenticated ではない
           if let ckError = self.extractCKError(error), ckError.code == .notAuthenticated {
             print("[ICloudSync] ⚠️ notAuthenticated (CKError rawValue=9): iCloudにサインインしていないか、iCloud Driveが無効です")
             self.lastSyncStatus = .notAuthenticated
@@ -311,39 +345,39 @@ final class ICloudSyncManager: ObservableObject {
     }
   }
 
-  /// 診断用: CloudKitに直接レコードを保存してみて、詳細なエラーを取得する
+  /// OSLogからCoreData/CloudKitの詳細エラーログを抽出する
   @MainActor
   func runDiagnosticSyncTest() async {
-    let container = CKContainer.default()
-    let database = container.privateCloudDatabase
-    
-    // CoreData/SwiftDataが自動生成するレコードタイプ名 (通常は CD_ + エンティティ名)
-    // SwiftDataは BatteryRecord、CoreDataは CDBatteryRecord という名前で作られている可能性あり
-    let recordType = "CD_BatteryRecord"
-    let recordID = CKRecord.ID(recordName: UUID().uuidString)
-    let record = CKRecord(recordType: recordType, recordID: recordID)
-    
-    // CoreData/SwiftDataはフィールド名に CD_ をつける
-    record["CD_deviceName"] = "Diagnostic Test"
-    record["CD_logDate"] = Date()
-    
+    self.lastSyncStatus = .syncing
     do {
-      self.lastSyncStatus = .syncing
-      _ = try await database.save(record)
-      // テスト成功した場合はすぐに消す
-      try? await database.deleteRecord(withID: recordID)
-      self.lastErrorLog = "診断テスト成功: レコードの保存と削除に成功しました。スキーマやアクセス権に問題はありません。"
-      self.lastSyncStatus = .error("診断テスト成功") // UIに表示させるため便宜上errorを使う
-    } catch let error as CKError {
-      var lines: [String] = []
-      lines.append("❌ 診断テスト エラー (CKError)")
-      dumpError(error, into: &lines, indent: "")
-      let logText = lines.joined(separator: "\n")
-      self.lastErrorLog = "[\(Date().formatted())]\n" + logText
-      self.lastSyncStatus = .error("診断テスト失敗")
+      // 直近10分間の現在のプロセスのログを取得
+      let store = try OSLogStore(scope: .currentProcessIdentifier)
+      let position = store.position(timeIntervalSinceEnd: -600)
+      let entries = try store.getEntries(at: position)
+      
+      var logLines: [String] = []
+      for entry in entries {
+        if let logEntry = entry as? OSLogEntryLog {
+          // NSPersistentCloudKitContainerのログを絞り込み
+          if logEntry.subsystem == "com.apple.coredata" {
+            // エラーや警告、または CloudKit 関連のメッセージを含める
+            let msg = logEntry.composedMessage
+            if logEntry.level == .error || logEntry.level == .fault || msg.contains("CloudKit") || msg.contains("error") || msg.contains("fail") {
+              logLines.append("[\(logEntry.date.formatted(date: .omitted, time: .standard))] \(msg)")
+            }
+          }
+        }
+      }
+      
+      if logLines.isEmpty {
+        self.lastErrorLog = "直近10分間のCoreData同期エラーログは見つかりませんでした。\n一度「今すぐ強制同期」を押してエラーを発生させてから、再度このボタンを押してください。"
+      } else {
+        self.lastErrorLog = "=== CoreData 同期ログ ===\n" + logLines.joined(separator: "\n\n")
+      }
+      self.lastSyncStatus = .error("ログ抽出完了") // UI表示用
     } catch {
-      self.lastErrorLog = "診断テスト エラー: \(error.localizedDescription)"
-      self.lastSyncStatus = .error("診断テスト失敗")
+      self.lastErrorLog = "ログ取得エラー: \(error.localizedDescription)"
+      self.lastSyncStatus = .error("ログ抽出失敗")
     }
   }
 
