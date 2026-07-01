@@ -311,6 +311,41 @@ final class ICloudSyncManager: ObservableObject {
     }
   }
 
+  /// 診断用: CloudKitに直接レコードを保存してみて、詳細なエラーを取得する
+  @MainActor
+  func runDiagnosticSyncTest() async {
+    let container = CKContainer.default()
+    let database = container.privateCloudDatabase
+    
+    // CoreData/SwiftDataが自動生成するレコードタイプ名 (通常は CD_ + エンティティ名)
+    let recordType = "CD_BatteryRecord"
+    let recordID = CKRecord.ID(recordName: UUID().uuidString)
+    let record = CKRecord(recordType: recordType, recordID: recordID)
+    
+    // 必須プロパティ（スキーマに合わせて適当な値を入れる）
+    record["deviceName"] = "Diagnostic Test"
+    record["logDate"] = Date()
+    
+    do {
+      self.lastSyncStatus = .syncing
+      _ = try await database.save(record)
+      // テスト成功した場合はすぐに消す
+      try? await database.deleteRecord(withID: recordID)
+      self.lastErrorLog = "診断テスト成功: レコードの保存と削除に成功しました。スキーマやアクセス権に問題はありません。"
+      self.lastSyncStatus = .error("診断テスト成功") // UIに表示させるため便宜上errorを使う
+    } catch let error as CKError {
+      var lines: [String] = []
+      lines.append("❌ 診断テスト エラー (CKError)")
+      dumpError(error, into: &lines, indent: "")
+      let logText = lines.joined(separator: "\n")
+      self.lastErrorLog = "[\(Date().formatted())]\n" + logText
+      self.lastSyncStatus = .error("診断テスト失敗")
+    } catch {
+      self.lastErrorLog = "診断テスト エラー: \(error.localizedDescription)"
+      self.lastSyncStatus = .error("診断テスト失敗")
+    }
+  }
+
   /// SwiftData/CoreDataの保存エラーから競合を抽出し、管理リストに追加する
   @MainActor
   func handleSaveError(_ error: Error) {

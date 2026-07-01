@@ -240,6 +240,24 @@ struct ICloudSettingsContentView: View {
               .font(.caption)
               .foregroundColor(.secondary)
           }
+
+          Divider()
+          
+          Button(action: {
+            Task {
+              await syncManager.runDiagnosticSyncTest()
+            }
+          }) {
+            HStack {
+              Label(
+                "詳細エラー診断テストを実行",
+                systemImage: "stethoscope"
+              )
+              Spacer()
+            }
+          }
+          .foregroundColor(.orange)
+          .padding(.vertical, 4)
         }
         .padding(8)
       }
