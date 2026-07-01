@@ -332,39 +332,81 @@ final class ICloudSyncManager: ObservableObject {
     }
   }
 
-  /// OSLogからCoreData/CloudKitの詳細エラーログを抽出する
+  /// 実際のデータを使ってCloudKitへの直接保存テストを行い、詳細なエラーを取得する
   @MainActor
   func runDiagnosticSyncTest() async {
     self.lastSyncStatus = .syncing
+    
+    guard let store = self.dataStore else {
+      self.lastErrorLog = "データストアにアクセスできません"
+      self.lastSyncStatus = .error("テスト失敗")
+      return
+    }
+    
+    let records = Array(store.recordsDescending.prefix(10))
+    if records.isEmpty {
+      self.lastErrorLog = "ローカルにデータが存在しません"
+      self.lastSyncStatus = .error("テスト終了")
+      return
+    }
+    
+    let container = CKContainer.default()
+    let database = container.privateCloudDatabase
+    let zoneID = CKRecordZone.ID(zoneName: "com.apple.coredata.cloudkit.zone", ownerName: CKCurrentUserDefaultName)
+    
+    var ckRecords: [CKRecord] = []
+    for r in records {
+      // 一時的な固有のレコードIDを生成（既存データとの競合を防ぐため）
+      let recordID = CKRecord.ID(recordName: "DIAG_" + UUID().uuidString, zoneID: zoneID)
+      let ckRecord = CKRecord(recordType: "CD_BatteryRecord", recordID: recordID)
+      
+      // 全フィールドをマッピング
+      ckRecord["CD_recordID"] = r.id.uuidString
+      ckRecord["CD_logDate"] = r.logDate
+      ckRecord["CD_deviceName"] = r.deviceName
+      if let val = r.deviceModelCode { ckRecord["CD_deviceModelCode"] = val }
+      if let val = r.osVersion { ckRecord["CD_osVersion"] = val }
+      if let val = r.storage { ckRecord["CD_storage"] = val }
+      if let val = r.ram { ckRecord["CD_ram"] = val }
+      if let val = r.manufactureDate { ckRecord["CD_manufactureDate"] = val }
+      if let val = r.firstUseDate { ckRecord["CD_firstUseDate"] = val }
+      ckRecord["CD_cycleCount"] = r.cycleCount
+      ckRecord["CD_designCapacity"] = r.designCapacity
+      ckRecord["CD_nominalCapacity"] = r.nominalCapacity
+      ckRecord["CD_rawCapacity"] = r.rawCapacity
+      if let val = r.lowRateCapacity { ckRecord["CD_lowRateCapacity"] = val }
+      if let val = r.deflator { ckRecord["CD_deflator"] = val }
+      if let val = r.settingsDisplayPercent { ckRecord["CD_settingsDisplayPercent"] = val }
+      if let val = r.diagnosticResult { ckRecord["CD_diagnosticResult"] = val }
+      if let val = r.avgTemp { ckRecord["CD_avgTemp"] = val }
+      if let val = r.maxTemp { ckRecord["CD_maxTemp"] = val }
+      if let val = r.minTemp { ckRecord["CD_minTemp"] = val }
+      if let val = r.maxVoltage { ckRecord["CD_maxVoltage"] = val }
+      if let val = r.minVoltage { ckRecord["CD_minVoltage"] = val }
+      if let val = r.minSoC { ckRecord["CD_minSoC"] = val }
+      if let val = r.maxSoC { ckRecord["CD_maxSoC"] = val }
+      ckRecord["CD_createdAt"] = r.createdAt
+      
+      ckRecords.append(ckRecord)
+    }
+    
     do {
-      // 直近10分間の現在のプロセスのログを取得
-      let store = try OSLogStore(scope: .currentProcessIdentifier)
-      let position = store.position(timeIntervalSinceEnd: -600)
-      let entries = try store.getEntries(at: position)
+      _ = try await database.modifyRecords(saving: ckRecords, deleting: [])
+      // 保存に成功したらゴミを残さないように消す
+      let idsToDelete = ckRecords.map { $0.recordID }
+      _ = try? await database.modifyRecords(saving: [], deleting: idsToDelete)
       
-      var logLines: [String] = []
-      for entry in entries {
-        if let logEntry = entry as? OSLogEntryLog {
-          // NSPersistentCloudKitContainerのログを絞り込み
-          if logEntry.subsystem == "com.apple.coredata" {
-            // エラーや警告、または CloudKit 関連のメッセージを含める
-            let msg = logEntry.composedMessage
-            if logEntry.level == .error || logEntry.level == .fault || msg.contains("CloudKit") || msg.contains("error") || msg.contains("fail") {
-              logLines.append("[\(logEntry.date.formatted(date: .omitted, time: .standard))] \(msg)")
-            }
-          }
-        }
-      }
-      
-      if logLines.isEmpty {
-        self.lastErrorLog = "直近10分間のCoreData同期エラーログは見つかりませんでした。\n一度「今すぐ強制同期」を押してエラーを発生させてから、再度このボタンを押してください。"
-      } else {
-        self.lastErrorLog = "=== CoreData 同期ログ ===\n" + logLines.joined(separator: "\n\n")
-      }
-      self.lastSyncStatus = .error("ログ抽出完了") // UI表示用
+      self.lastErrorLog = "✅ 実際のデータ10件の直接保存テスト成功！\n\nスキーマやデータの中身にはCloudKitが拒否するような問題はありませんでした。原因はCoreData自体の同期メカニズムにある可能性があります。"
+      self.lastSyncStatus = .error("テスト成功")
+    } catch let error as CKError {
+      var lines: [String] = []
+      lines.append("❌ 実際のデータ保存テスト エラー (生データ)")
+      dumpError(error, into: &lines, indent: "")
+      self.lastErrorLog = lines.joined(separator: "\n")
+      self.lastSyncStatus = .error("テスト失敗")
     } catch {
-      self.lastErrorLog = "ログ取得エラー: \(error.localizedDescription)"
-      self.lastSyncStatus = .error("ログ抽出失敗")
+      self.lastErrorLog = "エラー: \(error.localizedDescription)"
+      self.lastSyncStatus = .error("テスト失敗")
     }
   }
 
