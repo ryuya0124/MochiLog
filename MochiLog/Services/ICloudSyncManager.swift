@@ -127,26 +127,13 @@ final class ICloudSyncManager: ObservableObject {
       if event.endDate == nil {
         self.lastSyncStatus = .syncing
       } else {
-          if let ckError = self.extractCKError(error), ckError.code == .notAuthenticated {
-            print("[ICloudSync] ⚠️ notAuthenticated (CKError rawValue=9): iCloudにサインインしていないか、iCloud Driveが無効です")
-            self.lastSyncStatus = .notAuthenticated
-            // アカウント状態を非同期で確認してログに追記
-            Task {
-              await self.logAccountStatus()
-            }
-          } else {
-            let friendlyMessage = self.friendlyErrorMessage(error)
-            self.lastSyncStatus = .error(friendlyMessage)
-          }
-        } else {
-          self.lastSyncStatus = .success
-          AppSettings.shared.lastICloudSyncDate = Date().timeIntervalSince1970
+        self.lastSyncStatus = .success
+        AppSettings.shared.lastICloudSyncDate = Date().timeIntervalSince1970
 
-          // インポートイベント完了時（他デバイスからデータを受信した場合）は
-          // ローカルコンテキストを最新状態に更新してUIに反映する
-          if event.type == .import {
-            self.dataStore?.refreshRecords()
-          }
+        // インポートイベント完了時（他デバイスからデータを受信した場合）は
+        // ローカルコンテキストを最新状態に更新してUIに反映する
+        if event.type == .import {
+          self.dataStore?.refreshRecords()
         }
       }
     }
