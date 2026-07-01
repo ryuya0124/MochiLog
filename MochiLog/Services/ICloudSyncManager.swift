@@ -343,19 +343,24 @@ final class ICloudSyncManager: ObservableObject {
       return
     }
     
-    let records = Array(store.recordsDescending.prefix(10))
+    // 最新の10件だけでなく、ローカルの全データ（今回は78件前後のはず）をテストして、
+    // どれがCloudKitに拒否される「爆弾データ」なのかを特定します。
+    let records = Array(store.recordsDescending)
     if records.isEmpty {
       self.lastErrorLog = "ローカルにデータが存在しません"
       self.lastSyncStatus = .error("テスト終了")
       return
     }
     
+    // CloudKitの制限(400件)を超えないように念のため最大399件までに絞る
+    let testRecords = Array(records.prefix(399))
+    
     let container = CKContainer.default()
     let database = container.privateCloudDatabase
     let zoneID = CKRecordZone.ID(zoneName: "com.apple.coredata.cloudkit.zone", ownerName: CKCurrentUserDefaultName)
     
     var ckRecords: [CKRecord] = []
-    for r in records {
+    for r in testRecords {
       // 一時的な固有のレコードIDを生成（既存データとの競合を防ぐため）
       let recordID = CKRecord.ID(recordName: "DIAG_" + UUID().uuidString, zoneID: zoneID)
       let ckRecord = CKRecord(recordType: "CD_BatteryRecord", recordID: recordID)
