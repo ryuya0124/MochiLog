@@ -120,23 +120,32 @@ final class ICloudSyncManager: ObservableObject {
 
   // MARK: - エラー解析ヘルパー
 
-  /// NSErrorの中からCKErrorを掘り起こす（ネストされている場合も対応）
+  /// NSErrorの中からCKErrorを掘り起こす（全階層を再帰探索）
   private func extractCKError(_ error: Error) -> CKError? {
-    if let ck = error as? CKError {
+    let ns = error as NSError
+    if ns.domain == CKErrorDomain, let ck = error as? CKError {
       return ck
     }
-    let ns = error as NSError
-    // underlyingErrorsに格納されている場合
+    if ns.domain == CKErrorDomain {
+      // Swiftブリッジが効かない場合もNSErrorのままCKErrorとして扱う
+      return CKError(_nsError: ns)
+    }
+    // NSUnderlyingErrorKey を再帰探索
     if let underlying = ns.userInfo[NSUnderlyingErrorKey] as? Error {
       return extractCKError(underlying)
+    }
+    // underlyingErrors（複数）を探索
+    if let underlyingErrors = ns.userInfo["NSUnderlyingErrorsKey"] as? [Error] {
+      for e in underlyingErrors {
+        if let found = extractCKError(e) { return found }
+      }
     }
     return nil
   }
 
-  /// CloudKit/CoreDataエラーの詳細をログ出力し、UI表示用の文字列として返す
+  /// CloudKit/CoreDataエラーの全情報をログ出力し、UI表示用の文字列として返す
   @discardableResult
   private func logCloudKitError(_ error: Error, eventType: NSPersistentCloudKitContainer.EventType) -> String {
-    let ns = error as NSError
     let typeLabel: String
     switch eventType {
     case .setup:  typeLabel = "setup"
@@ -145,49 +154,9 @@ final class ICloudSyncManager: ObservableObject {
     @unknown default: typeLabel = "unknown"
     }
 
-    // ログ行を配列に積んでまとめて出力・保存する
     var lines: [String] = []
     lines.append("❌ CloudKitエラー (eventType=\(typeLabel))")
-    lines.append("   domain=\(ns.domain), code=\(ns.code)")
-    lines.append("   \(ns.localizedDescription)")
-
-    // CKError情報を展開
-    if let ckError = extractCKError(error) {
-      lines.append("   CKError.code=\(ckError.code.rawValue) (\(ckError.code))")
-      if let retryAfter = ckError.retryAfterSeconds {
-        lines.append("   retryAfter=\(Int(retryAfter))秒")
-      }
-      if let serverRecord = ckError.serverRecord {
-        lines.append("   serverRecord=\(serverRecord)")
-      }
-      // partialFailure (rawValue=2) の場合はサブエラーを個別に展開
-      if ckError.code == .partialFailure,
-         let partialErrors = ckError.userInfo[CKPartialErrorsByItemIDKey] as? [AnyHashable: Error] {
-        lines.append("   partialFailure: \(partialErrors.count)件のサブエラー")
-        for (itemID, subError) in partialErrors {
-          let sub = subError as NSError
-          lines.append("     - itemID=\(itemID): \(sub.domain) \(sub.code) — \(sub.localizedDescription)")
-        }
-      }
-    }
-
-    // userInfo全体をダンプ（NSError層）
-    if !ns.userInfo.isEmpty {
-      lines.append("   userInfo:")
-      for (key, value) in ns.userInfo {
-        if key == NSUnderlyingErrorKey, let underlyingError = value as? Error {
-          let ue = underlyingError as NSError
-          lines.append("     NSUnderlyingError: \(ue.domain) \(ue.code) — \(ue.localizedDescription)")
-          for (k2, v2) in ue.userInfo {
-            lines.append("       [\(k2)]: \(v2)")
-          }
-        } else if key == CKPartialErrorsByItemIDKey {
-          lines.append("     [CKPartialErrorsByItemIDKey]: (上記参照)")
-        } else {
-          lines.append("     [\(key)]: \(value)")
-        }
-      }
-    }
+    dumpError(error, into: &lines, indent: "")
 
     let logText = lines.joined(separator: "\n")
 
@@ -202,6 +171,93 @@ final class ICloudSyncManager: ObservableObject {
 
     return logText
   }
+
+  /// NSErrorを再帰的にダンプする（partialFailureのサブエラーも完全展開）
+  private func dumpError(_ error: Error, into lines: inout [String], indent: String) {
+    let ns = error as NSError
+    lines.append("\(indent)domain=\(ns.domain), code=\(ns.code)")
+    lines.append("\(indent)desc=\(ns.localizedDescription)")
+
+    // CKErrorDomainならコード名も表示
+    if ns.domain == CKErrorDomain {
+      lines.append("\(indent)CKError: \(ckErrorCodeName(ns.code)) (rawValue=\(ns.code))")
+    }
+
+    // userInfoを全て展開
+    for (key, value) in ns.userInfo {
+      let keyStr = "\(key)"
+      switch keyStr {
+      case NSUnderlyingErrorKey:
+        if let sub = value as? Error {
+          lines.append("\(indent)NSUnderlyingError:")
+          dumpError(sub, into: &lines, indent: indent + "  ")
+        }
+      case CKPartialErrorsByItemIDKey:
+        if let partial = value as? [AnyHashable: Error] {
+          lines.append("\(indent)partialErrors(\(partial.count)件):")
+          for (itemID, subErr) in partial {
+            lines.append("\(indent)  [itemID=\(itemID)]")
+            dumpError(subErr, into: &lines, indent: indent + "    ")
+          }
+        }
+      case "NSUnderlyingErrorsKey":
+        if let subs = value as? [Error] {
+          lines.append("\(indent)NSUnderlyingErrors(\(subs.count)件):")
+          for (i, sub) in subs.enumerated() {
+            lines.append("\(indent)  [\(i)]")
+            dumpError(sub, into: &lines, indent: indent + "    ")
+          }
+        }
+      case NSLocalizedDescriptionKey, "NSLocalizedFailureReason":
+        break // desc と重複するためスキップ
+      default:
+        lines.append("\(indent)[\(keyStr)]: \(value)")
+      }
+    }
+  }
+
+  /// CKErrorコード番号から名前文字列を返す
+  private func ckErrorCodeName(_ code: Int) -> String {
+    switch code {
+    case 1:  return "internalError"
+    case 2:  return "partialFailure"
+    case 3:  return "networkUnavailable"
+    case 4:  return "networkFailure"
+    case 5:  return "badContainer"
+    case 6:  return "serviceUnavailable"
+    case 7:  return "requestRateLimited"
+    case 9:  return "notAuthenticated"
+    case 10: return "permissionFailure"
+    case 11: return "unknownItem"
+    case 12: return "invalidArguments"
+    case 14: return "resultsTruncated"
+    case 15: return "serverRecordChanged"
+    case 16: return "serverRejectedRequest"
+    case 17: return "assetFileNotFound"
+    case 18: return "assetFileModified"
+    case 19: return "incompatibleVersion"
+    case 20: return "constraintViolation"
+    case 21: return "operationCancelled"
+    case 22: return "changeTokenExpired"
+    case 23: return "batchRequestFailed"
+    case 24: return "zoneBusy"
+    case 25: return "badDatabase"
+    case 26: return "quotaExceeded"
+    case 27: return "zoneNotFound"
+    case 28: return "limitExceeded"
+    case 29: return "userDeletedZone"
+    case 30: return "tooManyParticipants"
+    case 31: return "alreadyShared"
+    case 32: return "referenceViolation"
+    case 33: return "managedAccountRestricted"
+    case 34: return "participantMayNeedVerification"
+    case 36: return "serverResponseLost"
+    case 37: return "assetNotAvailable"
+    case 38: return "accountTemporarilyUnavailable"
+    default: return "unknown(\(code))"
+    }
+  }
+
 
   /// CKErrorコードに応じた日本語エラーメッセージを返す
   private func friendlyErrorMessage(_ error: Error) -> String {
