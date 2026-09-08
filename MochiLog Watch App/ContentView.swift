@@ -55,6 +55,7 @@ struct ContentView: View {
         ) {
           DeviceCard(device: device)
         }
+        .accessibilityIdentifier("watch.device.\(device.name)")
         .listRowInsets(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
         .listRowBackground(Color.clear)
       }
@@ -256,6 +257,8 @@ struct DeviceCard: View {
       .foregroundStyle(.tertiary)
     }
     .padding(.vertical, 6)
+    .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+    .contentShape(Rectangle())
   }
 
   /// ヘルスパーセンテージに応じたグラデーション（iOS側と統一）

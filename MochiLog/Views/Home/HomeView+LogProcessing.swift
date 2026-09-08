@@ -688,7 +688,7 @@ extension HomeView {
     )
     dataStore.insert(record)
     do {
-      try dataStore.saveForImport()
+      try dataStore.saveChanges()
       let key = "\(record.logDate.timeIntervalSince1970)_\(actualDeviceName)"
       HomeView.recentlyAddedLogs[key] = Date()
     } catch {

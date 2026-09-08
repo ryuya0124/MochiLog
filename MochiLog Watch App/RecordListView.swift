@@ -18,6 +18,7 @@ struct RecordListView: View {
         NavigationLink(destination: RecordDetailView(record: record)) {
           RecordRow(record: record)
         }
+        .accessibilityIdentifier("watch.record")
         .listRowInsets(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
         .listRowBackground(Color.clear)
       }
@@ -81,10 +82,12 @@ struct RecordRow: View {
         Text(record.localizedDiagnosticResult)
           .font(.caption2)
           .foregroundStyle(.secondary)
-          .lineLimit(1)
+          .fixedSize(horizontal: false, vertical: true)
       }
     }
     .padding(.vertical, 4)
+    .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+    .contentShape(Rectangle())
   }
 
   /// ヘルスステータスのグラデーション（iOS側と統一）

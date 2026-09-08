@@ -23,6 +23,9 @@ final class WatchConnectivityManager: NSObject, ObservableObject {
   // MARK: - プライベートプロパティ
 
   private var session: WCSession?
+  private let deliveryQueue = DispatchQueue(label: "net.ryuya-dev.MochiLog.watch-delivery", qos: .utility)
+  // Accessed only on deliveryQueue. Keep data until activation/installation completes.
+  private var pendingSnapshot: (records: [WatchBatteryRecord], isSampleMode: Bool)?
 
   // MARK: - 初期化
 
@@ -59,54 +62,42 @@ final class WatchConnectivityManager: NSObject, ObservableObject {
   ///   - records: 送信するWatchBatteryRecordの配列
   ///   - isSampleMode: サンプルモードかどうか
   func sendWatchRecordsToWatch(_ records: [WatchBatteryRecord], isSampleMode: Bool = false) {
-    let startTime = CFAbsoluteTimeGetCurrent()
+    deliveryQueue.async {
+      self.pendingSnapshot = (records, isSampleMode)
+      self.deliverPendingSnapshot()
+    }
+  }
 
-    // バックグラウンドキューで実行
-    DispatchQueue.global(qos: .utility).async {
-      guard let session = self.session, session.activationState == .activated else {
-        print("[WatchConnectivity] セッションがアクティブではありません")
-        return
-      }
+  /// Retry the latest snapshot after session activation, installation or language changes.
+  func resendLatestSnapshot() {
+    deliveryQueue.async { self.deliverPendingSnapshot() }
+  }
 
-      guard session.isWatchAppInstalled else {
-        print("[WatchConnectivity] Watchアプリがインストールされていません")
-        return
-      }
-
-      // Codableデータをシリアライズ
-      do {
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-        let data = try encoder.encode(records)
-
-        // Application Contextとして送信（最新の状態を保持）
-        let context: [String: Any] = [
-          "records": data,
-          "syncDate": Date().timeIntervalSince1970,
-          "appLanguage": UserDefaults.standard.string(forKey: L10n.preferenceKey) ?? "system",
-          "isSampleMode": isSampleMode,
-        ]
-
-        try session.updateApplicationContext(context)
-
-        let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
-
-        Task { @MainActor in
-          self.lastSyncDate = Date()
-        }
-
-        print(
-          "[WatchConnectivity] \(records.count)件のレコードをWatchに送信しました（サンプルモード: \(isSampleMode)）- \(String(format: "%.2f", elapsed))ms"
-        )
-      } catch {
-        print("[WatchConnectivity] データのエンコードまたは送信に失敗: \(error)")
-      }
+  private func deliverPendingSnapshot() {
+    guard let snapshot = pendingSnapshot, let session = session,
+      session.activationState == .activated, session.isWatchAppInstalled else { return }
+    do {
+      let encoder = JSONEncoder()
+      encoder.dateEncodingStrategy = .iso8601
+      let data = try encoder.encode(snapshot.records)
+      let context: [String: Any] = [
+        "records": data,
+        "syncDate": Date().timeIntervalSince1970,
+        "appLanguage": UserDefaults.standard.string(forKey: L10n.preferenceKey) ?? "system",
+        "isSampleMode": snapshot.isSampleMode,
+      ]
+      try session.updateApplicationContext(context)
+      Task { @MainActor in self.lastSyncDate = Date() }
+      print("[WatchConnectivity] Sent \(snapshot.records.count) records")
+    } catch {
+      print("[WatchConnectivity] Failed to send records: \(error)")
     }
   }
 
   /// 即座にデータを送信（Watchが到達可能な場合のみ）
   /// - Parameter records: 送信するBatteryRecordの配列
   func sendRecordsImmediately(_ records: [BatteryRecord]) {
+    sendRecordsToWatch(records)
     guard let session = session,
       session.activationState == .activated,
       session.isReachable
@@ -141,7 +132,7 @@ final class WatchConnectivityManager: NSObject, ObservableObject {
           print("[WatchConnectivity] メッセージ送信エラー: \(error)")
           // エラー時はApplication Contextにフォールバック
           Task { @MainActor in
-            self.sendRecordsToWatch(records)
+            self.resendLatestSnapshot()
           }
         })
     } catch {
@@ -169,6 +160,7 @@ extension WatchConnectivityManager: WCSessionDelegate {
         print("[WatchConnectivity] セッションがアクティベートされました")
         isWatchAppInstalled = session.isWatchAppInstalled
         isReachable = session.isReachable
+        resendLatestSnapshot()
       case .inactive:
         print("[WatchConnectivity] セッションが非アクティブです")
       case .notActivated:
@@ -194,6 +186,7 @@ extension WatchConnectivityManager: WCSessionDelegate {
   nonisolated func sessionReachabilityDidChange(_ session: WCSession) {
     Task { @MainActor in
       isReachable = session.isReachable
+      if session.isReachable { resendLatestSnapshot() }
       print("[WatchConnectivity] 到達可能性が変更されました: \(session.isReachable)")
     }
   }
@@ -201,6 +194,7 @@ extension WatchConnectivityManager: WCSessionDelegate {
   nonisolated func sessionWatchStateDidChange(_ session: WCSession) {
     Task { @MainActor in
       isWatchAppInstalled = session.isWatchAppInstalled
+      resendLatestSnapshot()
       print("[WatchConnectivity] Watchアプリのインストール状態が変更されました: \(session.isWatchAppInstalled)")
     }
   }

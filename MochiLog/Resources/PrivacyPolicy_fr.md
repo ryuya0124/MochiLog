@@ -12,7 +12,7 @@ Les journaux et résultats d’analyse importés dans l’App sont utilisés uni
 
 ## 3. Communication à des tiers
 
-L’App ne collectant ni ne détenant d’informations personnelles ou de données des utilisateurs, elle ne communique aucune donnée à des tiers.
+Le développeur ne collecte, ne vend ni ne fournit les relevés des utilisateurs à des tiers via l’App. Les transferts par synchronisation iCloud, vers une Watch ou par partage choisi par l’utilisateur sont décrits à la section 1.
 
 ## 4. Publicité et outils d’analyse
 

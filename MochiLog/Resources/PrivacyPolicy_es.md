@@ -12,7 +12,7 @@ Los registros y resultados de análisis importados en la App se utilizan exclusi
 
 ## 3. Comunicación a terceros
 
-Como la App no recopila ni posee información personal o datos de los usuarios, no proporciona datos a terceros.
+El desarrollador no recopila, vende ni facilita a terceros los registros de los usuarios a través de la App. Las transferencias por sincronización con iCloud, a un Watch o mediante acciones de compartir elegidas por el usuario se describen en la sección 1.
 
 ## 4. Publicidad y herramientas de análisis
 

@@ -12,7 +12,7 @@ In die App importierte Protokolldaten und Analyseergebnisse werden ausschließli
 
 ## 3. Weitergabe an Dritte
 
-Da die App keine personenbezogenen Informationen oder Daten der Nutzer erhebt oder besitzt, gibt sie keine Daten an Dritte weiter.
+Der Entwickler erhebt oder verkauft über die App keine Datensätze der Nutzer und stellt sie Dritten nicht zur Verfügung. Vom Nutzer gewählte Übertragungen über iCloud, an eine Watch oder beim Teilen sind in Abschnitt 1 beschrieben.
 
 ## 4. Werbung und Analysewerkzeuge
 

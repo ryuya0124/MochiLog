@@ -133,6 +133,7 @@ struct MochiLogRootView: View {
     _dataStore = StateObject(wrappedValue: store)
     // CloudKitのインポートイベント完了時に自動refreshできるよう登録
     ICloudSyncManager.shared.register(dataStore: store)
+    WatchConnectivityManager.shared.sendRecordsToWatch(store.recordsDescending)
   }
 
   var body: some View {
@@ -179,7 +180,7 @@ struct MochiLogRootView: View {
     .onReceive(languageSettings.$selection.removeDuplicates().dropFirst()) { _ in
       // @Published emits before didSet persists the new preference.
       Task { @MainActor in
-        WatchConnectivityManager.shared.sendRecordsToWatch(dataStore.recordsDescending)
+        WatchConnectivityManager.shared.resendLatestSnapshot()
       }
     }
     .onReceive(appSettings.$iCloudSyncEnabled.removeDuplicates().dropFirst()) { _ in

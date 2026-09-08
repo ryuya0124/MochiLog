@@ -252,7 +252,7 @@ final class CoreDataStore: DataStore {
     refreshRecords()
   }
 
-  override func saveForImport() throws {
+  override func saveChanges() throws {
     do {
       try viewContext.save()
       refreshRecords()

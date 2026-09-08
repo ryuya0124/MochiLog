@@ -239,6 +239,28 @@ struct ICloudSettingsContentView: View {
               .font(.caption)
               .foregroundColor(.secondary)
           }
+
+          Divider()
+
+          Button(action: {
+            Task {
+              await syncManager.runDiagnosticSyncTest()
+            }
+          }) {
+            HStack {
+              Label(
+                L10n.string("cloud_diagnostic_title", table: "Language"),
+                systemImage: "stethoscope"
+              )
+              Spacer()
+            }
+          }
+          .foregroundColor(.orange)
+          .padding(.vertical, 4)
+          .disabled(syncManager.isRunningDiagnostics)
+          Text(L10n.string("cloud_diagnostic_description", table: "Language"))
+            .font(.caption)
+            .foregroundStyle(.secondary)
         }
         .padding(8)
       }

@@ -6,7 +6,7 @@ import Foundation
 /// iOS 16:  CoreDataStore（CoreData使用）
 class DataStore: ObservableObject {
   // MARK: - Properties
-  
+
   /// 内部的にiCloudが有効化されているかどうか
   @Published private(set) var isICloudEnabled: Bool
 
@@ -26,7 +26,7 @@ class DataStore: ObservableObject {
 
   /// レコードが空かどうか
   var isEmpty: Bool { recordsDescending.isEmpty }
-  
+
   init(isICloudEnabled: Bool = false) {
     self.isICloudEnabled = isICloudEnabled
   }
@@ -68,8 +68,8 @@ class DataStore: ObservableObject {
   }
 
   /// Imports must distinguish a durable save from a rolled-back write.
-  func saveForImport() throws {
-    fatalError("Subclass must override saveForImport()")
+  func saveChanges() throws {
+    fatalError("Subclass must override saveChanges()")
   }
 
   /// 特定デバイスのレコードを取得（日付昇順）

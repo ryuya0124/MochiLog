@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		127EAC3B627051340D274793 /* LanguageAndLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28577E54F8F793BF56F606D7 /* LanguageAndLayoutTests.swift */; };
+		2B72203E33BF09F62F1AC558 /* WatchLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBF473DDFC0446BB61C4CE9 /* WatchLayoutTests.swift */; };
+		421CD325C94FD06F30D0F2C0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB77B6B1AD1AB85D5C9A4320 /* Foundation.framework */; };
 		4E0CF2BE2EFC23F300307800 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 4E0CF2BD2EFC23F300307800 /* ZIPFoundation */; };
 		4E15D8EB2F024BC000D6C3FE /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 4E15D8EA2F024BBF00D6C3FE /* LICENSE */; };
 		4E2E3D712F41D3910041E83C /* Yams in Frameworks */ = {isa = PBXBuildFile; productRef = 4E2E3D702F41D3910041E83C /* Yams */; };
@@ -18,6 +20,13 @@
 
 /* Begin PBXContainerItemProxy section */
 		4EFB42BC2F2CF461001F2930 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4E0CF1372EF9542800307800 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4EFB3AB72F2CD92B001F2930;
+			remoteInfo = "MochiLog Watch App";
+		};
+		8D0CC62613013A22A7A638C1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4E0CF1372EF9542800307800 /* Project object */;
 			proxyType = 1;
@@ -60,11 +69,14 @@
 /* Begin PBXFileReference section */
 		129EAD9F001E904356A4AC73 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		28577E54F8F793BF56F606D7 /* LanguageAndLayoutTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LanguageAndLayoutTests.swift; sourceTree = "<group>"; };
+		2CBF473DDFC0446BB61C4CE9 /* WatchLayoutTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WatchLayoutTests.swift; sourceTree = "<group>"; };
 		4E0CF13F2EF9542800307800 /* MochiLog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MochiLog.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4E15D8EA2F024BBF00D6C3FE /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		4EFB3AB82F2CD92B001F2930 /* MochiLog Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MochiLog Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4EFB3E562F2CE3CA001F2930 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = System/Library/Frameworks/WatchConnectivity.framework; sourceTree = SDKROOT; };
 		D8E24672B82B6C4854EA9BCE /* MochiLogUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MochiLogUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F51ED240CA3B1C0EF9D69525 /* MochiLogWatchUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MochiLogWatchUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FB77B6B1AD1AB85D5C9A4320 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS11.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -103,6 +115,14 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		27F86AEEF952CD58E4B4B04F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				421CD325C94FD06F30D0F2C0 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4E0CF13C2EF9542800307800 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -149,6 +169,7 @@
 				4E15D8EA2F024BBF00D6C3FE /* LICENSE */,
 				4EFB3E552F2CE3CA001F2930 /* Frameworks */,
 				B54E76302BA49A688379A442 /* UITests */,
+				E8CC1BDEA89997DD7CD05E51 /* WatchUITests */,
 			);
 			sourceTree = "<group>";
 		};
@@ -158,6 +179,7 @@
 				4E0CF13F2EF9542800307800 /* MochiLog.app */,
 				4EFB3AB82F2CD92B001F2930 /* MochiLog Watch App.app */,
 				D8E24672B82B6C4854EA9BCE /* MochiLogUITests.xctest */,
+				F51ED240CA3B1C0EF9D69525 /* MochiLogWatchUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -167,6 +189,7 @@
 			children = (
 				4EFB3E562F2CE3CA001F2930 /* WatchConnectivity.framework */,
 				1487A6F0404C725155E93D3C /* iOS */,
+				B6093CD6622069D6FD218076 /* watchOS */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -178,6 +201,23 @@
 			);
 			name = UITests;
 			path = UITests;
+			sourceTree = "<group>";
+		};
+		B6093CD6622069D6FD218076 /* watchOS */ = {
+			isa = PBXGroup;
+			children = (
+				FB77B6B1AD1AB85D5C9A4320 /* Foundation.framework */,
+			);
+			name = watchOS;
+			sourceTree = "<group>";
+		};
+		E8CC1BDEA89997DD7CD05E51 /* WatchUITests */ = {
+			isa = PBXGroup;
+			children = (
+				2CBF473DDFC0446BB61C4CE9 /* WatchLayoutTests.swift */,
+			);
+			name = WatchUITests;
+			path = WatchUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -231,6 +271,24 @@
 			productName = "MochiLog Watch App";
 			productReference = 4EFB3AB82F2CD92B001F2930 /* MochiLog Watch App.app */;
 			productType = "com.apple.product-type.application";
+		};
+		5C4282754B1AB116B058EA58 /* MochiLogWatchUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 87F09FF56884B9FA7383A2BB /* Build configuration list for PBXNativeTarget "MochiLogWatchUITests" */;
+			buildPhases = (
+				820204C9C4A8FC35FB30C670 /* Sources */,
+				27F86AEEF952CD58E4B4B04F /* Frameworks */,
+				22C20EAAAE9ACE21552F4003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E089988FF5542F886750959E /* PBXTargetDependency */,
+			);
+			name = MochiLogWatchUITests;
+			productName = MochiLogWatchUITests;
+			productReference = F51ED240CA3B1C0EF9D69525 /* MochiLogWatchUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 		C819A3180A9451A2CD7D5371 /* MochiLogUITests */ = {
 			isa = PBXNativeTarget;
@@ -296,11 +354,19 @@
 				4E0CF13E2EF9542800307800 /* MochiLog */,
 				4EFB3AB72F2CD92B001F2930 /* MochiLog Watch App */,
 				C819A3180A9451A2CD7D5371 /* MochiLogUITests */,
+				5C4282754B1AB116B058EA58 /* MochiLogWatchUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		22C20EAAAE9ACE21552F4003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4E0CF13D2EF9542800307800 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -340,6 +406,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		820204C9C4A8FC35FB30C670 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2B72203E33BF09F62F1AC558 /* WatchLayoutTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8E491C31DB5133988F63B144 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -362,19 +436,40 @@
 			target = 4EFB3AB72F2CD92B001F2930 /* MochiLog Watch App */;
 			targetProxy = 4EFB42BC2F2CF461001F2930 /* PBXContainerItemProxy */;
 		};
+		E089988FF5542F886750959E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "MochiLog Watch App";
+			target = 4EFB3AB72F2CD92B001F2930 /* MochiLog Watch App */;
+			targetProxy = 8D0CC62613013A22A7A638C1 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		0C3FF5B228EF0DF7CCFE6354 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "net.ryuya-dev.MochiLog.WatchUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = "MochiLog Watch App";
+				WATCHOS_DEPLOYMENT_TARGET = 9.0;
+			};
+			name = Debug;
+		};
 		4E0CF14E2EF9542A00307800 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APS_ENVIRONMENT = development;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = MochiLog/Resources/MochiLog.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 81;
+				CURRENT_PROJECT_VERSION = 96;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = FZ35ZF3CZV;
@@ -398,6 +493,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportsDocumentBrowser = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
@@ -430,12 +526,13 @@
 		4E0CF14F2EF9542A00307800 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APS_ENVIRONMENT = production;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = MochiLog/Resources/MochiLog.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Distribution: ryuya watanabe (FZ35ZF3CZV)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 81;
+				CURRENT_PROJECT_VERSION = 96;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = FZ35ZF3CZV;
@@ -459,6 +556,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportsDocumentBrowser = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
@@ -689,6 +787,21 @@
 			};
 			name = Release;
 		};
+		A1621B9C0A098DDDA1AE5CD5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "net.ryuya-dev.MochiLog.WatchUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = "MochiLog Watch App";
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 9.0;
+			};
+			name = Release;
+		};
 		EACA4EEE2134B6D7E8559E9F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -757,6 +870,15 @@
 			buildConfigurations = (
 				4EFB3AC12F2CD92C001F2930 /* Debug */,
 				4EFB3AC22F2CD92C001F2930 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		87F09FF56884B9FA7383A2BB /* Build configuration list for PBXNativeTarget "MochiLogWatchUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1621B9C0A098DDDA1AE5CD5 /* Release */,
+				0C3FF5B228EF0DF7CCFE6354 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

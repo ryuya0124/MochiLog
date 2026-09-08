@@ -48,7 +48,50 @@ for path in paths:
                 errors.append(f'{path.name} / {key} / {language}: placeholder mismatch {value!r} vs {loc["en"]["stringUnit"]["value"]!r}')
             if not value and loc['en']['stringUnit']['value']:
                 errors.append(f'{path.name} / {key} / {language}: empty translation')
+# Verify that literal calls in production code actually point at catalog entries.
+# The language-coverage check alone cannot catch a misspelled lookup key.
+catalog_keys = {path: set(json.loads(path.read_text(encoding='utf-8'))['strings']) for path in paths}
+checked_calls = 0
+for directory in ['MochiLog', 'MochiLog Watch App', 'Shared']:
+    for swift in (root / directory).rglob('*.swift'):
+        source = swift.read_text(encoding='utf-8')
+        for match in re.finditer(r'L10n\.(?:string|text)\(', source):
+            start = match.end()
+            depth, quoted, escaped = 1, False, False
+            end = start
+            while end < len(source) and depth:
+                char = source[end]
+                if quoted:
+                    if escaped:
+                        escaped = False
+                    elif char == '\\':
+                        escaped = True
+                    elif char == '"':
+                        quoted = False
+                elif char == '"':
+                    quoted = True
+                elif char == '(':
+                    depth += 1
+                elif char == ')':
+                    depth -= 1
+                end += 1
+            arguments = source[start:end - 1]
+            literal = re.match(r'\s*("(?:\\.|[^"\\])*")', arguments)
+            if not literal or '\\(' in literal.group(1):
+                continue
+            key = json.loads(literal.group(1))
+            table_match = re.search(r'\btable:\s*"([^"]+)"', arguments)
+            table = table_match.group(1) if table_match else 'Localizable'
+            if directory == 'Shared':
+                candidates = paths
+            else:
+                candidates = [path for path in paths if path.relative_to(root).parts[0] in [directory, 'Shared']]
+            available = set().union(*(catalog_keys[path] for path in candidates if path.stem == table))
+            checked_calls += 1
+            if key not in available:
+                line = source.count('\n', 0, match.start()) + 1
+                errors.append(f'{swift.relative_to(root)}:{line}: missing lookup {table}/{key}')
 if errors:
     print('\n'.join(errors))
     raise SystemExit(f'FAIL: {len(errors)} errors')
-print(f'PASS: {count} strings across {len(paths)} catalogs, all 8 languages and placeholders checked')
+print(f'PASS: {count} strings across {len(paths)} catalogs, all 8 languages and placeholders checked; {checked_calls} literal lookups verified')

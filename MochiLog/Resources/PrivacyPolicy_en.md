@@ -12,7 +12,7 @@ Log data and analysis results imported into the App are used solely for the purp
 
 ## 3. Provision to Third Parties
 
-As the App does not collect or possess user personal information or data, it does not provide any data to third parties.
+The developer does not collect, sell, or provide users’ records to third parties through the App. Transfers through iCloud sync, to a Watch, or through sharing selected by the user are described in section 1.
 
 ## 4. Advertising and Analytics Tools
 

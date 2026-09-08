@@ -13,9 +13,23 @@ final class LanguageAndLayoutTests: XCTestCase {
     ]
   }
 
+  override func tearDownWithError() throws {
+    XCUIDevice.shared.orientation = .portrait
+    app.terminate()
+  }
+
   private func openLanguage() {
     if app.buttons["language.en"].exists { return }
-    app.tabBars.buttons.element(boundBy: 2).tap()
+    if app.tabBars.buttons.count >= 3 {
+      app.tabBars.buttons.element(boundBy: 2).tap()
+    } else {
+      // iPad's floating tab bar exposes cells in iOS 27.
+      let settings = app.descendants(matching: .any).matching(
+        NSPredicate(format: "label == %@ OR label == %@", "Settings", "Einstellungen")
+      ).firstMatch
+      XCTAssertTrue(settings.waitForExistence(timeout: 5), app.debugDescription)
+      settings.tap()
+    }
     let link = app.buttons["settings.language"]
     for _ in 0..<8 {
       if link.exists && link.isHittable { break }
@@ -27,7 +41,7 @@ final class LanguageAndLayoutTests: XCTestCase {
   }
 
   private func screenshot(_ name: String) {
-    let attachment = XCTAttachment(screenshot: app.screenshot())
+    let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
     attachment.name = name
     attachment.lifetime = .keepAlways
     add(attachment)
@@ -71,6 +85,13 @@ final class LanguageAndLayoutTests: XCTestCase {
     openLanguage()
     screenshot("Language settings at largest text size")
     XCUIDevice.shared.orientation = .landscapeLeft
+    let rotated = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+      self.app.frame.width > self.app.frame.height
+    }, object: nil)
+    XCTAssertEqual(XCTWaiter.wait(for: [rotated], timeout: 5), .completed,
+      "The app must actually rotate")
+    // Wait for the system rotation animation before capturing the whole display.
+    Thread.sleep(forTimeInterval: 1)
     XCTAssertTrue(app.buttons["language.en"].waitForExistence(timeout: 5))
     screenshot("Language settings in landscape")
     XCUIDevice.shared.orientation = .portrait
