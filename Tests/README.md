@@ -14,3 +14,11 @@ xcodebuild -project MochiLog.xcodeproj -scheme MochiLog -configuration Debug \
 On an isolated simulator with iCloud disabled, import the valid fixture with three different dates, a fourth copy with the first date, and the invalid fixture. Expect 3 saved, 1 duplicate, and 1 error. Repeat on a compact phone, iPad mini, a large iPad and with accessibility text sizes. Relaunch and verify the saved records persist. Test both a terminated app and an already running app.
 
 The containing app uses `UISceneDelegate` for both `connectionOptions.urlContexts` and `scene(_:openURLContexts:)`. No share extension is involved. Simulator `openurl` exercises delivery to the main app; a physical-device check from Files and Settings Analytics is still needed to verify each source app's multi-selection behavior.
+
+## Launch after upgrading from the SwiftUI app lifecycle
+
+Keep `MochiLog Main Scene` and its UIKit delegate declared in `Info.plist`, with the same configuration name returned by the app delegate. An empty scene manifest can restore an older installation's `SwiftUI.AppSceneDelegate` even though the app now starts through UIKit, causing `Fatal error: Missing AppGraph` during scene state restoration.
+
+To check this migration, launch a version using the former SwiftUI `App` lifecycle, then install the current app over it without uninstalling or clearing its data. Verify the home screen and existing records load, then terminate and relaunch. Also background and foreground the app and check that URL imports still reach the queue. A clean install alone does not exercise the saved-session migration.
+
+Verified on a connected iPhone 17: the failing session archive referenced `SwiftUI.AppSceneDelegate`; after installing the named UIKit configuration, the same session referenced `MochiLog Main Scene`. Launching through Xcode reached `HomeView.onAppear` and loaded 158 existing records without the AppGraph failure.

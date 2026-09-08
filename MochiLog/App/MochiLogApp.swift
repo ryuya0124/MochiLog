@@ -21,7 +21,11 @@ final class MochiLogApp: UIResponder, UIApplicationDelegate {
     configurationForConnecting connectingSceneSession: UISceneSession,
     options: UIScene.ConnectionOptions
   ) -> UISceneConfiguration {
-    let configuration = UISceneConfiguration(name: nil, sessionRole: connectingSceneSession.role)
+    // Keep the name in sync with Info.plist so UIKit can validate restored sessions
+    // against our current lifecycle instead of restoring SwiftUI.AppSceneDelegate.
+    let configuration = UISceneConfiguration(
+      name: "MochiLog Main Scene", sessionRole: connectingSceneSession.role)
+    configuration.sceneClass = UIWindowScene.self
     configuration.delegateClass = MochiLogSceneDelegate.self
     return configuration
   }
