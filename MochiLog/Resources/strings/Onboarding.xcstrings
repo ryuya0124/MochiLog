@@ -1,3219 +1,3239 @@
 {
-  "sourceLanguage": "ja",
-  "strings": {
-    "open_analytics_settings": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open Settings App"
+  "sourceLanguage" : "ja",
+  "strings" : {
+    "discord_announcement_card_subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Community beitreten"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "設定アプリを開く"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Join our community"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "打开“设置”"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Únete a la comunidad"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "開啟「設定」"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rejoignez la communauté"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "설정 앱 열기"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "コミュニティに参加"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Abrir Ajustes"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "커뮤니티 참여"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ouvrir Réglages"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "加入社区"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Einstellungen öffnen"
-          }
-        }
-      }
-    },
-    "pip_instruction": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Use Picture-in-Picture to keep watching"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ピクチャ・イン・ピクチャで視聴を続けられます"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "使用画中画继续观看"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "使用子母畫面繼續觀看"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "화면 속 화면으로 계속 시청"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Continúa viendo con imagen dentro de imagen"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Continuez avec l’image dans l’image"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mit Bild-in-Bild weiter ansehen"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "加入社群"
           }
         }
       }
     },
-    "pip_instruction_detail": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The video will continue playing in a floating window.\n*Please ensure Picture in Picture is enabled in Settings > General > Picture in Picture."
+    "discord_announcement_card_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Discord-Server"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "動画はフローティングウィンドウで再生され続けます。\n※iPhone/iPadの設定 > 一般 > ピクチャ・イン・ピクチャ をオンにしてください。"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Discord Server"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "视频将继续在浮动窗口中播放。\n请在“设置”>“通用”>“画中画”中启用此功能。"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servidor de Discord"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "影片會繼續在浮動視窗播放。\n請在「設定」>「一般」>「子母畫面」中啟用此功能。"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serveur Discord"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "동영상은 작은 창에서 계속 재생됩니다.\n설정 > 일반 > 화면 속 화면을 켜주세요."
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Discordサーバー"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "El vídeo seguirá en una ventana flotante.\nActiva la función en Ajustes > General > Imagen dentro de imagen."
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Discord 서버"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "La vidéo continuera dans une fenêtre flottante.\nActivez Réglages > Général > Image dans l’image."
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Discord服务器"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Das Video läuft in einem schwebenden Fenster weiter.\nAktiviere Einstellungen > Allgemein > Bild-in-Bild."
-          }
-        }
-      }
-    },
-    "pip_note": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Note: Due to iOS limitations, PIP may occasionally fail to display. Restarting the app or device may resolve this issue."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "※iOSの不具合により、PIPが稀に表示されない場合があります。\nアプリや端末の再起動で直る場合があります。"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "由于iOS问题，画中画有时可能不显示。重新启动应用或设备可能有帮助。"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "由於iOS問題，子母畫面有時可能無法顯示。重新啟動App或裝置可能有幫助。"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iOS 문제로 화면 속 화면이 나타나지 않을 수 있습니다. 앱이나 기기를 다시 실행해 보세요."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Por limitaciones de iOS, la ventana flotante puede no aparecer. Reiniciar la app o el dispositivo puede resolverlo."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "L’image dans l’image peut parfois ne pas apparaître à cause d’iOS. Redémarrer l’app ou l’appareil peut aider."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aufgrund von iOS-Problemen erscheint Bild-in-Bild manchmal nicht. Ein Neustart der App oder des Geräts kann helfen."
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Discord伺服器"
           }
         }
       }
     },
-    "pip_step_analytics_data": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Analytics Data"
+    "discord_announcement_close_button" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schließen"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "解析データ"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "分析数据"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerrar"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "分析資料"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fermer"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "분석 데이터"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "閉じる"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Datos de análisis"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "닫기"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Données d’analyse"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Analysedaten"
-          }
-        }
-      }
-    },
-    "pip_step_analytics_improvements": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Analytics & Improvements"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "解析と改善"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "分析与改进"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "分析與改進"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "분석 및 향상"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Análisis y mejoras"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Analyse et améliorations"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Analyse & Verbesserungen"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
           }
         }
       }
     },
-    "pip_step_button_at_bottom": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Button is at the bottom"
+    "discord_announcement_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teile deine Ideen und Fehlerberichte direkt mit uns"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ボタンは下の方にあります"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share your ideas and bug reports with us directly"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "按钮在页面下方"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comparte tus ideas e informes de errores con nosotros"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "按鈕在頁面下方"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partagez directement vos idées et signalements de bugs"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "버튼은 아래쪽에 있습니다"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ご要望や不具合などを直接共有できる場所を用意しました"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "El botón está al final"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "아이디어와 오류를 직접 공유해주세요"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Le bouton est en bas"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "直接向我们分享建议和问题报告"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Die Taste befindet sich unten"
-          }
-        }
-      }
-    },
-    "pip_step_choose_larger_file": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Short files lack battery data"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "短いファイルには情報が入っていません"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "较短的日志不含电池信息"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "較短的日誌不含電池資訊"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "짧은 로그에는 배터리 정보가 없습니다"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Los registros cortos no incluyen datos de batería"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Les journaux courts ne contiennent pas de données de batterie"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kurze Protokolle enthalten keine Batteriedaten"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "直接向我們分享建議與問題回報"
           }
         }
       }
     },
-    "pip_step_go_to_settings_top": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Go to Settings Top"
+    "discord_announcement_feature_community" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mit anderen Nutzern austauschen"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "設定のトップに移動"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connect with other users"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "返回“设置”首页"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conecta con otros usuarios"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "返回「設定」首頁"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échangez avec les autres utilisateurs"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "설정 첫 화면으로 이동"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "他のユーザーとつながる"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ir al inicio de Ajustes"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다른 사용자와 소통"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Revenir à l’accueil de Réglages"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "与其他用户交流"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zur Startseite der Einstellungen"
-          }
-        }
-      }
-    },
-    "pip_step_if_not_listed": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "If not listed, check 'More'"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "リストにない場合は「その他」から"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "如果没有显示，请查看“更多”"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "如果沒有顯示，請查看「更多」"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "목록에 없으면 더 보기를 확인하세요"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Si no aparece, busca en Más"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sinon, consultez Plus"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Falls nicht aufgeführt, unter Mehr nachsehen"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "與其他使用者交流"
           }
         }
       }
     },
-    "pip_step_log_selection": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Choose the Right File"
+    "discord_announcement_feature_fast" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schnellere Reaktion auf Fehlerberichte"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "正しいファイルを選択"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Faster response to bug reports"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "选择正确的文件"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Respuesta más rápida a errores"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "選擇正確的檔案"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réponse plus rapide aux bugs"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "올바른 파일 선택"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不具合報告への迅速な対応"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Elige el archivo correcto"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "빠른 오류 보고 대응"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Choisissez le bon fichier"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更快处理问题报告"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Die richtige Datei auswählen"
-          }
-        }
-      }
-    },
-    "pip_step_log_timing": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Logs Generated at 9:00 AM"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ログは毎日9:00に生成"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "日志每天9:00生成"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "日誌每天9:00產生"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "로그는 매일 오전 9시에 생성됩니다"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Los registros se generan a las 9:00"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Journaux générés à 9 h"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Protokolle werden um 9 Uhr erstellt"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更快處理問題回報"
           }
         }
       }
     },
-    "pip_step_menu_select": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Select from menu"
+    "discord_announcement_feature_ideas" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Funktionswünsche und Ideen teilen"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "メニューから選択"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share feature requests and ideas"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "从菜单中选择"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comparte funciones e ideas"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "從選單中選擇"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partagez vos idées de fonctionnalités"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "메뉴에서 선택"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "機能要望やアイデアを共有"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Seleccionar en el menú"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기능 요청과 아이디어 공유"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Choisir dans le menu"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分享功能建议和想法"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Im Menü auswählen"
-          }
-        }
-      }
-    },
-    "pip_step_open_settings": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open Settings"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "設定を開く"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "打开设置"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "開啟設定"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "설정 열기"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Abrir Ajustes"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ouvrir Réglages"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Einstellungen öffnen"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分享功能建議與想法"
           }
         }
       }
     },
-    "pip_step_privacy_security": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Privacy & Security"
+    "discord_announcement_join_button" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Discord öffnen"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "プライバシーとセキュリティ"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Discord"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "隐私与安全性"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir Discord"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "隱私權與安全性"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrir Discord"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "개인정보 보호 및 보안"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Discordを開く"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Privacidad y seguridad"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Discord 열기"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Confidentialité et sécurité"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开Discord"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Datenschutz & Sicherheit"
-          }
-        }
-      }
-    },
-    "pip_step_select_log": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Select Analytics-202x..."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Analytics-202x...を選択"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "选择Analytics-202x…"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "選擇Analytics-202x…"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Analytics-202x… 선택"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Selecciona Analytics-202x…"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sélectionnez Analytics-202x…"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Analytics-202x… auswählen"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開啟Discord"
           }
         }
       }
     },
-    "pip_step_select_mochilog": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Select MochiLog"
+    "discord_announcement_nav_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neuigkeiten"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "MochiLogを選択"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "选择MochiLog"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Novedades"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "選擇MochiLog"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualités"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "MochiLog 선택"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お知らせ"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Selecciona MochiLog"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "안내"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sélectionnez MochiLog"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通知"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "MochiLog auswählen"
-          }
-        }
-      }
-    },
-    "pip_step_settings_app": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Settings App"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "設定アプリ"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "设置应用"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "設定App"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "설정 앱"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "App Ajustes"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "App Réglages"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Einstellungen-App"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通知"
           }
         }
       }
     },
-    "pip_step_share_analytics": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Share iPhone/iPad Analytics"
+    "discord_announcement_note" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Teilnahme ist freiwillig. Den Link findest du jederzeit in den Einstellungen."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iPhone/iPad解析を共有"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Participation is optional. You can always find the link in Settings."
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "共享iPhone/iPad分析"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La participación es opcional. Encontrarás el enlace en Ajustes cuando quieras."
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "分享iPhone/iPad分析"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La participation est facultative. Le lien reste disponible dans les réglages."
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iPhone/iPad 분석 공유"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "参加は任意です。設定からいつでもアクセスできます。"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Compartir análisis del iPhone/iPad"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "참여는 선택 사항입니다. 설정에서 언제든지 링크를 찾을 수 있습니다."
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Partager les analyses iPhone/iPad"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是否加入由您决定。您随时可以在设置中找到链接。"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iPhone-/iPad-Analyse teilen"
-          }
-        }
-      }
-    },
-    "pip_step_share_on": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Share Analytics: ON"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "解析を共有: ON"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "开启共享分析"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "開啟分享分析"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "분석 공유 켜기"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Compartir análisis: activado"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Partager les analyses : activé"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Analyse teilen: Ein"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是否加入由您決定。您隨時可以在設定中找到連結。"
           }
         }
       }
     },
-    "pip_step_tap_back_button": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tap back button (top left)"
+    "discord_announcement_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wir haben einen Discord-Server erstellt!"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "左上の「戻る」をタップ"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We Created a Discord Server!"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "点击左上角的返回按钮"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Creamos un servidor de Discord!"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "點選左上角的返回按鈕"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nous avons créé un serveur Discord !"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "왼쪽 위 뒤로 버튼 탭"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Discordサーバーを作りました"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pulsa Atrás arriba a la izquierda"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Discord 서버를 만들었어요!"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Touchez Retour en haut à gauche"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "我们创建了Discord服务器！"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Oben links auf Zurück tippen"
-          }
-        }
-      }
-    },
-    "pip_step_wait_next_day": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wait until the next day"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "次の日まで待ってください"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "请等到第二天"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "請等到隔天"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "다음 날까지 기다려주세요"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Espera hasta el día siguiente"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Attendez le lendemain"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bis zum nächsten Tag warten"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "我們建立了Discord伺服器！"
           }
         }
       }
     },
-    "try_with_video": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Follow Video Guide"
+    "open_analytics_settings" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen öffnen"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "動画で確認しながら操作する"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Settings App"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "跟随视频指南操作"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir Ajustes"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "跟隨影片教學操作"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrir Réglages"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "동영상 보며 따라 하기"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定アプリを開く"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Seguir la guía en vídeo"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정 앱 열기"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Suivre le guide vidéo"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开“设置”"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Der Videoanleitung folgen"
-          }
-        }
-      }
-    },
-    "tutorial": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tutorial"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "チュートリアル"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "教程"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "教學"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "튜토리얼"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tutorial"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tutoriel"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Anleitung"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開啟「設定」"
           }
         }
       }
     },
-    "tutorial_analytics_improvements_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Select 'Analytics & Improvements' from the menu.\nThe button is located at the bottom of the screen."
+    "pip_instruction" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mit Bild-in-Bild weiter ansehen"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "メニューから「解析と改善」を選択します。\nボタンは画面の下の方にあります。"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use Picture-in-Picture to keep watching"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "从菜单中选择“分析与改进”。按钮位于页面下方。"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continúa viendo con imagen dentro de imagen"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "從選單中選擇「分析與改進」。按鈕位於頁面下方。"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuez avec l’image dans l’image"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "메뉴에서 분석 및 향상을 선택하세요. 버튼은 화면 아래쪽에 있습니다."
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ピクチャ・イン・ピクチャで視聴を続けられます"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Selecciona Análisis y mejoras en el menú. El botón está al final de la pantalla."
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "화면 속 화면으로 계속 시청"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sélectionnez Analyse et améliorations dans le menu. Le bouton se trouve en bas de l’écran."
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用画中画继续观看"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wähle Analyse & Verbesserungen im Menü. Die Taste befindet sich unten auf dem Bildschirm."
-          }
-        }
-      }
-    },
-    "tutorial_analytics_improvements_title": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Analytics & Improvements"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "解析と改善"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "分析与改进"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "分析與改進"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "분석 및 향상"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Análisis y mejoras"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Analyse et améliorations"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Analyse & Verbesserungen"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用子母畫面繼續觀看"
           }
         }
       }
     },
-    "tutorial_complete_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "You're all set!\nTrack your battery health with MochiLog."
+    "pip_instruction_detail" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Video läuft in einem schwebenden Fenster weiter.\nAktiviere Einstellungen > Allgemein > Bild-in-Bild."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "準備完了です！\nMochiLogでバッテリーの状態を詳しく分析しましょう。"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The video will continue playing in a floating window.\n*Please ensure Picture in Picture is enabled in Settings > General > Picture in Picture."
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "准备就绪！\n使用MochiLog详细了解电池状态。"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El vídeo seguirá en una ventana flotante.\nActiva la función en Ajustes > General > Imagen dentro de imagen."
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "準備完成！\n使用MochiLog詳細了解電池狀態。"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La vidéo continuera dans une fenêtre flottante.\nActivez Réglages > Général > Image dans l’image."
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "준비 완료!\nMochiLog로 배터리 상태를 자세히 확인하세요."
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "動画はフローティングウィンドウで再生され続けます。\n※iPhone/iPadの設定 > 一般 > ピクチャ・イン・ピクチャ をオンにしてください。"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¡Todo listo!\nConsulta el estado de la batería con MochiLog."
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "동영상은 작은 창에서 계속 재생됩니다.\n설정 > 일반 > 화면 속 화면을 켜주세요."
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tout est prêt !\nSuivez l’état de votre batterie avec MochiLog."
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "视频将继续在浮动窗口中播放。\n请在“设置”>“通用”>“画中画”中启用此功能。"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Alles bereit!\nVerfolge deinen Batteriezustand mit MochiLog."
-          }
-        }
-      }
-    },
-    "tutorial_complete_title": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Done!"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "完了！"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "完成！"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "完成！"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "완료!"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¡Listo!"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Terminé !"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fertig!"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "影片會繼續在浮動視窗播放。\n請在「設定」>「一般」>「子母畫面」中啟用此功能。"
           }
         }
       }
     },
-    "tutorial_enable_analytics_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open Settings > Privacy & Security > Analytics & Improvements"
+    "pip_note" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aufgrund von iOS-Problemen erscheint Bild-in-Bild manchmal nicht. Ein Neustart der App oder des Geräts kann helfen."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "設定 > プライバシーとセキュリティ > 解析と改善\nを開きます。"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Note: Due to iOS limitations, PIP may occasionally fail to display. Restarting the app or device may resolve this issue."
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "打开“设置”>“隐私与安全性”>“分析与改进”"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por limitaciones de iOS, la ventana flotante puede no aparecer. Reiniciar la app o el dispositivo puede resolverlo."
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "開啟「設定」>「隱私權與安全性」>「分析與改進」"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’image dans l’image peut parfois ne pas apparaître à cause d’iOS. Redémarrer l’app ou l’appareil peut aider."
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "설정 > 개인정보 보호 및 보안 > 분석 및 향상을 여세요"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "※iOSの不具合により、PIPが稀に表示されない場合があります。\nアプリや端末の再起動で直る場合があります。"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Abre Ajustes > Privacidad y seguridad > Análisis y mejoras"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iOS 문제로 화면 속 화면이 나타나지 않을 수 있습니다. 앱이나 기기를 다시 실행해 보세요."
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ouvrez Réglages > Confidentialité et sécurité > Analyse et améliorations"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "由于iOS问题，画中画有时可能不显示。重新启动应用或设备可能有帮助。"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Öffne Einstellungen > Datenschutz & Sicherheit > Analyse & Verbesserungen"
-          }
-        }
-      }
-    },
-    "tutorial_enable_analytics_title": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open Settings"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "設定を開く"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "打开设置"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "開啟設定"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "설정 열기"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Abrir Ajustes"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ouvrir Réglages"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Einstellungen öffnen"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "由於iOS問題，子母畫面有時可能無法顯示。重新啟動App或裝置可能有幫助。"
           }
         }
       }
     },
-    "tutorial_find_log_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "In Analytics Data, find the latest file starting with\n'Analytics-yyyy-mm-dd'"
+    "pip_step_analytics_data" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analysedaten"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "解析データ内で\n「Analytics-yyyy-mm-dd」\nで始まる最新のファイルを探します。"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analytics Data"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "在分析数据中查找以“Analytics-yyyy-mm-dd”开头的最新文件。"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datos de análisis"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "在分析資料中尋找以「Analytics-yyyy-mm-dd」開頭的最新檔案。"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Données d’analyse"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "분석 데이터에서 Analytics-yyyy-mm-dd로 시작하는 최신 파일을 찾으세요."
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析データ"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "En Datos de análisis, busca el archivo más reciente que empiece por Analytics-yyyy-mm-dd."
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "분석 데이터"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dans Données d’analyse, trouvez le fichier le plus récent commençant par Analytics-yyyy-mm-dd."
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分析数据"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Suche in den Analysedaten die neueste Datei, die mit Analytics-yyyy-mm-dd beginnt."
-          }
-        }
-      }
-    },
-    "tutorial_find_log_title": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Find the Log File"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ログファイルを探す"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "查找日志文件"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "尋找日誌檔案"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "로그 파일 찾기"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Buscar archivo de registro"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Trouver le fichier journal"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Protokolldatei suchen"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分析資料"
           }
         }
       }
     },
-    "tutorial_log_selection_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Short log files with only a few dozen lines do not contain battery information.\nPlease select a different, larger file."
+    "pip_step_analytics_improvements" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analyse & Verbesserungen"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "数十行の短いログデータにはバッテリー情報が含まれていません。\n他のより大きなファイルを選んでください。"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analytics & Improvements"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "只有几十行的较短日志不含电池信息。请选择其他更大的文件。"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Análisis y mejoras"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "只有數十行的較短日誌不含電池資訊。請選擇其他較大的檔案。"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analyse et améliorations"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "수십 줄 정도의 짧은 로그에는 배터리 정보가 없습니다. 다른 큰 파일을 선택하세요."
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析と改善"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Los registros de unas pocas decenas de líneas no contienen información de batería. Elige otro archivo más grande."
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "분석 및 향상"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Les journaux de quelques dizaines de lignes ne contiennent pas d’informations sur la batterie. Choisissez un fichier plus volumineux."
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分析与改进"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kurze Protokolle mit nur wenigen Dutzend Zeilen enthalten keine Batterieinformationen. Wähle eine andere, größere Datei."
-          }
-        }
-      }
-    },
-    "tutorial_log_selection_title": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Important: Choose the Right File"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "重要: 正しいファイルを選択"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "重要：选择正确的文件"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "重要：選擇正確的檔案"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "중요: 올바른 파일 선택"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Importante: elige el archivo correcto"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Important : choisissez le bon fichier"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wichtig: Die richtige Datei auswählen"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分析與改進"
           }
         }
       }
     },
-    "tutorial_log_timing_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "After enabling analytics sharing, logs are generated daily at 9:00 AM.\nPlease wait until the next day to find the log file."
+    "pip_step_button_at_bottom" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Taste befindet sich unten"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "解析を共有をONにしても、ログが生成されるのは毎日9:00です。\n次の日まで待ってからログファイルを探してください。"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Button is at the bottom"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "开启共享分析后，日志每天9:00生成。请等到第二天再查找日志文件。"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El botón está al final"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "開啟分享分析後，日誌每天9:00產生。請等到隔天再尋找日誌檔案。"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le bouton est en bas"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "분석 공유를 켜면 로그는 매일 오전 9시에 생성됩니다. 다음 날 로그 파일을 찾아주세요."
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ボタンは下の方にあります"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Al activar los análisis, los registros se generan a diario a las 9:00. Espera hasta el día siguiente para buscar el archivo."
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "버튼은 아래쪽에 있습니다"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Après activation du partage, les journaux sont générés chaque jour à 9 h. Attendez le lendemain pour rechercher le fichier."
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按钮在页面下方"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nach Aktivierung werden die Protokolle täglich um 9 Uhr erstellt. Suche die Protokolldatei erst am nächsten Tag."
-          }
-        }
-      }
-    },
-    "tutorial_log_timing_title": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Important: Log Generation Timing"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "重要: ログ生成のタイミング"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "重要：日志生成时间"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "重要：日誌產生時間"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "중요: 로그 생성 시점"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Importante: hora de generación"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Important : génération des journaux"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wichtig: Erstellungszeit der Protokolle"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按鈕在頁面下方"
           }
         }
       }
     },
-    "tutorial_privacy_security_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Select 'Privacy & Security' from the menu."
+    "pip_step_choose_larger_file" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kurze Protokolle enthalten keine Batteriedaten"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "メニューから「プライバシーとセキュリティ」を選択します。"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Short files lack battery data"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "从菜单中选择“隐私与安全性”。"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los registros cortos no incluyen datos de batería"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "從選單中選擇「隱私權與安全性」。"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les journaux courts ne contiennent pas de données de batterie"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "메뉴에서 개인정보 보호 및 보안을 선택하세요."
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "短いファイルには情報が入っていません"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Selecciona Privacidad y seguridad en el menú."
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "짧은 로그에는 배터리 정보가 없습니다"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sélectionnez Confidentialité et sécurité dans le menu."
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "较短的日志不含电池信息"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wähle Datenschutz & Sicherheit im Menü."
-          }
-        }
-      }
-    },
-    "tutorial_privacy_security_title": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Privacy & Security"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "プライバシーとセキュリティ"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "隐私与安全性"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "隱私權與安全性"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "개인정보 보호 및 보안"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Privacidad y seguridad"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Confidentialité et sécurité"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Datenschutz & Sicherheit"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "較短的日誌不含電池資訊"
           }
         }
       }
     },
-    "tutorial_share_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tap the Share button and select MochiLog.\nThe log will be automatically imported."
+    "pip_step_go_to_settings_top" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zur Startseite der Einstellungen"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "共有ボタンをタップして、MochiLogを選択します。\nログが自動的にインポートされます。"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Go to Settings Top"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "点击共享按钮并选择MochiLog。日志将自动导入。"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ir al inicio de Ajustes"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "點選分享按鈕並選擇MochiLog。日誌將自動匯入。"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revenir à l’accueil de Réglages"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "공유 버튼을 누르고 MochiLog를 선택하세요. 로그가 자동으로 가져와집니다."
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定のトップに移動"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pulsa Compartir y selecciona MochiLog. El registro se importará automáticamente."
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정 첫 화면으로 이동"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Touchez Partager et sélectionnez MochiLog. Le journal sera importé automatiquement."
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "返回“设置”首页"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tippe auf Teilen und wähle MochiLog. Das Protokoll wird automatisch importiert."
-          }
-        }
-      }
-    },
-    "tutorial_share_on_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Turn on\n'Share iPhone/iPad Analytics'"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "「iPhone/iPad解析を共有」を\nオンにします。"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "开启“共享iPhone/iPad分析”"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "開啟「分享iPhone/iPad分析」"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iPhone/iPad 분석 공유를 켜세요"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Activa Compartir análisis del iPhone/iPad"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Activez Partager les analyses iPhone/iPad"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aktiviere iPhone-/iPad-Analyse teilen"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "返回「設定」首頁"
           }
         }
       }
     },
-    "tutorial_share_on_title": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Share Analytics: ON"
+    "pip_step_if_not_listed" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falls nicht aufgeführt, unter Mehr nachsehen"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "解析を共有: ON"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If not listed, check 'More'"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "开启共享分析"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si no aparece, busca en Más"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "開啟分享分析"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sinon, consultez Plus"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "분석 공유 켜기"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リストにない場合は「その他」から"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Compartir análisis: activado"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "목록에 없으면 더 보기를 확인하세요"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Partager les analyses : activé"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "如果没有显示，请查看“更多”"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Analyse teilen: Ein"
-          }
-        }
-      }
-    },
-    "video_tutorial": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Video Tutorial"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "動画チュートリアル"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "视频教程"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "影片教學"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "동영상 튜토리얼"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tutorial en vídeo"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tutoriel vidéo"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Videoanleitung"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "如果沒有顯示，請查看「更多」"
           }
         }
       }
     },
-    "watch_video_tutorial": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Watch Video Tutorial"
+    "pip_step_log_selection" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die richtige Datei auswählen"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "動画チュートリアルを見る"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose the Right File"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "观看视频教程"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elige el archivo correcto"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "觀看影片教學"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisissez le bon fichier"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "동영상 튜토리얼 보기"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正しいファイルを選択"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ver tutorial en vídeo"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "올바른 파일 선택"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Regarder le tutoriel vidéo"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择正确的文件"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Videoanleitung ansehen"
-          }
-        }
-      }
-    },
-    "discord_announcement_title": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "We Created a Discord Server!"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Discordサーバーを作りました"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "我们创建了Discord服务器！"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "我們建立了Discord伺服器！"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Discord 서버를 만들었어요!"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¡Creamos un servidor de Discord!"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nous avons créé un serveur Discord !"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wir haben einen Discord-Server erstellt!"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇正確的檔案"
           }
         }
       }
     },
-    "discord_announcement_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Share your ideas and bug reports with us directly"
+    "pip_step_log_timing" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Protokolle werden um 9 Uhr erstellt"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ご要望や不具合などを直接共有できる場所を用意しました"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Logs Generated at 9:00 AM"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "直接向我们分享建议和问题报告"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los registros se generan a las 9:00"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "直接向我們分享建議與問題回報"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Journaux générés à 9 h"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "아이디어와 오류를 직접 공유해주세요"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログは毎日9:00に生成"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Comparte tus ideas e informes de errores con nosotros"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로그는 매일 오전 9시에 생성됩니다"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Partagez directement vos idées et signalements de bugs"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日志每天9:00生成"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Teile deine Ideen und Fehlerberichte direkt mit uns"
-          }
-        }
-      }
-    },
-    "discord_announcement_card_title": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Discord Server"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Discordサーバー"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Discord服务器"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Discord伺服器"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Discord 서버"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Servidor de Discord"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Serveur Discord"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Discord-Server"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日誌每天9:00產生"
           }
         }
       }
     },
-    "discord_announcement_card_subtitle": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Join our community"
+    "pip_step_menu_select" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Im Menü auswählen"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "コミュニティに参加"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select from menu"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "加入社区"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleccionar en el menú"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "加入社群"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisir dans le menu"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "커뮤니티 참여"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "メニューから選択"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Únete a la comunidad"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "메뉴에서 선택"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rejoignez la communauté"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "从菜单中选择"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Der Community beitreten"
-          }
-        }
-      }
-    },
-    "discord_announcement_feature_fast": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Faster response to bug reports"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "不具合報告への迅速な対応"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "更快处理问题报告"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "更快處理問題回報"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "빠른 오류 보고 대응"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Respuesta más rápida a errores"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Réponse plus rapide aux bugs"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Schnellere Reaktion auf Fehlerberichte"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "從選單中選擇"
           }
         }
       }
     },
-    "discord_announcement_feature_community": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Connect with other users"
+    "pip_step_open_settings" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen öffnen"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "他のユーザーとつながる"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Settings"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "与其他用户交流"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir Ajustes"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "與其他使用者交流"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrir Réglages"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "다른 사용자와 소통"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定を開く"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Conecta con otros usuarios"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정 열기"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Échangez avec les autres utilisateurs"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开设置"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mit anderen Nutzern austauschen"
-          }
-        }
-      }
-    },
-    "discord_announcement_feature_ideas": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Share feature requests and ideas"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "機能要望やアイデアを共有"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "分享功能建议和想法"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "分享功能建議與想法"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "기능 요청과 아이디어 공유"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Comparte funciones e ideas"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Partagez vos idées de fonctionnalités"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Funktionswünsche und Ideen teilen"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開啟設定"
           }
         }
       }
     },
-    "discord_announcement_join_button": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open Discord"
+    "pip_step_privacy_security" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datenschutz & Sicherheit"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Discordを開く"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy & Security"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "打开Discord"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacidad y seguridad"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "開啟Discord"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confidentialité et sécurité"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Discord 열기"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プライバシーとセキュリティ"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Abrir Discord"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "개인정보 보호 및 보안"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ouvrir Discord"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隐私与安全性"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Discord öffnen"
-          }
-        }
-      }
-    },
-    "discord_announcement_note": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Participation is optional. You can always find the link in Settings."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "参加は任意です。設定からいつでもアクセスできます。"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "是否加入由您决定。您随时可以在设置中找到链接。"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "是否加入由您決定。您隨時可以在設定中找到連結。"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "참여는 선택 사항입니다. 설정에서 언제든지 링크를 찾을 수 있습니다."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "La participación es opcional. Encontrarás el enlace en Ajustes cuando quieras."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "La participation est facultative. Le lien reste disponible dans les réglages."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Die Teilnahme ist freiwillig. Den Link findest du jederzeit in den Einstellungen."
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隱私權與安全性"
           }
         }
       }
     },
-    "discord_announcement_close_button": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Close"
+    "pip_step_select_log" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analytics-202x… auswählen"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "閉じる"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select Analytics-202x..."
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "关闭"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecciona Analytics-202x…"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "關閉"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sélectionnez Analytics-202x…"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "닫기"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analytics-202x...を選択"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cerrar"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analytics-202x… 선택"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fermer"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择Analytics-202x…"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Schließen"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇Analytics-202x…"
           }
         }
       }
     },
-    "discord_announcement_nav_title": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Update"
+    "pip_step_select_mochilog" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MochiLog auswählen"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "お知らせ"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select MochiLog"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "通知"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecciona MochiLog"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "通知"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sélectionnez MochiLog"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "안내"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MochiLogを選択"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Novedades"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MochiLog 선택"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Actualités"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择MochiLog"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Neuigkeiten"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇MochiLog"
           }
         }
       }
     },
-    "tutorial_welcome": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Welcome to MochiLog"
+    "pip_step_settings_app" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen-App"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "MochiLogへようこそ"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings App"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "欢迎使用MochiLog"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Ajustes"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "歡迎使用MochiLog"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Réglages"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "MochiLog에 오신 것을 환영합니다"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定アプリ"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Te damos la bienvenida a MochiLog"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정 앱"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bienvenue dans MochiLog"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设置应用"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Willkommen bei MochiLog"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定App"
           }
         }
       }
     },
-    "tutorial_welcome_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Track your device battery health in detail.\nLet's set up together!"
+    "pip_step_share_analytics" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iPhone-/iPad-Analyse teilen"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "デバイスのバッテリー状態を詳しく記録できます。\n一緒に設定しましょう！"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share iPhone/iPad Analytics"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "详细记录设备的电池状态。\n让我们一起完成设置！"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartir análisis del iPhone/iPad"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "詳細記錄裝置的電池狀態。\n一起完成設定吧！"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partager les analyses iPhone/iPad"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "기기의 배터리 상태를 자세히 기록하세요.\n함께 설정해 볼까요?"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iPhone/iPad解析を共有"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Registra en detalle el estado de tu batería.\n¡Vamos a configurarlo!"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iPhone/iPad 분석 공유"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Suivez en détail l’état de votre batterie.\nConfigurons l’app ensemble !"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共享iPhone/iPad分析"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Erfasse den Batteriezustand deines Geräts im Detail.\nRichten wir die App gemeinsam ein!"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分享iPhone/iPad分析"
           }
         }
       }
     },
-    "tutorial_open_settings_title": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open Settings App"
+    "pip_step_share_on" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analyse teilen: Ein"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "設定アプリを開く"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share Analytics: ON"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "打开“设置”"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartir análisis: activado"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "開啟「設定」"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partager les analyses : activé"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "설정 앱 열기"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析を共有: ON"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Abrir Ajustes"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "분석 공유 켜기"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ouvrir Réglages"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开启共享分析"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Einstellungen öffnen"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開啟分享分析"
           }
         }
       }
     },
-    "tutorial_open_settings_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open the Settings app on your iPhone or iPad.\nTap the button below to open Settings."
+    "pip_step_tap_back_button" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oben links auf Zurück tippen"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iPhoneやiPadの設定アプリを開きます。\n下のボタンをタップして設定を開いてください。"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap back button (top left)"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "打开iPhone或iPad的“设置”应用。点击下方按钮即可打开。"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pulsa Atrás arriba a la izquierda"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "開啟iPhone或iPad的「設定」App。點選下方按鈕即可開啟。"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Touchez Retour en haut à gauche"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iPhone 또는 iPad의 설정 앱을 여세요. 아래 버튼을 누르면 열립니다."
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左上の「戻る」をタップ"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Abre Ajustes en tu iPhone o iPad con el botón de abajo."
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "왼쪽 위 뒤로 버튼 탭"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ouvrez l’app Réglages de votre iPhone ou iPad avec le bouton ci-dessous."
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点击左上角的返回按钮"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Öffne die Einstellungen deines iPhone oder iPad über die Taste unten."
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "點選左上角的返回按鈕"
           }
         }
       }
     },
-    "tutorial_go_to_settings_top_title": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Go Back to Settings Top"
+    "pip_step_wait_next_day" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bis zum nächsten Tag warten"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "設定のトップに戻る"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wait until the next day"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "返回“设置”首页"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Espera hasta el día siguiente"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "返回「設定」首頁"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attendez le lendemain"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "설정 첫 화면으로 돌아가기"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "次の日まで待ってください"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Volver al inicio de Ajustes"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다음 날까지 기다려주세요"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Revenir à l’accueil de Réglages"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请等到第二天"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zur Startseite der Einstellungen zurück"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請等到隔天"
           }
         }
       }
     },
-    "tutorial_go_to_settings_top_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "If you're in the wrong section, go back to the Settings top screen.\nTap the back button in the upper left."
+    "try_with_video" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Videoanleitung folgen"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "間違った場所にいる場合は、設定のトップ画面に戻ります。\n左上の戻るボタンをタップしてください。"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Follow Video Guide"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "如果当前页面不正确，请点击左上角的返回按钮，回到“设置”首页。"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seguir la guía en vídeo"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "若目前頁面不正確，請點選左上角的返回按鈕，回到「設定」首頁。"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suivre le guide vidéo"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "다른 화면에 있다면 왼쪽 위 뒤로 버튼을 눌러 설정 첫 화면으로 돌아가세요."
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "動画で確認しながら操作する"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Si estás en otra sección, pulsa Atrás arriba a la izquierda para volver al inicio de Ajustes."
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "동영상 보며 따라 하기"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Si vous êtes dans une autre rubrique, touchez Retour en haut à gauche pour revenir à l’accueil de Réglages."
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "跟随视频指南操作"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Falls du im falschen Bereich bist, tippe oben links auf Zurück, um zur Startseite der Einstellungen zurückzukehren."
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "跟隨影片教學操作"
           }
         }
       }
     },
-    "tutorial_share_title": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Share to MochiLog"
+    "tutorial" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anleitung"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "MochiLogに共有"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tutorial"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "共享到MochiLog"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tutorial"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "分享到MochiLog"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tutoriel"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "MochiLog로 공유"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "チュートリアル"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Compartir con MochiLog"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "튜토리얼"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Partager avec MochiLog"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "教程"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mit MochiLog teilen"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "教學"
+          }
+        }
+      }
+    },
+    "tutorial_analytics_improvements_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle Analyse & Verbesserungen im Menü. Die Taste befindet sich unten auf dem Bildschirm."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select 'Analytics & Improvements' from the menu.\nThe button is located at the bottom of the screen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecciona Análisis y mejoras en el menú. El botón está al final de la pantalla."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sélectionnez Analyse et améliorations dans le menu. Le bouton se trouve en bas de l’écran."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "メニューから「解析と改善」を選択します。\nボタンは画面の下の方にあります。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "메뉴에서 분석 및 향상을 선택하세요. 버튼은 화면 아래쪽에 있습니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "从菜单中选择“分析与改进”。按钮位于页面下方。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "從選單中選擇「分析與改進」。按鈕位於頁面下方。"
+          }
+        }
+      }
+    },
+    "tutorial_analytics_improvements_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analyse & Verbesserungen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analytics & Improvements"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Análisis y mejoras"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analyse et améliorations"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析と改善"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "분석 및 향상"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分析与改进"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分析與改進"
+          }
+        }
+      }
+    },
+    "tutorial_complete_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alles bereit!\nVerfolge deinen Batteriezustand mit MochiLog."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You're all set!\nTrack your battery health with MochiLog."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Todo listo!\nConsulta el estado de la batería con MochiLog."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tout est prêt !\nSuivez l’état de votre batterie avec MochiLog."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "準備完了です！\nMochiLogでバッテリーの状態を詳しく分析しましょう。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "준비 완료!\nMochiLog로 배터리 상태를 자세히 확인하세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "准备就绪！\n使用MochiLog详细了解电池状态。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "準備完成！\n使用MochiLog詳細了解電池狀態。"
+          }
+        }
+      }
+    },
+    "tutorial_complete_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fertig!"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done!"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¡Listo!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terminé !"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完了！"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "완료!"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完成！"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完成！"
+          }
+        }
+      }
+    },
+    "tutorial_enable_analytics_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öffne Einstellungen > Datenschutz & Sicherheit > Analyse & Verbesserungen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Settings > Privacy & Security > Analytics & Improvements"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre Ajustes > Privacidad y seguridad > Análisis y mejoras"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrez Réglages > Confidentialité et sécurité > Analyse et améliorations"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定 > プライバシーとセキュリティ > 解析と改善\nを開きます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정 > 개인정보 보호 및 보안 > 분석 및 향상을 여세요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开“设置”>“隐私与安全性”>“分析与改进”"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開啟「設定」>「隱私權與安全性」>「分析與改進」"
+          }
+        }
+      }
+    },
+    "tutorial_enable_analytics_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen öffnen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Settings"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir Ajustes"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrir Réglages"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定を開く"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정 열기"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开设置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開啟設定"
+          }
+        }
+      }
+    },
+    "tutorial_find_log_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suche in den Analysedaten die neueste Datei, die mit Analytics-yyyy-mm-dd beginnt."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In Analytics Data, find the latest file starting with\n'Analytics-yyyy-mm-dd'"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En Datos de análisis, busca el archivo más reciente que empiece por Analytics-yyyy-mm-dd."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dans Données d’analyse, trouvez le fichier le plus récent commençant par Analytics-yyyy-mm-dd."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析データ内で\n「Analytics-yyyy-mm-dd」\nで始まる最新のファイルを探します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "분석 데이터에서 Analytics-yyyy-mm-dd로 시작하는 최신 파일을 찾으세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在分析数据中查找以“Analytics-yyyy-mm-dd”开头的最新文件。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在分析資料中尋找以「Analytics-yyyy-mm-dd」開頭的最新檔案。"
+          }
+        }
+      }
+    },
+    "tutorial_find_log_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Protokolldatei suchen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Find the Log File"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar archivo de registro"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trouver le fichier journal"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログファイルを探す"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로그 파일 찾기"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查找日志文件"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "尋找日誌檔案"
+          }
+        }
+      }
+    },
+    "tutorial_go_to_settings_top_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falls du im falschen Bereich bist, tippe oben links auf Zurück, um zur Startseite der Einstellungen zurückzukehren."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If you're in the wrong section, go back to the Settings top screen.\nTap the back button in the upper left."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si estás en otra sección, pulsa Atrás arriba a la izquierda para volver al inicio de Ajustes."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si vous êtes dans une autre rubrique, touchez Retour en haut à gauche pour revenir à l’accueil de Réglages."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "間違った場所にいる場合は、設定のトップ画面に戻ります。\n左上の戻るボタンをタップしてください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다른 화면에 있다면 왼쪽 위 뒤로 버튼을 눌러 설정 첫 화면으로 돌아가세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "如果当前页面不正确，请点击左上角的返回按钮，回到“设置”首页。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "若目前頁面不正確，請點選左上角的返回按鈕，回到「設定」首頁。"
+          }
+        }
+      }
+    },
+    "tutorial_go_to_settings_top_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zur Startseite der Einstellungen zurück"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Go Back to Settings Top"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Volver al inicio de Ajustes"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revenir à l’accueil de Réglages"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定のトップに戻る"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정 첫 화면으로 돌아가기"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "返回“设置”首页"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "返回「設定」首頁"
+          }
+        }
+      }
+    },
+    "tutorial_log_selection_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kurze Protokolle mit nur wenigen Dutzend Zeilen enthalten keine Batterieinformationen. Wähle eine andere, größere Datei."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Short log files with only a few dozen lines do not contain battery information.\nPlease select a different, larger file."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los registros de unas pocas decenas de líneas no contienen información de batería. Elige otro archivo más grande."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les journaux de quelques dizaines de lignes ne contiennent pas d’informations sur la batterie. Choisissez un fichier plus volumineux."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "数十行の短いログデータにはバッテリー情報が含まれていません。\n他のより大きなファイルを選んでください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "수십 줄 정도의 짧은 로그에는 배터리 정보가 없습니다. 다른 큰 파일을 선택하세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "只有几十行的较短日志不含电池信息。请选择其他更大的文件。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "只有數十行的較短日誌不含電池資訊。請選擇其他較大的檔案。"
+          }
+        }
+      }
+    },
+    "tutorial_log_selection_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wichtig: Die richtige Datei auswählen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Important: Choose the Right File"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importante: elige el archivo correcto"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Important : choisissez le bon fichier"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重要: 正しいファイルを選択"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "중요: 올바른 파일 선택"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重要：选择正确的文件"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重要：選擇正確的檔案"
+          }
+        }
+      }
+    },
+    "tutorial_log_timing_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nach Aktivierung werden die Protokolle täglich um 9 Uhr erstellt. Suche die Protokolldatei erst am nächsten Tag."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "After enabling analytics sharing, logs are generated daily at 9:00 AM.\nPlease wait until the next day to find the log file."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Al activar los análisis, los registros se generan a diario a las 9:00. Espera hasta el día siguiente para buscar el archivo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Après activation du partage, les journaux sont générés chaque jour à 9 h. Attendez le lendemain pour rechercher le fichier."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析を共有をONにしても、ログが生成されるのは毎日9:00です。\n次の日まで待ってからログファイルを探してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "분석 공유를 켜면 로그는 매일 오전 9시에 생성됩니다. 다음 날 로그 파일을 찾아주세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开启共享分析后，日志每天9:00生成。请等到第二天再查找日志文件。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開啟分享分析後，日誌每天9:00產生。請等到隔天再尋找日誌檔案。"
+          }
+        }
+      }
+    },
+    "tutorial_log_timing_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wichtig: Erstellungszeit der Protokolle"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Important: Log Generation Timing"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importante: hora de generación"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Important : génération des journaux"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重要: ログ生成のタイミング"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "중요: 로그 생성 시점"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重要：日志生成时间"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重要：日誌產生時間"
+          }
+        }
+      }
+    },
+    "tutorial_open_settings_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öffne die Einstellungen deines iPhone oder iPad über die Taste unten."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open the Settings app on your iPhone or iPad.\nTap the button below to open Settings."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre Ajustes en tu iPhone o iPad con el botón de abajo."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrez l’app Réglages de votre iPhone ou iPad avec le bouton ci-dessous."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iPhoneやiPadの設定アプリを開きます。\n下のボタンをタップして設定を開いてください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iPhone 또는 iPad의 설정 앱을 여세요. 아래 버튼을 누르면 열립니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开iPhone或iPad的“设置”应用。点击下方按钮即可打开。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開啟iPhone或iPad的「設定」App。點選下方按鈕即可開啟。"
+          }
+        }
+      }
+    },
+    "tutorial_open_settings_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen öffnen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Settings App"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir Ajustes"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrir Réglages"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定アプリを開く"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정 앱 열기"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开“设置”"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開啟「設定」"
+          }
+        }
+      }
+    },
+    "tutorial_privacy_security_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle Datenschutz & Sicherheit im Menü."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select 'Privacy & Security' from the menu."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecciona Privacidad y seguridad en el menú."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sélectionnez Confidentialité et sécurité dans le menu."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "メニューから「プライバシーとセキュリティ」を選択します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "메뉴에서 개인정보 보호 및 보안을 선택하세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "从菜单中选择“隐私与安全性”。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "從選單中選擇「隱私權與安全性」。"
+          }
+        }
+      }
+    },
+    "tutorial_privacy_security_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datenschutz & Sicherheit"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy & Security"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacidad y seguridad"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confidentialité et sécurité"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プライバシーとセキュリティ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "개인정보 보호 및 보안"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隐私与安全性"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隱私權與安全性"
+          }
+        }
+      }
+    },
+    "tutorial_share_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tippe auf Teilen und wähle MochiLog. Das Protokoll wird automatisch importiert."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap the Share button and select MochiLog.\nThe log will be automatically imported."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pulsa Compartir y selecciona MochiLog. El registro se importará automáticamente."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Touchez Partager et sélectionnez MochiLog. Le journal sera importé automatiquement."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共有ボタンをタップして、MochiLogを選択します。\nログが自動的にインポートされます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "공유 버튼을 누르고 MochiLog를 선택하세요. 로그가 자동으로 가져와집니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点击共享按钮并选择MochiLog。日志将自动导入。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "點選分享按鈕並選擇MochiLog。日誌將自動匯入。"
+          }
+        }
+      }
+    },
+    "tutorial_share_on_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktiviere iPhone-/iPad-Analyse teilen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turn on\n'Share iPhone/iPad Analytics'"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activa Compartir análisis del iPhone/iPad"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activez Partager les analyses iPhone/iPad"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「iPhone/iPad解析を共有」を\nオンにします。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iPhone/iPad 분석 공유를 켜세요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开启“共享iPhone/iPad分析”"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開啟「分享iPhone/iPad分析」"
+          }
+        }
+      }
+    },
+    "tutorial_share_on_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analyse teilen: Ein"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share Analytics: ON"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartir análisis: activado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partager les analyses : activé"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析を共有: ON"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "분석 공유 켜기"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开启共享分析"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開啟分享分析"
+          }
+        }
+      }
+    },
+    "tutorial_share_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mit MochiLog teilen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share to MochiLog"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartir con MochiLog"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partager avec MochiLog"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MochiLogに共有"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MochiLog로 공유"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共享到MochiLog"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分享到MochiLog"
+          }
+        }
+      }
+    },
+    "tutorial_welcome" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Willkommen bei MochiLog"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome to MochiLog"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Te damos la bienvenida a MochiLog"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bienvenue dans MochiLog"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MochiLogへようこそ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MochiLog에 오신 것을 환영합니다"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "欢迎使用MochiLog"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "歡迎使用MochiLog"
+          }
+        }
+      }
+    },
+    "tutorial_welcome_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erfasse den Batteriezustand deines Geräts im Detail.\nRichten wir die App gemeinsam ein!"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Track your device battery health in detail.\nLet's set up together!"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registra en detalle el estado de tu batería.\n¡Vamos a configurarlo!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suivez en détail l’état de votre batterie.\nConfigurons l’app ensemble !"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイスのバッテリー状態を詳しく記録できます。\n一緒に設定しましょう！"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기기의 배터리 상태를 자세히 기록하세요.\n함께 설정해 볼까요?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "详细记录设备的电池状态。\n让我们一起完成设置！"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "詳細記錄裝置的電池狀態。\n一起完成設定吧！"
+          }
+        }
+      }
+    },
+    "video_tutorial" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Videoanleitung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Video Tutorial"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tutorial en vídeo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tutoriel vidéo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "動画チュートリアル"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "동영상 튜토리얼"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "视频教程"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "影片教學"
+          }
+        }
+      }
+    },
+    "watch_video_tutorial" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Videoanleitung ansehen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Watch Video Tutorial"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver tutorial en vídeo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Regarder le tutoriel vidéo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "動画チュートリアルを見る"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "동영상 튜토리얼 보기"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "观看视频教程"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "觀看影片教學"
           }
         }
       }
     }
   },
-  "version": "1.1"
+  "version" : "1.1"
 }

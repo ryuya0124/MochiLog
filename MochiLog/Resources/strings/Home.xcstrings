@@ -1,1569 +1,1596 @@
 {
-  "sourceLanguage": "ja",
-  "strings": {
-    "add_data": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Add Data"
+  "sourceLanguage" : "ja",
+  "strings" : {
+    "add_data" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daten hinzufügen"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "データを追加"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add Data"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "添加数据"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir datos"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "新增資料"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter des données"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "데이터 추가"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データを追加"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Añadir datos"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "데이터 추가"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ajouter des données"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加数据"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Daten hinzufügen"
-          }
-        }
-      }
-    },
-    "capacity_mismatch_error": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Log design capacity differs significantly from device specs"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ログの設計容量が端末のスペックと大きく異なります"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "日志中的设计容量与设备规格存在较大差异"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "日誌中的設計容量與裝置規格差異過大"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "로그의 설계 용량이 기기 사양과 크게 다릅니다"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "La capacidad de diseño del registro difiere mucho de las especificaciones del dispositivo"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "La capacité de conception du journal diffère fortement des spécifications de l’appareil"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Die Auslegungskapazität im Protokoll weicht deutlich von den Gerätespezifikationen ab"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新增資料"
           }
         }
       }
     },
-    "clear_all_logs": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Clear All Logs"
+    "capacity_mismatch_error" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Auslegungskapazität im Protokoll weicht deutlich von den Gerätespezifikationen ab"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "すべてのログを削除"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log design capacity differs significantly from device specs"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "清除所有日志"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La capacidad de diseño del registro difiere mucho de las especificaciones del dispositivo"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "清除所有日誌"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La capacité de conception du journal diffère fortement des spécifications de l’appareil"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "모든 로그 삭제"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログの設計容量が端末のスペックと大きく異なります"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Borrar todos los registros"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로그의 설계 용량이 기기 사양과 크게 다릅니다"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Effacer tous les journaux"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日志中的设计容量与设备规格存在较大差异"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Alle Protokolle löschen"
-          }
-        }
-      }
-    },
-    "delete_all_logs_confirm": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Delete all logs?"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "すべてのログを削除してもよろしいですか？"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "要删除所有日志吗？"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "要刪除所有日誌嗎？"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "모든 로그를 삭제할까요?"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¿Eliminar todos los registros?"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Supprimer tous les journaux ?"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Alle Protokolle löschen?"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日誌中的設計容量與裝置規格差異過大"
           }
         }
       }
     },
-    "duplicate_record": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "A log with the same date already exists"
+    "clear_all_logs" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle Protokolle löschen"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "同じ日時のログは既に登録されています"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear All Logs"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "相同日期和时间的日志已存在"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Borrar todos los registros"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "相同日期與時間的日誌已存在"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Effacer tous les journaux"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "동일한 일시의 로그가 이미 있습니다"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべてのログを削除"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ya existe un registro con la misma fecha y hora"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모든 로그 삭제"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Un journal avec cette date et cette heure existe déjà"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清除所有日志"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ein Protokoll mit demselben Zeitpunkt ist bereits vorhanden"
-          }
-        }
-      }
-    },
-    "file_access_denied": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "File access denied"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ファイルへのアクセス権限がありません"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "没有文件访问权限"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "沒有檔案存取權限"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "파일 접근 권한이 없습니다"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Acceso al archivo denegado"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Accès au fichier refusé"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dateizugriff verweigert"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清除所有日誌"
           }
         }
       }
     },
-    "file_read_error": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Failed to read file"
+    "delete_all_logs_confirm" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle Protokolle löschen?"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ファイルの読み込みに失敗しました"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete all logs?"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "无法读取文件"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Eliminar todos los registros?"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "無法讀取檔案"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer tous les journaux ?"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "파일을 읽지 못했습니다"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべてのログを削除してもよろしいですか？"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No se pudo leer el archivo"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모든 로그를 삭제할까요?"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Impossible de lire le fichier"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "要删除所有日志吗？"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Datei konnte nicht gelesen werden"
-          }
-        }
-      }
-    },
-    "file_select_error": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "File selection error"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ファイル選択エラー"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "文件选择错误"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "檔案選擇錯誤"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "파일 선택 오류"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Error al seleccionar el archivo"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Erreur de sélection du fichier"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fehler bei der Dateiauswahl"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "要刪除所有日誌嗎？"
           }
         }
       }
     },
-    "import_silent_failure": {
-      "extractionState": "stale",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Import Failed"
+    "duplicate_record" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein Protokoll mit demselben Zeitpunkt ist bereits vorhanden"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "取り込みに失敗しました"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A log with the same date already exists"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "导入失败"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ya existe un registro con la misma fecha y hora"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "匯入失敗"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un journal avec cette date et cette heure existe déjà"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "가져오기 실패"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同じ日時のログは既に登録されています"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Error de importación"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "동일한 일시의 로그가 이미 있습니다"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Échec de l’importation"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "相同日期和时间的日志已存在"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Import fehlgeschlagen"
-          }
-        }
-      }
-    },
-    "import_silent_success": {
-      "extractionState": "stale",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Import Succeeded"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "取り込みに成功しました"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "导入成功"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "匯入成功"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "가져오기 성공"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Importación completada"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Importation réussie"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Import erfolgreich"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "相同日期與時間的日誌已存在"
           }
         }
       }
     },
-    "import_silent_success_body": {
-      "extractionState": "stale",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Imported %@ (%@)"
+    "file_access_denied" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dateizugriff verweigert"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@（%@）のログを取り込みました"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File access denied"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已导入 %@（%@）"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acceso al archivo denegado"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已匯入 %@（%@）"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accès au fichier refusé"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ (%@) 가져오기 완료"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ファイルへのアクセス権限がありません"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Se importó %@ (%@)"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "파일 접근 권한이 없습니다"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ (%@) importé"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有文件访问权限"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ (%@) importiert"
-          }
-        }
-      }
-    },
-    "load_more": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Load More"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "もっと読み込む"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "加载更多"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "載入更多"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "더 불러오기"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cargar más"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Afficher plus"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mehr laden"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "沒有檔案存取權限"
           }
         }
       }
     },
-    "log_saved": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Log saved"
+    "file_read_error" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datei konnte nicht gelesen werden"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ログを保存しました"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to read file"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "日志已保存"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo leer el archivo"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "日誌已儲存"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de lire le fichier"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "로그 저장 완료"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ファイルの読み込みに失敗しました"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Registro guardado"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "파일을 읽지 못했습니다"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Journal enregistré"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法读取文件"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Protokoll gespeichert"
-          }
-        }
-      }
-    },
-    "log_saved_message": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "A parse error log has been saved. You can view it in Support -> Error Logs."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "解析エラーのログを保存しました。サポートの「エラーログを表示」から確認できます。"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已保存解析错误日志。可在“支持”中的“错误日志”查看。"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已儲存解析錯誤日誌。可在「支援」中的「錯誤日誌」查看。"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "분석 오류 로그가 저장되었습니다. 지원의 오류 로그에서 확인할 수 있습니다."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Se guardó el registro del error de análisis. Puedes verlo en Soporte > Registros de errores."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Un journal d’erreur d’analyse a été enregistré. Consultez Assistance > Journaux d’erreurs."
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ein Analysefehlerprotokoll wurde gespeichert. Du findest es unter Support > Fehlerprotokolle."
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法讀取檔案"
           }
         }
       }
     },
-    "mismatch_warning_message": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Log design capacity differs significantly from device specs. Would you like to select the correct model manually?"
+    "file_select_error" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fehler bei der Dateiauswahl"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ログの設計容量が端末スペックと大きく異なります。正しい機種を手動で選択しますか？"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File selection error"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "日志中的设计容量与设备规格存在较大差异。要手动选择正确的机型吗？"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al seleccionar el archivo"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "日誌中的設計容量與裝置規格差異過大。要手動選擇正確機型嗎？"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur de sélection du fichier"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "로그의 설계 용량이 기기 사양과 크게 다릅니다. 올바른 모델을 직접 선택할까요?"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ファイル選択エラー"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "La capacidad de diseño difiere mucho de las especificaciones. ¿Quieres seleccionar el modelo correcto manualmente?"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "파일 선택 오류"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "La capacité de conception diffère fortement des spécifications. Voulez-vous choisir manuellement le bon modèle ?"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文件选择错误"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Die Auslegungskapazität weicht deutlich von den Spezifikationen ab. Möchtest du das richtige Modell manuell auswählen?"
-          }
-        }
-      }
-    },
-    "mismatch_warning_title": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Capacity Mismatch"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "容量の不一致"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "容量不匹配"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "容量不符"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "용량 불일치"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Capacidad no coincidente"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Capacité incohérente"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kapazität stimmt nicht überein"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "檔案選擇錯誤"
           }
         }
       }
     },
-    "no_data": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No Data"
+    "import_silent_failure" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import fehlgeschlagen"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "データがありません"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import Failed"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "暂无数据"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error de importación"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "尚無資料"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec de l’importation"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "데이터 없음"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取り込みに失敗しました"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No hay datos"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가져오기 실패"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aucune donnée"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入失败"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Keine Daten"
-          }
-        }
-      }
-    },
-    "no_data_description": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tap the + button to add logs"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "右上の＋ボタンからログを追加してください"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "点击右上角的＋按钮添加日志"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "點選右上角的＋按鈕新增日誌"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "오른쪽 위의 + 버튼으로 로그를 추가하세요"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pulsa + para añadir registros"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Touchez + pour ajouter des journaux"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tippe auf +, um Protokolle hinzuzufügen"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "匯入失敗"
           }
         }
       }
     },
-    "no_supported_files": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No supported files were selected"
+    "import_silent_success" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import erfolgreich"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "対応するファイルが選択されていません"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import Succeeded"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "未选择支持的文件"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importación completada"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "未選取支援的檔案"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importation réussie"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "지원되는 파일이 선택되지 않았습니다"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取り込みに成功しました"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No se seleccionaron archivos compatibles"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가져오기 성공"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aucun fichier pris en charge n’a été sélectionné"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入成功"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Keine unterstützten Dateien ausgewählt"
-          }
-        }
-      }
-    },
-    "parse_error": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Could not parse date or battery info from log"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ログから日時やバッテリー情報を取得できませんでした"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "无法从日志中解析日期或电池信息"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "無法從日誌解析日期或電池資訊"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "로그에서 날짜 또는 배터리 정보를 읽지 못했습니다"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No se pudo obtener la fecha o la información de la batería del registro"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Impossible d’extraire la date ou les informations de batterie du journal"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Datum oder Batterieinformationen konnten nicht aus dem Protokoll gelesen werden"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "匯入成功"
           }
         }
       }
     },
-    "parsing_log": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Parsing log..."
+    "import_silent_success_body" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ (%@) importiert"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ログを解析中..."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imported %@ (%@)"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "正在解析日志…"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se importó %@ (%@)"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "正在解析日誌…"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ (%@) importé"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "로그 분석 중…"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@（%@）のログを取り込みました"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Analizando registro…"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ (%@) 가져오기 완료"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Analyse du journal…"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已导入 %@（%@）"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Protokoll wird analysiert …"
-          }
-        }
-      }
-    },
-    "preparing_data": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Preparing data..."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "データを準備中..."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "正在准备数据…"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "正在準備資料…"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "데이터 준비 중…"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Preparando datos…"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Préparation des données…"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Daten werden vorbereitet …"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已匯入 %@（%@）"
           }
         }
       }
     },
-    "sample_data_hint": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Add your own data to see your battery health"
+    "load_more" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mehr laden"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "実際のデータを追加してバッテリー状態を確認しましょう"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Load More"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "添加自己的数据以查看电池健康状况"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cargar más"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "新增自己的資料以查看電池健康狀態"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher plus"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "실제 데이터를 추가하여 배터리 상태를 확인하세요"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "もっと読み込む"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Añade tus datos para consultar el estado de la batería"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "더 불러오기"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ajoutez vos données pour consulter l’état de la batterie"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "加载更多"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Füge eigene Daten hinzu, um den Batteriezustand zu sehen"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "載入更多"
           }
         }
       }
     },
-    "sample_data_viewing": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Viewing Sample Data"
+    "log_saved" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Protokoll gespeichert"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "サンプルデータ表示中"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log saved"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "正在查看示例数据"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registro guardado"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "正在檢視範例資料"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Journal enregistré"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "샘플 데이터 보는 중"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログを保存しました"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Viendo datos de ejemplo"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로그 저장 완료"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Affichage des données d’exemple"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日志已保存"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Beispieldaten werden angezeigt"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日誌已儲存"
           }
         }
       }
     },
-    "select_manually": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Select Manually"
+    "log_saved_message" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein Analysefehlerprotokoll wurde gespeichert. Du findest es unter Support > Fehlerprotokolle."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "手動で選択"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A parse error log has been saved. You can view it in Support -> Error Logs."
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "手动选择"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se guardó el registro del error de análisis. Puedes verlo en Soporte > Registros de errores."
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "手動選擇"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un journal d’erreur d’analyse a été enregistré. Consultez Assistance > Journaux d’erreurs."
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "수동 선택"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析エラーのログを保存しました。サポートの「エラーログを表示」から確認できます。"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Seleccionar manualmente"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "분석 오류 로그가 저장되었습니다. 지원의 오류 로그에서 확인할 수 있습니다."
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Choisir manuellement"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已保存解析错误日志。可在“支持”中的“错误日志”查看。"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Manuell auswählen"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已儲存解析錯誤日誌。可在「支援」中的「錯誤日誌」查看。"
           }
         }
       }
     },
-    "sort_devices": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sort Devices"
+    "mismatch_warning_message" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Auslegungskapazität weicht deutlich von den Spezifikationen ab. Möchtest du das richtige Modell manuell auswählen?"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "端末の並び替え"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log design capacity differs significantly from device specs. Would you like to select the correct model manually?"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "设备排序"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La capacidad de diseño difiere mucho de las especificaciones. ¿Quieres seleccionar el modelo correcto manualmente?"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "裝置排序"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La capacité de conception diffère fortement des spécifications. Voulez-vous choisir manuellement le bon modèle ?"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "기기 순서 변경"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログの設計容量が端末スペックと大きく異なります。正しい機種を手動で選択しますか？"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ordenar dispositivos"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로그의 설계 용량이 기기 사양과 크게 다릅니다. 올바른 모델을 직접 선택할까요?"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Trier les appareils"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日志中的设计容量与设备规格存在较大差异。要手动选择正确的机型吗？"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Geräte sortieren"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日誌中的設計容量與裝置規格差異過大。要手動選擇正確機型嗎？"
           }
         }
       }
     },
-    "tab_home": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Home"
+    "mismatch_warning_title" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kapazität stimmt nicht überein"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ホーム"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Capacity Mismatch"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "首页"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Capacidad no coincidente"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "首頁"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Capacité incohérente"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "홈"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "容量の不一致"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Inicio"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "용량 불일치"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Accueil"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "容量不匹配"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Start"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "容量不符"
           }
         }
       }
     },
-    "view_sample_data": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "View Sample Data"
+    "no_data" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Daten"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "サンプルデータを見る"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Data"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "查看示例数据"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay datos"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "檢視範例資料"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune donnée"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "샘플 데이터 보기"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データがありません"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ver datos de ejemplo"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "데이터 없음"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Voir les données d’exemple"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暂无数据"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Beispieldaten ansehen"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "尚無資料"
           }
         }
       }
     },
-    "view_tutorial": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "View Tutorial"
+    "no_data_description" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tippe auf +, um Protokolle hinzuzufügen"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "チュートリアルを見る"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap the + button to add logs"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "查看教程"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pulsa + para añadir registros"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "查看教學"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Touchez + pour ajouter des journaux"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "튜토리얼 보기"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右上の＋ボタンからログを追加してください"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ver tutorial"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오른쪽 위의 + 버튼으로 로그를 추가하세요"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Voir le tutoriel"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点击右上角的＋按钮添加日志"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Anleitung ansehen"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "點選右上角的＋按鈕新增日誌"
           }
         }
       }
     },
-    "zip_extract_failed": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Failed to extract ZIP"
+    "no_supported_files" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine unterstützten Dateien ausgewählt"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ZIPの展開に失敗しました"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No supported files were selected"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ZIP解压失败"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se seleccionaron archivos compatibles"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ZIP解壓縮失敗"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun fichier pris en charge n’a été sélectionné"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ZIP 압축 해제 실패"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "対応するファイルが選択されていません"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No se pudo extraer el ZIP"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지원되는 파일이 선택되지 않았습니다"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Impossible d’extraire le ZIP"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未选择支持的文件"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ZIP konnte nicht entpackt werden"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未選取支援的檔案"
+          }
+        }
+      }
+    },
+    "parse_error" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datum oder Batterieinformationen konnten nicht aus dem Protokoll gelesen werden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could not parse date or battery info from log"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo obtener la fecha o la información de la batería del registro"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible d’extraire la date ou les informations de batterie du journal"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログから日時やバッテリー情報を取得できませんでした"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로그에서 날짜 또는 배터리 정보를 읽지 못했습니다"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法从日志中解析日期或电池信息"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法從日誌解析日期或電池資訊"
+          }
+        }
+      }
+    },
+    "parsing_log" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Protokoll wird analysiert …"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Parsing log..."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analizando registro…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analyse du journal…"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログを解析中..."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로그 분석 중…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在解析日志…"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在解析日誌…"
+          }
+        }
+      }
+    },
+    "preparing_data" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daten werden vorbereitet …"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preparing data..."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preparando datos…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Préparation des données…"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データを準備中..."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "데이터 준비 중…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在准备数据…"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在準備資料…"
+          }
+        }
+      }
+    },
+    "sample_data_hint" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Füge eigene Daten hinzu, um den Batteriezustand zu sehen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add your own data to see your battery health"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añade tus datos para consultar el estado de la batería"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajoutez vos données pour consulter l’état de la batterie"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "実際のデータを追加してバッテリー状態を確認しましょう"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "실제 데이터를 추가하여 배터리 상태를 확인하세요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加自己的数据以查看电池健康状况"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新增自己的資料以查看電池健康狀態"
+          }
+        }
+      }
+    },
+    "sample_data_viewing" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beispieldaten werden angezeigt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Viewing Sample Data"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Viendo datos de ejemplo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Affichage des données d’exemple"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サンプルデータ表示中"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "샘플 데이터 보는 중"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在查看示例数据"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在檢視範例資料"
+          }
+        }
+      }
+    },
+    "select_manually" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manuell auswählen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select Manually"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleccionar manualmente"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisir manuellement"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手動で選択"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "수동 선택"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手动选择"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手動選擇"
+          }
+        }
+      }
+    },
+    "sort_devices" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geräte sortieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sort Devices"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ordenar dispositivos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trier les appareils"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "端末の並び替え"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기기 순서 변경"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设备排序"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "裝置排序"
+          }
+        }
+      }
+    },
+    "tab_home" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Home"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicio"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accueil"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ホーム"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "홈"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "首页"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "首頁"
+          }
+        }
+      }
+    },
+    "view_sample_data" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beispieldaten ansehen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View Sample Data"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver datos de ejemplo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voir les données d’exemple"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サンプルデータを見る"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "샘플 데이터 보기"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看示例数据"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "檢視範例資料"
+          }
+        }
+      }
+    },
+    "view_tutorial" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anleitung ansehen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View Tutorial"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver tutorial"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voir le tutoriel"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "チュートリアルを見る"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "튜토리얼 보기"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看教程"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看教學"
+          }
+        }
+      }
+    },
+    "zip_extract_failed" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ZIP konnte nicht entpackt werden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to extract ZIP"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo extraer el ZIP"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible d’extraire le ZIP"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ZIPの展開に失敗しました"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ZIP 압축 해제 실패"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ZIP解压失败"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ZIP解壓縮失敗"
           }
         }
       }
     }
   },
-  "version": "1.1"
+  "version" : "1.1"
 }

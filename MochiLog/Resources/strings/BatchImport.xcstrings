@@ -1,734 +1,748 @@
 {
-  "sourceLanguage": "en",
-  "strings": {
-    "processing": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "処理中"
+  "sourceLanguage" : "en",
+  "strings" : {
+    "add_manually" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manuell hinzufügen"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Processing"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add manually"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "处理中"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir manualmente"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "處理中"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter manuellement"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "처리 중"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手動追加"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Procesando"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "수동 추가"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Traitement en cours"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手动添加"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wird verarbeitet"
-          }
-        }
-      }
-    },
-    "saved": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "保存完了"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Saved"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已保存"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已儲存"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "저장 완료"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Guardado"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enregistré"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gespeichert"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手動新增"
           }
         }
       }
     },
-    "duplicate_skipped": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "重複スキップ"
+    "completed_count" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%ld Dateien verarbeitet"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Duplicate skipped"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Processed %ld files"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已跳过重复项"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se procesaron %ld archivos"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已略過重複項目"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%ld fichiers traités"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "중복 건너뜀"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%ld件の処理が完了しました"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Duplicado omitido"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "파일 %ld개 처리 완료"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Doublon ignoré"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已处理 %ld 个文件"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Duplikat übersprungen"
-          }
-        }
-      }
-    },
-    "review": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "手動選択必要"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Needs review"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "需要手动选择"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "需要手動選擇"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "수동 선택 필요"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Requiere revisión"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Vérification requise"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Prüfung erforderlich"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已處理 %ld 個檔案"
           }
         }
       }
     },
-    "error": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "エラー"
+    "done" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fertig"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Error"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "错误"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Listo"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "錯誤"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terminé"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "오류"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完了"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Error"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "완료"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Erreur"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完成"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fehler"
-          }
-        }
-      }
-    },
-    "title": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "処理結果"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Import results"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "导入结果"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "匯入結果"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "가져오기 결과"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Resultados de importación"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Résultats de l’importation"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Importergebnisse"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完成"
           }
         }
       }
     },
-    "done": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "完了"
+    "duplicate" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplikate"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Done"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplicates"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "完成"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplicados"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "完成"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doublons"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "완료"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重複"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Listo"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "중복"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Terminé"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重复项"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fertig"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重複項目"
           }
         }
       }
     },
-    "duplicate": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "重複"
+    "duplicate_skipped" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplikat übersprungen"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Duplicates"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplicate skipped"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "重复项"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplicado omitido"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "重複項目"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doublon ignoré"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "중복"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重複スキップ"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Duplicados"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "중복 건너뜀"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Doublons"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已跳过重复项"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Duplikate"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已略過重複項目"
           }
         }
       }
     },
-    "manual_selection": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "手動選択"
+    "error" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fehler"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Review"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "手动选择"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "手動選擇"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "수동 선택"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "エラー"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Revisar"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오류"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "À vérifier"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "错误"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Prüfen"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "錯誤"
           }
         }
       }
     },
-    "parsing": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "解析中…"
+    "manual_selection" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prüfen"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Reading log…"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "正在读取日志…"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revisar"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "正在讀取日誌…"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "À vérifier"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "로그 읽는 중…"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手動選択"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Leyendo registro…"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "수동 선택"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Lecture du journal…"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手动选择"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Protokoll wird gelesen …"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手動選擇"
           }
         }
       }
     },
-    "unknown_device": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "デバイス不明"
+    "parsing" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Protokoll wird gelesen …"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Unknown device"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reading log…"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "未知设备"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leyendo registro…"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "未知裝置"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lecture du journal…"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "알 수 없는 기기"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析中…"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dispositivo desconocido"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로그 읽는 중…"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Appareil inconnu"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在读取日志…"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Unbekanntes Gerät"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在讀取日誌…"
           }
         }
       }
     },
-    "add_manually": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "手動追加"
+    "processing" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wird verarbeitet"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Add manually"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Processing"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "手动添加"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Procesando"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "手動新增"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Traitement en cours"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "수동 추가"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "処理中"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Añadir manualmente"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "처리 중"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ajouter manuellement"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "处理中"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Manuell hinzufügen"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "處理中"
           }
         }
       }
     },
-    "completed_count": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%ld件の処理が完了しました"
+    "progress_count" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%ld von %ld abgeschlossen"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Processed %ld files"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%ld of %ld complete"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已处理 %ld 个文件"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%ld de %ld completados"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已處理 %ld 個檔案"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%ld sur %ld terminés"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "파일 %ld개 처리 완료"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%ld / %ld件 完了"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Se procesaron %ld archivos"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%ld / %ld개 완료"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%ld fichiers traités"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已完成 %ld / %ld"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%ld Dateien verarbeitet"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已完成 %ld / %ld"
           }
         }
       }
     },
-    "progress_count": {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%ld / %ld件 完了"
+    "review" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prüfung erforderlich"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%ld of %ld complete"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Needs review"
           }
         },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已完成 %ld / %ld"
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Requiere revisión"
           }
         },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已完成 %ld / %ld"
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérification requise"
           }
         },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%ld / %ld개 완료"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手動選択必要"
           }
         },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%ld de %ld completados"
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "수동 선택 필요"
           }
         },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%ld sur %ld terminés"
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "需要手动选择"
           }
         },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%ld von %ld abgeschlossen"
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "需要手動選擇"
+          }
+        }
+      }
+    },
+    "saved" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gespeichert"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saved"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guardado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enregistré"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存完了"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "저장 완료"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已保存"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已儲存"
+          }
+        }
+      }
+    },
+    "title" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importergebnisse"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import results"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resultados de importación"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Résultats de l’importation"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "処理結果"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가져오기 결과"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入结果"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "匯入結果"
+          }
+        }
+      }
+    },
+    "unknown_device" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unbekanntes Gerät"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unknown device"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dispositivo desconocido"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appareil inconnu"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイス不明"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알 수 없는 기기"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未知设备"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未知裝置"
           }
         }
       }
     }
   },
-  "version": "1.0"
+  "version" : "1.0"
 }
