@@ -12,6 +12,7 @@ struct RecordListView<Header: View>: View {
 
   @StateObject private var appSettings = AppSettings.shared
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+  @Environment(\.dynamicTypeSize) private var dynamicTypeSize
   @State private var collapsedSections: Set<String> = []
   @State private var allowSectionAnimation = false
 
@@ -67,7 +68,7 @@ struct RecordListView<Header: View>: View {
     ZStack {
       // コンテンツ表示
       Group {
-        if horizontalSizeClass == .regular {
+        if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
           iPadGridLayout
         } else {
           iPhoneLayout

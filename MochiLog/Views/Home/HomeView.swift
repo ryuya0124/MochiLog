@@ -283,7 +283,11 @@ struct HomeView: View {
 
   // MARK: - バッチインポート（共有メニューからの複数ファイル処理）用
   /// バッチ処理の結果（リアルタイム更新対象）
-  @State var batchImportResults: [FileImportResult] = []
+  @ObservedObject private var sharedImports = SharedImportQueue.shared
+  var batchImportResults: [FileImportResult] {
+    get { sharedImports.results }
+    nonmutating set { sharedImports.results = newValue }
+  }
   /// バッチ結果シートの表示フラグ
   @State var showingBatchResults = false
   @State private var showingRegisterWatchAlert = false
@@ -442,20 +446,9 @@ struct HomeView: View {
         )
         processLogTextAsync(text, silent: silent, contentHash: contentHash)
       }
-      // MARK: - 共有メニューからの複数ファイルバッチ処理
-      .onReceive(
-        NotificationCenter.default.publisher(for: NSNotification.Name("ProcessSharedLogQueue"))
-      ) { notification in
-        guard let entries = notification.userInfo?["entries"] as? [[String: Any]],
-          !entries.isEmpty
-        else {
-          print("[HomeView] ProcessSharedLogQueue: エントリなし")
-          return
-        }
-        print("[HomeView] \(entries.count)件のバッチ処理を開始")
-        Task {
-          await processSharedLogQueue(entries)
-        }
+      .task { await consumeSharedImports() }
+      .onReceive(sharedImports.$revision) { _ in
+        Task { await consumeSharedImports() }
       }
       .onReceive(
         NotificationCenter.default.publisher(for: NSNotification.Name("ShowRecordDetail"))
@@ -730,7 +723,7 @@ struct HomeView: View {
       }
       // MARK: - バッチインポート結果シート
       .sheet(isPresented: $showingBatchResults) {
-        BatchImportResultView(results: $batchImportResults) { result in
+        BatchImportResultView(results: $sharedImports.results) { result in
           // 1. シートを閉じる
           showingBatchResults = false
 

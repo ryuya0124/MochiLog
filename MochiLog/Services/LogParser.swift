@@ -271,43 +271,6 @@ struct LogParser {
 
   // 日付パース用
   private static func parseDate(_ str: String) -> Date? {
-    // ISO8601 (with or without fractional seconds)
-    if let date = isoFormatter.date(from: str) {
-      return date
-    }
-    // Fallback for headers like "2025-12-22 09:00:00.00 +0900"
-    for formatter in fallbackFormatters {
-      if let date = formatter.date(from: str) {
-        return date
-      }
-    }
-    return nil
-  }
-
-  private static let isoFormatter: ISO8601DateFormatter = {
-    let formatter = ISO8601DateFormatter()
-    formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-    return formatter
-  }()
-
-  private static let fallbackFormatters: [DateFormatter] = {
-    let base = DateFormatter()
-    base.locale = Locale(identifier: "en_US_POSIX")
-    base.timeZone = TimeZone(secondsFromGMT: 0)
-    return [
-      configuredFormatter(base, format: "yyyy-MM-dd HH:mm:ss.SS Z"),
-      configuredFormatter(base, format: "yyyy-MM-dd HH:mm:ss.S Z"),
-      configuredFormatter(base, format: "yyyy-MM-dd HH:mm:ss Z"),
-    ]
-  }()
-
-  private static func configuredFormatter(_ prototype: DateFormatter, format: String)
-    -> DateFormatter
-  {
-    let formatter = DateFormatter()
-    formatter.locale = prototype.locale
-    formatter.timeZone = prototype.timeZone
-    formatter.dateFormat = format
-    return formatter
+    LogDateParser.parse(str)
   }
 }

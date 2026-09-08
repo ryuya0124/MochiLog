@@ -1,26 +1,38 @@
 import Combine
 import SwiftUI
+import UIKit
 import WatchConnectivity
 
+/// UIKit owns URL delivery so every URL in a single Open In request reaches the queue.
+/// All app screens remain SwiftUI views.
 @main
-struct MochiLogApp: App {
+final class MochiLogApp: UIResponder, UIApplicationDelegate {
   private static let appGroupIdentifier = "group.net.ryuya-dev.MochiLog"
 
-  init() {
+  func application(_ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+  ) -> Bool {
     prepareApplicationSupportDirectories()
-
-    // Watch Connectivityセッションを開始
     WatchConnectivityManager.shared.startSession()
+    return true
+  }
 
-    // ファイルピッカー経由の単一ファイル処理完了通知（ログのみ）
-    NotificationCenter.default.addObserver(
-      forName: NSNotification.Name("SharedLogProcessingCompleted"),
-      object: nil,
-      queue: .main
-    ) { notification in
-      let hash = notification.userInfo?["contentHash"] as? Int
-      print(
-        "[MochiLogApp] Single file processing completed. Hash: \(String(describing: hash))")
+  func application(_ application: UIApplication,
+    configurationForConnecting connectingSceneSession: UISceneSession,
+    options: UIScene.ConnectionOptions
+  ) -> UISceneConfiguration {
+    let configuration = UISceneConfiguration(name: nil, sessionRole: connectingSceneSession.role)
+    configuration.delegateClass = MochiLogSceneDelegate.self
+    return configuration
+  }
+
+  static func route(_ urls: [URL]) {
+    for url in urls {
+      if url.scheme == "mochilog" {
+        handleShortcutCallback(url)
+      } else {
+        SharedImportQueue.shared.enqueue(url, presentsResults: AppSettings.shared.openAppAfterShareImport)
+      }
     }
   }
 
@@ -51,179 +63,7 @@ struct MochiLogApp: App {
     print("App Group database path checked: \(appGroupSupportURL.path)")
   }
 
-  var body: some Scene {
-    WindowGroup {
-      MochiLogRootView()
-        .task {
-          enforceSingleScene()
-        }
-        .onOpenURL { url in
-          enforceSingleScene()
-          handleOpenURL(url)
-        }
-    }
-    .handlesExternalEvents(matching: ["*"])
-  }
-
-  // 重複URL処理防止（iPadの複数シーン対策）
-  private static var lastProcessedURL: URL?
-  private static var lastProcessedURLTime: Date?
-
-  // MARK: - 共有ファイルキュー（複数ファイル順次処理用）
-
-  /// 共有ファイルのキューエントリ（テキスト読み込み済み）
-  private struct SharedFileEntry {
-    let text: String?   // nil = 読み込み失敗
-    let filename: String
-    let silent: Bool
-  }
-
-  /// 処理待ちキュー（onOpenURLが複数回呼ばれた分をまとめる）
-  private static var pendingSharedQueue: [SharedFileEntry] = []
-  /// デバウンス用ワークアイテム
-  private static var queueFlushWorkItem: DispatchWorkItem?
-
-  // デバッグ用: onOpenURL呼び出しのカウンター
-  private static var openURLCallCount = 0
-
-  // 開かれたURLを確認して処理（Document Types経由）
-  private func handleOpenURL(_ url: URL) {
-    MochiLogApp.openURLCallCount += 1
-    let callIndex = MochiLogApp.openURLCallCount
-
-    // ① iOSが何回呼び出したか確認するためのログ
-    print("")
-    print("[デバッグ] === onOpenURL #\(callIndex) ===")
-    print("[デバッグ] URL: \(url.lastPathComponent)")
-    print("[デバッグ] フルパス: \(url.path)")
-    print("[デバッグ] scheme=\(url.scheme ?? "nil")  isFileURL=\(url.isFileURL)")
-
-    // ショートカットコールバックの処理
-    if url.scheme == "mochilog" {
-      print("[デバッグ] → mochilog://スキームなのでショートカットコールバック処理")
-      handleShortcutCallback(url)
-      return
-    }
-
-    // 5秒以内の同じURL処理をスキップ
-    let now = Date()
-    if let lastURL = MochiLogApp.lastProcessedURL,
-      let lastTime = MochiLogApp.lastProcessedURLTime,
-      lastURL == url,
-      now.timeIntervalSince(lastTime) < 5.0
-    {
-      // ② URL重複ブロック: iPadの複数シーンが同一URLを送ってきた
-      print("[デバッグ] → ✖ 5秒以内の同一URL → スキップ (elapsed=\(String(format: "%.2f", now.timeIntervalSince(lastTime)))s)")
-      return
-    }
-    MochiLogApp.lastProcessedURL = url
-    MochiLogApp.lastProcessedURLTime = now
-    print("[デバッグ] → URL重複チェック: 通過")
-
-    guard url.isFileURL else {
-      print("[デバッグ] → ✖ fileURLでないのでスキップ")
-      return
-    }
-
-    // ファイルへのアクセス権を要求（共有シートからのファイルはInboxにコピーされる）
-    let secure = url.startAccessingSecurityScopedResource()
-    print("[デバッグ] → startAccessingSecurityScopedResource: \(secure)")
-    defer {
-      if secure { url.stopAccessingSecurityScopedResource() }
-      // 処理後にInboxのファイルを削除
-      cleanupInboxFile(url)
-    }
-
-    // 複数エンコーディングを順番に試してテキストを読み込む
-    var text: String? = nil
-    if let s = try? String(contentsOf: url, encoding: .utf8) { text = s }
-    if text == nil, let s = try? String(contentsOf: url, encoding: .utf16) { text = s }
-    if text == nil, let s = try? String(contentsOf: url, encoding: .isoLatin1) { text = s }
-    if text == nil, let data = try? Data(contentsOf: url),
-      let s = String(data: data, encoding: .shiftJIS) { text = s }
-    if text == nil, let s = try? String(contentsOf: url) { text = s }
-
-    // ③ 読み込み結果
-    if let text = text {
-      print("[デバッグ] → ✓ 読み込み成功: \(text.count)文字")
-    } else {
-      print("[デバッグ] → ✖ 読み込み失敗 (text=nil)")
-    }
-
-    // 読み込み結果をキューに追加してデバウンス送信
-    let silent = !AppSettings.shared.openAppAfterShareImport
-    enqueueAndFlush(
-      entry: SharedFileEntry(text: text, filename: url.lastPathComponent, silent: silent)
-    )
-  }
-
-  /// 共有ファイルをキューに追加し、0.5秒デバウンス後にまとめて通知する
-  /// ※ onOpenURL は常にメインスレッドで呼ばれるため、ロック不要
-  private func enqueueAndFlush(entry: SharedFileEntry) {
-    MochiLogApp.pendingSharedQueue.append(entry)
-
-    // ④ キューの現在状態
-    print("[デバッグ] → キュー追加: \(entry.filename) [キュー内: \(MochiLogApp.pendingSharedQueue.map(\.filename).joined(separator: ", "))]")
-
-    // 既存のタイマーをキャンセルして再スケジュール（デバウンス）
-    MochiLogApp.queueFlushWorkItem?.cancel()
-    let workItem = DispatchWorkItem {
-      let queue = MochiLogApp.pendingSharedQueue
-      MochiLogApp.pendingSharedQueue = []
-      MochiLogApp.queueFlushWorkItem = nil
-
-      guard !queue.isEmpty else { return }
-
-      // ⑤ デバウンス後の実際に処理する件数
-      print("")
-      print("[デバッグ] === デバウンスフラッシュ ===")
-      print("[デバッグ] ProcessSharedLogQueue 送信: \(queue.count)件")
-      queue.enumerated().forEach { i, e in
-        print("[デバッグ]   [\(i)] \(e.filename) text=\(e.text != nil ? "\(e.text!.count)文字" : "nil")")
-      }
-
-      // [[String: Any]] に変換してNotificationで送信
-      let entries: [[String: Any]] = queue.map { entry in
-        var dict: [String: Any] = [
-          "filename": entry.filename,
-          "silent": entry.silent,
-        ]
-        if let text = entry.text {
-          dict["text"] = text
-        }
-        return dict
-      }
-
-      NotificationCenter.default.post(
-        name: NSNotification.Name("ProcessSharedLogQueue"),
-        object: nil,
-        userInfo: ["entries": entries]
-      )
-    }
-    MochiLogApp.queueFlushWorkItem = workItem
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: workItem)
-  }
-
-  // iPadで複数シーンが生成される場合に、先頭の1つだけ残して閉じる
-  private func enforceSingleScene() {
-    let scenes = UIApplication.shared.connectedScenes
-    guard scenes.count > 1 else { return }
-
-    for scene in scenes.dropFirst() {
-      UIApplication.shared.requestSceneSessionDestruction(scene.session, options: nil)
-    }
-  }
-
-  // Inboxフォルダにコピーされたファイルを削除
-  private func cleanupInboxFile(_ url: URL) {
-    // Inboxフォルダ内のファイルかどうかをチェック
-    if url.path.contains("/Inbox/") {
-      try? FileManager.default.removeItem(at: url)
-    }
-  }
-
-  // ショートカットコールバックの処理
-  private func handleShortcutCallback(_ url: URL) {
+  private static func handleShortcutCallback(_ url: URL) {
     switch url.host {
     case "shortcut-success":
       // 注: 現在はx-successコールバックを使用していないため、このケースは呼ばれない
@@ -254,6 +94,29 @@ struct MochiLogApp: App {
     default:
       break
     }
+  }
+}
+
+final class MochiLogSceneDelegate: UIResponder, UIWindowSceneDelegate {
+  var window: UIWindow?
+
+  func scene(_ scene: UIScene, willConnectTo session: UISceneSession,
+    options connectionOptions: UIScene.ConnectionOptions
+  ) {
+    guard let windowScene = scene as? UIWindowScene else { return }
+    let window = UIWindow(windowScene: windowScene)
+    window.rootViewController = UIHostingController(rootView: MochiLogRootView())
+    self.window = window
+    window.makeKeyAndVisible()
+    open(connectionOptions.urlContexts)
+  }
+
+  func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+    open(URLContexts)
+  }
+
+  private func open(_ contexts: Set<UIOpenURLContext>) {
+    MochiLogApp.route(contexts.map(\.url).sorted { $0.absoluteString < $1.absoluteString })
   }
 }
 

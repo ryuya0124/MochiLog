@@ -109,7 +109,7 @@ struct HealthTrendView: View {
 
       }
     }
-    .frame(height: horizontalSizeClass == .regular ? 480 : nil, alignment: .top)
+    .frame(minHeight: horizontalSizeClass == .regular ? 480 : nil, alignment: .top)
     .padding()
     .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16))
     .onAppear {

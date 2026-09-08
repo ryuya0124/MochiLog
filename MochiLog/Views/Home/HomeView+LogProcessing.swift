@@ -476,112 +476,75 @@ extension HomeView {
 // MARK: - 共有メニューバッチ処理（並列）
 extension HomeView {
 
-  /// 共有メニューからの複数ファイルキューを並列処理する
-  ///
-  /// 処理フロー:
-  /// 1. 全ファイルを「処理中」状態で結果シートをすぐに開く
-  /// 2. withTaskGroup で全ファイルを同時にパース
-  /// 3. パース完了次第、即座に対応する行を更新（リアルタイム）
-  ///
-  /// - Parameter entries: MochiLogAppから受け取ったエントリ配列（[[String: Any]]）
-  func processSharedLogQueue(_ entries: [[String: Any]]) async {
-    let total = entries.count
-    guard total > 0 else { return }
-
-    // 1件のみ → 従来の単ファイルフロー（詳細画面を開く）
-    if total == 1 {
-      let entry = entries[0]
-      guard let text = entry["text"] as? String, !text.isEmpty else {
-        // テキスト読み込み失敗：エラーアラートを表示
-        await MainActor.run {
-          errorMessage = "ファイルの読み込みに失敗しました。"
-          showingErrorAlert = true
-        }
-        return
-      }
-      let silent = entry["silent"] as? Bool ?? false
-      // 既存の単ファイル処理（解析→詳細画面）を再利用
-      await MainActor.run {
-        processLogTextAsync(text, silent: silent, contentHash: text.hashValue)
-      }
+  /// One consumer owns all batches, including files arriving while parsing is in flight.
+  @MainActor
+  func consumeSharedImports() async {
+    let queue = SharedImportQueue.shared
+    guard queue.begin() else {
+      if queue.isConsuming && queue.shouldPresentResults { showingBatchResults = true }
       return
     }
-
-    // 2件以上 → バッチUI（並列処理＋リアルタイム結果シート）
-
-    // ファイル名とテキストを先に抽出（Sendable な型として TaskGroup に渡すため）
-    let filenames: [String] = entries.map { $0["filename"] as? String ?? "不明" }
-    let texts: [String?] = entries.map { $0["text"] as? String }
-
-    let enableValidation = AppSettings.shared.enableCapacityValidation
+    defer { queue.finish() }
+    isProcessing = true
+    defer { isProcessing = false }
+    if !showingBatchResults { batchImportResults = [] }
+    showingBatchResults = queue.shouldPresentResults
+    let validation = AppSettings.shared.enableCapacityValidation
     let threshold = AppSettings.shared.capacityValidationThreshold
-
-    // Step 1: 全件を「処理中」状態でプレースホルダーを作り、即シートを開く
-    await MainActor.run {
-      batchImportResults = (0..<total).map { index in
-        FileImportResult(
-          id: index,
-          filename: filenames[index],
-          parsedDate: nil,
-          deviceName: nil,
-          rawText: texts[index],
-          status: .processing,
-          errorMessage: nil
-        )
+    while true {
+      let urls = queue.takeNext()
+      if urls.isEmpty { break }
+      if queue.shouldPresentResults { showingBatchResults = true }
+      let offset = batchImportResults.count
+      batchImportResults += urls.enumerated().map { index, url in
+        FileImportResult(id: offset + index, filename: url.lastPathComponent,
+          parsedDate: nil, deviceName: nil, rawText: nil, status: .processing, errorMessage: nil)
       }
-      showingBatchResults = true
-    }
-
-    // Step 2: 全ファイルを並列でパース、完了次第 UI を更新
-    await withTaskGroup(of: Void.self) { group in
-      for index in 0..<total {
-        let filename = filenames[index]
-        let text = texts[index]
-
-        group.addTask(priority: .userInitiated) {
-          // テキストが存在しない（読み込み失敗）ケース
-          guard let text = text, !text.isEmpty else {
-            await MainActor.run {
-              batchImportResults[index] = FileImportResult(
-                id: index,
-                filename: filename,
-                parsedDate: nil,
-                deviceName: nil,
-                rawText: nil,
-                status: .error,
-                errorMessage: "ファイルの読み込みに失敗しました。文字エンコーディングを確認してください。"
-              )
-            }
-            return
-          }
-
-          // バックグラウンドでログをパース
-          // LogParser.parse は同期関数なので DispatchQueue でラップ
-          let parseResult: LogParser.ParseResult = await withCheckedContinuation { continuation in
-            DispatchQueue.global(qos: .userInitiated).async {
-              let result = LogParser.parse(
-                text: text,
-                enableValidation: enableValidation,
-                validationThreshold: threshold
-              )
-              continuation.resume(returning: result)
+      // A bounded window avoids holding dozens of large analytics logs in memory.
+      for start in stride(from: 0, to: urls.count, by: 2) {
+        let end = min(start + 2, urls.count)
+        let parsed = await withTaskGroup(of: (Int, String?, LogParser.ParseResult?).self) { group in
+          for index in start..<end {
+            let url = urls[index]
+            group.addTask {
+              await withCheckedContinuation { continuation in
+                DispatchQueue.global(qos: .userInitiated).async {
+                  let text = try? LogTextReader.read(url)
+                  let result = text.map {
+                    LogParser.parse(text: $0, enableValidation: validation, validationThreshold: threshold)
+                  }
+                  continuation.resume(returning: (index, text, result))
+                }
+              }
             }
           }
-
-          // パース完了 → メインスレッドで判定・保存・UI更新
-          await MainActor.run {
-            let itemResult = processBatchItem(
-              id: index,
-              parseResult: parseResult,
-              filename: filename,
-              rawText: text
-            )
-            batchImportResults[index] = itemResult
+          var values: [(Int, String?, LogParser.ParseResult?)] = []
+          for await value in group { values.append(value) }
+          return values.sorted { $0.0 < $1.0 }
+        }
+        // Deterministic insertion makes duplicate handling independent of parse completion order.
+        for (index, text, parsedResult) in parsed {
+          let id = offset + index
+          let url = urls[index]
+          if let text, let parsedResult {
+            batchImportResults[id] = processBatchItem(id: id, parseResult: parsedResult,
+              filename: url.lastPathComponent, rawText: text)
+          } else {
+            batchImportResults[id] = FileImportResult(id: id, filename: url.lastPathComponent,
+              parsedDate: nil, deviceName: nil, rawText: nil, status: .error,
+              errorMessage: String(localized: "file_read_error", table: "Home"))
           }
+          let status = batchImportResults[id].status
+          queue.acknowledge(url, saved: status == .success || status == .duplicate)
         }
       }
-
-      // 全タスクの完了を待つ（withTaskGroup は暗黙的に待機）
+    }
+    if !queue.shouldPresentResults {
+      if batchImportResults.contains(where: { $0.status == .needsReview || $0.status == .error }) {
+        showingBatchResults = true
+      } else {
+        SettingsRedirectHelper.redirectToPrivacyAnalytics()
+      }
     }
   }
 
@@ -623,6 +586,12 @@ extension HomeView {
         status: .error,
         errorMessage: String(localized: "capacity_mismatch_error", table: "Home")
       )
+    }
+
+    if parseResult.isCapacityMismatch {
+      return FileImportResult(id: id, filename: filename, parsedDate: logDate,
+        deviceName: nil, rawText: rawText, status: .needsReview,
+        errorMessage: String(localized: "capacity_mismatch_error", table: "Home"))
     }
 
     // デバイス名解決
@@ -703,7 +672,7 @@ extension HomeView {
         filename: filename,
         parsedDate: logDate,
         deviceName: actualDeviceName,
-        rawText: rawText,
+        rawText: nil,
         status: .duplicate,
         errorMessage: nil
       )
@@ -717,17 +686,25 @@ extension HomeView {
       deviceModelCodeOverride: actualModelCode,
       designCapacityOverride: designCap
     )
-    saveRecord(record, deviceName: actualDeviceName)
+    dataStore.insert(record)
+    do {
+      try dataStore.saveForImport()
+      let key = "\(record.logDate.timeIntervalSince1970)_\(actualDeviceName)"
+      HomeView.recentlyAddedLogs[key] = Date()
+    } catch {
+      return FileImportResult(id: id, filename: filename, parsedDate: logDate,
+        deviceName: actualDeviceName, rawText: rawText, status: .error,
+        errorMessage: error.localizedDescription)
+    }
 
     return FileImportResult(
       id: id,
       filename: filename,
       parsedDate: logDate,
       deviceName: actualDeviceName,
-      rawText: rawText,
+      rawText: nil,
       status: .success,
       errorMessage: nil
     )
   }
 }
-

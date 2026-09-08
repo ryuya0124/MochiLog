@@ -67,6 +67,11 @@ class DataStore: ObservableObject {
     fatalError("Subclass must override save()")
   }
 
+  /// Imports must distinguish a durable save from a rolled-back write.
+  func saveForImport() throws {
+    fatalError("Subclass must override saveForImport()")
+  }
+
   /// 特定デバイスのレコードを取得（日付昇順）
   func fetchRecords(for deviceName: String, ascending: Bool = true) -> [BatteryRecord] {
     fatalError("Subclass must override fetchRecords(for:ascending:)")

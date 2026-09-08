@@ -51,11 +51,11 @@ struct FileImportResult: Identifiable {
 
     var label: String {
       switch self {
-      case .processing:  return "処理中"
-      case .success:     return "保存完了"
-      case .duplicate:   return "重複スキップ"
-      case .needsReview: return "手動選択必要"
-      case .error:       return "エラー"
+      case .processing:  return String(localized: "processing", table: "BatchImport")
+      case .success:     return String(localized: "saved", table: "BatchImport")
+      case .duplicate:   return String(localized: "duplicate_skipped", table: "BatchImport")
+      case .needsReview: return String(localized: "review", table: "BatchImport")
+      case .error:       return String(localized: "error", table: "BatchImport")
       }
     }
 
@@ -70,6 +70,8 @@ struct FileImportResult: Identifiable {
 /// 共有インポートの結果シート
 /// results はリアルタイムで更新される @Binding を受け取る
 struct BatchImportResultView: View {
+  @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+  @Environment(\.dynamicTypeSize) private var dynamicTypeSize
   @Binding var results: [FileImportResult]
   let onResolve: (FileImportResult) -> Void
   let onDismiss: () -> Void
@@ -93,15 +95,17 @@ struct BatchImportResultView: View {
           summaryCard
           resultList
         }
+        .frame(maxWidth: 850)
+        .frame(maxWidth: .infinity)
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
       }
       .background(Color(uiColor: .systemGroupedBackground))
-      .navigationTitle("処理結果")
+      .navigationTitle(String(localized: "title", table: "BatchImport"))
       .navigationBarTitleDisplayMode(.large)
       .toolbar {
         ToolbarItem(placement: .confirmationAction) {
-          Button("完了") {
+          Button(String(localized: "done", table: "BatchImport")) {
             onDismiss()
           }
           .fontWeight(.semibold)
@@ -110,6 +114,7 @@ struct BatchImportResultView: View {
         }
       }
     }
+    .interactiveDismissDisabled(!isAllDone)
   }
 
   // MARK: - サマリーカード
@@ -119,7 +124,7 @@ struct BatchImportResultView: View {
       // ヘッダー行：処理状況メッセージ
       if isAllDone {
         Label {
-          Text("\(results.count)件の処理が完了しました")
+          Text(String(format: String(localized: "completed_count", table: "BatchImport"), results.count))
             .font(.headline)
         } icon: {
           Image(systemName: "checkmark.circle")
@@ -129,7 +134,7 @@ struct BatchImportResultView: View {
         HStack(spacing: 10) {
           ProgressView()
             .scaleEffect(0.85)
-          Text("\(results.count)件中 \(completedCount)件 完了")
+          Text(String(format: String(localized: "progress_count", table: "BatchImport"), completedCount, results.count))
             .font(.headline)
             .contentTransition(.numericText())
             .animation(.spring(duration: 0.3), value: completedCount)
@@ -137,31 +142,29 @@ struct BatchImportResultView: View {
       }
 
       // 成功 / 重複 / 要手動選択 / エラー バッジ行
-      HStack(spacing: 0) {
+      LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count:
+        dynamicTypeSize.isAccessibilitySize ? 1 : (horizontalSizeClass == .compact ? 2 : 4)), spacing: 16) {
         summaryBadge(
           count: successCount,
-          label: "保存完了",
+          label: String(localized: "saved", table: "BatchImport"),
           color: FileImportResult.ImportStatus.success.color,
           icon: "checkmark.circle.fill"
         )
-        Divider().frame(height: 40)
         summaryBadge(
           count: duplicateCount,
-          label: "重複",
+          label: String(localized: "duplicate", table: "BatchImport"),
           color: FileImportResult.ImportStatus.duplicate.color,
           icon: "arrow.triangle.2.circlepath.circle.fill"
         )
-        Divider().frame(height: 40)
         summaryBadge(
           count: needsReviewCount,
-          label: "手動選択",
+          label: String(localized: "manual_selection", table: "BatchImport"),
           color: FileImportResult.ImportStatus.needsReview.color,
           icon: "hand.raised.fill"
         )
-        Divider().frame(height: 40)
         summaryBadge(
           count: errorCount,
-          label: "エラー",
+          label: String(localized: "error", table: "BatchImport"),
           color: FileImportResult.ImportStatus.error.color,
           icon: "xmark.circle.fill"
         )
@@ -179,16 +182,18 @@ struct BatchImportResultView: View {
   private func summaryBadge(count: Int, label: String, color: Color, icon: String) -> some View {
     VStack(spacing: 6) {
       Image(systemName: icon)
-        .font(.system(size: 22, weight: .medium))
+        .font(.title2.weight(.medium))
         .foregroundStyle(count > 0 ? color : Color(uiColor: .tertiaryLabel))
       Text("\(count)")
-        .font(.system(size: 24, weight: .bold, design: .rounded))
+        .font(.system(.title, design: .rounded).bold())
         .foregroundStyle(count > 0 ? color : Color(uiColor: .tertiaryLabel))
         .contentTransition(.numericText())
         .animation(.spring(duration: 0.4), value: count)
       Text(label)
         .font(.caption)
         .foregroundStyle(Color(uiColor: .secondaryLabel))
+        .multilineTextAlignment(.center)
+        .fixedSize(horizontal: false, vertical: true)
     }
     .frame(maxWidth: .infinity)
   }
@@ -199,8 +204,9 @@ struct BatchImportResultView: View {
     LazyVStack(spacing: 0) {
       ForEach(results) { result in
         ResultRowView(result: result, onResolve: {
-          onResolve(result)
+          if isAllDone { onResolve(result) }
         })
+          .disabled(!isAllDone)
           .transition(
             .asymmetric(
               insertion: .opacity.combined(with: .move(edge: .top)),
@@ -252,11 +258,11 @@ private struct ResultRowView: View {
             .foregroundStyle(.primary)
             .transition(.opacity)
         } else if result.status == .processing {
-          Text("解析中…")
+          Text(String(localized: "parsing", table: "BatchImport"))
             .font(.body.weight(.semibold))
             .foregroundStyle(Color(uiColor: .secondaryLabel))
         } else {
-          Text("デバイス不明")
+          Text(String(localized: "unknown_device", table: "BatchImport"))
             .font(.body.weight(.semibold))
             .foregroundStyle(Color(uiColor: .secondaryLabel))
         }
@@ -280,11 +286,25 @@ private struct ResultRowView: View {
           Text(result.filename)
             .font(.caption)
             .foregroundStyle(Color(uiColor: .tertiaryLabel))
-            .lineLimit(1)
+            .lineLimit(2)
+            .truncationMode(.middle)
         } icon: {
           Image(systemName: "doc")
             .font(.caption2)
             .foregroundStyle(Color(uiColor: .tertiaryLabel))
+        }
+
+        HStack(spacing: 12) {
+          Label(result.status.label, systemImage: result.status.iconName)
+            .font(.caption.weight(.medium))
+            .foregroundStyle(result.status.color)
+            .fixedSize(horizontal: false, vertical: true)
+          if result.status == .needsReview {
+            Button(String(localized: "add_manually", table: "BatchImport"), action: onResolve)
+              .font(.body.weight(.semibold))
+              .frame(minHeight: 44)
+              .buttonStyle(.bordered)
+          }
         }
 
         // エラーメッセージ（エラー時のみ）
@@ -304,37 +324,9 @@ private struct ResultRowView: View {
       .animation(.spring(duration: 0.4), value: result.parsedDate)
       .animation(.spring(duration: 0.4), value: result.errorMessage)
 
-      Spacer(minLength: 0)
 
-      // ステータスラベルとアクションボタン（右端）
-      VStack(alignment: .trailing, spacing: 6) {
-        Text(result.status.label)
-          .font(.caption2.weight(.medium))
-          .foregroundStyle(result.status.color)
-          .padding(.horizontal, 8)
-          .padding(.vertical, 4)
-          .background(result.status.color.opacity(0.15))
-          .clipShape(Capsule())
-          .animation(.spring(duration: 0.4), value: result.status)
-
-        if result.status == .needsReview {
-          Button {
-            onResolve()
-          } label: {
-            Text("手動追加")
-              .font(.caption2.weight(.bold))
-              .foregroundColor(.white)
-              .padding(.horizontal, 10)
-              .padding(.vertical, 5)
-              .background(Color(red: 0.35, green: 0.37, blue: 0.90))
-              .clipShape(Capsule())
-          }
-          .buttonStyle(.plain)
-          .transition(.scale.combined(with: .opacity))
-        }
-      }
-      .padding(.top, 3)
     }
+    .frame(maxWidth: .infinity, alignment: .leading)
     .padding(.horizontal, 16)
     .padding(.vertical, 14)
   }

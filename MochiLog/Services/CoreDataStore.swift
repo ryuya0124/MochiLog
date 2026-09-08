@@ -252,6 +252,18 @@ final class CoreDataStore: DataStore {
     refreshRecords()
   }
 
+  override func saveForImport() throws {
+    do {
+      try viewContext.save()
+      refreshRecords()
+    } catch {
+      viewContext.rollback()
+      refreshRecords()
+      Task { @MainActor in ICloudSyncManager.shared.handleSaveError(error) }
+      throw error
+    }
+  }
+
   override func fetchRecords(for deviceName: String, ascending: Bool = true) -> [BatteryRecord] {
     let request = NSFetchRequest<CDBatteryRecord>(entityName: "CDBatteryRecord")
     request.predicate = NSPredicate(format: "deviceName == %@", deviceName)

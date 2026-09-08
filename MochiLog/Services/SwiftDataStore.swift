@@ -260,6 +260,18 @@ final class SwiftDataStore: DataStore {
     refreshRecords()
   }
 
+  override func saveForImport() throws {
+    do {
+      try modelContext.save()
+      refreshRecords()
+    } catch {
+      modelContext.rollback()
+      refreshRecords()
+      ICloudSyncManager.shared.handleSaveError(error)
+      throw error
+    }
+  }
+
   override func fetchRecords(for deviceName: String, ascending: Bool = true) -> [BatteryRecord] {
     let descriptor = FetchDescriptor<SDBatteryRecord>(
       predicate: #Predicate { $0.deviceName == deviceName },

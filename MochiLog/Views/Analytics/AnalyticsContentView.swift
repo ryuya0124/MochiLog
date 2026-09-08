@@ -10,6 +10,8 @@ struct AnalyticsContentView: View {
   @Binding var selectedRange: RangePreset
   @Binding var windowEnd: Date
 
+  @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+  @State private var availableWidth: CGFloat = 0
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
   // MARK: - バックグラウンド計算用の状態
@@ -98,7 +100,7 @@ struct AnalyticsContentView: View {
             DevicePickerView(deviceNames: cachedDeviceNames, selectedDevice: $selectedDevice)
 
             // iPad: 2列レイアウト、iPhone: 1列レイアウト
-            if horizontalSizeClass == .regular {
+            if availableWidth >= 850 && !dynamicTypeSize.isAccessibilitySize {
               // iPad向け：グラフと統計を同じ幅にまとめる
               VStack(spacing: 20) {
                 // iPad向け2列グリッド
@@ -180,6 +182,13 @@ struct AnalyticsContentView: View {
         .padding(12)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
         .allowsHitTesting(false)
+      }
+    }
+    .background {
+      GeometryReader { geometry in
+        Color.clear
+          .onAppear { availableWidth = geometry.size.width }
+          .onChange(of: geometry.size.width) { availableWidth = $0 }
       }
     }
     .onAppear {
