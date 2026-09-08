@@ -87,7 +87,7 @@ struct AnalyticsContentView: View {
         VStack(spacing: 16) {
           ProgressView()
             .scaleEffect(1.2)
-          Text(String(localized: "preparing_data", table: "Home"))
+          Text(L10n.string("preparing_data", table: "Home"))
             .font(.subheadline)
             .foregroundStyle(.secondary)
         }
@@ -175,7 +175,7 @@ struct AnalyticsContentView: View {
         VStack(spacing: 8) {
           ProgressView()
             .scaleEffect(1.0)
-          Text(String(localized: "preparing_data", table: "Home"))
+          Text(L10n.string("preparing_data", table: "Home"))
             .font(.caption)
             .foregroundStyle(.secondary)
         }

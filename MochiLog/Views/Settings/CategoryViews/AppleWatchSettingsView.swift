@@ -13,11 +13,11 @@ struct AppleWatchSettingsView: View {
   var body: some View {
     watchList
       .alert(
-        String(localized: "remove_watch", table: "Settings"),
+        L10n.string("remove_watch", table: "Settings"),
         isPresented: $showingRemoveConfirmation
       ) {
-        Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
-        Button(String(localized: "remove", table: "Common"), role: .destructive) {
+        Button(L10n.string("cancel", table: "Common"), role: .cancel) {}
+        Button(L10n.string("remove", table: "Common"), role: .destructive) {
           if let watch = watchToRemove {
             appSettings.removeWatch(model: watch)
           }
@@ -26,19 +26,19 @@ struct AppleWatchSettingsView: View {
         if let watch = watchToRemove {
           Text(
             String(
-              format: String(localized: "remove_watch_confirm_specific", table: "Settings"), watch))
+              format: L10n.string("remove_watch_confirm_specific", table: "Settings"), watch))
         }
       }
       .alert(
-        String(localized: "remove_all_watches", table: "Settings"),
+        L10n.string("remove_all_watches", table: "Settings"),
         isPresented: $showingRemoveAllConfirmation
       ) {
-        Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
-        Button(String(localized: "remove", table: "Common"), role: .destructive) {
+        Button(L10n.string("cancel", table: "Common"), role: .cancel) {}
+        Button(L10n.string("remove", table: "Common"), role: .destructive) {
           appSettings.unregisterAllWatches()
         }
       } message: {
-        Text(String(localized: "remove_all_watches_confirm", table: "Settings"))
+        Text(L10n.string("remove_all_watches_confirm", table: "Settings"))
       }
   }
 
@@ -54,10 +54,10 @@ struct AppleWatchSettingsView: View {
         if appSettings.registeredWatches.isEmpty {
           HStack {
             Label(
-              String(localized: "registered_watch", table: "Settings"),
+              L10n.string("registered_watch", table: "Settings"),
               systemImage: "applewatch")
             Spacer()
-            Text(String(localized: "not_registered", table: "Settings"))
+            Text(L10n.string("not_registered", table: "Settings"))
               .foregroundStyle(.secondary)
           }
         } else {
@@ -68,7 +68,7 @@ struct AppleWatchSettingsView: View {
 
         Button(action: { showingWatchPicker = true }) {
           Label(
-            String(localized: "add_watch", table: "Settings"),
+            L10n.string("add_watch", table: "Settings"),
             systemImage: "plus.circle"
           )
         }
@@ -76,7 +76,7 @@ struct AppleWatchSettingsView: View {
         if appSettings.registeredWatches.count > 1 {
           Button(action: { showingRemoveAllConfirmation = true }) {
             Label(
-              String(localized: "remove_all_watches", table: "Settings"),
+              L10n.string("remove_all_watches", table: "Settings"),
               systemImage: "trash"
             )
             .foregroundStyle(.red)
@@ -102,14 +102,14 @@ struct AppleWatchSettingsView: View {
         watchToRemove = watchModel
         showingRemoveConfirmation = true
       } label: {
-        Label(String(localized: "remove", table: "Common"), systemImage: "trash")
+        Label(L10n.string("remove", table: "Common"), systemImage: "trash")
       }
       .tint(.red)
     }
   }
 
   private var watchSectionHeader: some View {
-    Text(String(localized: "apple_watch_settings", table: "Settings"))
+    Text(L10n.string("apple_watch_settings", table: "Settings"))
   }
 
   private var watchSectionFooter: some View {
@@ -118,8 +118,8 @@ struct AppleWatchSettingsView: View {
 
   private var watchDescriptionText: String {
     appSettings.registeredWatches.isEmpty
-      ? String(localized: "watch_selection_description", table: "Settings")
-      : String(localized: "multiple_watch_description", table: "Settings")
+      ? L10n.string("watch_selection_description", table: "Settings")
+      : L10n.string("multiple_watch_description", table: "Settings")
   }
 
   private var primaryWatchModel: String? {
@@ -137,7 +137,7 @@ struct AppleWatchSettingsView: View {
 
       VStack(alignment: .leading, spacing: 6) {
         if primaryWatchModel != nil {
-          Text(String(localized: "registered", table: "Settings"))
+          Text(L10n.string("registered", table: "Settings"))
             .font(.subheadline)
             .foregroundStyle(.green)
         }

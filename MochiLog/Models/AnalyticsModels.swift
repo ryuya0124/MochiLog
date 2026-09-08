@@ -27,23 +27,23 @@ enum RangePreset: String, CaseIterable, Identifiable {
   var localizedName: String {
     switch self {
     case .auto:
-      return String(localized: "range_auto", table: "Analytics")
+      return L10n.string("range_auto", table: "Analytics")
     case .oneWeek:
-      return String(localized: "range_1w", table: "Analytics")
+      return L10n.string("range_1w", table: "Analytics")
     case .twoWeeks:
-      return String(localized: "range_2w", table: "Analytics")
+      return L10n.string("range_2w", table: "Analytics")
     case .oneMonth:
-      return String(localized: "range_1m", table: "Analytics")
+      return L10n.string("range_1m", table: "Analytics")
     case .threeMonths:
-      return String(localized: "range_3m", table: "Analytics")
+      return L10n.string("range_3m", table: "Analytics")
     case .sixMonths:
-      return String(localized: "range_6m", table: "Analytics")
+      return L10n.string("range_6m", table: "Analytics")
     case .oneYear:
-      return String(localized: "range_1y", table: "Analytics")
+      return L10n.string("range_1y", table: "Analytics")
     case .twoYears:
-      return String(localized: "range_2y", table: "Analytics")
+      return L10n.string("range_2y", table: "Analytics")
     case .threeYears:
-      return String(localized: "range_3y", table: "Analytics")
+      return L10n.string("range_3y", table: "Analytics")
     }
   }
 }

@@ -83,6 +83,7 @@ final class WatchConnectivityManager: NSObject, ObservableObject {
         let context: [String: Any] = [
           "records": data,
           "syncDate": Date().timeIntervalSince1970,
+          "appLanguage": UserDefaults.standard.string(forKey: L10n.preferenceKey) ?? "system",
           "isSampleMode": isSampleMode,
         ]
 
@@ -125,6 +126,7 @@ final class WatchConnectivityManager: NSObject, ObservableObject {
       let message: [String: Any] = [
         "records": data,
         "syncDate": Date().timeIntervalSince1970,
+          "appLanguage": UserDefaults.standard.string(forKey: L10n.preferenceKey) ?? "system",
       ]
 
       session.sendMessage(

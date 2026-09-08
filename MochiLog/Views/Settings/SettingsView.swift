@@ -72,7 +72,7 @@ struct SettingsView: View {
   var body: some View {
     NavigationStack {
       settingsList
-        .navigationTitle(String(localized: "settings_title", table: "Settings"))
+        .navigationTitle(L10n.string("settings_title", table: "Settings"))
         .onAppear {
           setupShortcutNotification()
         }
@@ -92,30 +92,30 @@ struct SettingsView: View {
           DonationView()
         }
         .alert(
-          String(localized: "delete_all_data", table: "Settings"),
+          L10n.string("delete_all_data", table: "Settings"),
           isPresented: $showingDeleteConfirmation
         ) {
-          Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
-          Button(String(localized: "delete", table: "Common"), role: .destructive) {
+          Button(L10n.string("cancel", table: "Common"), role: .cancel) {}
+          Button(L10n.string("delete", table: "Common"), role: .destructive) {
             deleteAllRecords()
           }
         } message: {
-          Text(String(localized: "delete_all_data_confirm", table: "Settings"))
+          Text(L10n.string("delete_all_data_confirm", table: "Settings"))
         }
         .alert(
-          String(localized: "no_data_to_delete_title", table: "Settings"),
+          L10n.string("no_data_to_delete_title", table: "Settings"),
           isPresented: $showingNoDataToDeleteAlert
         ) {
-          Button(String(localized: "ok", table: "Common"), role: .cancel) {}
+          Button(L10n.string("ok", table: "Common"), role: .cancel) {}
         } message: {
-          Text(String(localized: "no_data_to_delete_message", table: "Settings"))
+          Text(L10n.string("no_data_to_delete_message", table: "Settings"))
         }
         .alert(
-          String(localized: "remove_watch", table: "Settings"),
+          L10n.string("remove_watch", table: "Settings"),
           isPresented: $showingRemoveWatchConfirmation
         ) {
-          Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
-          Button(String(localized: "remove", table: "Common"), role: .destructive) {
+          Button(L10n.string("cancel", table: "Common"), role: .cancel) {}
+          Button(L10n.string("remove", table: "Common"), role: .destructive) {
             if let watch = watchToRemove {
               appSettings.removeWatch(model: watch)
             }
@@ -124,22 +124,22 @@ struct SettingsView: View {
           if let watch = watchToRemove {
             Text(
               String(
-                format: String(localized: "remove_watch_confirm_specific", table: "Settings"), watch
+                format: L10n.string("remove_watch_confirm_specific", table: "Settings"), watch
               ))
           } else {
-            Text(String(localized: "remove_watch_confirm", table: "Settings"))
+            Text(L10n.string("remove_watch_confirm", table: "Settings"))
           }
         }
         .alert(
-          String(localized: "remove_all_watches", table: "Settings"),
+          L10n.string("remove_all_watches", table: "Settings"),
           isPresented: $showingRemoveAllWatchesConfirmation
         ) {
-          Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
-          Button(String(localized: "remove", table: "Common"), role: .destructive) {
+          Button(L10n.string("cancel", table: "Common"), role: .cancel) {}
+          Button(L10n.string("remove", table: "Common"), role: .destructive) {
             appSettings.unregisterAllWatches()
           }
         } message: {
-          Text(String(localized: "remove_all_watches_confirm", table: "Settings"))
+          Text(L10n.string("remove_all_watches_confirm", table: "Settings"))
         }
         .sheet(isPresented: $showingDeviceDeletePicker) {
           DeviceDeletePickerView(availableDevices: availableDevices) { deviceName in
@@ -148,11 +148,11 @@ struct SettingsView: View {
           }
         }
         .alert(
-          String(localized: "delete_device_data_title", table: "Settings"),
+          L10n.string("delete_device_data_title", table: "Settings"),
           isPresented: $showingDeviceDeleteConfirmation
         ) {
-          Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
-          Button(String(localized: "delete", table: "Common"), role: .destructive) {
+          Button(L10n.string("cancel", table: "Common"), role: .cancel) {}
+          Button(L10n.string("delete", table: "Common"), role: .destructive) {
             if let deviceName = selectedDeviceToDelete {
               deleteRecordsForDevice(deviceName)
               // 削除後はデバイス選択をリセット（再選択を促す）
@@ -163,21 +163,21 @@ struct SettingsView: View {
           if let deviceName = selectedDeviceToDelete {
             Text(
               String(
-                format: String(localized: "delete_device_data_confirm", table: "Settings"),
+                format: L10n.string("delete_device_data_confirm", table: "Settings"),
                 deviceName
               ))
           }
         }
         .alert(
-          String(localized: "shortcut_required_title", table: "Settings"),
+          L10n.string("shortcut_required_title", table: "Settings"),
           isPresented: $showingShortcutSetupPrompt
         ) {
-          Button(String(localized: "setup_now", table: "Settings"), role: .none) {
+          Button(L10n.string("setup_now", table: "Settings"), role: .none) {
             SettingsRedirectHelper.openShortcutSetup()
           }
-          Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
+          Button(L10n.string("cancel", table: "Common"), role: .cancel) {}
         } message: {
-          Text(String(localized: "shortcut_required_message", table: "Settings"))
+          Text(L10n.string("shortcut_required_message", table: "Settings"))
         }
         .fileExporter(
           isPresented: $showingExportSheet,
@@ -203,7 +203,7 @@ struct SettingsView: View {
           print("[SettingsView] showingImportSheet changed")
         }
         .alert(
-          String(localized: "import_result_title", table: "Settings"),
+          L10n.string("import_result_title", table: "Settings"),
           isPresented: $showingImportAlert
         ) {
           Button("OK", role: .cancel) {}
@@ -211,7 +211,7 @@ struct SettingsView: View {
           Text(importResultMessage)
         }
         .alert(
-          String(localized: "export_error_title", table: "Settings"),
+          L10n.string("export_error_title", table: "Settings"),
           isPresented: $showingExportError
         ) {
           Button("OK", role: .cancel) {}
@@ -339,7 +339,11 @@ struct SettingsView: View {
   @ViewBuilder
   private var settingsContent: some View {
     // MARK: - 一般
-    Section(String(localized: "general", table: "Settings")) {
+    Section(L10n.string("general", table: "Settings")) {
+      NavigationLink(destination: LanguageSettingsView()) {
+        Label(L10n.string("language_title", table: "Language"), systemImage: "globe")
+      }
+      .accessibilityIdentifier("settings.language")
       // iCloud同期画面へのリンク
       if #available(iOS 17, *) {
         Button {
@@ -349,12 +353,12 @@ struct SettingsView: View {
             HStack(spacing: 12) {
               Image(systemName: "icloud.fill")
                 .foregroundColor(appSettings.accentColor.color)
-              Text(String(localized: "icloud_sync_settings", defaultValue: "iCloud同期設定", table: "Settings"))
+              Text(L10n.string("icloud_sync_settings", defaultValue: "iCloud同期設定", table: "Settings"))
                 .foregroundColor(.primary)
             }
-            
+
             Spacer()
-            
+
             Image(systemName: "chevron.right")
               .font(.system(size: 14, weight: .semibold))
               .foregroundColor(Color(UIColor.tertiaryLabel))
@@ -366,7 +370,7 @@ struct SettingsView: View {
       }
 
       Picker(
-        String(localized: "accent_color", table: "Settings"),
+        L10n.string("accent_color", table: "Settings"),
         selection: $appSettings.accentColor
       ) {
         ForEach(AppSettings.ThemeColor.allCases) { theme in
@@ -386,7 +390,7 @@ struct SettingsView: View {
         appSettings.showingSampleData = true
         appSettings.selectedTabIndex = 0  // ホームページへ遷移
       } label: {
-        Label(String(localized: "view_sample_data", table: "Home"), systemImage: "eye")
+        Label(L10n.string("view_sample_data", table: "Home"), systemImage: "eye")
       }
     }
 
@@ -396,9 +400,9 @@ struct SettingsView: View {
       if appSettings.registeredWatches.isEmpty {
         HStack {
           Label(
-            String(localized: "registered_watch", table: "Settings"), systemImage: "applewatch")
+            L10n.string("registered_watch", table: "Settings"), systemImage: "applewatch")
           Spacer()
-          Text(String(localized: "not_registered", table: "Settings"))
+          Text(L10n.string("not_registered", table: "Settings"))
             .foregroundStyle(.secondary)
         }
       } else {
@@ -411,7 +415,7 @@ struct SettingsView: View {
               watchToRemove = watchModel
               showingRemoveWatchConfirmation = true
             } label: {
-              Label(String(localized: "remove", table: "Common"), systemImage: "trash")
+              Label(L10n.string("remove", table: "Common"), systemImage: "trash")
             }
             .tint(.red)
           }
@@ -421,7 +425,7 @@ struct SettingsView: View {
       // Watchを追加ボタン
       Button(action: { showingWatchPicker = true }) {
         Label(
-          String(localized: "add_watch", table: "Settings"),
+          L10n.string("add_watch", table: "Settings"),
           systemImage: "plus.circle"
         )
       }
@@ -430,30 +434,30 @@ struct SettingsView: View {
       if appSettings.registeredWatches.count > 1 {
         Button(action: { showingRemoveAllWatchesConfirmation = true }) {
           Label(
-            String(localized: "remove_all_watches", table: "Settings"),
+            L10n.string("remove_all_watches", table: "Settings"),
             systemImage: "trash"
           )
           .foregroundStyle(.red)
         }
       }
     } header: {
-      Text(String(localized: "apple_watch_settings", table: "Settings"))
+      Text(L10n.string("apple_watch_settings", table: "Settings"))
     } footer: {
       Text(
         appSettings.registeredWatches.isEmpty
-          ? String(localized: "watch_selection_description", table: "Settings")
-          : String(localized: "multiple_watch_description", table: "Settings")
+          ? L10n.string("watch_selection_description", table: "Settings")
+          : L10n.string("multiple_watch_description", table: "Settings")
       )
     }
 
     // MARK: - データ管理
-    Section(String(localized: "data_management", table: "Settings")) {
+    Section(L10n.string("data_management", table: "Settings")) {
       // エクスポート
       Button {
         showingExportSheet = true
       } label: {
         Label {
-          Text(String(localized: "export_data", table: "Settings"))
+          Text(L10n.string("export_data", table: "Settings"))
             .foregroundStyle(.primary)
         } icon: {
           Image(systemName: "square.and.arrow.up.fill")
@@ -469,7 +473,7 @@ struct SettingsView: View {
         showingImportSheet = true
       } label: {
         Label {
-          Text(String(localized: "import_data", table: "Settings"))
+          Text(L10n.string("import_data", table: "Settings"))
             .foregroundStyle(.primary)
         } icon: {
           Image(systemName: "square.and.arrow.down.fill")
@@ -487,7 +491,7 @@ struct SettingsView: View {
           showingDeviceDeletePicker = true
         }
       } label: {
-        Label(String(localized: "delete_device_data", table: "Settings"), systemImage: "trash")
+        Label(L10n.string("delete_device_data", table: "Settings"), systemImage: "trash")
           .foregroundStyle(.red)
       }
       .tint(.red)
@@ -500,7 +504,7 @@ struct SettingsView: View {
         }
       } label: {
         Label(
-          String(localized: "delete_all_data", table: "Settings"), systemImage: "trash.fill"
+          L10n.string("delete_all_data", table: "Settings"), systemImage: "trash.fill"
         )
         .foregroundStyle(.red)
       }
@@ -508,10 +512,10 @@ struct SettingsView: View {
     }
 
     // MARK: - サポート
-    Section(String(localized: "support", table: "Settings")) {
+    Section(L10n.string("support", table: "Settings")) {
       Button(action: { showingTutorial = true }) {
         Label {
-          Text(String(localized: "view_tutorial", table: "Home"))
+          Text(L10n.string("view_tutorial", table: "Home"))
             .foregroundStyle(.primary)
         } icon: {
           Image(systemName: "lightbulb.fill")
@@ -528,7 +532,7 @@ struct SettingsView: View {
           SettingsRedirectHelper.openShortcutSetup()
         }) {
           Label {
-            Text(String(localized: "setup_shortcut", table: "Settings"))
+            Text(L10n.string("setup_shortcut", table: "Settings"))
               .foregroundStyle(.primary)
           } icon: {
             Image(systemName: "arrow.down.circle")
@@ -544,7 +548,7 @@ struct SettingsView: View {
         SettingsRedirectHelper.openAnalyticsViaShortcut()
       }) {
         Label {
-          Text(String(localized: "view_analytics_data", table: "Settings"))
+          Text(L10n.string("view_analytics_data", table: "Settings"))
             .foregroundStyle(.primary)
         } icon: {
           Image(systemName: "doc.text.magnifyingglass")
@@ -557,7 +561,7 @@ struct SettingsView: View {
 
       Button(action: { showingSupportForm = true }) {
         Label {
-          Text(String(localized: "contact_support", table: "Support"))
+          Text(L10n.string("contact_support", table: "Support"))
             .foregroundStyle(.primary)
         } icon: {
           Image(systemName: "envelope.fill")
@@ -573,7 +577,7 @@ struct SettingsView: View {
         }
       }) {
         Label {
-          Text(String(localized: "join_discord", table: "Settings"))
+          Text(L10n.string("join_discord", table: "Settings"))
             .foregroundStyle(.primary)
         } icon: {
           Image(systemName: "bubble.left.and.bubble.right.fill")
@@ -586,7 +590,7 @@ struct SettingsView: View {
 
       Button(action: { showingDonation = true }) {
         Label {
-          Text(String(localized: "donation_title", table: "Settings"))
+          Text(L10n.string("donation_title", table: "Settings"))
             .foregroundStyle(.primary)
         } icon: {
           Image(systemName: "heart.fill")
@@ -599,14 +603,14 @@ struct SettingsView: View {
     }
 
     // MARK: - デバッグ
-    Section(String(localized: "debug", table: "Support")) {
+    Section(L10n.string("debug", table: "Support")) {
       Toggle(
-        String(localized: "show_popup_on_load", table: "Support"),
+        L10n.string("show_popup_on_load", table: "Support"),
         isOn: $appSettings.showPopupOnLoad)
 
       NavigationLink(destination: DebugLogsView()) {
         Label(
-          String(localized: "view_error_logs", table: "Support"),
+          L10n.string("view_error_logs", table: "Support"),
           systemImage: "exclamationmark.triangle")
       }
     }
@@ -617,7 +621,7 @@ struct SettingsView: View {
         destination: AdvancedSettingsDetailView(appSettings: appSettings)
       ) {
         Label(
-          String(localized: "advanced_settings", table: "Settings"),
+          L10n.string("advanced_settings", table: "Settings"),
           systemImage: "gearshape.2.fill"
         )
       }
@@ -626,7 +630,7 @@ struct SettingsView: View {
     // MARK: - アプリについて
     Section {
       NavigationLink(destination: AboutView()) {
-        Label(String(localized: "about_app", table: "Settings"), systemImage: "info.circle")
+        Label(L10n.string("about_app", table: "Settings"), systemImage: "info.circle")
       }
     }
   }
@@ -698,8 +702,7 @@ struct SettingsView: View {
         guard url.startAccessingSecurityScopedResource() else {
           await MainActor.run {
             importResultMessage =
-              String(
-                localized: "import_error",
+              L10n.string("import_error",
                 table: "Settings"
               ) + ": ファイルへのアクセス権限がありません"
             showingImportAlert = true
@@ -732,21 +735,18 @@ struct SettingsView: View {
           await MainActor.run {
             isImporting = false
             if importResult.hasErrors {
-              importResultMessage = String(
-                localized: "import_partial_success",
+              importResultMessage = L10n.string("import_partial_success",
                 table: "Settings"
               ).replacingOccurrences(of: "{imported}", with: "\(importResult.importedRecords)")
                 .replacingOccurrences(of: "{skipped}", with: "\(importResult.skippedDuplicates)")
                 .replacingOccurrences(of: "{errors}", with: "\(importResult.errors.count)")
             } else if importResult.skippedDuplicates > 0 {
-              importResultMessage = String(
-                localized: "import_success_with_duplicates",
+              importResultMessage = L10n.string("import_success_with_duplicates",
                 table: "Settings"
               ).replacingOccurrences(of: "{imported}", with: "\(importResult.importedRecords)")
                 .replacingOccurrences(of: "{skipped}", with: "\(importResult.skippedDuplicates)")
             } else {
-              importResultMessage = String(
-                localized: "import_success",
+              importResultMessage = L10n.string("import_success",
                 table: "Settings"
               ).replacingOccurrences(of: "{count}", with: "\(importResult.importedRecords)")
             }
@@ -756,8 +756,7 @@ struct SettingsView: View {
           await MainActor.run {
             isImporting = false
             importResultMessage =
-              String(
-                localized: "import_error",
+              L10n.string("import_error",
                 table: "Settings"
               ) + ": \(error.localizedDescription)"
             showingImportAlert = true
@@ -767,8 +766,7 @@ struct SettingsView: View {
 
     case .failure(let error):
       importResultMessage =
-        String(
-          localized: "import_error",
+        L10n.string("import_error",
           table: "Settings"
         ) + ": \(error.localizedDescription)"
       showingImportAlert = true

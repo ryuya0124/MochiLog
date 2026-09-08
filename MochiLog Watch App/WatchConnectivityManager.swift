@@ -61,7 +61,7 @@ final class WatchConnectivityManager: NSObject, ObservableObject {
       session.activationState == .activated,
       session.isReachable
     else {
-      syncError = "Cannot connect to iPhone"
+      syncError = L10n.string("watch_connection_failed", table: "Language")
       return
     }
 
@@ -82,7 +82,7 @@ final class WatchConnectivityManager: NSObject, ObservableObject {
       errorHandler: { [weak self] error in
         Task { @MainActor in
           self?.isSyncing = false
-          self?.syncError = "Sync error: \(error.localizedDescription)"
+          self?.syncError = String(format: L10n.string("watch_sync_error", table: "Language"), error.localizedDescription)
           print("[WatchConnectivity] データリクエストエラー: \(error)")
         }
       }
@@ -93,6 +93,12 @@ final class WatchConnectivityManager: NSObject, ObservableObject {
 
   /// 受信したデータを処理
   private func handleReceivedData(_ data: [String: Any]) {
+    if let language = data["appLanguage"] as? String, let selection = AppLanguage(rawValue: language) {
+      LanguageSettings.shared.selection = selection
+    }
+    if data["error"] != nil {
+      syncError = L10n.string("watch_no_data", table: "Language")
+    }
     guard let recordsData = data["records"] as? Data else {
       print("[WatchConnectivity] レコードデータが見つかりません")
       return
@@ -118,7 +124,7 @@ final class WatchConnectivityManager: NSObject, ObservableObject {
       syncError = nil
       print("[WatchConnectivity] \(decodedRecords.count)件のレコードを受信しました（サンプルモード: \(isSampleMode)）")
     } catch {
-      syncError = "Failed to load data"
+      syncError = L10n.string("watch_load_failed", table: "Language")
       print("[WatchConnectivity] データのデコードに失敗: \(error)")
     }
   }
@@ -134,7 +140,7 @@ extension WatchConnectivityManager: WCSessionDelegate {
   ) {
     Task { @MainActor in
       if let error = error {
-        syncError = "Connection error: \(error.localizedDescription)"
+        syncError = String(format: L10n.string("watch_sync_error", table: "Language"), error.localizedDescription)
         print("[WatchConnectivity] アクティベーション失敗: \(error)")
         return
       }

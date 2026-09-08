@@ -38,12 +38,12 @@ extension HomeView {
       await consumeSharedImports()
       if !errors.isEmpty || files.isEmpty {
         errorMessage = errors.isEmpty
-          ? String(localized: "no_supported_files", table: "Home") : errors.joined(separator: "\n")
+          ? L10n.string("no_supported_files", table: "Home") : errors.joined(separator: "\n")
         showingErrorAlert = true
       }
     case .failure(let error):
       if (error as NSError).domain == NSCocoaErrorDomain && (error as NSError).code == CocoaError.userCancelled.rawValue { return }
-      errorMessage = "\(String(localized: "file_select_error", table: "Home")): \(error.localizedDescription)"
+      errorMessage = "\(L10n.string("file_select_error", table: "Home")): \(error.localizedDescription)"
       showingErrorAlert = true
     }
   }

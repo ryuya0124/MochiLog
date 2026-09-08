@@ -35,14 +35,14 @@ struct RegisteredDeviceSelectSheet: View {
             }
           }
         } header: {
-          Text(String(localized: "select_registered_device", table: "Settings"))
+          Text(L10n.string("select_registered_device", table: "Settings"))
         }
       }
-      .navigationTitle(String(localized: "select_device", table: "Common"))
+      .navigationTitle(L10n.string("select_device", table: "Common"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button(String(localized: "cancel", table: "Common")) {
+          Button(L10n.string("cancel", table: "Common")) {
             dismiss()
           }
         }

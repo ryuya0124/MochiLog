@@ -15,15 +15,15 @@ struct DataImportService {
     var errorDescription: String? {
       switch self {
       case .fileReadError:
-        return String(localized: "import_file_read_error", table: "Settings")
+        return L10n.string("import_file_read_error", table: "Settings")
       case .decodeError:
-        return String(localized: "import_decode_error", table: "Settings")
+        return L10n.string("import_decode_error", table: "Settings")
       case .invalidData:
-        return String(localized: "import_invalid_data", table: "Settings")
+        return L10n.string("import_invalid_data", table: "Settings")
       case .noRecords:
-        return String(localized: "import_no_records", table: "Settings")
+        return L10n.string("import_no_records", table: "Settings")
       case .unsupportedFormatVersion(let version):
-        return String(localized: "import_unsupported_version", table: "Settings")
+        return L10n.string("import_unsupported_version", table: "Settings")
           .replacingOccurrences(of: "{version}", with: version)
       }
     }

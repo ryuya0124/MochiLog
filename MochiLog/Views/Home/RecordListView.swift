@@ -152,7 +152,7 @@ struct RecordListView<Header: View>: View {
                   } label: {
                     HStack(spacing: 12) {
                       let splitName = splitDeviceName(section.displayName)
-                      
+
                       // エレガントなアイコン表示
                       ZStack {
                         Circle()
@@ -162,7 +162,7 @@ struct RecordListView<Header: View>: View {
                           .foregroundStyle(appSettings.accentColor.color)
                           .font(.system(size: 18, weight: .semibold))
                       }
-                      
+
                       VStack(alignment: .leading, spacing: 2) {
                         Text(splitName.primary)
                           .font(.title3)
@@ -174,9 +174,9 @@ struct RecordListView<Header: View>: View {
                             .foregroundColor(.secondary)
                         }
                       }
-                      
+
                       Spacer()
-                      
+
                       ZStack {
                         Circle()
                           .fill(Color(uiColor: .tertiarySystemGroupedBackground))
@@ -190,7 +190,7 @@ struct RecordListView<Header: View>: View {
                     .contentShape(Rectangle())
                   }
                   .buttonStyle(.plain)
-                  
+
                   if !collapsedSections.contains(section.id) {
                     iPadDeviceSectionContent(
                       section: section,
@@ -278,7 +278,7 @@ struct RecordListView<Header: View>: View {
               } label: {
                 HStack {
                   Spacer()
-                  Text(String(localized: "load_more", table: "Home"))
+                  Text(L10n.string("load_more", table: "Home"))
                     .font(.subheadline)
                   Text("(\(sectionRecords.count)/\(totalRecordsForSection(section)))")
                     .font(.caption)
@@ -328,7 +328,7 @@ struct RecordListView<Header: View>: View {
       } label: {
         HStack {
           Spacer()
-          Text(String(localized: "load_more", table: "Home"))
+          Text(L10n.string("load_more", table: "Home"))
             .font(.subheadline)
           Text("(\(sectionRecords.count)/\(totalRecordsForSection(section)))")
             .font(.caption)
@@ -367,7 +367,7 @@ struct RecordListView<Header: View>: View {
           onDelete(record)
         } label: {
           Label {
-            Text(String(localized: "delete", table: "Common"))
+            Text(L10n.string("delete", table: "Common"))
           } icon: {
             Image(
               uiImage: UIImage(systemName: "trash")?
@@ -433,36 +433,36 @@ private struct ModerniPadRecordCard: View {
             .fontWeight(.semibold)
             .foregroundColor(.primary)
         }
-        
+
         HStack(spacing: 12) {
           Label(
-            String(format: String(localized: "cycle_count_format", table: "Analytics"), record.cycleCount),
+            String(format: L10n.string("cycle_count_format", table: "Analytics"), record.cycleCount),
             systemImage: "arrow.triangle.2.circlepath"
           )
           .font(.caption)
           .foregroundStyle(.secondary)
-          
+
           Label("\(record.nominalCapacity) mAh", systemImage: "battery.100")
             .font(.caption)
             .foregroundStyle(.secondary)
         }
-        
+
         Text(record.cachedDiagnostic)
           .font(.caption2)
           .foregroundColor(.secondary)
           .lineLimit(1)
       }
-      
+
       Spacer(minLength: 8)
-      
+
       // 右側: 健康度リング
       let health = appSettings.analysisDataSource == .nominal ? record.nominalHealthPercent : record.healthPercent
-      
+
       ZStack {
         Circle()
           .stroke(Color(uiColor: .systemGray5), lineWidth: 5)
           .frame(width: 52, height: 52)
-        
+
         Circle()
           .trim(from: 0, to: CGFloat(min(max(health, 0), 100)) / 100.0)
           .stroke(
@@ -471,7 +471,7 @@ private struct ModerniPadRecordCard: View {
           )
           .rotationEffect(.degrees(-90))
           .frame(width: 52, height: 52)
-          
+
         Text("\(String(format: "%.0f", health))%")
           .font(.caption2)
           .fontWeight(.bold)
@@ -479,7 +479,7 @@ private struct ModerniPadRecordCard: View {
       }
     }
   }
-  
+
   private func healthColor(_ percent: Double) -> Color {
     if percent < 80 { return .red }
     if percent < 90 { return .orange }

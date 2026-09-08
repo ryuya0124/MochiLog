@@ -146,7 +146,7 @@ struct LogParser {
       let msg = batObj.message
     else {
 
-      let msg = String(localized: "log_parse_error_no_battery_data", table: "Support")
+      let msg = L10n.string("log_parse_error_no_battery_data", table: "Support")
       // デバッグログは常に保存
       ErrorLogStore.shared.saveLog(message: msg, rawText: text)
       NotificationCenter.default.post(name: NSNotification.Name("ParseErrorSaved"), object: nil)
@@ -232,11 +232,11 @@ struct LogParser {
     // 診断結果 (簡易ロジック) - ローカライズキーを使用
     if let health = result.rawRatio {
       if health < 80.0 {
-        result.diagnosticResult = String(localized: "diag_replace_recommended", table: "Records")
+        result.diagnosticResult = L10n.string("diag_replace_recommended", table: "Records")
       } else if health < 90.0 {
-        result.diagnosticResult = String(localized: "diag_slightly_degraded", table: "Records")
+        result.diagnosticResult = L10n.string("diag_slightly_degraded", table: "Records")
       } else {
-        result.diagnosticResult = String(localized: "diag_normal", table: "Records")
+        result.diagnosticResult = L10n.string("diag_normal", table: "Records")
       }
     }
 
@@ -249,7 +249,7 @@ struct LogParser {
     }
     if result.rawCapacity == nil || result.rawCapacity == 0 { missingFields.append("rawCapacity") }
     if !missingFields.isEmpty {
-      let format = String(localized: "log_parse_error_missing_fields", table: "Support")
+      let format = L10n.string("log_parse_error_missing_fields", table: "Support")
       let message = String(format: format, missingFields.joined(separator: ", "))
       ErrorLogStore.shared.saveLog(message: message, rawText: text)
       NotificationCenter.default.post(name: NSNotification.Name("ParseErrorSaved"), object: nil)

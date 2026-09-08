@@ -24,10 +24,10 @@ struct PrivacyPolicyView: View {
               .foregroundStyle(.secondary)
 
             VStack(alignment: .leading, spacing: 2) {
-              Text(headerTitle ?? String(localized: "privacy_policy_title", table: "Legal"))
+              Text(headerTitle ?? L10n.string("privacy_policy_title", table: "Legal"))
                 .font(.title2)
                 .fontWeight(.semibold)
-              Text(String(localized: "privacy_policy_subtitle", table: "Legal"))
+              Text(L10n.string("privacy_policy_subtitle", table: "Legal"))
                 .font(.caption)
                 .foregroundColor(.secondary)
             }
@@ -38,7 +38,7 @@ struct PrivacyPolicyView: View {
 
           // Content card
           VStack(spacing: 12) {
-            ForEach(blocks) { block in
+            ForEach(Array(blocks.enumerated()), id: \.offset) { _, block in
               switch block {
               case .heading(let level, let text):
                 Text(text)
@@ -67,7 +67,7 @@ struct PrivacyPolicyView: View {
       .navigationTitle("")
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button(String(localized: "close", table: "Common")) { dismiss() }
+          Button(L10n.string("close", table: "Common")) { dismiss() }
         }
       }
       .task {
@@ -83,7 +83,7 @@ struct PrivacyPolicyView: View {
     guard let url = Bundle.main.url(forResource: resourceName, withExtension: "md") else {
       blocks = [
         .paragraph(
-          AttributedString(String(localized: "privacy_policy_unavailable", table: "Legal")))
+          AttributedString(L10n.string("privacy_policy_unavailable", table: "Legal")))
       ]
       return
     }
@@ -92,7 +92,7 @@ struct PrivacyPolicyView: View {
     else {
       blocks = [
         .paragraph(
-          AttributedString(String(localized: "privacy_policy_unavailable", table: "Legal")))
+          AttributedString(L10n.string("privacy_policy_unavailable", table: "Legal")))
       ]
       return
     }
@@ -147,8 +147,11 @@ struct PrivacyPolicyView: View {
   }
 
   private func selectedResourceName() -> String {
-    let preferred = Locale.preferredLanguages.first ?? Locale.current.identifier
-    if preferred.starts(with: "en") {
+    let preferred = L10n.language
+    if preferred != "ja" {
+      if Bundle.main.url(forResource: "PrivacyPolicy_\(preferred)", withExtension: "md") != nil {
+        return "PrivacyPolicy_\(preferred)"
+      }
       if Bundle.main.url(forResource: "PrivacyPolicy_en", withExtension: "md") != nil {
         return "PrivacyPolicy_en"
       }

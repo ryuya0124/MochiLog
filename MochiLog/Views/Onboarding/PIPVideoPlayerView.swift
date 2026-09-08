@@ -47,11 +47,11 @@ struct PIPVideoPlayerView: View {
 
         // 説明テキスト
         VStack(spacing: 12) {
-          Text(String(localized: "pip_instruction", table: "Onboarding"))
+          Text(L10n.string("pip_instruction", table: "Onboarding"))
             .font(.headline)
             .multilineTextAlignment(.center)
 
-          Text(String(localized: "pip_instruction_detail", table: "Onboarding"))
+          Text(L10n.string("pip_instruction_detail", table: "Onboarding"))
             .font(.subheadline)
             .foregroundStyle(.secondary)
             .multilineTextAlignment(.center)
@@ -59,7 +59,7 @@ struct PIPVideoPlayerView: View {
         .padding(.horizontal)
 
         // 注意書き
-        Text(String(localized: "pip_note", table: "Onboarding"))
+        Text(L10n.string("pip_note", table: "Onboarding"))
           .font(.caption)
           .foregroundStyle(.secondary)
           .multilineTextAlignment(.center)
@@ -73,7 +73,7 @@ struct PIPVideoPlayerView: View {
           Button(action: startPIP) {
             HStack {
               Image(systemName: "gear")
-              Text(String(localized: "open_analytics_settings", table: "Onboarding"))
+              Text(L10n.string("open_analytics_settings", table: "Onboarding"))
             }
             .font(.headline)
             .foregroundColor(.white)
@@ -86,11 +86,11 @@ struct PIPVideoPlayerView: View {
         .padding(.horizontal, 24)
         .padding(.bottom, 40)
       }
-      .navigationTitle(String(localized: "video_tutorial", table: "Onboarding"))
+      .navigationTitle(L10n.string("video_tutorial", table: "Onboarding"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button(String(localized: "close", table: "Common")) {
+          Button(L10n.string("close", table: "Common")) {
             dismiss()
           }
         }
@@ -146,10 +146,10 @@ struct PIPTutorialContentView: View {
           Image(systemName: "gear")
             .font(.system(size: 40))
             .foregroundStyle(.primary)
-          Text(String(localized: "pip_step_open_settings", table: "Onboarding"))
+          Text(L10n.string("pip_step_open_settings", table: "Onboarding"))
             .font(.headline)
             .foregroundStyle(.primary)
-          Text(String(localized: "pip_step_settings_app", table: "Onboarding"))
+          Text(L10n.string("pip_step_settings_app", table: "Onboarding"))
             .font(.caption)
             .foregroundStyle(.secondary)
         }
@@ -160,10 +160,10 @@ struct PIPTutorialContentView: View {
           Image(systemName: "chevron.left")
             .font(.system(size: 40))
             .foregroundStyle(.blue)
-          Text(String(localized: "pip_step_go_to_settings_top", table: "Onboarding"))
+          Text(L10n.string("pip_step_go_to_settings_top", table: "Onboarding"))
             .font(.headline)
             .foregroundStyle(.primary)
-          Text(String(localized: "pip_step_tap_back_button", table: "Onboarding"))
+          Text(L10n.string("pip_step_tap_back_button", table: "Onboarding"))
             .font(.caption)
             .foregroundStyle(.secondary)
         }
@@ -174,10 +174,10 @@ struct PIPTutorialContentView: View {
           Image(systemName: "hand.raised.fill")
             .font(.system(size: 40))
             .foregroundStyle(.primary)
-          Text(String(localized: "pip_step_privacy_security", table: "Onboarding"))
+          Text(L10n.string("pip_step_privacy_security", table: "Onboarding"))
             .font(.headline)
             .foregroundStyle(.primary)
-          Text(String(localized: "pip_step_menu_select", table: "Onboarding"))
+          Text(L10n.string("pip_step_menu_select", table: "Onboarding"))
             .font(.caption)
             .foregroundStyle(.secondary)
         }
@@ -188,10 +188,10 @@ struct PIPTutorialContentView: View {
           Image(systemName: "chart.bar.xaxis")
             .font(.system(size: 40))
             .foregroundStyle(.primary)
-          Text(String(localized: "pip_step_analytics_improvements", table: "Onboarding"))
+          Text(L10n.string("pip_step_analytics_improvements", table: "Onboarding"))
             .font(.headline)
             .foregroundStyle(.primary)
-          Text(String(localized: "pip_step_button_at_bottom", table: "Onboarding"))
+          Text(L10n.string("pip_step_button_at_bottom", table: "Onboarding"))
             .font(.caption)
             .foregroundStyle(.orange)
         }
@@ -202,10 +202,10 @@ struct PIPTutorialContentView: View {
           Image(systemName: "switch.2")
             .font(.system(size: 40))
             .foregroundStyle(.green)
-          Text(String(localized: "pip_step_share_on", table: "Onboarding"))
+          Text(L10n.string("pip_step_share_on", table: "Onboarding"))
             .font(.headline)
             .foregroundStyle(.primary)
-          Text(String(localized: "pip_step_share_analytics", table: "Onboarding"))
+          Text(L10n.string("pip_step_share_analytics", table: "Onboarding"))
             .font(.caption)
             .foregroundStyle(.primary)
         }
@@ -216,10 +216,10 @@ struct PIPTutorialContentView: View {
           Image(systemName: "clock.fill")
             .font(.system(size: 40))
             .foregroundStyle(.orange)
-          Text(String(localized: "pip_step_log_timing", table: "Onboarding"))
+          Text(L10n.string("pip_step_log_timing", table: "Onboarding"))
             .font(.headline)
             .foregroundStyle(.primary)
-          Text(String(localized: "pip_step_wait_next_day", table: "Onboarding"))
+          Text(L10n.string("pip_step_wait_next_day", table: "Onboarding"))
             .font(.caption)
             .foregroundStyle(.orange)
         }
@@ -230,10 +230,10 @@ struct PIPTutorialContentView: View {
           Image(systemName: "doc.text.magnifyingglass")
             .font(.system(size: 40))
             .foregroundStyle(.primary)
-          Text(String(localized: "pip_step_analytics_data", table: "Onboarding"))
+          Text(L10n.string("pip_step_analytics_data", table: "Onboarding"))
             .font(.headline)
             .foregroundStyle(.primary)
-          Text(String(localized: "pip_step_select_log", table: "Onboarding"))
+          Text(L10n.string("pip_step_select_log", table: "Onboarding"))
             .font(.subheadline)
             .foregroundStyle(.yellow)
         }
@@ -244,10 +244,10 @@ struct PIPTutorialContentView: View {
           Image(systemName: "exclamationmark.triangle.fill")
             .font(.system(size: 40))
             .foregroundStyle(.yellow)
-          Text(String(localized: "pip_step_log_selection", table: "Onboarding"))
+          Text(L10n.string("pip_step_log_selection", table: "Onboarding"))
             .font(.headline)
             .foregroundStyle(.primary)
-          Text(String(localized: "pip_step_choose_larger_file", table: "Onboarding"))
+          Text(L10n.string("pip_step_choose_larger_file", table: "Onboarding"))
             .font(.caption)
             .foregroundStyle(.yellow)
         }
@@ -266,10 +266,10 @@ struct PIPTutorialContentView: View {
               .font(.system(size: 40))
               .foregroundStyle(.green)
           }
-          Text(String(localized: "pip_step_select_mochilog", table: "Onboarding"))
+          Text(L10n.string("pip_step_select_mochilog", table: "Onboarding"))
             .font(.headline)
             .foregroundStyle(.primary)
-          Text(String(localized: "pip_step_if_not_listed", table: "Onboarding"))
+          Text(L10n.string("pip_step_if_not_listed", table: "Onboarding"))
             .font(.caption)
             .foregroundStyle(.secondary)
         }

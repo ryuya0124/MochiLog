@@ -13,11 +13,11 @@ struct DeviceSelectionSettingsView: View {
   var body: some View {
     deviceSelectionList
       .alert(
-        String(localized: "remove_device", table: "Settings"),
+        L10n.string("remove_device", table: "Settings"),
         isPresented: $showingRemoveConfirmation
       ) {
-        Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
-        Button(String(localized: "remove", table: "Common"), role: .destructive) {
+        Button(L10n.string("cancel", table: "Common"), role: .cancel) {}
+        Button(L10n.string("remove", table: "Common"), role: .destructive) {
           if let device = deviceToRemove {
             appSettings.removeDevice(name: device)
           }
@@ -26,20 +26,20 @@ struct DeviceSelectionSettingsView: View {
         if let device = deviceToRemove {
           Text(
             String(
-              format: String(localized: "remove_device_confirm_specific", table: "Settings"),
+              format: L10n.string("remove_device_confirm_specific", table: "Settings"),
               device))
         }
       }
       .alert(
-        String(localized: "remove_all_devices", table: "Settings"),
+        L10n.string("remove_all_devices", table: "Settings"),
         isPresented: $showingRemoveAllConfirmation
       ) {
-        Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
-        Button(String(localized: "remove", table: "Common"), role: .destructive) {
+        Button(L10n.string("cancel", table: "Common"), role: .cancel) {}
+        Button(L10n.string("remove", table: "Common"), role: .destructive) {
           appSettings.unregisterAllDevices()
         }
       } message: {
-        Text(String(localized: "remove_all_devices_confirm", table: "Settings"))
+        Text(L10n.string("remove_all_devices_confirm", table: "Settings"))
       }
   }
 
@@ -85,9 +85,9 @@ struct DeviceSelectionSettingsView: View {
           .buttonStyle(.plain)
         }
       } header: {
-        Text(String(localized: "device_selection_mode", table: "Settings"))
+        Text(L10n.string("device_selection_mode", table: "Settings"))
       } footer: {
-        Text(String(localized: "device_selection_mode_footer", table: "Settings"))
+        Text(L10n.string("device_selection_mode_footer", table: "Settings"))
       }
 
       // MARK: - 登録済みデバイスセクション（preRegisteredモードの場合のみ表示）
@@ -96,11 +96,11 @@ struct DeviceSelectionSettingsView: View {
           if appSettings.registeredDevices.isEmpty {
             HStack {
               Label(
-                String(localized: "registered_device", table: "Settings"),
+                L10n.string("registered_device", table: "Settings"),
                 systemImage: "iphone.gen3"
               )
               Spacer()
-              Text(String(localized: "not_registered", table: "Settings"))
+              Text(L10n.string("not_registered", table: "Settings"))
                 .foregroundStyle(.secondary)
             }
           } else {
@@ -111,7 +111,7 @@ struct DeviceSelectionSettingsView: View {
 
           Button(action: { showingDevicePicker = true }) {
             Label(
-              String(localized: "add_device", table: "Settings"),
+              L10n.string("add_device", table: "Settings"),
               systemImage: "plus.circle"
             )
           }
@@ -119,20 +119,20 @@ struct DeviceSelectionSettingsView: View {
           if appSettings.registeredDevices.count > 1 {
             Button(action: { showingRemoveAllConfirmation = true }) {
               Label(
-                String(localized: "remove_all_devices", table: "Settings"),
+                L10n.string("remove_all_devices", table: "Settings"),
                 systemImage: "trash"
               )
               .foregroundStyle(.red)
             }
           }
         } header: {
-          Text(String(localized: "registered_devices", table: "Settings"))
+          Text(L10n.string("registered_devices", table: "Settings"))
         } footer: {
           Text(
             appSettings.registeredDevices.isEmpty
-              ? String(localized: "registered_devices_empty_footer", table: "Settings")
+              ? L10n.string("registered_devices_empty_footer", table: "Settings")
               : String(
-                format: String(localized: "registered_devices_footer", table: "Settings"),
+                format: L10n.string("registered_devices_footer", table: "Settings"),
                 appSettings.registeredDevices.count)
           )
         }
@@ -153,7 +153,7 @@ struct DeviceSelectionSettingsView: View {
         deviceToRemove = deviceName
         showingRemoveConfirmation = true
       } label: {
-        Label(String(localized: "remove", table: "Common"), systemImage: "trash")
+        Label(L10n.string("remove", table: "Common"), systemImage: "trash")
       }
       .tint(.red)
     }

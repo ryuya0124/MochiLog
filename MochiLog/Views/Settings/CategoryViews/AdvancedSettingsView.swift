@@ -43,7 +43,7 @@ struct AdvancedSettingsView: View {
           .foregroundStyle(.primary)
         }
       } header: {
-        Text(String(localized: "device_selection_settings", table: "Settings"))
+        Text(L10n.string("device_selection_settings", table: "Settings"))
       }
 
       if appSettings.deviceSelectionMode == .preRegistered {
@@ -51,11 +51,11 @@ struct AdvancedSettingsView: View {
           if appSettings.registeredDevices.isEmpty {
             HStack {
               Label(
-                String(localized: "registered_devices", table: "Settings"),
+                L10n.string("registered_devices", table: "Settings"),
                 systemImage: "iphone.gen3"
               )
               Spacer()
-              Text(String(localized: "not_registered", table: "Settings"))
+              Text(L10n.string("not_registered", table: "Settings"))
                 .foregroundStyle(.secondary)
             }
           } else {
@@ -67,7 +67,7 @@ struct AdvancedSettingsView: View {
                     deviceToRemove = deviceName
                     showingRemoveConfirmation = true
                   } label: {
-                    Label(String(localized: "remove", table: "Common"), systemImage: "trash")
+                    Label(L10n.string("remove", table: "Common"), systemImage: "trash")
                   }
                   .tint(.red)
                 }
@@ -76,7 +76,7 @@ struct AdvancedSettingsView: View {
 
           Button(action: { showingDevicePickerForRegistration = true }) {
             Label(
-              String(localized: "add_device", table: "Settings"),
+              L10n.string("add_device", table: "Settings"),
               systemImage: "plus.circle"
             )
           }
@@ -84,19 +84,19 @@ struct AdvancedSettingsView: View {
           if appSettings.registeredDevices.count > 1 {
             Button(action: { showingRemoveAllConfirmation = true }) {
               Label(
-                String(localized: "remove_all_devices", table: "Settings"),
+                L10n.string("remove_all_devices", table: "Settings"),
                 systemImage: "trash"
               )
               .foregroundStyle(.red)
             }
           }
         } header: {
-          Text(String(localized: "registered_devices", table: "Settings"))
+          Text(L10n.string("registered_devices", table: "Settings"))
         } footer: {
           Text(
             appSettings.registeredDevices.isEmpty
-              ? String(localized: "registered_devices_empty_footer", table: "Settings")
-              : String(localized: "registered_devices_footer", table: "Settings")
+              ? L10n.string("registered_devices_empty_footer", table: "Settings")
+              : L10n.string("registered_devices_footer", table: "Settings")
           )
         }
       }
@@ -107,7 +107,7 @@ struct AdvancedSettingsView: View {
           .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
           .listRowBackground(Color.clear)
       } header: {
-        Text(String(localized: "analysis_source", table: "Settings"))
+        Text(L10n.string("analysis_source", table: "Settings"))
       }
 
       // MARK: - 共有インポート設定
@@ -153,11 +153,11 @@ struct AdvancedSettingsView: View {
       }
     }
     .alert(
-      String(localized: "remove_device", table: "Settings"),
+      L10n.string("remove_device", table: "Settings"),
       isPresented: $showingRemoveConfirmation
     ) {
-      Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
-      Button(String(localized: "remove", table: "Common"), role: .destructive) {
+      Button(L10n.string("cancel", table: "Common"), role: .cancel) {}
+      Button(L10n.string("remove", table: "Common"), role: .destructive) {
         if let device = deviceToRemove {
           appSettings.removeDevice(name: device)
         }
@@ -166,21 +166,21 @@ struct AdvancedSettingsView: View {
       if let device = deviceToRemove {
         Text(
           String(
-            format: String(localized: "remove_device_confirm_specific", table: "Settings"),
+            format: L10n.string("remove_device_confirm_specific", table: "Settings"),
             device
           ))
       }
     }
     .alert(
-      String(localized: "remove_all_devices", table: "Settings"),
+      L10n.string("remove_all_devices", table: "Settings"),
       isPresented: $showingRemoveAllConfirmation
     ) {
-      Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
-      Button(String(localized: "remove", table: "Common"), role: .destructive) {
+      Button(L10n.string("cancel", table: "Common"), role: .cancel) {}
+      Button(L10n.string("remove", table: "Common"), role: .destructive) {
         appSettings.registeredDevices.forEach { appSettings.removeDevice(name: $0) }
       }
     } message: {
-      Text(String(localized: "remove_all_devices_confirm", table: "Settings"))
+      Text(L10n.string("remove_all_devices_confirm", table: "Settings"))
     }
   }
 
@@ -194,7 +194,7 @@ struct AdvancedSettingsView: View {
           .frame(width: 60)
 
         VStack(alignment: .leading, spacing: 8) {
-          Text(String(localized: "analysis_source", table: "Settings"))
+          Text(L10n.string("analysis_source", table: "Settings"))
             .font(.headline)
 
           Picker("", selection: $appSettings.analysisDataSource) {
@@ -204,7 +204,7 @@ struct AdvancedSettingsView: View {
           }
           .pickerStyle(.segmented)
 
-          Text(String(localized: "analysis_source_description", table: "Settings"))
+          Text(L10n.string("analysis_source_description", table: "Settings"))
             .font(.subheadline)
             .foregroundStyle(.secondary)
         }
@@ -224,12 +224,12 @@ struct AdvancedSettingsView: View {
 
         VStack(alignment: .leading, spacing: 8) {
           Toggle(
-            String(localized: "open_app_after_share_import", table: "Settings"),
+            L10n.string("open_app_after_share_import", table: "Settings"),
             isOn: $appSettings.openAppAfterShareImport
           )
           .font(.headline)
 
-          Text(String(localized: "open_app_after_share_import_description", table: "Settings"))
+          Text(L10n.string("open_app_after_share_import_description", table: "Settings"))
             .font(.subheadline)
             .foregroundStyle(.secondary)
         }
@@ -279,12 +279,12 @@ struct AdvancedSettingsView: View {
 
           VStack(alignment: .leading, spacing: 8) {
             Toggle(
-              String(localized: "enable_capacity_validation", table: "Settings"),
+              L10n.string("enable_capacity_validation", table: "Settings"),
               isOn: $appSettings.enableCapacityValidation
             )
             .font(.headline)
 
-            Text(String(localized: "validation_threshold_description", table: "Settings"))
+            Text(L10n.string("validation_threshold_description", table: "Settings"))
               .font(.subheadline)
               .foregroundStyle(.secondary)
           }
@@ -295,7 +295,7 @@ struct AdvancedSettingsView: View {
 
           VStack(alignment: .leading, spacing: 12) {
             HStack {
-              Text(String(localized: "validation_threshold", table: "Settings"))
+              Text(L10n.string("validation_threshold", table: "Settings"))
                 .font(.subheadline)
               Spacer()
               Text(String(format: "%.1f x", appSettings.capacityValidationThreshold))
@@ -306,7 +306,7 @@ struct AdvancedSettingsView: View {
             Slider(value: $appSettings.capacityValidationThreshold, in: 2...20, step: 0.5)
 
             Picker(
-              String(localized: "mismatch_behavior", table: "Settings"),
+              L10n.string("mismatch_behavior", table: "Settings"),
               selection: $appSettings.mismatchBehavior
             ) {
               ForEach(AppSettings.MismatchBehavior.allCases) { behavior in
@@ -333,12 +333,12 @@ struct AdvancedSettingsView: View {
 
         VStack(alignment: .leading, spacing: 8) {
           Toggle(
-            String(localized: "allow_duplicate_records", table: "Settings"),
+            L10n.string("allow_duplicate_records", table: "Settings"),
             isOn: $appSettings.allowDuplicateRecords
           )
           .font(.headline)
 
-          Text(String(localized: "allow_duplicate_records_description", table: "Settings"))
+          Text(L10n.string("allow_duplicate_records_description", table: "Settings"))
             .font(.subheadline)
             .foregroundStyle(.secondary)
         }
@@ -357,11 +357,11 @@ struct AdvancedSettingsView: View {
           .frame(width: 60)
 
         VStack(alignment: .leading, spacing: 12) {
-          Text(String(localized: "icloud_storage_threshold", table: "Settings"))
+          Text(L10n.string("icloud_storage_threshold", table: "Settings"))
             .font(.headline)
 
           HStack {
-            Text(String(localized: "threshold_label", table: "Settings"))
+            Text(L10n.string("threshold_label", table: "Settings"))
               .font(.subheadline)
             Spacer()
             Text(String(format: "%.0f MB", appSettings.iCloudStorageThresholdMB))
@@ -376,7 +376,7 @@ struct AdvancedSettingsView: View {
               .foregroundColor(.red)
           }
 
-          Text(String(localized: "icloud_storage_description", table: "Settings"))
+          Text(L10n.string("icloud_storage_description", table: "Settings"))
             .font(.subheadline)
             .foregroundStyle(.secondary)
         }

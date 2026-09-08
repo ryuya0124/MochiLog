@@ -168,7 +168,7 @@ struct TutorialView: View {
                 currentPage += 1
               }
             }) {
-              Text(String(localized: "next", table: "Common"))
+              Text(L10n.string("next", table: "Common"))
                 .font(.headline)
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
@@ -184,7 +184,7 @@ struct TutorialView: View {
               appSettings.completeTutorial()
               dismiss()
             }) {
-              Text(String(localized: "got_it", table: "Common"))
+              Text(L10n.string("got_it", table: "Common"))
                 .font(.headline)
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
@@ -202,7 +202,7 @@ struct TutorialView: View {
               currentPage -= 1
             }
           }) {
-            Text(String(localized: "back", table: "Common"))
+            Text(L10n.string("back", table: "Common"))
               .font(.subheadline)
               .foregroundColor(.secondary)
           }
@@ -215,11 +215,11 @@ struct TutorialView: View {
       // iPad向け: コンテンツ幅を500ptに制限し中央配置
       .frame(maxWidth: 500)
       .frame(maxWidth: .infinity)
-      .navigationTitle(String(localized: "tutorial", table: "Onboarding"))
+      .navigationTitle(L10n.string("tutorial", table: "Onboarding"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button(String(localized: "close", table: "Common")) {
+          Button(L10n.string("close", table: "Common")) {
             dismiss()
           }
         }
@@ -299,14 +299,14 @@ struct TutorialPageView: View {
 
       // テキスト
       VStack(spacing: 16) {
-        Text(String(localized: String.LocalizationValue(page.titleKey), table: "Onboarding"))
+        Text(L10n.string(String.LocalizationValue(page.titleKey), table: "Onboarding"))
           .font(.title2)
           .fontWeight(.bold)
           .multilineTextAlignment(.center)
           .lineLimit(nil)
           .fixedSize(horizontal: false, vertical: true)
 
-        Text(String(localized: String.LocalizationValue(page.descriptionKey), table: "Onboarding"))
+        Text(L10n.string(String.LocalizationValue(page.descriptionKey), table: "Onboarding"))
           .font(.body)
           .foregroundStyle(.secondary)
           .multilineTextAlignment(.center)
@@ -322,7 +322,7 @@ struct TutorialPageView: View {
         Button(action: { onOpenVideo?() }) {
           HStack {
             Image(systemName: "play.rectangle.fill")
-            Text(String(localized: "watch_video_tutorial", table: "Onboarding"))
+            Text(L10n.string("watch_video_tutorial", table: "Onboarding"))
           }
           .font(.subheadline)
           .foregroundColor(.blue)
@@ -344,13 +344,12 @@ struct TutorialPageView: View {
             // テキスト: 両方のテキストを常に存在させ、opacityで切り替え
             ZStack {
               Text(
-                String(
-                  localized: String.LocalizationValue(
+                L10n.string(String.LocalizationValue(
                     page.customButtonTitleKey ?? "open_analytics_settings"),
                   table: "Onboarding")
               )
               .opacity(page.customButtonTitleKey != nil ? 1 : 0)
-              Text(String(localized: "open_analytics_settings", table: "Onboarding"))
+              Text(L10n.string("open_analytics_settings", table: "Onboarding"))
                 .opacity(page.customButtonTitleKey == nil ? 1 : 0)
             }
           }

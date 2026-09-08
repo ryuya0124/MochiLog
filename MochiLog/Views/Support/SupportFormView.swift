@@ -11,7 +11,7 @@ enum InquiryType: String, CaseIterable, Identifiable {
   var id: String { rawValue }
 
   var localizedName: String {
-    String(localized: String.LocalizationValue(rawValue), table: "Support")
+    L10n.string(String.LocalizationValue(rawValue), table: "Support")
   }
 }
 
@@ -38,17 +38,17 @@ struct SupportFormView: View {
     NavigationStack {
       Form {
         Section {
-          TextField(String(localized: "your_name", table: "Support"), text: $name)
+          TextField(L10n.string("your_name", table: "Support"), text: $name)
             .textContentType(.name)
 
-          TextField(String(localized: "email_address", table: "Support"), text: $email)
+          TextField(L10n.string("email_address", table: "Support"), text: $email)
             .textContentType(.emailAddress)
             .keyboardType(.emailAddress)
             .autocapitalization(.none)
         }
 
-        Section(String(localized: "inquiry_type", table: "Support")) {
-          Picker(String(localized: "inquiry_type", table: "Support"), selection: $inquiryType) {
+        Section(L10n.string("inquiry_type", table: "Support")) {
+          Picker(L10n.string("inquiry_type", table: "Support"), selection: $inquiryType) {
             ForEach(InquiryType.allCases) { type in
               Text(type.localizedName).tag(type)
             }
@@ -60,36 +60,36 @@ struct SupportFormView: View {
           TextEditor(text: $message)
             .frame(minHeight: 150)
         } header: {
-          Text(String(localized: "message", table: "Support"))
+          Text(L10n.string("message", table: "Support"))
         } footer: {
-          Text(String(localized: "device_info_included", table: "Common"))
+          Text(L10n.string("device_info_included", table: "Common"))
             .foregroundStyle(.secondary)
         }
       }
-      .navigationTitle(String(localized: "contact_form", table: "Support"))
+      .navigationTitle(L10n.string("contact_form", table: "Support"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button(String(localized: "cancel", table: "Common")) { dismiss() }
+          Button(L10n.string("cancel", table: "Common")) { dismiss() }
         }
         ToolbarItem(placement: .confirmationAction) {
-          Button(String(localized: "send", table: "Common")) {
+          Button(L10n.string("send", table: "Common")) {
             sendEmail()
           }
           .disabled(!isFormValid)
         }
       }
       .alert(
-        String(localized: "mail_not_configured", table: "Support"), isPresented: $showingMailError
+        L10n.string("mail_not_configured", table: "Support"), isPresented: $showingMailError
       ) {
-        Button(String(localized: "ok", table: "Common"), role: .cancel) {}
+        Button(L10n.string("ok", table: "Common"), role: .cancel) {}
       } message: {
-        Text(String(localized: "mail_not_configured_message", table: "Support"))
+        Text(L10n.string("mail_not_configured_message", table: "Support"))
       }
-      .alert(String(localized: "error", table: "Common"), isPresented: $showingValidationError) {
-        Button(String(localized: "ok", table: "Common"), role: .cancel) {}
+      .alert(L10n.string("error", table: "Common"), isPresented: $showingValidationError) {
+        Button(L10n.string("ok", table: "Common"), role: .cancel) {}
       } message: {
-        Text(String(localized: "required_fields_empty", table: "Support"))
+        Text(L10n.string("required_fields_empty", table: "Support"))
       }
       .sheet(isPresented: $isShowingMailCompose) {
         MailComposeView(
@@ -137,11 +137,11 @@ struct SupportFormView: View {
 
   private func composeEmailBody() -> String {
     """
-    \(String(localized: "mail_body_name", table: "Support")): \(name)
-    \(String(localized: "mail_body_email", table: "Support")): \(email)
-    \(String(localized: "mail_body_type", table: "Support")): \(inquiryType.localizedName)
+    \(L10n.string("mail_body_name", table: "Support")): \(name)
+    \(L10n.string("mail_body_email", table: "Support")): \(email)
+    \(L10n.string("mail_body_type", table: "Support")): \(inquiryType.localizedName)
 
-    \(String(localized: "mail_body_message", table: "Support")):
+    \(L10n.string("mail_body_message", table: "Support")):
     \(message)
 
     \(appSettings.getDeviceInfo())

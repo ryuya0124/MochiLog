@@ -16,12 +16,12 @@ struct DebugSettingsView: View {
 
           VStack(alignment: .leading, spacing: 8) {
             Toggle(
-              String(localized: "show_popup_on_load", table: "Support"),
+              L10n.string("show_popup_on_load", table: "Support"),
               isOn: $appSettings.showPopupOnLoad
             )
             .font(.headline)
 
-            Text(String(localized: "debug_popup_description", table: "Settings"))
+            Text(L10n.string("debug_popup_description", table: "Settings"))
               .font(.subheadline)
               .foregroundStyle(.secondary)
           }
@@ -39,11 +39,11 @@ struct DebugSettingsView: View {
               .frame(width: 60)
 
             VStack(alignment: .leading, spacing: 4) {
-              Text(String(localized: "view_error_logs", table: "Support"))
+              Text(L10n.string("view_error_logs", table: "Support"))
                 .font(.headline)
                 .foregroundStyle(.primary)
 
-              Text(String(localized: "error_logs_description", table: "Settings"))
+              Text(L10n.string("error_logs_description", table: "Settings"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             }

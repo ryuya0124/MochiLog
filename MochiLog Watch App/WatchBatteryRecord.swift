@@ -35,15 +35,19 @@ struct WatchBatteryRecord: Codable, Identifiable, Hashable {
 
   /// 診断結果テキスト
   let diagnosticResult: String
+  let diagnosticCode: String?
 
   // MARK: - 計算プロパティ
 
   /// ローカライズされた診断結果
   /// iPhone側から送信された日本語テキストを、Watch側の言語設定に応じて翻訳する
   var localizedDiagnosticResult: String {
+    if let diagnosticCode, ["diag_normal", "diag_slightly_degraded", "diag_replace_recommended"].contains(diagnosticCode) {
+      return L10n.text(diagnosticCode)
+    }
     // 日本語テキストを対応する翻訳キーにマッピング
     let key: String
-    if diagnosticResult.contains("正常") {
+    if diagnosticResult.contains("正常") || diagnosticResult.contains("Normal") {
       key = "diag_normal"
     } else if diagnosticResult.contains("やや劣化") || diagnosticResult.contains("Slightly Degraded") {
       key = "diag_slightly_degraded"
@@ -54,7 +58,7 @@ struct WatchBatteryRecord: Codable, Identifiable, Hashable {
       // マッピングできない場合は元のテキストをそのまま返す
       return diagnosticResult
     }
-    return String(localized: LocalizedStringResource(stringLiteral: key))
+    return L10n.text(key)
   }
 
   // MARK: - イニシャライザ
@@ -65,7 +69,8 @@ struct WatchBatteryRecord: Codable, Identifiable, Hashable {
     cycleCount: Int,
     nominalHealthPercent: Double,
     healthPercent: Double,
-    diagnosticResult: String
+    diagnosticResult: String,
+    diagnosticCode: String? = nil
   ) {
     self.deviceName = deviceName
     self.logDate = logDate
@@ -73,5 +78,6 @@ struct WatchBatteryRecord: Codable, Identifiable, Hashable {
     self.nominalHealthPercent = nominalHealthPercent
     self.healthPercent = healthPercent
     self.diagnosticResult = diagnosticResult
+    self.diagnosticCode = diagnosticCode
   }
 }

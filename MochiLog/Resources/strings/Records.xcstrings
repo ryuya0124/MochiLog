@@ -1,855 +1,2763 @@
 {
-  "sourceLanguage" : "ja",
-  "strings" : {
-    "hint_cycle_count" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The number of times the battery has gone through a complete charge cycle (0→100%). Higher counts generally indicate more wear."
+  "sourceLanguage": "ja",
+  "strings": {
+    "hint_cycle_count": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The number of times the battery has gone through a complete charge cycle (0→100%). Higher counts generally indicate more wear."
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バッテリーが完全な充放電サイクル（0→100%）を繰り返した回数です。回数が多いほど劣化が進んでいる傾向があります。"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "バッテリーが完全な充放電サイクル（0→100%）を繰り返した回数です。回数が多いほど劣化が進んでいる傾向があります。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "电池完成完整充放电循环（0→100%）的次数。次数越多，通常损耗越大。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "電池完成完整充放電循環（0→100%）的次數。次數越多，通常耗損越大。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "배터리가 완전한 충방전 사이클(0→100%)을 거친 횟수입니다. 횟수가 많을수록 대체로 마모가 큽니다."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Número de ciclos completos de carga y descarga (0→100%). Más ciclos suelen indicar mayor desgaste."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nombre de cycles complets de charge et décharge (0→100 %). Un nombre élevé indique généralement plus d’usure."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anzahl vollständiger Lade- und Entladezyklen (0→100 %). Mehr Zyklen bedeuten meist stärkeren Verschleiß."
           }
         }
       }
     },
-    "hint_design_capacity" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The original battery capacity when the device was manufactured (mAh). This is used as the 100% baseline for health calculations."
+    "hint_design_capacity": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The original battery capacity when the device was manufactured (mAh). This is used as the 100% baseline for health calculations."
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "製造時のバッテリー容量（mAh）です。バッテリー健康状態を100%とした際の基準値として使用されます。"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "製造時のバッテリー容量（mAh）です。バッテリー健康状態を100%とした際の基準値として使用されます。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设备出厂时的电池容量（mAh），用作电池健康度100%的计算基准。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "裝置出廠時的電池容量（mAh），用作電池健康度100%的計算基準。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "제조 당시의 배터리 용량(mAh)으로, 배터리 상태 100%의 기준값입니다."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capacidad de la batería de fábrica (mAh). Se usa como referencia del 100% para calcular su estado."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capacité de la batterie à la fabrication (mAh), utilisée comme référence de 100 % pour le calcul de son état."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Batteriekapazität bei der Herstellung (mAh). Sie dient als 100-%-Referenz für die Zustandsberechnung."
           }
         }
       }
     },
-    "hint_nominal_capacity" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The capacity Apple's firmware reports as the current maximum. This value is smoothed by the OS and may differ slightly from the raw measurement."
+    "hint_nominal_capacity": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The capacity Apple's firmware reports as the current maximum. This value is smoothed by the OS and may differ slightly from the raw measurement."
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Appleのファームウェアが現在の最大容量として報告する値です。OSによって平滑化されており、実測値と若干異なる場合があります。"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Appleのファームウェアが現在の最大容量として報告する値です。OSによって平滑化されており、実測値と若干異なる場合があります。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple固件报告的当前最大容量。此值经过系统平滑处理，可能与实测值略有差异。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple韌體回報的目前最大容量。此值經過系統平滑處理，可能與實測值略有差異。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple 펌웨어가 보고하는 현재 최대 용량입니다. OS가 값을 평활화하므로 실측값과 약간 다를 수 있습니다."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capacidad máxima actual que informa el firmware de Apple. El sistema suaviza este valor y puede diferir de la medición directa."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capacité maximale actuelle signalée par le micrologiciel Apple. Le système lisse cette valeur, qui peut différer de la mesure brute."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vom Apple-Firmware gemeldete aktuelle Maximalkapazität. Das System glättet diesen Wert, daher kann er von der Rohmessung abweichen."
           }
         }
       }
     },
-    "hint_raw_capacity" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The unfiltered capacity measured directly from the battery hardware. This can fluctuate more than the nominal value."
+    "hint_raw_capacity": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The unfiltered capacity measured directly from the battery hardware. This can fluctuate more than the nominal value."
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バッテリーハードウェアから直接測定した生の容量値です。公称容量よりも変動しやすい場合があります。"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "バッテリーハードウェアから直接測定した生の容量値です。公称容量よりも変動しやすい場合があります。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "直接从电池硬件测得的原始容量，波动可能比标称容量更大。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "直接從電池硬體測得的原始容量，波動可能比標稱容量更大。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "배터리 하드웨어에서 직접 측정한 원시 용량입니다. 공칭 용량보다 변동이 클 수 있습니다."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capacidad medida directamente en la batería, sin filtrar. Puede variar más que la capacidad nominal."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capacité brute mesurée directement sur la batterie. Elle peut fluctuer davantage que la capacité nominale."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Direkt an der Batterie gemessene, ungefilterte Kapazität. Sie kann stärker schwanken als die Nennkapazität."
           }
         }
       }
     },
-    "hint_low_rate_capacity" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The capacity measured under a low discharge rate condition. This typically shows a higher value than normal usage measurements."
+    "hint_low_rate_capacity": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The capacity measured under a low discharge rate condition. This typically shows a higher value than normal usage measurements."
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "低放電レート条件下で測定した容量です。通常使用時の測定値より高い値になる傾向があります。"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "低放電レート条件下で測定した容量です。通常使用時の測定値より高い値になる傾向があります。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "低放电速率条件下测得的容量，通常高于正常使用时的测量值。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "低放電速率條件下測得的容量，通常高於正常使用時的測量值。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "낮은 방전율에서 측정한 용량입니다. 보통 일반 사용 시 측정값보다 높습니다."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capacidad medida con una descarga lenta. Suele ser mayor que la medida durante un uso normal."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capacité mesurée avec un faible taux de décharge. Elle est généralement supérieure aux mesures en usage normal."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bei geringer Entladerate gemessene Kapazität. Sie liegt meist über den Messwerten bei normaler Nutzung."
           }
         }
       }
     },
-    "hint_os_display" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The battery health percentage shown in iOS Settings → Battery → Battery Health. This is Apple's official display value, capped at 100%."
+    "hint_os_display": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The battery health percentage shown in iOS Settings → Battery → Battery Health. This is Apple's official display value, capped at 100%."
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iOSの「設定 → バッテリー → バッテリーの状態と充電」に表示されるバッテリー健康状態の割合です。最大100%で表示されます。"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iOSの「設定 → バッテリー → バッテリーの状態と充電」に表示されるバッテリー健康状態の割合です。最大100%で表示されます。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iOS“设置”>“电池”>“电池健康”显示的健康度，最高显示100%。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iOS「設定」>「電池」>「電池健康度」顯示的健康度，最高顯示100%。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iOS 설정 > 배터리 > 배터리 성능 상태에 표시되는 비율입니다. 최대 100%로 표시됩니다."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Porcentaje mostrado en Ajustes > Batería > Salud de la batería de iOS. Se limita al 100%."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pourcentage affiché dans Réglages > Batterie > État de la batterie d’iOS, limité à 100 %."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In iOS unter Einstellungen > Batterie > Batteriezustand angezeigter Wert, begrenzt auf 100 %."
           }
         }
       }
     },
-    "hint_deflator" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A correction factor Apple applies to the raw capacity to calculate the nominal capacity. A higher deflator means Apple is adjusting the value more significantly."
+    "hint_deflator": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A correction factor Apple applies to the raw capacity to calculate the nominal capacity. A higher deflator means Apple is adjusting the value more significantly."
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Appleが実測容量から公称容量を算出する際に適用する補正係数です。値が大きいほど、Appleが値を大きく調整していることを意味します。"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Appleが実測容量から公称容量を算出する際に適用する補正係数です。値が大きいほど、Appleが値を大きく調整していることを意味します。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple从实测容量计算标称容量时使用的修正系数。数值越大，调整幅度越大。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple從實測容量計算標稱容量時使用的修正係數。數值越大，調整幅度越大。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple이 실측 용량에서 공칭 용량을 계산할 때 적용하는 보정 계수입니다. 클수록 조정 폭이 큽니다."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Factor de corrección que Apple aplica a la capacidad medida para obtener la nominal. Un valor mayor indica un ajuste mayor."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Facteur de correction appliqué par Apple à la capacité brute pour obtenir la capacité nominale. Une valeur élevée indique une correction plus importante."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Korrekturfaktor, den Apple zur Berechnung der Nennkapazität aus der Rohkapazität anwendet. Ein höherer Wert bedeutet eine stärkere Anpassung."
           }
         }
       }
     },
-    "hint_diagnostic_result" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "An estimated condition based on the calculated health percentage.\n\n✅ Normal: 90% or above\nℹ️ Slightly Degraded: 80–90%\n⚠️ Replace Recommended: below 80%\n\nThese are estimates, not Apple's official assessment."
+    "hint_diagnostic_result": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An estimated condition based on the calculated health percentage.\n\n✅ Normal: 90% or above\nℹ️ Slightly Degraded: 80–90%\n⚠️ Replace Recommended: below 80%\n\nThese are estimates, not Apple's official assessment."
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "計算されたバッテリー健康状態のパーセントに基づく推定的な診断です。\n\n✅ 正常: 90%以上\nℹ️ やや劣化: 80〜90%\n⚠️ 交換推奨: 80%未満\n\nApple公式の評価ではありません。"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "計算されたバッテリー健康状態のパーセントに基づく推定的な診断です。\n\n✅ 正常: 90%以上\nℹ️ やや劣化: 80〜90%\n⚠️ 交換推奨: 80%未満\n\nApple公式の評価ではありません。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "根据计算出的健康度进行估算。\n\n✅ 正常：90%及以上\nℹ️ 轻度损耗：80–90%\n⚠️ 建议更换：低于80%\n\n这不是Apple官方评估。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "根據計算出的健康度進行估算。\n\n✅ 正常：90%以上\nℹ️ 輕度耗損：80–90%\n⚠️ 建議更換：低於80%\n\n這不是Apple官方評估。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "계산된 배터리 상태를 바탕으로 한 추정입니다.\n\n✅ 정상: 90% 이상\nℹ️ 약간 저하: 80–90%\n⚠️ 교체 권장: 80% 미만\n\nApple의 공식 평가가 아닙니다."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Estimación basada en el porcentaje calculado.\n\n✅ Normal: 90% o más\nℹ️ Leve desgaste: 80–90%\n⚠️ Sustitución recomendada: menos del 80%\n\nNo es una evaluación oficial de Apple."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Estimation basée sur le pourcentage calculé.\n\n✅ Normal : 90 % ou plus\nℹ️ Légère usure : 80–90 %\n⚠️ Remplacement conseillé : moins de 80 %\n\nCe n’est pas une évaluation officielle d’Apple."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schätzung anhand des berechneten Zustands.\n\n✅ Normal: ab 90 %\nℹ️ Leicht verschlissen: 80–90 %\n⚠️ Austausch empfohlen: unter 80 %\n\nKeine offizielle Bewertung von Apple."
           }
         }
       }
     },
-    "hint_settings_display_diagnostic" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A comment based on the iOS Settings display value. The Settings value and the calculated health may differ due to Apple's calibration logic."
+    "hint_settings_display_diagnostic": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A comment based on the iOS Settings display value. The Settings value and the calculated health may differ due to Apple's calibration logic."
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iOSの設定に表示される値に基づくコメントです。Appleの校正ロジックにより、設定の表示値と計算されたヘルス値が異なる場合があります。"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iOSの設定に表示される値に基づくコメントです。Appleの校正ロジックにより、設定の表示値と計算されたヘルス値が異なる場合があります。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "基于iOS设置中显示值的说明。由于Apple的校准逻辑，显示值可能与计算值不同。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "根據iOS設定顯示值提供的說明。由於Apple的校準邏輯，顯示值可能與計算值不同。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iOS 설정 표시값에 기반한 설명입니다. Apple의 보정 방식에 따라 계산값과 다를 수 있습니다."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comentario basado en el valor de Ajustes. La calibración de Apple puede hacer que difiera del estado calculado."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Commentaire basé sur la valeur des réglages iOS. L’étalonnage Apple peut expliquer un écart avec la valeur calculée."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hinweis zum Wert in den iOS-Einstellungen. Apples Kalibrierung kann Abweichungen vom berechneten Zustand verursachen."
           }
         }
       }
     },
-    "hint_first_use_date" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The date the device was first activated. Used to calculate how long the battery has been in use."
+    "hint_first_use_date": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The date the device was first activated. Used to calculate how long the battery has been in use."
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "デバイスが初めてアクティベートされた日付です。バッテリーの使用期間を算出するために使用します。"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "デバイスが初めてアクティベートされた日付です。バッテリーの使用期間を算出するために使用します。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设备首次激活的日期，用于计算电池使用时长。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "裝置首次啟用的日期，用於計算電池使用時間。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기기가 처음 활성화된 날짜로, 배터리 사용 기간 계산에 쓰입니다."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fecha de la primera activación del dispositivo. Sirve para calcular el tiempo de uso de la batería."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Date de première activation de l’appareil, utilisée pour calculer la durée d’utilisation de la batterie."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Datum der ersten Geräteaktivierung. Es dient zur Berechnung der Nutzungsdauer der Batterie."
           }
         }
       }
     },
-    "hint_temperature" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The battery temperature recorded during the day. Temperatures below 0°C or above 35°C can accelerate battery wear."
+    "hint_temperature": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The battery temperature recorded during the day. Temperatures below 0°C or above 35°C can accelerate battery wear."
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "その日に記録されたバッテリーの温度です。0°C以下または35°C以上の温度はバッテリーの劣化を加速させる可能性があります。"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "その日に記録されたバッテリーの温度です。0°C以下または35°C以上の温度はバッテリーの劣化を加速させる可能性があります。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "当天记录的电池温度。低于0°C或高于35°C的温度可能加速电池损耗。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "當天記錄的電池溫度。低於0°C或高於35°C的溫度可能加速电池耗損。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "해당 날짜에 기록된 배터리 온도입니다. 0°C 미만 또는 35°C 초과 온도는 마모를 빠르게 할 수 있습니다."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temperatura registrada durante el día. Menos de 0 °C o más de 35 °C puede acelerar el desgaste."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Température enregistrée dans la journée. En dessous de 0 °C ou au-dessus de 35 °C, l’usure peut s’accélérer."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Im Tagesverlauf erfasste Batterietemperatur. Unter 0 °C oder über 35 °C kann der Verschleiß zunehmen."
           }
         }
       }
     },
-    "hint_voltage" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The battery voltage recorded during the day (mV). Normal voltage typically ranges from about 3,200 mV (empty) to 4,200 mV (full)."
+    "hint_voltage": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The battery voltage recorded during the day (mV). Normal voltage typically ranges from about 3,200 mV (empty) to 4,200 mV (full)."
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "その日に記録されたバッテリーの電圧（mV）です。通常、約3,200 mV（空）から4,200 mV（満充電）の範囲になります。（4,200mVは目安であり、最大で4,400mV程度になることもあります）"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "その日に記録されたバッテリーの電圧（mV）です。通常、約3,200 mV（空）から4,200 mV（満充電）の範囲になります。（4,200mVは目安であり、最大で4,400mV程度になることもあります）"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "当天记录的电池电压（mV）。通常约为3200mV（空电）至4200mV（满电），有时可达到约4400mV。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "當天記錄的電池電壓（mV）。通常約為3200mV（沒電）至4200mV（充飽），有時可達約4400mV。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "해당 날짜의 배터리 전압(mV)입니다. 보통 약 3,200mV(방전)부터 4,200mV(완충)이며 약 4,400mV에 이를 수도 있습니다."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Voltaje registrado durante el día (mV). Suele ir de unos 3.200 mV (vacía) a 4.200 mV (llena), y puede rondar los 4.400 mV."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tension du jour (mV), généralement d’environ 3 200 mV (vide) à 4 200 mV (pleine), pouvant atteindre environ 4 400 mV."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Batteriespannung des Tages (mV). Meist etwa 3.200 mV (leer) bis 4.200 mV (voll), teilweise bis etwa 4.400 mV."
           }
         }
       }
     },
-    "hint_charge_range" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The range of charge levels (State of Charge) during the day. Frequently charging from 0% to 100% accelerates battery wear."
+    "hint_charge_range": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The range of charge levels (State of Charge) during the day. Frequently charging from 0% to 100% accelerates battery wear."
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "その日の充電レベル（SoC）の範囲です。0%→100%の充放電を頻繁に行うとバッテリーの劣化が加速します。"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "その日の充電レベル（SoC）の範囲です。0%→100%の充放電を頻繁に行うとバッテリーの劣化が加速します。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "当天的电量范围（SoC）。频繁从0%充至100%可能加速电池损耗。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "當天的電量範圍（SoC）。頻繁從0%充至100%可能加速電池耗損。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "하루 동안의 충전 상태(SoC) 범위입니다. 0%에서 100%까지 자주 충방전하면 마모가 빨라질 수 있습니다."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rango de carga (SoC) durante el día. Cargar frecuentemente de 0% a 100% puede acelerar el desgaste."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plage de charge (SoC) de la journée. Des cycles fréquents de 0 à 100 % peuvent accélérer l’usure."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ladezustandsbereich (SoC) des Tages. Häufige Zyklen von 0 auf 100 % können den Verschleiß beschleunigen."
           }
         }
       }
     },
-    "hint_soc" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "System on a Chip — the processor chip used in this device (e.g. A18 Pro, M4). It integrates the CPU, GPU, Neural Engine, and other components."
+    "hint_soc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System on a Chip — the processor chip used in this device (e.g. A18 Pro, M4). It integrates the CPU, GPU, Neural Engine, and other components."
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "System on a Chip — このデバイスに搭載されているチップ（例: A18 Pro、M4）です。CPU・GPU・Neural Engineなどが1つのチップに統合されています。"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System on a Chip — このデバイスに搭載されているチップ（例: A18 Pro、M4）です。CPU・GPU・Neural Engineなどが1つのチップに統合されています。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "片上系统：此设备使用的芯片（如A18 Pro、M4），集成CPU、GPU、神经网络引擎等组件。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "系統單晶片：此裝置使用的晶片（如A18 Pro、M4），整合CPU、GPU、神經網路引擎等元件。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "시스템 온 칩: 기기에 쓰이는 칩(예: A18 Pro, M4)입니다. CPU, GPU, Neural Engine 등이 통합되어 있습니다."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sistema en un chip: procesador del dispositivo (p. ej., A18 Pro o M4), que integra CPU, GPU, Neural Engine y otros componentes."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Système sur puce de l’appareil (ex. A18 Pro, M4), intégrant CPU, GPU, Neural Engine et d’autres composants."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System-on-a-Chip des Geräts (z. B. A18 Pro, M4). Er integriert CPU, GPU, Neural Engine und weitere Komponenten."
           }
         }
       }
     },
-    "hint_model_code" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The internal model identifier for this device (e.g. iPhone16,2). This uniquely identifies the hardware variant."
+    "hint_model_code": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The internal model identifier for this device (e.g. iPhone16,2). This uniquely identifies the hardware variant."
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "デバイスの内部モデル識別子（例: iPhone16,2）です。ハードウェアのバリアントを一意に識別します。"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "デバイスの内部モデル識別子（例: iPhone16,2）です。ハードウェアのバリアントを一意に識別します。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设备的内部型号标识符（如iPhone16,2），用于唯一识别硬件版本。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "裝置的內部型號識別碼（如iPhone16,2），用於唯一識別硬體版本。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기기의 내부 모델 식별자(예: iPhone16,2)로, 하드웨어 종류를 고유하게 식별합니다."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Identificador interno del modelo (p. ej., iPhone16,2), que identifica la variante del hardware."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Identifiant interne du modèle (ex. iPhone16,2), qui identifie la variante matérielle."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Interne Modellkennung (z. B. iPhone16,2), die die Hardwarevariante eindeutig identifiziert."
           }
         }
       }
     },
-    "hint_storage" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The total internal storage capacity of the device."
+    "hint_storage": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The total internal storage capacity of the device."
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "デバイスの内部ストレージの総容量です。"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "デバイスの内部ストレージの総容量です。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设备的内部存储总容量。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "裝置的內部儲存空間總容量。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기기의 전체 내부 저장 공간 용량입니다."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capacidad total del almacenamiento interno."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capacité totale du stockage interne de l’appareil."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gesamtkapazität des internen Gerätespeichers."
           }
         }
       }
     },
-    "hint_ram" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The amount of RAM (working memory) in this device."
+    "hint_ram": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The amount of RAM (working memory) in this device."
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "デバイスのRAM（作業メモリ）の容量です。"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "デバイスのRAM（作業メモリ）の容量です。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设备的RAM（运行内存）容量。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "裝置的RAM（工作記憶體）容量。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기기의 RAM(작업 메모리) 용량입니다."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cantidad de RAM (memoria de trabajo) del dispositivo."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quantité de RAM (mémoire vive) de l’appareil."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Größe des Arbeitsspeichers (RAM) des Geräts."
           }
         }
       }
     },
-    "battery_health" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maximum Capacity"
+    "battery_health": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maximum Capacity"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バッテリー最大容量"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "バッテリー最大容量"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "电池最大容量"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "電池最大容量"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "배터리 최대 용량"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capacidad máxima"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capacité maximale"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maximale Kapazität"
           }
         }
       }
     },
-    "charge_range_daily" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Charge Range (Daily)"
+    "charge_range_daily": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Charge Range (Daily)"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "充電範囲（日次）"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "充電範囲（日次）"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每日电量范围"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每日電量範圍"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "일일 충전 범위"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rango de carga diario"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plage de charge quotidienne"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Täglicher Ladebereich"
           }
         }
       }
     },
-    "deflator" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deflator"
+    "deflator": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deflator"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "デフレータ"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "デフレータ"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "修正系数"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "修正係數"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "보정 계수"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Factor de corrección"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Facteur de correction"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Korrekturfaktor"
           }
         }
       }
     },
-    "detail" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Details"
+    "detail": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Details"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "詳細"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "詳細"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "详情"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "詳細資訊"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "세부 정보"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Detalles"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Détails"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Details"
           }
         }
       }
     },
-    "device_info" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Device Info"
+    "device_info": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device Info"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "デバイス情報"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "デバイス情報"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设备信息"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "裝置資訊"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기기 정보"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Información del dispositivo"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Informations sur l’appareil"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geräteinformationen"
           }
         }
       }
     },
-    "device_info_included" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Device info will be automatically attached"
+    "device_info_included": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device info will be automatically attached"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "端末情報が自動で添付されます"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "端末情報が自動で添付されます"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设备信息将自动附加"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "裝置資訊將自動附加"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기기 정보가 자동 첨부됩니다"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se adjuntará la información del dispositivo"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les informations de l’appareil seront jointes"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geräteinformationen werden automatisch angehängt"
           }
         }
       }
     },
-    "diag_normal" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "✅ Normal"
+    "diag_normal": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "✅ Normal"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "✅ 正常"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "✅ 正常"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "✅ 正常"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "✅ 正常"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "✅ 정상"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "✅ Normal"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "✅ Normal"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "✅ Normal"
           }
         }
       }
     },
-    "diag_replace_recommended" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "⚠️ Replace Recommended"
+    "diag_replace_recommended": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "⚠️ Replace Recommended"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "⚠️ 交換推奨"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "⚠️ 交換推奨"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "⚠️ 建议更换"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "⚠️ 建議更換"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "⚠️ 교체 권장"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "⚠️ Sustitución recomendada"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "⚠️ Remplacement conseillé"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "⚠️ Austausch empfohlen"
           }
         }
       }
     },
-    "diag_slightly_degraded" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ℹ️ Slightly Degraded"
+    "diag_slightly_degraded": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ℹ️ Slightly Degraded"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ℹ️ やや劣化"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ℹ️ やや劣化"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ℹ️ 轻度损耗"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ℹ️ 輕度耗損"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ℹ️ 약간 저하"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ℹ️ Leve desgaste"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ℹ️ Légère usure"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ℹ️ Leicht verschlissen"
           }
         }
       }
     },
-    "diagnostic_result" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Diagnostic Result"
+    "diagnostic_result": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diagnostic Result"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "診断結果"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "診断結果"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "诊断结果"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "診斷結果"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "진단 결과"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resultado del diagnóstico"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Résultat du diagnostic"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diagnoseergebnis"
           }
         }
       }
     },
-    "empty_log_preview" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No log preview available"
+    "empty_log_preview": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No log preview available"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ログのプレビューはありません"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ログのプレビューはありません"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暂无日志预览"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無日誌預覽"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "로그 미리보기가 없습니다"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No hay vista previa del registro"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun aperçu du journal"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Protokollvorschau verfügbar"
           }
         }
       }
     },
-    "first_use_date" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "First Use Date"
+    "first_use_date": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "First Use Date"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "初使用日"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "初使用日"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "首次使用日期"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "首次使用日期"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "최초 사용일"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fecha del primer uso"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Date de première utilisation"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Datum der ersten Nutzung"
           }
         }
       }
     },
-    "log_date" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Log Date"
+    "log_date": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log Date"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ログ日付"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ログ日付"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "日志日期"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "日誌日期"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "로그 날짜"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fecha del registro"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Date du journal"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Protokolldatum"
           }
         }
       }
     },
-    "log_details" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Log Details"
+    "log_details": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log Details"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ログ詳細"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ログ詳細"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "日志详情"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "日誌詳細資訊"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "로그 세부 정보"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Detalles del registro"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Détails du journal"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Protokolldetails"
           }
         }
       }
     },
-    "low_rate_capacity" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Low Rate Capacity"
+    "low_rate_capacity": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Low Rate Capacity"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "低レート容量"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "低レート容量"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "低速率容量"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "低速率容量"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "저율 용량"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capacidad a baja tasa"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capacité à faible décharge"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kapazität bei geringer Entladerate"
           }
         }
       }
     },
-    "max_soc" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Max Charge %"
+    "max_soc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Max Charge %"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最大充電%"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最大充電%"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最高电量%"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最高電量%"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "최대 충전 %"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Carga máxima %"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Charge maximale %"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maximale Ladung %"
           }
         }
       }
     },
-    "min_soc" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Min Charge %"
+    "min_soc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Min Charge %"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最小充電%"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最小充電%"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最低电量%"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最低電量%"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "최소 충전 %"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Carga mínima %"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Charge minimale %"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Minimale Ladung %"
           }
         }
       }
     },
-    "model_code" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Model Code"
+    "model_code": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Model Code"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "モデルコード"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "モデルコード"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "型号代码"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "型號代碼"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "모델 코드"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Código de modelo"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Code du modèle"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modellcode"
           }
         }
       }
     },
-    "not_official_note" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Note: These values and comments are not official Apple data."
+    "not_official_note": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Note: These values and comments are not official Apple data."
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "注: これらの数値やコメントは Apple の公式データではありません。"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "注: これらの数値やコメントは Apple の公式データではありません。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "注意：这些数值和说明并非Apple官方数据。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "注意：這些數值與說明並非Apple官方資料。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "참고: 이 수치와 설명은 Apple의 공식 데이터가 아닙니다."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nota: estos valores y comentarios no son datos oficiales de Apple."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remarque : ces valeurs et commentaires ne sont pas des données officielles d’Apple."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hinweis: Diese Werte und Hinweise sind keine offiziellen Daten von Apple."
           }
         }
       }
     },
-    "os_display" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Settings Display"
+    "os_display": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings Display"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "設定上の表示"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定上の表示"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设置中的显示值"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定中的顯示值"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "설정 표시값"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Valor en Ajustes"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Valeur dans les réglages"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anzeige in den Einstellungen"
           }
         }
       }
     },
-    "ram" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "RAM"
+    "ram": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RAM"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "RAM"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RAM"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RAM"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RAM"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RAM"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RAM"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RAM"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RAM"
           }
         }
       }
     },
-    "settings_display_diagnostic" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Diagnostic comment"
+    "settings_display_diagnostic": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diagnostic comment"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "診断コメント"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "診断コメント"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "诊断说明"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "診斷說明"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "진단 설명"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comentario del diagnóstico"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Commentaire du diagnostic"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diagnosehinweis"
           }
         }
       }
     },
-    "settings_display_diagnostic_high" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Settings display is %d%%. This often reflects calibration differences; battery appears healthy."
+    "settings_display_diagnostic_high": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings display is %d%%. This often reflects calibration differences; battery appears healthy."
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "設定上の表示は %d%% です。校正差の可能性が高く、状態は良好に見えます。"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定上の表示は %d%% です。校正差の可能性が高く、状態は良好に見えます。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设置中显示为%d%%。这可能是校准差异，电池状态看起来良好。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定中顯示為%d%%。這可能是校準差異，電池狀態看起來良好。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "설정 표시값은 %d%%입니다. 보정 차이일 가능성이 높으며 상태는 양호해 보입니다."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajustes muestra %d%%. Probablemente se deba a la calibración; la batería parece estar en buen estado."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les réglages affichent %d%%. Cela reflète probablement l’étalonnage ; la batterie semble en bon état."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Einstellungen zeigen %d%%. Das liegt wahrscheinlich an der Kalibrierung; die Batterie scheint in gutem Zustand zu sein."
           }
         }
       }
     },
-    "settings_display_diagnostic_low" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Settings display is %d%% — battery health is low; consider replacing the battery."
+    "settings_display_diagnostic_low": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings display is %d%% — battery health is low; consider replacing the battery."
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "設定上の表示は %d%% です。バッテリーの状態が低下しています。交換を検討してください。"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定上の表示は %d%% です。バッテリーの状態が低下しています。交換を検討してください。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设置中显示为%d%%。电池健康度较低，建议考虑更换。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定中顯示為%d%%。電池健康度較低，建議考慮更換。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "설정 표시값은 %d%%입니다. 배터리 상태가 낮으므로 교체를 고려하세요."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajustes muestra %d%%. El estado es bajo; considera sustituir la batería."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les réglages affichent %d%%. L’état de la batterie est faible ; envisagez son remplacement."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Einstellungen zeigen %d%%. Der Batteriezustand ist niedrig; erwäge einen Austausch."
           }
         }
       }
     },
-    "settings_display_diagnostic_normal" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Settings display is %d%% — battery is showing signs of wear."
+    "settings_display_diagnostic_normal": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings display is %d%% — battery is showing signs of wear."
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "設定上の表示は %d%% です。バッテリーに劣化の傾向が見られます。"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定上の表示は %d%% です。バッテリーに劣化の傾向が見られます。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设置中显示为%d%%。电池出现损耗迹象。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定中顯示為%d%%。電池出現耗損跡象。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "설정 표시값은 %d%%입니다. 배터리에 마모 징후가 있습니다."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajustes muestra %d%%. La batería presenta signos de desgaste."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les réglages affichent %d%%. La batterie montre des signes d’usure."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Einstellungen zeigen %d%%. Die Batterie weist Verschleiß auf."
           }
         }
       }
     },
-    "settings_display_diagnostic_slight" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Settings display is %d%% — battery is slightly degraded but still usable."
+    "settings_display_diagnostic_slight": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings display is %d%% — battery is slightly degraded but still usable."
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "設定上の表示は %d%% です。やや劣化していますが、まだ使用可能です。"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定上の表示は %d%% です。やや劣化していますが、まだ使用可能です。"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设置中显示为%d%%。电池有轻度损耗，但仍可使用。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定中顯示為%d%%。電池有輕度耗損，但仍可使用。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "설정 표시값은 %d%%입니다. 약간 저하되었지만 아직 사용할 수 있습니다."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajustes muestra %d%%. La batería tiene un leve desgaste, pero sigue siendo utilizable."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les réglages affichent %d%%. La batterie est légèrement usée mais reste utilisable."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Einstellungen zeigen %d%%. Die Batterie ist leicht verschlissen, aber weiterhin nutzbar."
           }
         }
       }
     },
-    "share_days" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d days"
+    "share_days": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%d days"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d日間"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%d日間"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%d天"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%d天"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%d일"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%d días"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%d jours"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%d Tage"
           }
         }
       }
     },
-    "share_footer" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "\n#MochiLog"
+    "share_footer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\n#MochiLog"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "\n#MochiLog"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\n#MochiLog"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\n#MochiLog"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\n#MochiLog"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\n#MochiLog"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\n#MochiLog"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\n#MochiLog"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\n#MochiLog"
           }
         }
       }
     },
-    "share_title" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "🔋 Battery Report"
+    "share_title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "🔋 Battery Report"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "🔋 バッテリーレポート"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "🔋 バッテリーレポート"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "🔋 电池报告"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "🔋 電池報告"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "🔋 배터리 보고서"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "🔋 Informe de batería"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "🔋 Rapport de batterie"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "🔋 Batteriebericht"
           }
         }
       }
     },
-    "share_usage_period" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Usage Period"
+    "share_usage_period": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usage Period"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "使用期間"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "使用期間"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "使用时长"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "使用時間"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "사용 기간"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Período de uso"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Durée d’utilisation"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nutzungsdauer"
           }
         }
       }
     },
-    "share_years_days" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d years %d days"
+    "share_years_days": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%d years %d days"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d年%d日"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%d年%d日"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%d年%d天"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%d年%d天"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%d년 %d일"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%d años y %d días"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%d ans et %d jours"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%d Jahre und %d Tage"
           }
         }
       }
     },
-    "soc" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "SoC"
+    "soc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SoC"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "SoC"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SoC"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SoC"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SoC"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SoC"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SoC"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SoC"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SoC"
           }
         }
       }
     },
-    "storage" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Storage"
+    "storage": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Storage"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ストレージ"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ストレージ"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "存储空间"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "儲存空間"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "저장 공간"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Almacenamiento"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stockage"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Speicher"
           }
         }
       }
     },
-    "temperature_daily" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Temperature (Daily)"
+    "temperature_daily": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temperature (Daily)"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "温度（日次）"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "温度（日次）"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每日温度"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每日溫度"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "일일 온도"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temperatura diaria"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Température quotidienne"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tagestemperatur"
           }
         }
       }
     },
-    "view_log" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "View Log"
+    "view_log": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "View Log"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ログを表示"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ログを表示"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "查看日志"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "檢視日誌"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "로그 보기"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ver registro"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Voir le journal"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Protokoll ansehen"
           }
         }
       }
     },
-    "voltage" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Voltage"
+    "voltage": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Voltage"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "電圧"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "電圧"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "电压"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "電壓"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "전압"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Voltaje"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tension"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spannung"
           }
         }
       }
     }
   },
-  "version" : "1.1"
+  "version": "1.1"
 }

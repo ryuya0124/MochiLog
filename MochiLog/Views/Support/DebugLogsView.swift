@@ -31,7 +31,7 @@ struct DebugLogsView: View {
             ProgressView()
               .scaleEffect(1.5)
 
-            Text(String(localized: "loading_logs", table: "Support"))
+            Text(L10n.string("loading_logs", table: "Support"))
               .font(.system(.subheadline, design: .rounded))
               .foregroundStyle(.secondary)
           }
@@ -56,10 +56,10 @@ struct DebugLogsView: View {
             }
 
             VStack(spacing: 8) {
-              Text(String(localized: "no_error_logs_title", table: "Support"))
+              Text(L10n.string("no_error_logs_title", table: "Support"))
                 .font(.system(.title2, design: .rounded, weight: .bold))
 
-              Text(String(localized: "no_error_logs", table: "Support"))
+              Text(L10n.string("no_error_logs", table: "Support"))
                 .font(.system(.body, design: .rounded))
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -92,7 +92,7 @@ struct DebugLogsView: View {
                     ErrorLogStore.shared.deleteLog(id: log.id)
                     reload()
                   } label: {
-                    Label(String(localized: "delete", table: "Common"), systemImage: "trash")
+                    Label(L10n.string("delete", table: "Common"), systemImage: "trash")
                   }
                   .tint(.red)
                 }
@@ -101,7 +101,7 @@ struct DebugLogsView: View {
           }
         }
       }
-      .navigationTitle(String(localized: "view_error_logs", table: "Support"))
+      .navigationTitle(L10n.string("view_error_logs", table: "Support"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .navigationBarTrailing) {
@@ -109,22 +109,22 @@ struct DebugLogsView: View {
             Button(role: .destructive) {
               showingDeleteAllConfirm = true
             } label: {
-              Text(String(localized: "clear_all_logs", table: "Home"))
+              Text(L10n.string("clear_all_logs", table: "Home"))
             }
           }
         }
       }
       .onAppear(perform: reload)
       .confirmationDialog(
-        String(localized: "delete_all_logs_confirm", table: "Home"),
+        L10n.string("delete_all_logs_confirm", table: "Home"),
         isPresented: $showingDeleteAllConfirm,
         titleVisibility: .visible
       ) {
-        Button(String(localized: "delete", table: "Common"), role: .destructive) {
+        Button(L10n.string("delete", table: "Common"), role: .destructive) {
           ErrorLogStore.shared.clearAll()
           reload()
         }
-        Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
+        Button(L10n.string("cancel", table: "Common"), role: .cancel) {}
       }
       .fullScreenCover(item: horizontalSizeClass == .regular ? .constant(nil) : $selectedLog) {
         log in
@@ -150,7 +150,7 @@ struct DebugLogsView: View {
           }
           reload()
         } label: {
-          Label(String(localized: "delete", table: "Common"), systemImage: "trash")
+          Label(L10n.string("delete", table: "Common"), systemImage: "trash")
         }
         .tint(.red)
       }
@@ -183,10 +183,10 @@ struct DebugLogsView: View {
           }
 
           VStack(spacing: 8) {
-            Text(String(localized: "select_log_title", table: "Support"))
+            Text(L10n.string("select_log_title", table: "Support"))
               .font(.system(.title2, design: .rounded, weight: .bold))
 
-            Text(String(localized: "select_log_message", table: "Support"))
+            Text(L10n.string("select_log_message", table: "Support"))
               .font(.system(.body, design: .rounded))
               .foregroundStyle(.secondary)
               .multilineTextAlignment(.center)
@@ -298,7 +298,7 @@ struct DebugLogDetailContentView: View {
             }
 
             VStack(alignment: .leading, spacing: 6) {
-              Text(String(localized: "error_log_title", table: "Support"))
+              Text(L10n.string("error_log_title", table: "Support"))
                 .font(.system(.title2, design: .rounded, weight: .bold))
 
               HStack(spacing: 12) {
@@ -352,7 +352,7 @@ struct DebugLogDetailContentView: View {
         // メッセージ
         VStack(alignment: .leading, spacing: 12) {
           Label {
-            Text(String(localized: "message", table: "Support"))
+            Text(L10n.string("message", table: "Support"))
               .font(.system(.headline, design: .rounded, weight: .semibold))
           } icon: {
             Image(systemName: "text.bubble.fill")
@@ -386,7 +386,7 @@ struct DebugLogDetailContentView: View {
         VStack(alignment: .leading, spacing: 12) {
           HStack {
             Label {
-              Text(String(localized: "details_label", table: "Support"))
+              Text(L10n.string("details_label", table: "Support"))
                 .font(.system(.headline, design: .rounded, weight: .semibold))
             } icon: {
               Image(systemName: "doc.text.fill")
@@ -406,7 +406,7 @@ struct DebugLogDetailContentView: View {
                 HStack(spacing: 4) {
                   Image(systemName: "square.and.arrow.up")
                     .font(.system(.caption, design: .rounded, weight: .medium))
-                  Text(String(localized: "share_label", table: "Support"))
+                  Text(L10n.string("share_label", table: "Support"))
                     .font(.system(.caption, design: .rounded, weight: .medium))
                 }
                 .padding(.horizontal, 12)
@@ -437,7 +437,7 @@ struct DebugLogDetailContentView: View {
                 .fill(Color(.tertiarySystemGroupedBackground))
             )
           } else {
-            Text(String(localized: "empty_log_preview", table: "Records"))
+            Text(L10n.string("empty_log_preview", table: "Records"))
               .foregroundStyle(.secondary)
               .font(.system(.body, design: .rounded))
               .frame(maxWidth: .infinity)
@@ -494,10 +494,10 @@ struct DebugLogDetailView: View {
   var body: some View {
     NavigationStack {
       DebugLogDetailContentView(entry: entry)
-        .navigationTitle(String(localized: "log_details", table: "Records"))
+        .navigationTitle(L10n.string("log_details", table: "Records"))
         .toolbar {
           ToolbarItem(placement: .navigationBarLeading) {
-            Button(String(localized: "close", table: "Common")) { dismiss() }
+            Button(L10n.string("close", table: "Common")) { dismiss() }
           }
         }
     }

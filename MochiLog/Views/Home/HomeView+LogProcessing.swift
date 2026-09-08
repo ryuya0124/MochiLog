@@ -57,7 +57,7 @@ extension HomeView {
         }
       }
     }
-    
+
     return (updatedDeviceName, updatedModelCode, needsManualSelection)
   }
 
@@ -125,7 +125,7 @@ extension HomeView {
             NotificationCenter.default.post(
               name: NSNotification.Name("ShowImportError"),
               object: nil,
-              userInfo: ["errorMessage": String(localized: "duplicate_record", table: "Home")]
+              userInfo: ["errorMessage": L10n.string("duplicate_record", table: "Home")]
             )
           }
           return (nil, true)
@@ -169,7 +169,7 @@ extension HomeView {
     silent: Bool
   ) -> BatteryRecord? {
     let selectionMode = AppSettings.shared.deviceSelectionMode
-    
+
     // iPhone Air関連は専用の判定（自動/手動）を優先するため、一般的な端末の手動選択をバイパスする
     let isAirOrMagSafe = deviceName == "iPhone Air" || deviceName == "iPhone Air MagSafeバッテリー"
 
@@ -203,7 +203,7 @@ extension HomeView {
           NotificationCenter.default.post(
             name: NSNotification.Name("ShowImportError"),
             object: nil,
-            userInfo: ["errorMessage": String(localized: "duplicate_record", table: "Home")]
+            userInfo: ["errorMessage": L10n.string("duplicate_record", table: "Home")]
           )
         }
         return nil
@@ -238,7 +238,7 @@ extension HomeView {
         NotificationCenter.default.post(
           name: NSNotification.Name("ShowImportError"),
           object: nil,
-          userInfo: ["errorMessage": String(localized: "duplicate_record", table: "Home")]
+          userInfo: ["errorMessage": L10n.string("duplicate_record", table: "Home")]
         )
       }
       pendingParseResult = nil
@@ -411,7 +411,7 @@ extension HomeView {
         NotificationCenter.default.post(
           name: NSNotification.Name("ShowImportError"),
           object: nil,
-          userInfo: ["errorMessage": String(localized: "parse_error", table: "Home")]
+          userInfo: ["errorMessage": L10n.string("parse_error", table: "Home")]
         )
       }
       return nil
@@ -424,7 +424,7 @@ extension HomeView {
           NotificationCenter.default.post(
             name: NSNotification.Name("ShowImportError"),
             object: nil,
-            userInfo: ["errorMessage": String(localized: "capacity_mismatch_error", table: "Home")]
+            userInfo: ["errorMessage": L10n.string("capacity_mismatch_error", table: "Home")]
           )
         }
         return nil
@@ -443,7 +443,7 @@ extension HomeView {
       modelCode: baseModelCode,
       silent: false
     )
-    
+
     if needsMagSafeSelection {
       pendingParseResult = result
       showingMagSafeSelection = true
@@ -532,7 +532,7 @@ extension HomeView {
           } else {
             batchImportResults[id] = FileImportResult(id: id, filename: url.lastPathComponent,
               parsedDate: nil, deviceName: nil, rawText: nil, status: .error,
-              errorMessage: String(localized: "file_read_error", table: "Home"))
+              errorMessage: L10n.string("file_read_error", table: "Home"))
           }
           let status = batchImportResults[id].status
           queue.acknowledge(url, saved: status == .success || status == .duplicate)
@@ -571,7 +571,7 @@ extension HomeView {
         deviceName: nil,
         rawText: rawText,
         status: .error,
-        errorMessage: String(localized: "parse_error", table: "Home")
+        errorMessage: L10n.string("parse_error", table: "Home")
       )
     }
 
@@ -584,14 +584,14 @@ extension HomeView {
         deviceName: nil,
         rawText: rawText,
         status: .error,
-        errorMessage: String(localized: "capacity_mismatch_error", table: "Home")
+        errorMessage: L10n.string("capacity_mismatch_error", table: "Home")
       )
     }
 
     if parseResult.isCapacityMismatch {
       return FileImportResult(id: id, filename: filename, parsedDate: logDate,
         deviceName: nil, rawText: rawText, status: .needsReview,
-        errorMessage: String(localized: "capacity_mismatch_error", table: "Home"))
+        errorMessage: L10n.string("capacity_mismatch_error", table: "Home"))
     }
 
     // デバイス名解決
@@ -602,7 +602,7 @@ extension HomeView {
       modelCode: baseModelCode,
       silent: false // バッチ処理でもユーザーへの確認（needsReview）を行うためにfalseを指定
     )
-    
+
     if needsMagSafeSelection {
       return FileImportResult(
         id: id,
@@ -643,7 +643,7 @@ extension HomeView {
           deviceName: actualDeviceName,
           rawText: rawText,
           status: .error,
-          errorMessage: "Apple Watchが登録されていません。設定から登録してください。"
+          errorMessage: L10n.string("watch_not_registered", table: "Language")
         )
       }
     } else {

@@ -204,7 +204,7 @@ struct RecordRowView: View {
           .foregroundColor(.secondary)
         Text(
           String(
-            format: String(localized: "cycle_count_format", table: "Analytics"), record.cycleCount)
+            format: L10n.string("cycle_count_format", table: "Analytics"), record.cycleCount)
         )
         .font(.caption)
         .foregroundColor(.secondary)
@@ -378,7 +378,7 @@ struct RecordDetailView: View {
                 HStack(spacing: 12) {
                   Label(
                     String(
-                      format: String(localized: "cycle_count_format", table: "Analytics"),
+                      format: L10n.string("cycle_count_format", table: "Analytics"),
                       record.cycleCount),
                     systemImage: "gauge"
                   )
@@ -409,7 +409,7 @@ struct RecordDetailView: View {
                   ProgressView()
                 } else {
                   Label(
-                    String(localized: "share", table: "Common"),
+                    L10n.string("share", table: "Common"),
                     systemImage: "square.and.arrow.up")
                 }
               }
@@ -431,50 +431,50 @@ struct RecordDetailView: View {
 
             // Device info spans full width on iPad
             DetailCard(
-              title: String(localized: "device_info", table: "Records"), systemImage: "iphone"
+              title: L10n.string("device_info", table: "Records"), systemImage: "iphone"
             ) {
               VStack(alignment: .leading, spacing: 8) {
                 LabeledContent(
-                  String(localized: "device_name", table: "Common"), value: record.deviceName)
+                  L10n.string("device_name", table: "Common"), value: record.deviceName)
 
                 if !isMagSafe {
                   if let soc = record.soc {
                     InfoLabeledContent(
-                      String(localized: "soc", table: "Records"),
-                      hint: String(localized: "hint_soc", table: "Records"),
+                      L10n.string("soc", table: "Records"),
+                      hint: L10n.string("hint_soc", table: "Records"),
                       value: soc)
                   }
                 }
-                
+
                 if let modelCode = record.deviceModelCode {
                   InfoLabeledContent(
-                    String(localized: "model_code", table: "Records"),
-                    hint: String(localized: "hint_model_code", table: "Records"),
+                    L10n.string("model_code", table: "Records"),
+                    hint: L10n.string("hint_model_code", table: "Records"),
                     value: modelCode)
                 }
-                
+
                 if !isMagSafe {
                   if record.storage != nil, let formatted = record.formattedStorage {
                     InfoLabeledContent(
-                      String(localized: "storage", table: "Records"),
-                      hint: String(localized: "hint_storage", table: "Records"),
+                      L10n.string("storage", table: "Records"),
+                      hint: L10n.string("hint_storage", table: "Records"),
                       value: formatted)
                   }
                   if record.ram != nil, let formattedRam = record.formattedRAM {
                     InfoLabeledContent(
-                      String(localized: "ram", table: "Records"),
-                      hint: String(localized: "hint_ram", table: "Records"),
+                      L10n.string("ram", table: "Records"),
+                      hint: L10n.string("hint_ram", table: "Records"),
                       value: formattedRam)
                   }
                 }
-                
+
                 LabeledContent(
-                  String(localized: "log_date", table: "Records"), value: record.logDate,
+                  L10n.string("log_date", table: "Records"), value: record.logDate,
                   format: .dateTime.year().month().day())
                 if let firstUse = record.firstUseDate {
                   InfoLabeledContent(
-                    String(localized: "first_use_date", table: "Records"),
-                    hint: String(localized: "hint_first_use_date", table: "Records")
+                    L10n.string("first_use_date", table: "Records"),
+                    hint: L10n.string("hint_first_use_date", table: "Records")
                   ) {
                     Text(firstUse, format: .dateTime.year().month().day())
                   }
@@ -485,30 +485,30 @@ struct RecordDetailView: View {
 
             // Battery capacity spans full width to avoid cut-off
             DetailCard(
-              title: String(localized: "battery_capacity", table: "Analytics"),
+              title: L10n.string("battery_capacity", table: "Analytics"),
               systemImage: "battery.100"
             ) {
               VStack(alignment: .leading, spacing: 8) {
                 InfoLabeledContent(
-                  String(localized: "cycle_count", table: "Analytics"),
-                  hint: String(localized: "hint_cycle_count", table: "Records"),
+                  L10n.string("cycle_count", table: "Analytics"),
+                  hint: L10n.string("hint_cycle_count", table: "Records"),
                   value: String(
-                    format: String(localized: "cycle_count_format", table: "Analytics"),
+                    format: L10n.string("cycle_count_format", table: "Analytics"),
                     record.cycleCount))
                 if record.designCapacity > 0 {
                   InfoLabeledContent(
-                    String(localized: "design_capacity", table: "Analytics"),
-                    hint: String(localized: "hint_design_capacity", table: "Records"),
+                    L10n.string("design_capacity", table: "Analytics"),
+                    hint: L10n.string("hint_design_capacity", table: "Records"),
                     value: "\(record.designCapacity) mAh (100%)")
                 } else {
                   InfoLabeledContent(
-                    String(localized: "design_capacity", table: "Analytics"),
-                    hint: String(localized: "hint_design_capacity", table: "Records"),
-                    value: String(localized: "unknown", table: "Common"))
+                    L10n.string("design_capacity", table: "Analytics"),
+                    hint: L10n.string("hint_design_capacity", table: "Records"),
+                    value: L10n.string("unknown", table: "Common"))
                 }
                 InfoLabeledContent(
-                  String(localized: "nominal_capacity", table: "Analytics"),
-                  hint: String(localized: "hint_nominal_capacity", table: "Records")
+                  L10n.string("nominal_capacity", table: "Analytics"),
+                  hint: L10n.string("hint_nominal_capacity", table: "Records")
                 ) {
                   HStack(spacing: 8) {
                     Text("\(record.nominalCapacity) mAh")
@@ -522,8 +522,8 @@ struct RecordDetailView: View {
                 }
                 if !isMagSafe {
                   InfoLabeledContent(
-                    String(localized: "raw_capacity", table: "Analytics"),
-                    hint: String(localized: "hint_raw_capacity", table: "Records")
+                    L10n.string("raw_capacity", table: "Analytics"),
+                    hint: L10n.string("hint_raw_capacity", table: "Records")
                   ) {
                     HStack(spacing: 8) {
                       Text("\(record.rawCapacity) mAh")
@@ -537,15 +537,15 @@ struct RecordDetailView: View {
                   if let lowRate = record.lowRateCapacity {
                     let lowRateRatio = record.designCapacity > 0 ? (Double(lowRate) / Double(record.designCapacity)) * 100.0 : 0.0
                     InfoLabeledContent(
-                      String(localized: "low_rate_capacity", table: "Records"),
-                      hint: String(localized: "hint_low_rate_capacity", table: "Records"),
+                      L10n.string("low_rate_capacity", table: "Records"),
+                      hint: L10n.string("hint_low_rate_capacity", table: "Records"),
                       value: "\(lowRate) mAh (\(String(format: "%.1f%%", lowRateRatio)))"
                     )
                   }
                   if let display = record.settingsDisplayPercent {
                     InfoLabeledContent(
-                      String(localized: "os_display", table: "Records"),
-                      hint: String(localized: "hint_os_display", table: "Records"),
+                      L10n.string("os_display", table: "Records"),
+                      hint: L10n.string("hint_os_display", table: "Records"),
                       value: "\(min(display, 100))%")
                   }
                 }
@@ -554,27 +554,27 @@ struct RecordDetailView: View {
 
                 if let deflator = record.deflator {
                   InfoLabeledContent(
-                    String(localized: "deflator", table: "Records"),
-                    hint: String(localized: "hint_deflator", table: "Records"),
+                    L10n.string("deflator", table: "Records"),
+                    hint: L10n.string("hint_deflator", table: "Records"),
                     value: String(format: "%.1f%%", deflator)
                   )
                 }
                 InfoLabeledContent(
-                  String(localized: "diagnostic_result", table: "Records"),
-                  hint: String(localized: "hint_diagnostic_result", table: "Records"),
+                  L10n.string("diagnostic_result", table: "Records"),
+                  hint: L10n.string("hint_diagnostic_result", table: "Records"),
                   value: record.cachedDiagnostic)
                 if !isMagSafe {
                   if let displayDiagnostic = settingsDisplayDiagnosticMessage(
                     record.settingsDisplayPercent)
                   {
                     InfoLabeledContent(
-                      String(localized: "settings_display_diagnostic", table: "Records"),
-                      hint: String(localized: "hint_settings_display_diagnostic", table: "Records"),
+                      L10n.string("settings_display_diagnostic", table: "Records"),
+                      hint: L10n.string("hint_settings_display_diagnostic", table: "Records"),
                       value: displayDiagnostic
                     )
                   }
                 }
-                Text(String(localized: "not_official_note", table: "Records"))
+                Text(L10n.string("not_official_note", table: "Records"))
                   .font(.caption2)
                   .foregroundStyle(.secondary)
               }
@@ -590,26 +590,26 @@ struct RecordDetailView: View {
               // Temperature (optional)
               if record.avgTemp != nil || record.maxTemp != nil || record.minTemp != nil {
                 DetailCard(
-                  title: String(localized: "temperature_daily", table: "Records"),
+                  title: L10n.string("temperature_daily", table: "Records"),
                   systemImage: "thermometer"
                 ) {
                   VStack(alignment: .leading, spacing: 8) {
                     if let avg = record.avgTemp {
                       InfoLabeledContent(
-                        String(localized: "average", table: "Analytics"),
-                        hint: String(localized: "hint_temperature", table: "Records"),
+                        L10n.string("average", table: "Analytics"),
+                        hint: L10n.string("hint_temperature", table: "Records"),
                         value: String(format: "%.1f°C", avg))
                     }
                     if let max = record.maxTemp {
                       InfoLabeledContent(
-                        String(localized: "maximum", table: "Analytics"),
-                        hint: String(localized: "hint_temperature", table: "Records"),
+                        L10n.string("maximum", table: "Analytics"),
+                        hint: L10n.string("hint_temperature", table: "Records"),
                         value: String(format: "%.1f°C", max))
                     }
                     if let min = record.minTemp {
                       InfoLabeledContent(
-                        String(localized: "minimum", table: "Analytics"),
-                        hint: String(localized: "hint_temperature", table: "Records"),
+                        L10n.string("minimum", table: "Analytics"),
+                        hint: L10n.string("hint_temperature", table: "Records"),
                         value: String(format: "%.1f°C", min))
                     }
                   }
@@ -620,19 +620,19 @@ struct RecordDetailView: View {
               // Voltage (optional)
               if record.maxVoltage != nil || record.minVoltage != nil {
                 DetailCard(
-                  title: String(localized: "voltage", table: "Records"), systemImage: "bolt.fill"
+                  title: L10n.string("voltage", table: "Records"), systemImage: "bolt.fill"
                 ) {
                   VStack(alignment: .leading, spacing: 8) {
                     if let max = record.maxVoltage {
                       InfoLabeledContent(
-                        String(localized: "maximum", table: "Analytics"),
-                        hint: String(localized: "hint_voltage", table: "Records"),
+                        L10n.string("maximum", table: "Analytics"),
+                        hint: L10n.string("hint_voltage", table: "Records"),
                         value: String(format: "%.0f mV", max))
                     }
                     if let min = record.minVoltage {
                       InfoLabeledContent(
-                        String(localized: "minimum", table: "Analytics"),
-                        hint: String(localized: "hint_voltage", table: "Records"),
+                        L10n.string("minimum", table: "Analytics"),
+                        hint: L10n.string("hint_voltage", table: "Records"),
                         value: String(format: "%.0f mV", min))
                     }
                   }
@@ -643,20 +643,20 @@ struct RecordDetailView: View {
               // Charge range (optional)
               if record.maxSoC != nil || record.minSoC != nil {
                 DetailCard(
-                  title: String(localized: "charge_range_daily", table: "Records"),
+                  title: L10n.string("charge_range_daily", table: "Records"),
                   systemImage: "battery.75"
                 ) {
                   VStack(alignment: .leading, spacing: 8) {
                     if let max = record.maxSoC {
                       InfoLabeledContent(
-                        String(localized: "max_soc", table: "Records"),
-                        hint: String(localized: "hint_charge_range", table: "Records"),
+                        L10n.string("max_soc", table: "Records"),
+                        hint: L10n.string("hint_charge_range", table: "Records"),
                         value: "\(max)%")
                     }
                     if let min = record.minSoC {
                       InfoLabeledContent(
-                        String(localized: "min_soc", table: "Records"),
-                        hint: String(localized: "hint_charge_range", table: "Records"),
+                        L10n.string("min_soc", table: "Records"),
+                        hint: L10n.string("hint_charge_range", table: "Records"),
                         value: "\(min)%")
                     }
                   }
@@ -674,75 +674,75 @@ struct RecordDetailView: View {
       } else {
         // Compact width (iPhone): 既存の List ベース UI
         List {
-          Section(String(localized: "device_info", table: "Records")) {
+          Section(L10n.string("device_info", table: "Records")) {
             LabeledContent(
-              String(localized: "device_name", table: "Common"), value: record.deviceName)
+              L10n.string("device_name", table: "Common"), value: record.deviceName)
 
             if !isMagSafe {
               if let soc = record.soc {
                 InfoLabeledContent(
-                  String(localized: "soc", table: "Records"),
-                  hint: String(localized: "hint_soc", table: "Records"),
+                  L10n.string("soc", table: "Records"),
+                  hint: L10n.string("hint_soc", table: "Records"),
                   value: soc)
               }
             }
-            
+
             if let modelCode = record.deviceModelCode {
               InfoLabeledContent(
-                String(localized: "model_code", table: "Records"),
-                hint: String(localized: "hint_model_code", table: "Records"),
+                L10n.string("model_code", table: "Records"),
+                hint: L10n.string("hint_model_code", table: "Records"),
                 value: modelCode)
             }
-            
+
             if !isMagSafe {
               if record.storage != nil, let formatted = record.formattedStorage {
                 InfoLabeledContent(
-                  String(localized: "storage", table: "Records"),
-                  hint: String(localized: "hint_storage", table: "Records"),
+                  L10n.string("storage", table: "Records"),
+                  hint: L10n.string("hint_storage", table: "Records"),
                   value: formatted)
               }
               if record.ram != nil, let formattedRam = record.formattedRAM {
                 InfoLabeledContent(
-                  String(localized: "ram", table: "Records"),
-                  hint: String(localized: "hint_ram", table: "Records"),
+                  L10n.string("ram", table: "Records"),
+                  hint: L10n.string("hint_ram", table: "Records"),
                   value: formattedRam)
               }
             }
-            
+
             LabeledContent(
-              String(localized: "log_date", table: "Records"), value: record.logDate,
+              L10n.string("log_date", table: "Records"), value: record.logDate,
               format: .dateTime.year().month().day())
             if let firstUse = record.firstUseDate {
               InfoLabeledContent(
-                String(localized: "first_use_date", table: "Records"),
-                hint: String(localized: "hint_first_use_date", table: "Records")
+                L10n.string("first_use_date", table: "Records"),
+                hint: L10n.string("hint_first_use_date", table: "Records")
               ) {
                 Text(firstUse, format: .dateTime.year().month().day())
               }
             }
           }
 
-          Section(String(localized: "battery_capacity", table: "Analytics")) {
+          Section(L10n.string("battery_capacity", table: "Analytics")) {
             InfoLabeledContent(
-              String(localized: "cycle_count", table: "Analytics"),
-              hint: String(localized: "hint_cycle_count", table: "Records"),
+              L10n.string("cycle_count", table: "Analytics"),
+              hint: L10n.string("hint_cycle_count", table: "Records"),
               value: String(
-                format: String(localized: "cycle_count_format", table: "Analytics"),
+                format: L10n.string("cycle_count_format", table: "Analytics"),
                 record.cycleCount))
             if record.designCapacity > 0 {
               InfoLabeledContent(
-                String(localized: "design_capacity", table: "Analytics"),
-                hint: String(localized: "hint_design_capacity", table: "Records"),
+                L10n.string("design_capacity", table: "Analytics"),
+                hint: L10n.string("hint_design_capacity", table: "Records"),
                 value: "\(record.designCapacity) mAh (100%)")
             } else {
               InfoLabeledContent(
-                String(localized: "design_capacity", table: "Analytics"),
-                hint: String(localized: "hint_design_capacity", table: "Records"),
-                value: String(localized: "unknown", table: "Common"))
+                L10n.string("design_capacity", table: "Analytics"),
+                hint: L10n.string("hint_design_capacity", table: "Records"),
+                value: L10n.string("unknown", table: "Common"))
             }
             InfoLabeledContent(
-              String(localized: "nominal_capacity", table: "Analytics"),
-              hint: String(localized: "hint_nominal_capacity", table: "Records")
+              L10n.string("nominal_capacity", table: "Analytics"),
+              hint: L10n.string("hint_nominal_capacity", table: "Records")
             ) {
               HStack(spacing: 8) {
                 Text("\(record.nominalCapacity) mAh")
@@ -756,8 +756,8 @@ struct RecordDetailView: View {
             }
             if !isMagSafe {
               InfoLabeledContent(
-                String(localized: "raw_capacity", table: "Analytics"),
-                hint: String(localized: "hint_raw_capacity", table: "Records")
+                L10n.string("raw_capacity", table: "Analytics"),
+                hint: L10n.string("hint_raw_capacity", table: "Records")
               ) {
                 HStack(spacing: 8) {
                   Text("\(record.rawCapacity) mAh")
@@ -771,96 +771,96 @@ struct RecordDetailView: View {
               if let lowRate = record.lowRateCapacity {
                 let lowRateRatio = record.designCapacity > 0 ? (Double(lowRate) / Double(record.designCapacity)) * 100.0 : 0.0
                 InfoLabeledContent(
-                  String(localized: "low_rate_capacity", table: "Records"),
-                  hint: String(localized: "hint_low_rate_capacity", table: "Records"),
+                  L10n.string("low_rate_capacity", table: "Records"),
+                  hint: L10n.string("hint_low_rate_capacity", table: "Records"),
                   value: "\(lowRate) mAh (\(String(format: "%.1f%%", lowRateRatio)))"
                 )
               }
               if let display = record.settingsDisplayPercent {
                 InfoLabeledContent(
-                  String(localized: "os_display", table: "Records"),
-                  hint: String(localized: "hint_os_display", table: "Records"),
+                  L10n.string("os_display", table: "Records"),
+                  hint: L10n.string("hint_os_display", table: "Records"),
                   value: "\(min(display, 100))%")
               }
             }
 
             if let deflator = record.deflator {
               InfoLabeledContent(
-                String(localized: "deflator", table: "Records"),
-                hint: String(localized: "hint_deflator", table: "Records"),
+                L10n.string("deflator", table: "Records"),
+                hint: L10n.string("hint_deflator", table: "Records"),
                 value: String(format: "%.1f%%", deflator))
             }
             InfoLabeledContent(
-              String(localized: "diagnostic_result", table: "Records"),
-              hint: String(localized: "hint_diagnostic_result", table: "Records"),
+              L10n.string("diagnostic_result", table: "Records"),
+              hint: L10n.string("hint_diagnostic_result", table: "Records"),
               value: record.dynamicDiagnosticResult)
             if !isMagSafe {
               if let displayDiagnostic = settingsDisplayDiagnosticMessage(
                 record.settingsDisplayPercent)
               {
                 InfoLabeledContent(
-                  String(localized: "settings_display_diagnostic", table: "Records"),
-                  hint: String(localized: "hint_settings_display_diagnostic", table: "Records"),
+                  L10n.string("settings_display_diagnostic", table: "Records"),
+                  hint: L10n.string("hint_settings_display_diagnostic", table: "Records"),
                   value: displayDiagnostic)
               }
             }
-            Text(String(localized: "not_official_note", table: "Records"))
+            Text(L10n.string("not_official_note", table: "Records"))
               .font(.caption2)
               .foregroundStyle(.secondary)
           }
 
           if record.avgTemp != nil || record.maxTemp != nil || record.minTemp != nil {
-            Section(String(localized: "temperature_daily", table: "Records")) {
+            Section(L10n.string("temperature_daily", table: "Records")) {
               if let avg = record.avgTemp {
                 InfoLabeledContent(
-                  String(localized: "average", table: "Analytics"),
-                  hint: String(localized: "hint_temperature", table: "Records"),
+                  L10n.string("average", table: "Analytics"),
+                  hint: L10n.string("hint_temperature", table: "Records"),
                   value: String(format: "%.1f°C", avg))
               }
               if let max = record.maxTemp {
                 InfoLabeledContent(
-                  String(localized: "maximum", table: "Analytics"),
-                  hint: String(localized: "hint_temperature", table: "Records"),
+                  L10n.string("maximum", table: "Analytics"),
+                  hint: L10n.string("hint_temperature", table: "Records"),
                   value: String(format: "%.1f°C", max))
               }
               if let min = record.minTemp {
                 InfoLabeledContent(
-                  String(localized: "minimum", table: "Analytics"),
-                  hint: String(localized: "hint_temperature", table: "Records"),
+                  L10n.string("minimum", table: "Analytics"),
+                  hint: L10n.string("hint_temperature", table: "Records"),
                   value: String(format: "%.1f°C", min))
               }
             }
           }
 
           if record.maxVoltage != nil || record.minVoltage != nil {
-            Section(String(localized: "voltage", table: "Records")) {
+            Section(L10n.string("voltage", table: "Records")) {
               if let max = record.maxVoltage {
                 InfoLabeledContent(
-                  String(localized: "maximum", table: "Analytics"),
-                  hint: String(localized: "hint_voltage", table: "Records"),
+                  L10n.string("maximum", table: "Analytics"),
+                  hint: L10n.string("hint_voltage", table: "Records"),
                   value: String(format: "%.0f mV", max))
               }
               if let min = record.minVoltage {
                 InfoLabeledContent(
-                  String(localized: "minimum", table: "Analytics"),
-                  hint: String(localized: "hint_voltage", table: "Records"),
+                  L10n.string("minimum", table: "Analytics"),
+                  hint: L10n.string("hint_voltage", table: "Records"),
                   value: String(format: "%.0f mV", min))
               }
             }
           }
 
           if record.maxSoC != nil || record.minSoC != nil {
-            Section(String(localized: "charge_range_daily", table: "Records")) {
+            Section(L10n.string("charge_range_daily", table: "Records")) {
               if let max = record.maxSoC {
                 InfoLabeledContent(
-                  String(localized: "max_soc", table: "Records"),
-                  hint: String(localized: "hint_charge_range", table: "Records"),
+                  L10n.string("max_soc", table: "Records"),
+                  hint: L10n.string("hint_charge_range", table: "Records"),
                   value: "\(max)%")
               }
               if let min = record.minSoC {
                 InfoLabeledContent(
-                  String(localized: "min_soc", table: "Records"),
-                  hint: String(localized: "hint_charge_range", table: "Records"),
+                  L10n.string("min_soc", table: "Records"),
+                  hint: L10n.string("hint_charge_range", table: "Records"),
                   value: "\(min)%")
               }
             }
@@ -868,12 +868,12 @@ struct RecordDetailView: View {
         }
       }
     }
-    .navigationTitle(String(localized: "detail", table: "Records"))
+    .navigationTitle(L10n.string("detail", table: "Records"))
     .navigationBarTitleDisplayMode(.inline)
     .toolbar {
       if horizontalSizeClass != .regular {
         ToolbarItem(placement: .navigationBarLeading) {
-          Button(String(localized: "close", table: "Common")) {
+          Button(L10n.string("close", table: "Common")) {
             dismiss()
           }
         }
@@ -932,10 +932,10 @@ struct RecordDetailView: View {
       ? record.nominalHealthPercent : record.healthPercent
     let dateFormatter = DateFormatter()
     dateFormatter.dateStyle = .medium
-    dateFormatter.locale = Locale.current
+    dateFormatter.locale = L10n.locale
 
     // タイトル
-    var text = String(localized: "share_title", table: "Records")
+    var text = L10n.string("share_title", table: "Records")
     text += "\n\n"
 
     // デバイス名（モデルコードは表示しない）
@@ -946,7 +946,7 @@ struct RecordDetailView: View {
 
     // バッテリー最大容量
     text +=
-      "\(String(localized: "battery_health", table: "Records")): \(String(format: "%.1f", health))%\n"
+      "\(L10n.string("battery_health", table: "Records")): \(String(format: "%.1f", health))%\n"
     text += "\(record.cachedDiagnostic)\n\n"
 
     // 使用期間（初使用日がある場合）
@@ -954,18 +954,18 @@ struct RecordDetailView: View {
       let calendar = Calendar.current
       let components = calendar.dateComponents([.day], from: firstUse, to: record.logDate)
       if let days = components.day {
-        text += "\(String(localized: "share_usage_period", table: "Records")): "
+        text += "\(L10n.string("share_usage_period", table: "Records")): "
 
         if days >= 365 {
           let years = days / 365
           let remainingDays = days % 365
           text += String(
-            format: String(localized: "share_years_days", table: "Records"),
+            format: L10n.string("share_years_days", table: "Records"),
             years, remainingDays
           )
         } else {
           text += String(
-            format: String(localized: "share_days", table: "Records"),
+            format: L10n.string("share_days", table: "Records"),
             days
           )
         }
@@ -976,30 +976,30 @@ struct RecordDetailView: View {
     // サイクルカウント
     text += String(
       format:
-        "\(String(localized: "cycle_count", table: "Analytics")): \(String(localized: "cycle_count_format", table: "Analytics"))",
+        "\(L10n.string("cycle_count", table: "Analytics")): \(L10n.string("cycle_count_format", table: "Analytics"))",
       record.cycleCount
     )
     text += "\n"
 
     // 実測容量
     text +=
-      "\(String(localized: "raw_capacity", table: "Analytics")): \(record.rawCapacity) mAh"
+      "\(L10n.string("raw_capacity", table: "Analytics")): \(record.rawCapacity) mAh"
     text += "\n"
 
     // 公称容量
     text +=
-      "\(String(localized: "nominal_capacity", table: "Analytics")): \(record.nominalCapacity) mAh"
+      "\(L10n.string("nominal_capacity", table: "Analytics")): \(record.nominalCapacity) mAh"
     text += "\n"
 
     // 設計容量（ある場合）
     if record.designCapacity > 0 {
       text +=
-        "\(String(localized: "design_capacity", table: "Analytics")): \(record.designCapacity) mAh"
+        "\(L10n.string("design_capacity", table: "Analytics")): \(record.designCapacity) mAh"
       text += "\n"
     }
 
     // フッター（アプリ名とハッシュタグ）
-    text += String(localized: "share_footer", table: "Records")
+    text += L10n.string("share_footer", table: "Records")
 
     return text
   }
@@ -1163,19 +1163,19 @@ struct RecordDetailView: View {
     if p >= 100 {
       // 100%以上：正常（良好）
       return String(
-        format: String(localized: "settings_display_diagnostic_high", table: "Records"), p)
+        format: L10n.string("settings_display_diagnostic_high", table: "Records"), p)
     }
     if p >= 90 {
       // 90%以上100%未満：やや劣化
       return String(
-        format: String(localized: "settings_display_diagnostic_slight", table: "Records"), p)
+        format: L10n.string("settings_display_diagnostic_slight", table: "Records"), p)
     }
     if p >= 80 {
       // 80%以上90%未満：中間（劣化傾向）
       return String(
-        format: String(localized: "settings_display_diagnostic_normal", table: "Records"), p)
+        format: L10n.string("settings_display_diagnostic_normal", table: "Records"), p)
     }
     // 80%未満：交換を検討
-    return String(format: String(localized: "settings_display_diagnostic_low", table: "Records"), p)
+    return String(format: L10n.string("settings_display_diagnostic_low", table: "Records"), p)
   }
 }

@@ -22,11 +22,11 @@ struct SupportSettingsView: View {
               .frame(width: 60)
 
             VStack(alignment: .leading, spacing: 4) {
-              Text(String(localized: "tutorial", table: "Onboarding"))
+              Text(L10n.string("tutorial", table: "Onboarding"))
                 .font(.headline)
                 .foregroundStyle(.primary)
 
-              Text(String(localized: "tutorial_description", table: "Settings"))
+              Text(L10n.string("tutorial_description", table: "Settings"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             }
@@ -56,11 +56,11 @@ struct SupportSettingsView: View {
                   .frame(width: 60)
 
                 VStack(alignment: .leading, spacing: 4) {
-                  Text(String(localized: "setup_shortcut", table: "Settings"))
+                  Text(L10n.string("setup_shortcut", table: "Settings"))
                     .font(.headline)
                     .foregroundStyle(.primary)
 
-                  Text(String(localized: "setup_shortcut_description", table: "Settings"))
+                  Text(L10n.string("setup_shortcut_description", table: "Settings"))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 }
@@ -91,11 +91,11 @@ struct SupportSettingsView: View {
               .frame(width: 60)
 
             VStack(alignment: .leading, spacing: 4) {
-              Text(String(localized: "view_analytics_data", table: "Settings"))
+              Text(L10n.string("view_analytics_data", table: "Settings"))
                 .font(.headline)
                 .foregroundStyle(.primary)
 
-              Text(String(localized: "view_analytics_data_description", table: "Settings"))
+              Text(L10n.string("view_analytics_data_description", table: "Settings"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             }
@@ -124,11 +124,11 @@ struct SupportSettingsView: View {
               .frame(width: 60)
 
             VStack(alignment: .leading, spacing: 4) {
-              Text(String(localized: "contact_support", table: "Support"))
+              Text(L10n.string("contact_support", table: "Support"))
                 .font(.headline)
                 .foregroundStyle(.primary)
 
-              Text(String(localized: "contact_support_description", table: "Settings"))
+              Text(L10n.string("contact_support_description", table: "Settings"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             }
@@ -159,11 +159,11 @@ struct SupportSettingsView: View {
               .frame(width: 60)
 
             VStack(alignment: .leading, spacing: 4) {
-              Text(String(localized: "join_discord", table: "Settings"))
+              Text(L10n.string("join_discord", table: "Settings"))
                 .font(.headline)
                 .foregroundStyle(.primary)
 
-              Text(String(localized: "join_discord_description", table: "Settings"))
+              Text(L10n.string("join_discord_description", table: "Settings"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             }
@@ -192,11 +192,11 @@ struct SupportSettingsView: View {
               .frame(width: 60)
 
             VStack(alignment: .leading, spacing: 4) {
-              Text(String(localized: "donation_title", table: "Settings"))
+              Text(L10n.string("donation_title", table: "Settings"))
                 .font(.headline)
                 .foregroundStyle(.primary)
 
-              Text(String(localized: "donation_description_short", table: "Settings"))
+              Text(L10n.string("donation_description_short", table: "Settings"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             }
@@ -228,15 +228,15 @@ struct SupportSettingsView: View {
       DonationView()
     }
     .alert(
-      String(localized: "shortcut_required_title", table: "Settings"),
+      L10n.string("shortcut_required_title", table: "Settings"),
       isPresented: $showingShortcutSetupPrompt
     ) {
-      Button(String(localized: "setup_now", table: "Settings"), role: .none) {
+      Button(L10n.string("setup_now", table: "Settings"), role: .none) {
         SettingsRedirectHelper.openShortcutSetup()
       }
-      Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
+      Button(L10n.string("cancel", table: "Common"), role: .cancel) {}
     } message: {
-      Text(String(localized: "shortcut_required_message", table: "Settings"))
+      Text(L10n.string("shortcut_required_message", table: "Settings"))
     }
   }
 

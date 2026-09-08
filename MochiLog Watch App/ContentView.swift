@@ -35,7 +35,7 @@ struct ContentView: View {
           Image(systemName: "eye.fill")
             .font(.caption)
             .foregroundStyle(.orange)
-          Text(String(localized: "sample_data_viewing"))
+          Text(L10n.string("sample_data_viewing"))
             .font(.caption)
             .foregroundStyle(.orange)
         }
@@ -66,7 +66,7 @@ struct ContentView: View {
             Image(systemName: "arrow.triangle.2.circlepath")
               .font(.caption2)
             Text(
-              "\(String(localized: "last_sync")) \(lastSync, format: .dateTime.month().day().hour().minute())"
+              "\(L10n.string("last_sync")) \(lastSync, format: .dateTime.month().day().hour().minute())"
             )
           }
           .font(.caption2)
@@ -109,11 +109,12 @@ struct ContentView: View {
 
         // メインメッセージ
         VStack(spacing: 8) {
-          Text(String(localized: "waiting_for_data"))
+          Text(L10n.string("waiting_for_data"))
             .font(.headline)
             .fontWeight(.semibold)
+            .multilineTextAlignment(.center)
 
-          Text(String(localized: "waiting_for_data_description"))
+          Text(L10n.string("waiting_for_data_description"))
             .font(.caption)
             .foregroundStyle(.secondary)
             .multilineTextAlignment(.center)
@@ -123,18 +124,18 @@ struct ContentView: View {
         // 同期ステータス
         VStack(spacing: 8) {
           if connectivityManager.isReachable {
-            Label(String(localized: "iphone_connected"), systemImage: "checkmark.circle.fill")
+            Label(L10n.string("iphone_connected"), systemImage: "checkmark.circle.fill")
               .font(.caption2)
               .foregroundStyle(.green)
           } else {
-            Label(String(localized: "iphone_not_connected"), systemImage: "iphone.slash")
+            Label(L10n.string("iphone_not_connected"), systemImage: "iphone.slash")
               .font(.caption2)
               .foregroundStyle(.orange)
           }
 
           if let lastSync = connectivityManager.lastSyncDate {
             Text(
-              "\(String(localized: "last_sync")) \(lastSync, format: .dateTime.month().day().hour().minute())"
+              "\(L10n.string("last_sync")) \(lastSync, format: .dateTime.month().day().hour().minute())"
             )
             .font(.caption2)
             .foregroundStyle(.secondary)
@@ -158,12 +159,12 @@ struct ContentView: View {
             HStack(spacing: 6) {
               ProgressView()
                 .scaleEffect(0.8)
-              Text(String(localized: "syncing"))
+              Text(L10n.string("syncing"))
             }
             .font(.subheadline)
             .fontWeight(.medium)
           } else {
-            Label(String(localized: "sync_now"), systemImage: "arrow.triangle.2.circlepath")
+            Label(L10n.string("sync_now"), systemImage: "arrow.triangle.2.circlepath")
               .font(.subheadline)
               .fontWeight(.medium)
           }
@@ -215,7 +216,7 @@ struct DeviceCard: View {
       Text(device.name)
         .font(.headline)
         .fontWeight(.semibold)
-        .lineLimit(1)
+        .lineLimit(2)
 
       // メトリクス
       HStack(spacing: 12) {
@@ -240,7 +241,7 @@ struct DeviceCard: View {
             .font(.caption)
             .foregroundStyle(.secondary)
 
-          Text("\(device.latestCycleCount)\(String(localized: "cycles_suffix"))")
+          Text("\(device.latestCycleCount)\(L10n.string("cycles_suffix"))")
             .font(.subheadline)
             .foregroundStyle(.secondary)
         }
@@ -248,7 +249,7 @@ struct DeviceCard: View {
 
       // レコード数
       Text(
-        String(localized: "logs_count", defaultValue: "%d logs", table: nil, comment: "")
+        L10n.string("logs_count", defaultValue: "%d logs", table: nil, comment: "")
           .replacingOccurrences(of: "%d", with: "\(device.records.count)")
       )
       .font(.caption2)

@@ -32,9 +32,9 @@ struct MainTabView: View {
 
     var title: String {
       switch self {
-      case .home: return String(localized: "tab_home", table: "Home")
-      case .analytics: return String(localized: "tab_analytics", table: "Analytics")
-      case .settings: return String(localized: "tab_settings", table: "Settings")
+      case .home: return L10n.string("tab_home", table: "Home")
+      case .analytics: return L10n.string("tab_analytics", table: "Analytics")
+      case .settings: return L10n.string("tab_settings", table: "Settings")
       }
     }
 
@@ -375,8 +375,8 @@ struct HomeView: View {
           await handleFileImport(result: result)
         }
       }
-      .alert(String(localized: "error", table: "Common"), isPresented: $showingErrorAlert) {
-        Button(String(localized: "ok", table: "Common"), role: .cancel) {}
+      .alert(L10n.string("error", table: "Common"), isPresented: $showingErrorAlert) {
+        Button(L10n.string("ok", table: "Common"), role: .cancel) {}
       } message: {
         Text(errorMessage)
       }
@@ -501,17 +501,17 @@ struct HomeView: View {
         }
       }
       .alert(
-        String(localized: "log_saved", table: "Home"), isPresented: $showingParseErrorSavedAlert
+        L10n.string("log_saved", table: "Home"), isPresented: $showingParseErrorSavedAlert
       ) {
-        Button(String(localized: "view_log", table: "Records")) {
+        Button(L10n.string("view_log", table: "Records")) {
           // アラートが閉じた後にシートを開く
           DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             showingDebugLogsSheet = true
           }
         }
-        Button(String(localized: "ok", table: "Common"), role: .cancel) {}
+        Button(L10n.string("ok", table: "Common"), role: .cancel) {}
       } message: {
-        Text(String(localized: "log_saved_message", table: "Home"))
+        Text(L10n.string("log_saved_message", table: "Home"))
       }
       .sheet(isPresented: $showingDebugLogsSheet) {
         DebugLogsView()
@@ -607,7 +607,7 @@ struct HomeView: View {
                 NotificationCenter.default.post(
                   name: NSNotification.Name("ShowImportError"),
                   object: nil,
-                  userInfo: ["errorMessage": String(localized: "duplicate_record", table: "Home")]
+                  userInfo: ["errorMessage": L10n.string("duplicate_record", table: "Home")]
                 )
               }
               selectedRecord = nil
@@ -637,28 +637,28 @@ struct HomeView: View {
         }
       }
       .alert(
-        String(localized: "register_watch_title", table: "Settings"),
+        L10n.string("register_watch_title", table: "Settings"),
         isPresented: $showingRegisterWatchAlert
       ) {
-        Button(String(localized: "register", table: "Common")) {
+        Button(L10n.string("register", table: "Common")) {
           appSettings.registerWatch(model: watchNameToRegister)
         }
-        Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
+        Button(L10n.string("cancel", table: "Common"), role: .cancel) {}
       } message: {
-        Text(String(localized: "register_watch_message", table: "Settings"))
+        Text(L10n.string("register_watch_message", table: "Settings"))
       }
       .alert(
-        String(localized: "mismatch_warning_title", table: "Home"),
+        L10n.string("mismatch_warning_title", table: "Home"),
         isPresented: $showingMismatchAlert
       ) {
-        Button(String(localized: "select_manually", table: "Home")) {
+        Button(L10n.string("select_manually", table: "Home")) {
           showingManualDevicePicker = true
         }
-        Button(String(localized: "cancel", table: "Common"), role: .cancel) {
+        Button(L10n.string("cancel", table: "Common"), role: .cancel) {
           pendingParseResult = nil
         }
       } message: {
-        Text(String(localized: "mismatch_warning_message", table: "Home"))
+        Text(L10n.string("mismatch_warning_message", table: "Home"))
       }
       .alert(
         "デバイスの選択",
@@ -670,7 +670,7 @@ struct HomeView: View {
         Button("iPhone Air MagSafeバッテリー") {
           completeRecordWithSelectedDevice(name: "iPhone Air MagSafeバッテリー", identifier: "A3385")
         }
-        Button(String(localized: "cancel", table: "Common"), role: .cancel) {
+        Button(L10n.string("cancel", table: "Common"), role: .cancel) {
           pendingParseResult = nil
         }
       } message: {
@@ -774,10 +774,10 @@ struct HomeView: View {
           Image(systemName: "battery.0")
             .font(.system(size: 48))
             .foregroundColor(.secondary)
-          Text(String(localized: "no_data", table: "Home"))
+          Text(L10n.string("no_data", table: "Home"))
             .font(.title2)
             .fontWeight(.semibold)
-          Text(String(localized: "no_data_description", table: "Home"))
+          Text(L10n.string("no_data_description", table: "Home"))
             .font(.subheadline)
             .foregroundColor(.secondary)
             .multilineTextAlignment(.center)
@@ -785,14 +785,14 @@ struct HomeView: View {
             Button {
               showingTutorial = true
             } label: {
-              Label(String(localized: "view_tutorial", table: "Home"), systemImage: "play.circle")
+              Label(L10n.string("view_tutorial", table: "Home"), systemImage: "play.circle")
             }
             .buttonStyle(.bordered)
 
             Button {
               withAnimation { showingSampleData = true }
             } label: {
-              Label(String(localized: "view_sample_data", table: "Home"), systemImage: "eye")
+              Label(L10n.string("view_sample_data", table: "Home"), systemImage: "eye")
             }
             .buttonStyle(.borderedProminent)
           }
@@ -823,7 +823,7 @@ struct HomeView: View {
         ProgressView()
           .scaleEffect(1.5)
           .tint(.white)
-        Text(String(localized: "parsing_log", table: "Home"))
+        Text(L10n.string("parsing_log", table: "Home"))
           .font(.headline)
           .foregroundColor(.white)
       }

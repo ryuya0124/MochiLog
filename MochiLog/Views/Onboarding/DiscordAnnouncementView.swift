@@ -19,10 +19,10 @@ struct DiscordAnnouncementView: View {
 
             // \u30bf\u30a4\u30c8\u30eb\u3068\u8aac\u660e
             VStack(spacing: 12) {
-              Text(String(localized: "discord_announcement_title", table: "Onboarding"))
+              Text(L10n.string("discord_announcement_title", table: "Onboarding"))
                 .font(.title2.bold())
 
-              Text(String(localized: "discord_announcement_description", table: "Onboarding"))
+              Text(L10n.string("discord_announcement_description", table: "Onboarding"))
                 .font(.body)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -38,10 +38,10 @@ struct DiscordAnnouncementView: View {
                   .foregroundStyle(.blue)
 
                 VStack(alignment: .leading, spacing: 4) {
-                  Text(String(localized: "discord_announcement_card_title", table: "Onboarding"))
+                  Text(L10n.string("discord_announcement_card_title", table: "Onboarding"))
                     .font(.headline)
 
-                  Text(String(localized: "discord_announcement_card_subtitle", table: "Onboarding"))
+                  Text(L10n.string("discord_announcement_card_subtitle", table: "Onboarding"))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 }
@@ -55,15 +55,14 @@ struct DiscordAnnouncementView: View {
               VStack(alignment: .leading, spacing: 12) {
                 FeatureRow(
                   icon: "bolt.fill",
-                  text: String(localized: "discord_announcement_feature_fast", table: "Onboarding"),
+                  text: L10n.string("discord_announcement_feature_fast", table: "Onboarding"),
                   color: .orange
                 )
 
                 FeatureRow(
 
                   icon: "lightbulb.fill",
-                  text: String(
-                    localized: "discord_announcement_feature_ideas", table: "Onboarding"),
+                  text: L10n.string("discord_announcement_feature_ideas", table: "Onboarding"),
                   color: .yellow
                 )
               }
@@ -86,7 +85,7 @@ struct DiscordAnnouncementView: View {
               }
             }) {
               Label(
-                String(localized: "discord_announcement_join_button", table: "Onboarding"),
+                L10n.string("discord_announcement_join_button", table: "Onboarding"),
                 systemImage: "arrow.up.forward.app"
               )
               .font(.headline)
@@ -102,7 +101,7 @@ struct DiscordAnnouncementView: View {
             .padding(.top, 8)
 
             // \u6ce8\u610f\u66f8\u304d
-            Text(String(localized: "discord_announcement_note", table: "Onboarding"))
+            Text(L10n.string("discord_announcement_note", table: "Onboarding"))
               .font(.caption)
               .foregroundStyle(.tertiary)
               .multilineTextAlignment(.center)
@@ -118,7 +117,7 @@ struct DiscordAnnouncementView: View {
           Button(action: {
             dismiss()
           }) {
-            Text(String(localized: "discord_announcement_close_button", table: "Onboarding"))
+            Text(L10n.string("discord_announcement_close_button", table: "Onboarding"))
               .font(.headline)
               .frame(maxWidth: .infinity)
               .padding(.vertical, 18)
@@ -134,7 +133,7 @@ struct DiscordAnnouncementView: View {
       .toolbar {
         ToolbarItem(placement: .principal) {
           // \u30bf\u30a4\u30c8\u30eb\u3092\u5c0f\u3055\u304f\u8868\u793a
-          Text(String(localized: "discord_announcement_nav_title", table: "Onboarding"))
+          Text(L10n.string("discord_announcement_nav_title", table: "Onboarding"))
             .font(.subheadline.weight(.medium))
             .foregroundStyle(.secondary)
         }

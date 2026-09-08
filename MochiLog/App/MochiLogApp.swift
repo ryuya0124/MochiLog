@@ -122,6 +122,7 @@ final class MochiLogSceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 /// アプリのルートビュー。iCloud設定に応じてDataStoreを動的に切り替える責務を持つ。
 struct MochiLogRootView: View {
+  @ObservedObject private var languageSettings = LanguageSettings.shared
   private let appSettings = AppSettings.shared
   @StateObject private var dataStore: DataStore
   @State private var viewID = UUID()
@@ -139,7 +140,8 @@ struct MochiLogRootView: View {
       // メインコンテンツ
       MainTabView()
         .environmentObject(dataStore)
-        .id(viewID)
+        .environment(\.locale, L10n.locale)
+        .id("\(viewID)-\(languageSettings.selection.rawValue)")
         .allowsHitTesting(!isReloading)  // リロード中は操作無効（見た目は変えない）
         .blur(radius: isReloading ? 1.5 : 0)  // 少しぼかす
         .animation(.easeInOut(duration: 0.5), value: isReloading)  // ぼかしのアニメーション
@@ -166,12 +168,18 @@ struct MochiLogRootView: View {
               .controlSize(.large)
               .scaleEffect(1.2)
 
-            Text(String(localized: "applying_settings", table: "Settings"))
+            Text(L10n.string("applying_settings", table: "Settings"))
               .font(.headline)
               .foregroundStyle(.secondary)
           }
         }
         .transition(.opacity.animation(.easeInOut(duration: 0.5)))
+      }
+    }
+    .onReceive(languageSettings.$selection.removeDuplicates().dropFirst()) { _ in
+      // @Published emits before didSet persists the new preference.
+      Task { @MainActor in
+        WatchConnectivityManager.shared.sendRecordsToWatch(dataStore.recordsDescending)
       }
     }
     .onReceive(appSettings.$iCloudSyncEnabled.removeDuplicates().dropFirst()) { _ in

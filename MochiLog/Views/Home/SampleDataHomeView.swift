@@ -50,17 +50,17 @@ struct SampleDataBanner: View {
         .foregroundStyle(appSettings.accentColor.color)
 
       VStack(alignment: .leading, spacing: 2) {
-        Text(String(localized: "sample_data_viewing", table: "Home"))
+        Text(L10n.string("sample_data_viewing", table: "Home"))
           .font(.subheadline)
           .fontWeight(.medium)
-        Text(String(localized: "sample_data_hint", table: "Home"))
+        Text(L10n.string("sample_data_hint", table: "Home"))
           .font(.caption)
           .foregroundStyle(.secondary)
       }
 
       Spacer()
 
-      Button(String(localized: "add_data", table: "Home")) {
+      Button(L10n.string("add_data", table: "Home")) {
         onAddData()
       }
       .font(.caption)

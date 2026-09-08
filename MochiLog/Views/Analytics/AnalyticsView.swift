@@ -140,7 +140,7 @@ struct AnalyticsView: View {
             showingSampleData = newValue
           }
         }
-        .navigationTitle(String(localized: "analytics", table: "Analytics"))
+        .navigationTitle(L10n.string("analytics", table: "Analytics"))
         .background(Color(.systemGroupedBackground))
         .sheet(isPresented: $showingTutorial) {
           TutorialView()
@@ -191,10 +191,10 @@ struct AnalyticsView: View {
           Image(systemName: "chart.line.uptrend.xyaxis")
             .font(.system(size: 48))
             .foregroundStyle(.secondary)
-          Text(String(localized: "no_data", table: "Home"))
+          Text(L10n.string("no_data", table: "Home"))
             .font(.title3)
             .fontWeight(.semibold)
-          Text(String(localized: "no_data_description", table: "Home"))
+          Text(L10n.string("no_data_description", table: "Home"))
             .font(.subheadline)
             .foregroundStyle(.secondary)
             .multilineTextAlignment(.center)
@@ -203,14 +203,14 @@ struct AnalyticsView: View {
               showingTutorial = true
             } label: {
               Label(
-                String(localized: "view_tutorial", table: "Home"), systemImage: "play.circle")
+                L10n.string("view_tutorial", table: "Home"), systemImage: "play.circle")
             }
             .buttonStyle(.bordered)
 
             Button {
               withAnimation { appSettings.showingSampleData = true }
             } label: {
-              Label(String(localized: "view_sample_data", table: "Home"), systemImage: "eye")
+              Label(L10n.string("view_sample_data", table: "Home"), systemImage: "eye")
             }
             .buttonStyle(.borderedProminent)
           }

@@ -63,7 +63,7 @@ struct RecordRow: View {
             .font(.caption2)
             .foregroundStyle(.secondary)
 
-          Text("\(record.cycleCount)\(String(localized: "cycles_suffix"))")
+          Text("\(record.cycleCount)\(L10n.string("cycles_suffix"))")
             .font(.subheadline)
             .foregroundStyle(.primary)
         }

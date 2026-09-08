@@ -36,14 +36,14 @@ struct RegisteredWatchSelectSheet: View {
             }
           }
         } header: {
-          Text(String(localized: "select_registered_watch", table: "Settings"))
+          Text(L10n.string("select_registered_watch", table: "Settings"))
         }
       }
-      .navigationTitle(String(localized: "select_watch", table: "Settings"))
+      .navigationTitle(L10n.string("select_watch", table: "Settings"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button(String(localized: "cancel", table: "Common")) {
+          Button(L10n.string("cancel", table: "Common")) {
             dismiss()
           }
         }

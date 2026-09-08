@@ -35,6 +35,7 @@ struct WatchBatteryRecord: Codable, Identifiable, Hashable {
 
   /// 診断結果テキスト
   let diagnosticResult: String
+  let diagnosticCode: String?
 
   // MARK: - BatteryRecordからの変換
 
@@ -48,6 +49,8 @@ struct WatchBatteryRecord: Codable, Identifiable, Hashable {
     self.nominalHealthPercent = record.nominalHealthPercent
     self.healthPercent = record.healthPercent
     self.diagnosticResult = record.dynamicDiagnosticResult
+    let health = AppSettings.shared.analysisDataSource == .nominal ? record.nominalHealthPercent : record.healthPercent
+    self.diagnosticCode = health < 80 ? "diag_replace_recommended" : (health < 90 ? "diag_slightly_degraded" : "diag_normal")
   }
 
   // MARK: - Codable用イニシャライザ
@@ -58,7 +61,8 @@ struct WatchBatteryRecord: Codable, Identifiable, Hashable {
     cycleCount: Int,
     nominalHealthPercent: Double,
     healthPercent: Double,
-    diagnosticResult: String
+    diagnosticResult: String,
+    diagnosticCode: String? = nil
   ) {
     self.deviceName = deviceName
     self.logDate = logDate
@@ -66,5 +70,6 @@ struct WatchBatteryRecord: Codable, Identifiable, Hashable {
     self.nominalHealthPercent = nominalHealthPercent
     self.healthPercent = healthPercent
     self.diagnosticResult = diagnosticResult
+    self.diagnosticCode = diagnosticCode
   }
 }

@@ -35,7 +35,7 @@ struct AboutSettingsView: View {
               .frame(width: 60)
 
             VStack(alignment: .leading, spacing: 4) {
-              Text(String(localized: "app_version", table: "Settings"))
+              Text(L10n.string("app_version", table: "Settings"))
                 .font(.headline)
 
               Text(appVersion)
@@ -107,11 +107,11 @@ struct AboutSettingsView: View {
               .frame(width: 60)
 
             VStack(alignment: .leading, spacing: 4) {
-              Text(String(localized: "terms_of_use", table: "Legal"))
+              Text(L10n.string("terms_of_use", table: "Legal"))
                 .font(.headline)
                 .foregroundStyle(.primary)
 
-              Text(String(localized: "terms_of_use_description", table: "Settings"))
+              Text(L10n.string("terms_of_use_description", table: "Settings"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             }
@@ -138,11 +138,11 @@ struct AboutSettingsView: View {
               .frame(width: 60)
 
             VStack(alignment: .leading, spacing: 4) {
-              Text(String(localized: "privacy_policy", table: "Legal"))
+              Text(L10n.string("privacy_policy", table: "Legal"))
                 .font(.headline)
                 .foregroundStyle(.primary)
 
-              Text(String(localized: "privacy_policy_description", table: "Settings"))
+              Text(L10n.string("privacy_policy_description", table: "Settings"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             }
@@ -169,11 +169,11 @@ struct AboutSettingsView: View {
               .frame(width: 60)
 
             VStack(alignment: .leading, spacing: 4) {
-              Text(String(localized: "licenses", table: "Settings"))
+              Text(L10n.string("licenses", table: "Settings"))
                 .font(.headline)
                 .foregroundStyle(.primary)
 
-              Text(String(localized: "licenses_description", table: "Settings"))
+              Text(L10n.string("licenses_description", table: "Settings"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             }
@@ -200,11 +200,11 @@ struct AboutSettingsView: View {
               .frame(width: 60)
 
             VStack(alignment: .leading, spacing: 4) {
-              Text(String(localized: "view_on_github", table: "Support"))
+              Text(L10n.string("view_on_github", table: "Support"))
                 .font(.headline)
                 .foregroundStyle(.primary)
 
-              Text(String(localized: "github_description", table: "Settings"))
+              Text(L10n.string("github_description", table: "Settings"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             }

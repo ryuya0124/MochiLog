@@ -28,14 +28,14 @@ enum SettingsCategory: String, CaseIterable, Identifiable {
 
   var title: String {
     switch self {
-    case .general: return String(localized: "general", table: "Settings")
-    case .iCloud: return String(localized: "icloud_sync_settings", defaultValue: "iCloud Sync", table: "Settings")
-    case .appleWatch: return String(localized: "apple_watch_settings", table: "Settings")
-    case .dataManagement: return String(localized: "data_management", table: "Settings")
-    case .support: return String(localized: "support", table: "Settings")
-    case .about: return String(localized: "about_app", table: "Settings")
-    case .debug: return String(localized: "debug", table: "Support")
-    case .advanced: return String(localized: "advanced_settings", table: "Settings")
+    case .general: return L10n.string("general", table: "Settings")
+    case .iCloud: return L10n.string("icloud_sync_settings", defaultValue: "iCloud Sync", table: "Settings")
+    case .appleWatch: return L10n.string("apple_watch_settings", table: "Settings")
+    case .dataManagement: return L10n.string("data_management", table: "Settings")
+    case .support: return L10n.string("support", table: "Settings")
+    case .about: return L10n.string("about_app", table: "Settings")
+    case .debug: return L10n.string("debug", table: "Support")
+    case .advanced: return L10n.string("advanced_settings", table: "Settings")
     }
   }
 }

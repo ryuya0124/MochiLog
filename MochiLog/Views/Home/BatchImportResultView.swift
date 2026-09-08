@@ -51,11 +51,11 @@ struct FileImportResult: Identifiable {
 
     var label: String {
       switch self {
-      case .processing:  return String(localized: "processing", table: "BatchImport")
-      case .success:     return String(localized: "saved", table: "BatchImport")
-      case .duplicate:   return String(localized: "duplicate_skipped", table: "BatchImport")
-      case .needsReview: return String(localized: "review", table: "BatchImport")
-      case .error:       return String(localized: "error", table: "BatchImport")
+      case .processing:  return L10n.string("processing", table: "BatchImport")
+      case .success:     return L10n.string("saved", table: "BatchImport")
+      case .duplicate:   return L10n.string("duplicate_skipped", table: "BatchImport")
+      case .needsReview: return L10n.string("review", table: "BatchImport")
+      case .error:       return L10n.string("error", table: "BatchImport")
       }
     }
 
@@ -101,11 +101,11 @@ struct BatchImportResultView: View {
         .padding(.vertical, 12)
       }
       .background(Color(uiColor: .systemGroupedBackground))
-      .navigationTitle(String(localized: "title", table: "BatchImport"))
+      .navigationTitle(L10n.string("title", table: "BatchImport"))
       .navigationBarTitleDisplayMode(.large)
       .toolbar {
         ToolbarItem(placement: .confirmationAction) {
-          Button(String(localized: "done", table: "BatchImport")) {
+          Button(L10n.string("done", table: "BatchImport")) {
             onDismiss()
           }
           .fontWeight(.semibold)
@@ -124,7 +124,7 @@ struct BatchImportResultView: View {
       // ヘッダー行：処理状況メッセージ
       if isAllDone {
         Label {
-          Text(String(format: String(localized: "completed_count", table: "BatchImport"), results.count))
+          Text(String(format: L10n.string("completed_count", table: "BatchImport"), results.count))
             .font(.headline)
         } icon: {
           Image(systemName: "checkmark.circle")
@@ -134,7 +134,7 @@ struct BatchImportResultView: View {
         HStack(spacing: 10) {
           ProgressView()
             .scaleEffect(0.85)
-          Text(String(format: String(localized: "progress_count", table: "BatchImport"), completedCount, results.count))
+          Text(String(format: L10n.string("progress_count", table: "BatchImport"), completedCount, results.count))
             .font(.headline)
             .contentTransition(.numericText())
             .animation(.spring(duration: 0.3), value: completedCount)
@@ -146,25 +146,25 @@ struct BatchImportResultView: View {
         dynamicTypeSize.isAccessibilitySize ? 1 : (horizontalSizeClass == .compact ? 2 : 4)), spacing: 16) {
         summaryBadge(
           count: successCount,
-          label: String(localized: "saved", table: "BatchImport"),
+          label: L10n.string("saved", table: "BatchImport"),
           color: FileImportResult.ImportStatus.success.color,
           icon: "checkmark.circle.fill"
         )
         summaryBadge(
           count: duplicateCount,
-          label: String(localized: "duplicate", table: "BatchImport"),
+          label: L10n.string("duplicate", table: "BatchImport"),
           color: FileImportResult.ImportStatus.duplicate.color,
           icon: "arrow.triangle.2.circlepath.circle.fill"
         )
         summaryBadge(
           count: needsReviewCount,
-          label: String(localized: "manual_selection", table: "BatchImport"),
+          label: L10n.string("manual_selection", table: "BatchImport"),
           color: FileImportResult.ImportStatus.needsReview.color,
           icon: "hand.raised.fill"
         )
         summaryBadge(
           count: errorCount,
-          label: String(localized: "error", table: "BatchImport"),
+          label: L10n.string("error", table: "BatchImport"),
           color: FileImportResult.ImportStatus.error.color,
           icon: "xmark.circle.fill"
         )
@@ -258,11 +258,11 @@ private struct ResultRowView: View {
             .foregroundStyle(.primary)
             .transition(.opacity)
         } else if result.status == .processing {
-          Text(String(localized: "parsing", table: "BatchImport"))
+          Text(L10n.string("parsing", table: "BatchImport"))
             .font(.body.weight(.semibold))
             .foregroundStyle(Color(uiColor: .secondaryLabel))
         } else {
-          Text(String(localized: "unknown_device", table: "BatchImport"))
+          Text(L10n.string("unknown_device", table: "BatchImport"))
             .font(.body.weight(.semibold))
             .foregroundStyle(Color(uiColor: .secondaryLabel))
         }
@@ -300,7 +300,7 @@ private struct ResultRowView: View {
             .foregroundStyle(result.status.color)
             .fixedSize(horizontal: false, vertical: true)
           if result.status == .needsReview {
-            Button(String(localized: "add_manually", table: "BatchImport"), action: onResolve)
+            Button(L10n.string("add_manually", table: "BatchImport"), action: onResolve)
               .font(.body.weight(.semibold))
               .frame(minHeight: 44)
               .buttonStyle(.bordered)

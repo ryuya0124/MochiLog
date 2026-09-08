@@ -37,7 +37,7 @@ struct ChartRangeSelector: View {
   private var compactLayout: some View {
     HStack(spacing: 8) {
       VStack(alignment: .leading, spacing: 4) {
-        Text(String(localized: "chart_range", table: "Analytics"))
+        Text(L10n.string("chart_range", table: "Analytics"))
           .font(.caption)
           .foregroundStyle(.secondary)
         HStack(spacing: 8) {
@@ -47,7 +47,7 @@ struct ChartRangeSelector: View {
             rangeOptions
           }
           .pickerStyle(.menu)
-          .accessibilityLabel(Text(String(localized: "chart_range", table: "Analytics")))
+          .accessibilityLabel(Text(L10n.string("chart_range", table: "Analytics")))
 
           yearLabel
         }
@@ -60,7 +60,7 @@ struct ChartRangeSelector: View {
   private var regularMenuLayout: some View {
     HStack(spacing: 12) {
       VStack(alignment: .leading, spacing: 6) {
-        Text(String(localized: "chart_range", table: "Analytics"))
+        Text(L10n.string("chart_range", table: "Analytics"))
           .font(.caption)
           .foregroundStyle(.secondary)
         HStack(spacing: 12) {
@@ -70,7 +70,7 @@ struct ChartRangeSelector: View {
             rangeOptions
           }
           .pickerStyle(.menu)
-          .accessibilityLabel(Text(String(localized: "chart_range", table: "Analytics")))
+          .accessibilityLabel(Text(L10n.string("chart_range", table: "Analytics")))
         }
       }
     }
@@ -80,7 +80,7 @@ struct ChartRangeSelector: View {
   private var regularSegmentedLayout: some View {
     HStack(spacing: 12) {
       VStack(alignment: .leading, spacing: 6) {
-        Text(String(localized: "chart_range", table: "Analytics"))
+        Text(L10n.string("chart_range", table: "Analytics"))
           .font(.caption)
           .foregroundStyle(.secondary)
         HStack(spacing: 12) {
@@ -90,7 +90,7 @@ struct ChartRangeSelector: View {
             rangeOptions
           }
           .pickerStyle(.segmented)
-          .accessibilityLabel(Text(String(localized: "chart_range", table: "Analytics")))
+          .accessibilityLabel(Text(L10n.string("chart_range", table: "Analytics")))
         }
       }
     }

@@ -19,7 +19,7 @@ struct LoadingOverlay: View {
           ProgressView()
             .scaleEffect(1.5)
             .tint(.white)
-          Text(message ?? String(localized: "preparing_data", table: "Home"))
+          Text(message ?? L10n.string("preparing_data", table: "Home"))
             .font(.headline)
             .foregroundColor(.white)
         }

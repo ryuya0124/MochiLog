@@ -26,22 +26,22 @@ struct RecordDetailView: View {
           // 実測ヘルス
           MetricRow(
             icon: "heart.fill",
-            label: String(localized: "actual_health"),
+            label: L10n.string("actual_health"),
             value: "\(Int(record.healthPercent))%"
           )
 
           // 公称ヘルス
           MetricRow(
             icon: "heart",
-            label: String(localized: "nominal_health"),
+            label: L10n.string("nominal_health"),
             value: "\(Int(record.nominalHealthPercent))%"
           )
 
           // サイクル数
           MetricRow(
             icon: "gauge",
-            label: String(localized: "cycle_count"),
-            value: String(format: String(localized: "cycles_count"), record.cycleCount)
+            label: L10n.string("cycle_count"),
+            value: String(format: L10n.string("cycles_count"), record.cycleCount)
           )
 
           // 診断結果
@@ -52,7 +52,7 @@ struct RecordDetailView: View {
                 .foregroundStyle(.green)
 
               VStack(alignment: .leading, spacing: 2) {
-                Text(String(localized: "diagnostic_result"))
+                Text(L10n.string("diagnostic_result"))
                   .font(.caption2)
                   .foregroundStyle(.secondary)
 
@@ -72,7 +72,7 @@ struct RecordDetailView: View {
 
           // ログ日時（詳細表示）
           VStack(alignment: .leading, spacing: 4) {
-            Text(String(localized: "log_date"))
+            Text(L10n.string("log_date"))
               .font(.caption)
               .foregroundStyle(.secondary)
 
@@ -89,7 +89,7 @@ struct RecordDetailView: View {
 
           // デバイス名
           VStack(alignment: .leading, spacing: 4) {
-            Text(String(localized: "device_name"))
+            Text(L10n.string("device_name"))
               .font(.caption)
               .foregroundStyle(.secondary)
 
@@ -122,6 +122,7 @@ struct RecordDetailView: View {
   /// 日付を詳細フォーマット
   private func formatDateFull(_ date: Date) -> String {
     let formatter = DateFormatter()
+    formatter.locale = L10n.locale
     formatter.dateStyle = .long
     formatter.timeStyle = .short
     return formatter.string(from: date)
@@ -141,7 +142,7 @@ struct HealthRingView: View {
 
       // プログレスリング（iOS側と同じグラデーション）
       Circle()
-        .trim(from: 0, to: CGFloat(percentage) / 100)
+        .trim(from: 0, to: CGFloat(min(max(percentage, 0), 100)) / 100)
         .stroke(
           AngularGradient(
             gradient: Gradient(colors: [.green, .green]),
@@ -171,16 +172,18 @@ struct MetricRow: View {
   let value: String
 
   var body: some View {
-    HStack {
-      Label(label, systemImage: icon)
-        .font(.caption)
-        .foregroundStyle(.secondary)
-
-      Spacer()
-
-      Text(value)
-        .font(.headline)
-        .fontWeight(.semibold)
+    ViewThatFits(in: .horizontal) {
+      HStack {
+        Label(label, systemImage: icon).font(.caption).foregroundStyle(.secondary)
+        Spacer()
+        Text(value).font(.headline).fontWeight(.semibold)
+      }
+      .fixedSize(horizontal: true, vertical: false)
+      VStack(alignment: .leading, spacing: 4) {
+        Label(label, systemImage: icon).font(.caption).foregroundStyle(.secondary)
+        Text(value).font(.headline).fontWeight(.semibold)
+      }
+      .frame(maxWidth: .infinity, alignment: .leading)
     }
     .padding(.vertical, 4)
   }

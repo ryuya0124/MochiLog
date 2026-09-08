@@ -20,7 +20,7 @@ struct AboutView: View {
       Section {
         Button(action: { showingTermsOfUse = true }) {
           Label {
-            Text(String(localized: "terms_of_use", table: "Legal"))
+            Text(L10n.string("terms_of_use", table: "Legal"))
               .foregroundStyle(.primary)
           } icon: {
             Image(systemName: "doc.plaintext")
@@ -33,7 +33,7 @@ struct AboutView: View {
 
         Button(action: { showingPrivacyPolicy = true }) {
           Label {
-            Text(String(localized: "privacy_policy", table: "Legal"))
+            Text(L10n.string("privacy_policy", table: "Legal"))
               .foregroundStyle(.primary)
           } icon: {
             Image(systemName: "hand.raised.fill")
@@ -46,7 +46,7 @@ struct AboutView: View {
 
         Button(action: { showingLicenses = true }) {
           Label {
-            Text(String(localized: "licenses", table: "Settings"))
+            Text(L10n.string("licenses", table: "Settings"))
               .foregroundStyle(.primary)
           } icon: {
             Image(systemName: "doc.text")
@@ -62,7 +62,7 @@ struct AboutView: View {
       Section {
         HStack {
           Label {
-            Text(String(localized: "app_version", table: "Settings"))
+            Text(L10n.string("app_version", table: "Settings"))
               .foregroundStyle(.primary)
           } icon: {
             Image(systemName: "info.circle.fill")
@@ -95,7 +95,7 @@ struct AboutView: View {
 
         Link(destination: URL(string: "https://github.com/ryuya0124/MochiLog")!) {
           Label {
-            Text(String(localized: "view_on_github", table: "Support"))
+            Text(L10n.string("view_on_github", table: "Support"))
               .foregroundStyle(.primary)
           } icon: {
             Image(systemName: "link")
@@ -131,7 +131,7 @@ struct AboutView: View {
         }
       }
     }
-    .navigationTitle(String(localized: "about_app", table: "Settings"))
+    .navigationTitle(L10n.string("about_app", table: "Settings"))
     .sheet(isPresented: $showingPrivacyPolicy) {
       PrivacyPolicyView()
     }

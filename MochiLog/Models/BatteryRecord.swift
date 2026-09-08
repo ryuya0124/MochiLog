@@ -175,11 +175,11 @@ final class BatteryRecord: Identifiable, Hashable {
     }
 
     if health < 80.0 {
-      return String(localized: "diag_replace_recommended", table: "Records")
+      return L10n.string("diag_replace_recommended", table: "Records")
     } else if health < 90.0 {
-      return String(localized: "diag_slightly_degraded", table: "Records")
+      return L10n.string("diag_slightly_degraded", table: "Records")
     } else {
-      return String(localized: "diag_normal", table: "Records")
+      return L10n.string("diag_normal", table: "Records")
     }
   }
 
@@ -245,13 +245,13 @@ final class BatteryRecord: Identifiable, Hashable {
     let s = raw.replacingOccurrences(of: " ", with: "")
     // e.g. "6GB" -> "6 GB"
     var formatted = s.replacingOccurrences(of: "gb", with: " GB", options: .caseInsensitive)
-    
+
     if formatted == "7.5 GB" || formatted == "7 GB" {
       formatted = "8 GB"
     } else if formatted == "15 GB" {
       formatted = "16 GB"
     }
-    
+
     return formatted
   }
   var cachedDiagnostic: String {

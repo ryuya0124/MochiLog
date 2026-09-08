@@ -12,9 +12,9 @@ struct DataExportService {
     var errorDescription: String? {
       switch self {
       case .encodeError:
-        return String(localized: "export_encode_error", table: "Settings")
+        return L10n.string("export_encode_error", table: "Settings")
       case .writeError:
-        return String(localized: "export_write_error", table: "Settings")
+        return L10n.string("export_write_error", table: "Settings")
       }
     }
   }

@@ -51,10 +51,10 @@ final class AppSettings: ObservableObject {
     // 新規: デバイス選択モード
     static let deviceSelectionMode = "deviceSelectionMode"
     static let registeredDevices = "registeredDevices"
-    
+
     // 新規: MagSafeバッテリー自動選択
     static let autoSelectMagSafeBattery = "autoSelectMagSafeBattery"
-    
+
     // 新規: デバイス識別子の上書き（開発者用）
     static let overrideLocalModelIdentifier = "overrideLocalModelIdentifier"
   }
@@ -79,18 +79,18 @@ final class AppSettings: ObservableObject {
 
     var localizedName: String {
       switch self {
-      case .automatic: return String(localized: "device_mode_automatic", table: "Settings")
-      case .preRegistered: return String(localized: "device_mode_pre_registered", table: "Settings")
-      case .fullManual: return String(localized: "device_mode_full_manual", table: "Settings")
+      case .automatic: return L10n.string("device_mode_automatic", table: "Settings")
+      case .preRegistered: return L10n.string("device_mode_pre_registered", table: "Settings")
+      case .fullManual: return L10n.string("device_mode_full_manual", table: "Settings")
       }
     }
 
     var description: String {
       switch self {
-      case .automatic: return String(localized: "device_mode_automatic_desc", table: "Settings")
+      case .automatic: return L10n.string("device_mode_automatic_desc", table: "Settings")
       case .preRegistered:
-        return String(localized: "device_mode_pre_registered_desc", table: "Settings")
-      case .fullManual: return String(localized: "device_mode_full_manual_desc", table: "Settings")
+        return L10n.string("device_mode_pre_registered_desc", table: "Settings")
+      case .fullManual: return L10n.string("device_mode_full_manual_desc", table: "Settings")
       }
     }
 
@@ -112,8 +112,8 @@ final class AppSettings: ObservableObject {
 
     var localizedName: String {
       switch self {
-      case .manualSelection: return String(localized: "mismatch_behavior_manual", table: "Settings")
-      case .error: return String(localized: "mismatch_behavior_error", table: "Settings")
+      case .manualSelection: return L10n.string("mismatch_behavior_manual", table: "Settings")
+      case .error: return L10n.string("mismatch_behavior_error", table: "Settings")
       }
     }
   }
@@ -127,8 +127,8 @@ final class AppSettings: ObservableObject {
 
     var localizedName: String {
       switch self {
-      case .actual: return String(localized: "analysis_source_actual", table: "Settings")
-      case .nominal: return String(localized: "analysis_source_nominal", table: "Settings")
+      case .actual: return L10n.string("analysis_source_actual", table: "Settings")
+      case .nominal: return L10n.string("analysis_source_nominal", table: "Settings")
       }
     }
   }
@@ -144,10 +144,10 @@ final class AppSettings: ObservableObject {
 
     var localizedName: String {
       switch self {
-      case .hour: return String(localized: "chart_unit_hour", table: "Analytics")
-      case .day: return String(localized: "chart_unit_day", table: "Analytics")
-      case .week: return String(localized: "chart_unit_week", table: "Analytics")
-      case .month: return String(localized: "chart_unit_month", table: "Analytics")
+      case .hour: return L10n.string("chart_unit_hour", table: "Analytics")
+      case .day: return L10n.string("chart_unit_day", table: "Analytics")
+      case .week: return L10n.string("chart_unit_week", table: "Analytics")
+      case .month: return L10n.string("chart_unit_month", table: "Analytics")
       }
     }
 
@@ -172,10 +172,10 @@ final class AppSettings: ObservableObject {
 
     var localizedName: String {
       switch self {
-      case .green: return String(localized: "theme_color_green", table: "Settings")
-      case .blue: return String(localized: "theme_color_blue", table: "Settings")
-      case .orange: return String(localized: "theme_color_orange", table: "Settings")
-      case .purple: return String(localized: "theme_color_purple", table: "Settings")
+      case .green: return L10n.string("theme_color_green", table: "Settings")
+      case .blue: return L10n.string("theme_color_blue", table: "Settings")
+      case .orange: return L10n.string("theme_color_orange", table: "Settings")
+      case .purple: return L10n.string("theme_color_purple", table: "Settings")
       }
     }
 
@@ -273,10 +273,10 @@ final class AppSettings: ObservableObject {
 
   /// MagSafeバッテリーの自動選択
   @Published var autoSelectMagSafeBattery: Bool
-  
+
   // 新規: iCloud設定画面の表示状態（iPhone用）
   @Published var showingICloudSettings: Bool = false
-  
+
   // 新規: 設定画面の選択カテゴリ（iPad用）
   @Published var selectedSettingsCategory: SettingsCategory = .general
 
@@ -578,14 +578,14 @@ final class AppSettings: ObservableObject {
         UserDefaults.standard.set(value, forKey: Keys.registeredDevices)
       }
       .store(in: &cancellables)
-      
+
     $autoSelectMagSafeBattery
       .dropFirst()
       .sink { value in
         UserDefaults.standard.set(value, forKey: Keys.autoSelectMagSafeBattery)
       }
       .store(in: &cancellables)
-      
+
     $overrideLocalModelIdentifier
       .dropFirst()
       .sink { value in
@@ -697,15 +697,15 @@ final class AppSettings: ObservableObject {
       switch self {
       case .lowSpace(let requiredMB):
         return String(
-          format: String(localized: "icloud_sync_blocked_low_space", table: "Settings"), requiredMB)
+          format: L10n.string("icloud_sync_blocked_low_space", table: "Settings"), requiredMB)
       case .accountNotSignedIn:
-        return String(localized: "icloud_account_not_signed_in", table: "Settings")
+        return L10n.string("icloud_account_not_signed_in", table: "Settings")
       case .accountRestricted:
-        return String(localized: "icloud_account_restricted", table: "Settings")
+        return L10n.string("icloud_account_restricted", table: "Settings")
       case .accountTemporarilyUnavailable:
-        return String(localized: "icloud_account_temporarily_unavailable", table: "Settings")
+        return L10n.string("icloud_account_temporarily_unavailable", table: "Settings")
       case .unknown:
-        return String(localized: "icloud_sync_failed", table: "Settings")
+        return L10n.string("icloud_sync_failed", table: "Settings")
       }
     }
   }

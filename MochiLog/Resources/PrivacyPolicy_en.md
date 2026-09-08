@@ -4,7 +4,7 @@ MochiLog (hereinafter referred to as "the App") establishes this Privacy Policy 
 
 ## 1. Collection of Personal Information
 
-The App does not collect any personal information from users. The App operates entirely offline, and all analysis data and settings are stored solely on the user's device. No data is transmitted to external servers.
+The developer does not collect users’ personal information through the App. Analysis data and settings are stored on the device. When iCloud sync is enabled, battery records are stored in the user’s private iCloud database and synchronized through Apple servers between devices using the same Apple ID. When using the Apple Watch app, records are also transferred to the paired Watch. If the user shares data or contacts support, the information selected for that action is sent.
 
 ## 2. Purpose of Use of Data
 

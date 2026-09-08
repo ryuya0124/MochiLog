@@ -93,7 +93,7 @@ struct DonationView: View {
               .foregroundColor(.red)
               .padding(.top)
 
-            Text(String(localized: "donation_description", table: "Settings"))
+            Text(L10n.string("donation_description", table: "Settings"))
               .font(.body)
               .multilineTextAlignment(.center)
               .padding(.horizontal)
@@ -102,7 +102,7 @@ struct DonationView: View {
           .listRowBackground(Color.clear)
         }
 
-        Section(String(localized: "donation_options", table: "Settings")) {
+        Section(L10n.string("donation_options", table: "Settings")) {
           if donationManager.products.isEmpty {
             ProgressView()
               .frame(maxWidth: .infinity)
@@ -135,11 +135,11 @@ struct DonationView: View {
           }
         }
       }
-      .navigationTitle(String(localized: "donation_title", table: "Settings"))
+      .navigationTitle(L10n.string("donation_title", table: "Settings"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button(String(localized: "close", table: "Common")) {
+          Button(L10n.string("close", table: "Common")) {
             dismiss()
           }
         }
@@ -147,10 +147,10 @@ struct DonationView: View {
       .task {
         await donationManager.fetchProducts()
       }
-      .alert(String(localized: "error", table: "Common"), isPresented: $showingError) {
-        Button(String(localized: "ok", table: "Common"), role: .cancel) {}
+      .alert(L10n.string("error", table: "Common"), isPresented: $showingError) {
+        Button(L10n.string("ok", table: "Common"), role: .cancel) {}
       } message: {
-        Text(String(localized: "purchase_error_message", table: "Settings"))
+        Text(L10n.string("purchase_error_message", table: "Settings"))
       }
       .fullScreenCover(isPresented: compactThankYouBinding) {
         ThankYouFullScreenView {
@@ -260,10 +260,10 @@ private struct ThankYouFullScreenView: View {
         .shadow(color: Color.black.opacity(0.25), radius: 20, x: 0, y: 12)
 
         VStack(spacing: 8) {
-          Text(String(localized: "donation_thanks_title", table: "Settings"))
+          Text(L10n.string("donation_thanks_title", table: "Settings"))
             .font(.title2.bold())
             .foregroundColor(.white)
-          Text(String(localized: "donation_thanks_message", table: "Settings"))
+          Text(L10n.string("donation_thanks_message", table: "Settings"))
             .font(.body)
             .foregroundColor(.white.opacity(0.95))
             .multilineTextAlignment(.center)
@@ -273,7 +273,7 @@ private struct ThankYouFullScreenView: View {
         Spacer()
 
         Button(action: onClose) {
-          Text(String(localized: "close", table: "Common"))
+          Text(L10n.string("close", table: "Common"))
             .font(.headline)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)

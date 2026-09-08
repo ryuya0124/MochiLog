@@ -15,11 +15,11 @@ struct RegisteredDevicesBlockView: View {
         row {
           HStack {
             Label(
-              String(localized: "registered_devices", table: "Settings"),
+              L10n.string("registered_devices", table: "Settings"),
               systemImage: "iphone.gen3"
             )
             Spacer()
-            Text(String(localized: "not_registered", table: "Settings"))
+            Text(L10n.string("not_registered", table: "Settings"))
               .foregroundStyle(.secondary)
           }
         }
@@ -53,7 +53,7 @@ struct RegisteredDevicesBlockView: View {
       row {
         Button(action: onAddDevice) {
           Label(
-            String(localized: "add_device", table: "Settings"),
+            L10n.string("add_device", table: "Settings"),
             systemImage: "plus.circle"
           )
         }
@@ -66,7 +66,7 @@ struct RegisteredDevicesBlockView: View {
         row {
           Button(action: { showingRemoveAllConfirmation = true }) {
             Label(
-              String(localized: "remove_all_devices", table: "Settings"),
+              L10n.string("remove_all_devices", table: "Settings"),
               systemImage: "trash"
             )
             .foregroundStyle(.red)
@@ -82,11 +82,11 @@ struct RegisteredDevicesBlockView: View {
         .stroke(Color(uiColor: .separator).opacity(0.3), lineWidth: 0.5)
     )
     .alert(
-      String(localized: "remove_device", table: "Settings"),
+      L10n.string("remove_device", table: "Settings"),
       isPresented: $showingRemoveConfirmation
     ) {
-      Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
-      Button(String(localized: "remove", table: "Common"), role: .destructive) {
+      Button(L10n.string("cancel", table: "Common"), role: .cancel) {}
+      Button(L10n.string("remove", table: "Common"), role: .destructive) {
         if let device = deviceToRemove {
           appSettings.removeDevice(name: device)
         }
@@ -95,20 +95,20 @@ struct RegisteredDevicesBlockView: View {
       if let device = deviceToRemove {
         Text(
           String(
-            format: String(localized: "remove_device_confirm_specific", table: "Settings"),
+            format: L10n.string("remove_device_confirm_specific", table: "Settings"),
             device))
       }
     }
     .alert(
-      String(localized: "remove_all_devices", table: "Settings"),
+      L10n.string("remove_all_devices", table: "Settings"),
       isPresented: $showingRemoveAllConfirmation
     ) {
-      Button(String(localized: "cancel", table: "Common"), role: .cancel) {}
-      Button(String(localized: "remove", table: "Common"), role: .destructive) {
+      Button(L10n.string("cancel", table: "Common"), role: .cancel) {}
+      Button(L10n.string("remove", table: "Common"), role: .destructive) {
         appSettings.registeredDevices.forEach { appSettings.removeDevice(name: $0) }
       }
     } message: {
-      Text(String(localized: "remove_all_devices_confirm", table: "Settings"))
+      Text(L10n.string("remove_all_devices_confirm", table: "Settings"))
     }
   }
 

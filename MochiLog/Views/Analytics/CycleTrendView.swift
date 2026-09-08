@@ -140,7 +140,7 @@ struct CycleTrendView: View {
 
     return VStack(alignment: .leading, spacing: 12) {
       HStack(alignment: .firstTextBaseline) {
-        Text(String(localized: "cycle_trend", table: "Analytics"))
+        Text(L10n.string("cycle_trend", table: "Analytics"))
           .font(.headline)
 
         if horizontalSizeClass == .regular {
@@ -167,7 +167,7 @@ struct CycleTrendView: View {
       }
 
       if allRecords.isEmpty {
-        Text(String(localized: "no_records_for_device", table: "Analytics"))
+        Text(L10n.string("no_records_for_device", table: "Analytics"))
           .foregroundStyle(.secondary)
           .frame(maxWidth: .infinity, alignment: .center)
           .padding()
@@ -294,13 +294,13 @@ struct CycleTrendView: View {
       ForEach(chartRecords) { record in
         LineMark(
           x: .value(
-            String(localized: "date", table: "Common"),
+            L10n.string("date", table: "Common"),
             Calendar.current.startOfDay(for: record.logDate),
             unit: unit.calendarComponent),
-          y: .value(String(localized: "cycle_count", table: "Analytics"), record.cycleCount)
+          y: .value(L10n.string("cycle_count", table: "Analytics"), record.cycleCount)
         )
         .foregroundStyle(
-          by: .value(String(localized: "device_name", table: "Common"), record.deviceName)
+          by: .value(L10n.string("device_name", table: "Common"), record.deviceName)
         )
         .interpolationMethod(.catmullRom)
         .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
@@ -319,16 +319,16 @@ struct CycleTrendView: View {
           ) { _, pointRecord in
             PointMark(
               x: .value(
-                String(localized: "date", table: "Common"),
+                L10n.string("date", table: "Common"),
                 Calendar.current.startOfDay(for: pointRecord.logDate),
                 unit: unit.calendarComponent),
               y: .value(
-                String(localized: "cycle_count", table: "Analytics"),
+                L10n.string("cycle_count", table: "Analytics"),
                 pointRecord.cycleCount)
             )
             .foregroundStyle(
               by: .value(
-                String(localized: "device_name", table: "Common"), pointRecord.deviceName)
+                L10n.string("device_name", table: "Common"), pointRecord.deviceName)
             )
             .symbol(.circle)
             .symbolSize(40)

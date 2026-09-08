@@ -6,6 +6,13 @@ struct GeneralSettingsView: View {
 
   var body: some View {
     VStack(spacing: 16) {
+      GroupBox {
+        NavigationLink(destination: LanguageSettingsView()) {
+          Label(L10n.string("language_title", table: "Language"), systemImage: "globe")
+            .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+        }
+        .accessibilityIdentifier("settings.language")
+      }
       // アクセントカラー
       GroupBox {
         HStack(spacing: 20) {
@@ -17,7 +24,7 @@ struct GeneralSettingsView: View {
 
           VStack(alignment: .leading, spacing: 8) {
             HStack {
-              Text(String(localized: "accent_color", table: "Settings"))
+              Text(L10n.string("accent_color", table: "Settings"))
                 .font(.headline)
               Spacer()
               Picker("", selection: $appSettings.accentColor) {
@@ -34,7 +41,7 @@ struct GeneralSettingsView: View {
               .pickerStyle(.menu)
             }
 
-            Text(String(localized: "accent_color_description", table: "Settings"))
+            Text(L10n.string("accent_color_description", table: "Settings"))
               .font(.subheadline)
               .foregroundStyle(.secondary)
           }
@@ -45,11 +52,11 @@ struct GeneralSettingsView: View {
       // iCloud同期設定（iPad用）
       if #available(iOS 17, *) {
         VStack(alignment: .leading, spacing: 8) {
-          Text(String(localized: "icloud_sync_settings", defaultValue: "iCloud同期設定", table: "Settings"))
+          Text(L10n.string("icloud_sync_settings", defaultValue: "iCloud同期設定", table: "Settings"))
             .font(.headline)
             .padding(.horizontal, 4)
             .padding(.top, 8)
-          
+
           ICloudSettingsContentView(appSettings: appSettings)
         }
       }
@@ -67,11 +74,11 @@ struct GeneralSettingsView: View {
               .frame(width: 60)
 
             VStack(alignment: .leading, spacing: 4) {
-              Text(String(localized: "view_sample_data", table: "Home"))
+              Text(L10n.string("view_sample_data", table: "Home"))
                 .font(.headline)
                 .foregroundStyle(.primary)
 
-              Text(String(localized: "sample_data_description", table: "Settings"))
+              Text(L10n.string("sample_data_description", table: "Settings"))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             }

@@ -26,8 +26,7 @@ struct HealthTrendView: View {
     return VStack(alignment: .leading, spacing: 12) {
       HStack(alignment: .firstTextBaseline) {
         Text(
-          String(
-            localized: analysisDataSource == .nominal
+          L10n.string(analysisDataSource == .nominal
               ? "health_trend_nominal" : "health_trend_actual",
             table: "Analytics")
         )
@@ -57,7 +56,7 @@ struct HealthTrendView: View {
       }
 
       if visibleRecords.isEmpty {
-        Text(String(localized: "no_records_for_device", table: "Analytics"))
+        Text(L10n.string("no_records_for_device", table: "Analytics"))
           .foregroundStyle(.secondary)
           .frame(maxWidth: .infinity, alignment: .center)
           .padding()
@@ -140,16 +139,16 @@ struct HealthTrendView: View {
       ForEach(chartRecords) { record in
         LineMark(
           x: .value(
-            String(localized: "date", table: "Common"),
+            L10n.string("date", table: "Common"),
             Calendar.current.startOfDay(for: record.logDate),
             unit: unit.calendarComponent),
           y: .value(
-            String(localized: "real_capacity", table: "Analytics"),
+            L10n.string("real_capacity", table: "Analytics"),
             analysisDataSource == .nominal
               ? record.nominalHealthPercent : record.healthPercent)
         )
         .foregroundStyle(
-          by: .value(String(localized: "device_name", table: "Common"), record.deviceName)
+          by: .value(L10n.string("device_name", table: "Common"), record.deviceName)
         )
         .interpolationMethod(.catmullRom)
       }
@@ -167,17 +166,17 @@ struct HealthTrendView: View {
           ) { _, pointRecord in
             PointMark(
               x: .value(
-                String(localized: "date", table: "Common"),
+                L10n.string("date", table: "Common"),
                 Calendar.current.startOfDay(for: pointRecord.logDate),
                 unit: unit.calendarComponent),
               y: .value(
-                String(localized: "real_capacity", table: "Analytics"),
+                L10n.string("real_capacity", table: "Analytics"),
                 analysisDataSource == .nominal
                   ? pointRecord.nominalHealthPercent : pointRecord.healthPercent)
             )
             .foregroundStyle(
               by: .value(
-                String(localized: "device_name", table: "Common"), pointRecord.deviceName)
+                L10n.string("device_name", table: "Common"), pointRecord.deviceName)
             )
             .symbol(.circle)
           }

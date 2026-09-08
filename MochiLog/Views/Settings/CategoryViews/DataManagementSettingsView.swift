@@ -49,11 +49,11 @@ struct DataManagementSettingsView: View {
             .frame(width: 60)
 
           VStack(alignment: .leading, spacing: 4) {
-            Text(String(localized: "export_data", table: "Settings"))
+            Text(L10n.string("export_data", table: "Settings"))
               .font(.headline)
               .foregroundStyle(.primary)
 
-            Text(String(localized: "export_data_description", table: "Settings"))
+            Text(L10n.string("export_data_description", table: "Settings"))
               .font(.subheadline)
               .foregroundStyle(.secondary)
           }
@@ -83,11 +83,11 @@ struct DataManagementSettingsView: View {
             .frame(width: 60)
 
           VStack(alignment: .leading, spacing: 4) {
-            Text(String(localized: "import_data", table: "Settings"))
+            Text(L10n.string("import_data", table: "Settings"))
               .font(.headline)
               .foregroundStyle(.primary)
 
-            Text(String(localized: "import_data_description", table: "Settings"))
+            Text(L10n.string("import_data_description", table: "Settings"))
               .font(.subheadline)
               .foregroundStyle(.secondary)
           }
@@ -113,7 +113,7 @@ struct DataManagementSettingsView: View {
 
         VStack(alignment: .leading, spacing: 8) {
           HStack {
-            Text(String(localized: "delete_device_data", table: "Settings"))
+            Text(L10n.string("delete_device_data", table: "Settings"))
               .font(.headline)
             Spacer()
             Picker(
@@ -123,7 +123,7 @@ struct DataManagementSettingsView: View {
                 set: { deletingDeviceId = $0.isEmpty ? nil : $0 }
               )
             ) {
-              Text(String(localized: "select_device", table: "Settings"))
+              Text(L10n.string("select_device", table: "Settings"))
                 .tag("")
               ForEach(availableDevices, id: \.self) { device in
                 Text(device)
@@ -133,7 +133,7 @@ struct DataManagementSettingsView: View {
             .pickerStyle(.menu)
           }
 
-          Text(String(localized: "delete_device_data_description", table: "Settings"))
+          Text(L10n.string("delete_device_data_description", table: "Settings"))
             .font(.subheadline)
             .foregroundStyle(.secondary)
         }
@@ -155,11 +155,11 @@ struct DataManagementSettingsView: View {
             .foregroundStyle(.red)
 
           VStack(alignment: .leading, spacing: 4) {
-            Text(String(localized: "delete_selected_device_data", table: "Settings"))
+            Text(L10n.string("delete_selected_device_data", table: "Settings"))
               .font(.headline)
               .foregroundStyle(.red)
 
-            Text(String(localized: "delete_selected_device_description", table: "Settings"))
+            Text(L10n.string("delete_selected_device_description", table: "Settings"))
               .font(.subheadline)
               .foregroundStyle(.secondary)
           }
@@ -186,11 +186,11 @@ struct DataManagementSettingsView: View {
             .frame(width: 60)
 
           VStack(alignment: .leading, spacing: 4) {
-            Text(String(localized: "delete_all_data", table: "Settings"))
+            Text(L10n.string("delete_all_data", table: "Settings"))
               .font(.headline)
               .foregroundStyle(.red)
 
-            Text(String(localized: "delete_all_data_description", table: "Settings"))
+            Text(L10n.string("delete_all_data_description", table: "Settings"))
               .font(.subheadline)
               .foregroundStyle(.secondary)
           }

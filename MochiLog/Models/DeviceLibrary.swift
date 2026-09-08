@@ -197,7 +197,7 @@ struct DeviceLibrary {
     "Watch7,19": "Apple Watch 11 (42mm)",
     "Watch7,20": "Apple Watch 11 (46mm)",
     "Watch7,12": "Apple Watch Ultra (第3世代)",
-    
+
     // Accessories
     "A3385": "iPhone Air MagSafeバッテリー",
   ]
@@ -589,7 +589,7 @@ struct DeviceLibrary {
     "Apple Watch 3 (42mm)": 342,
     "Apple Watch 3 (38mm) Cellular": 262,
     "Apple Watch 3 (38mm)": 262,
-    
+
     // Accessories
     "iPhone Air MagSafeバッテリー": 3149,
   ]
@@ -676,9 +676,9 @@ struct DeviceLibrary {
     var id: String { self.rawValue }
     var localizedName: String {
       switch self {
-      case .iphone: return String(localized: "category_iphone", table: "Common")
-      case .ipad: return String(localized: "category_ipad", table: "Common")
-      case .watch: return String(localized: "category_watch", table: "Common")
+      case .iphone: return L10n.string("category_iphone", table: "Common")
+      case .ipad: return L10n.string("category_ipad", table: "Common")
+      case .watch: return L10n.string("category_watch", table: "Common")
       case .ipod: return "iPod"
       }
     }
