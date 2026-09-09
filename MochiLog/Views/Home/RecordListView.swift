@@ -70,7 +70,9 @@ struct RecordListView<Header: View>: View {
     ZStack {
       // コンテンツ表示
       Group {
-        if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
+        if UIDevice.current.userInterfaceIdiom == .phone {
+          phoneLogList
+        } else if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
           iPadGridLayout
         } else {
           iPhoneLayout
@@ -229,7 +231,88 @@ struct RecordListView<Header: View>: View {
     .background(Color(uiColor: .systemGroupedBackground))
   }
 
-  // MARK: - iPhone レイアウト
+  private var phoneLogList: some View {
+    List {
+      header
+        .listRowInsets(EdgeInsets())
+        .listRowSeparator(.hidden)
+        .listRowBackground(Color.clear)
+
+      ForEach(cachedSections, id: \.id) { section in
+        let sectionRecords = recordsForSection(section)
+        Section {
+          Button {
+            withAnimation(.snappy) {
+              allowSectionAnimation = true
+              if collapsedSections.contains(section.id) {
+                collapsedSections.remove(section.id)
+              } else {
+                collapsedSections.insert(section.id)
+              }
+            }
+          } label: {
+            HStack(spacing: 8) {
+              Text(section.displayName)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.primary)
+                .fixedSize(horizontal: false, vertical: true)
+              Spacer(minLength: 8)
+              Image(systemName: collapsedSections.contains(section.id) ? "chevron.right" : "chevron.down")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.tertiary)
+            }
+            .frame(minHeight: 32)
+            .contentShape(Rectangle())
+          }
+          .buttonStyle(.plain)
+          .textCase(nil)
+          .accessibilityAddTraits(.isHeader)
+          if !collapsedSections.contains(section.id) {
+            ForEach(sectionRecords, id: \.id) { record in
+              Button {
+                onRecordTap?(record)
+              } label: {
+                RecordRowView(record: record)
+                  .frame(maxWidth: .infinity, alignment: .leading)
+                  .contentShape(Rectangle())
+              }
+              .buttonStyle(.plain)
+              .listRowInsets(EdgeInsets(top: 2, leading: 24, bottom: 2, trailing: 24))
+            }
+            .onDelete { offsets in
+              if let onDelete = onRecordDelete {
+                offsets.map { sectionRecords[$0] }.forEach(onDelete)
+              }
+            }
+            if hasMoreRecords(section) {
+              Button { loadMoreRecords(for: section) } label: {
+                HStack {
+                  Text(L10n.string("load_more", table: "Home"))
+                  Spacer()
+                  Text("\(sectionRecords.count) / \(totalRecordsForSection(section))")
+                    .foregroundStyle(.secondary)
+                    .monospacedDigit()
+                }
+                .font(.subheadline)
+                .padding(.vertical, 6)
+              }
+            }
+          }
+
+        }
+      }
+    }
+    .listStyle(.insetGrouped)
+    .task(id: collapsedSections) {
+      // Restart the delay on another tap so rapid toggles keep animating.
+      do {
+        try await Task.sleep(for: .milliseconds(500))
+        allowSectionAnimation = false
+      } catch { }
+    }
+  }
+
+  // MARK: - iPad compact layout
   private var iPhoneLayout: some View {
     List {
       if UIDevice.current.userInterfaceIdiom == .pad {

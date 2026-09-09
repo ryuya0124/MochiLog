@@ -218,18 +218,20 @@ struct RecordRowView: View {
         phoneHealthLabel
       }
     }
-    .padding(.vertical, 12)
+    .padding(.vertical, 16)
     .accessibilityElement(children: .combine)
   }
 
   private var phoneRecordLabel: some View {
-    VStack(alignment: .leading, spacing: 6) {
-      Text(record.logDate, style: .date)
-        .font(.subheadline.weight(.medium))
+    VStack(alignment: .leading, spacing: 5) {
+      Text(record.deviceName)
+        .font(.body.weight(.semibold))
         .foregroundStyle(.primary)
-      (Text(L10n.string("cycle_count", table: "Analytics")) + Text("  ")
-        + Text(record.cycleCount, format: .number))
-        .font(.caption)
+      Text(record.logDate, style: .date)
+        .font(.subheadline)
+        .foregroundStyle(.secondary)
+      Text(String(format: L10n.string("cycle_count_format", table: "Analytics"), record.cycleCount))
+        .font(.subheadline)
         .foregroundStyle(.secondary)
     }
     .fixedSize(horizontal: false, vertical: true)
@@ -238,10 +240,15 @@ struct RecordRowView: View {
   private var phoneHealthLabel: some View {
     let health = appSettings.analysisDataSource == .nominal
       ? record.nominalHealthPercent : record.healthPercent
-    return Text(health / 100, format: .percent.precision(.fractionLength(1)))
-      .font(.system(.title3, design: .rounded, weight: .semibold))
+    return VStack(alignment: .trailing, spacing: 5) {
+      Text(health / 100, format: .percent.precision(.fractionLength(1)))
+      .font(.system(.title2, weight: .semibold))
       .monospacedDigit()
       .foregroundStyle(health < 80 ? Color.red : health < 90 ? Color.orange : appSettings.accentColor.color)
+      Text(record.cachedDiagnostic)
+        .font(.caption)
+        .foregroundStyle(.secondary)
+    }
       .fixedSize()
       .accessibilityLabel(L10n.string("battery_health", table: "Records"))
       .accessibilityValue(Text(health / 100, format: .percent.precision(.fractionLength(1))))
