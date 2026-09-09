@@ -5,6 +5,7 @@ import UniformTypeIdentifiers
 struct SettingsView: View {
   @EnvironmentObject private var dataStore: DataStore
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+  @Environment(\.dynamicTypeSize) private var dynamicTypeSize
   @StateObject private var appSettings = AppSettings.shared
 
   /// DataStoreからレコードを取得（キャッシュ済み）
@@ -229,7 +230,7 @@ struct SettingsView: View {
   // MARK: - iPad/iPhone向けList
   @ViewBuilder
   private var settingsList: some View {
-    if horizontalSizeClass == .regular {
+    if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
       // iPad: 2カラムレイアウト（左:カテゴリ一覧、右:詳細） - スクロール分離
       HStack(alignment: .top, spacing: 0) {
         // 左側：カテゴリ一覧（独立したScrollView）
@@ -238,19 +239,21 @@ struct SettingsView: View {
           ScrollView {
             VStack(spacing: 16) {
               ForEach(SettingsCategory.allCases.filter { $0 != .iCloud }) { category in
-                CategoryCardView(
-                  category: category,
-                  isSelected: selectedCategory.wrappedValue == category
-                )
-                .onTapGesture {
+                Button {
                   selectedCategory.wrappedValue = category
+                } label: {
+                  CategoryCardView(category: category,
+                    isSelected: selectedCategory.wrappedValue == category)
                 }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier(category == .language ? "settings.language" : "settings.category.\(category.rawValue)")
               }
+
             }
             .padding()
           }
         }
-        .frame(width: 300)
+        .frame(width: 260)
         .frame(maxHeight: .infinity)
         .clipped()
 
@@ -267,6 +270,9 @@ struct SettingsView: View {
           }
           .frame(maxHeight: .infinity)
           .clipped()
+        } else if selectedCategory.wrappedValue == .language {
+          LanguageSettingsView(isEmbedded: true)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else if selectedCategory.wrappedValue == .advanced {
           VStack(spacing: 0) {
             Divider()  // ヘッダーとの境界線
@@ -313,12 +319,14 @@ struct SettingsView: View {
                   AboutSettingsView()
                 case .debug:
                   DebugSettingsView(appSettings: appSettings)
-                case .advanced:
+                case .advanced, .language:
                   EmptyView()
                 }
               }
               .padding(.top)
-              .frame(maxWidth: .infinity, alignment: .leading)
+              .frame(maxWidth: 760, alignment: .leading)
+              .frame(maxWidth: .infinity)
+              .padding(.horizontal, 12)
             }
           }
           .groupBoxStyle(SettingsCardGroupBoxStyle())
@@ -332,6 +340,11 @@ struct SettingsView: View {
       List {
         settingsContent
       }
+      .listStyle(.insetGrouped)
+      .labelStyle(SettingsRowLabelStyle(color: appSettings.accentColor.color))
+      .environment(\.defaultMinListRowHeight, 56)
+      .scrollContentBackground(.hidden)
+      .background(Color(uiColor: .systemGroupedBackground))
     }
   }
 
@@ -340,10 +353,6 @@ struct SettingsView: View {
   private var settingsContent: some View {
     // MARK: - 一般
     Section(L10n.string("general", table: "Settings")) {
-      NavigationLink(destination: LanguageSettingsView()) {
-        Label(L10n.string("language_title", table: "Language"), systemImage: "globe")
-      }
-      .accessibilityIdentifier("settings.language")
       // iCloud同期画面へのリンク
       if #available(iOS 17, *) {
         Button {
@@ -384,6 +393,8 @@ struct SettingsView: View {
         }
       }
       .pickerStyle(.menu)
+
+      RecordInfoToggle()
 
       // サンプルデータ表示
       Button {
@@ -633,6 +644,17 @@ struct SettingsView: View {
         Label(L10n.string("about_app", table: "Settings"), systemImage: "info.circle")
       }
     }
+
+    Section {
+      languageLink
+    }
+  }
+
+  private var languageLink: some View {
+    NavigationLink(destination: LanguageSettingsView()) {
+      Label(L10n.string("language_title", table: "Language"), systemImage: "globe")
+    }
+    .accessibilityIdentifier("settings.language")
   }
 
   private func deleteAllRecords() {
@@ -774,21 +796,34 @@ struct SettingsView: View {
   }
 }
 
-private struct SettingsCardGroupBoxStyle: GroupBoxStyle {
+struct SettingsCardGroupBoxStyle: GroupBoxStyle {
   func makeBody(configuration: Configuration) -> some View {
     VStack(alignment: .leading, spacing: 8) {
       configuration.label
       configuration.content
     }
     .padding()
-    .background(
-      RoundedRectangle(cornerRadius: 16)
-        .fill(Color(.secondarySystemGroupedBackground))
-    )
+    .mochiCard()
   }
 }
 
 #Preview {
   SettingsView()
     .environmentObject(DataStore.create(iCloudEnabled: false))
+}
+
+private struct SettingsRowLabelStyle: LabelStyle {
+  let color: Color
+
+  func makeBody(configuration: Configuration) -> some View {
+    HStack(spacing: 12) {
+      configuration.icon
+        .font(.system(size: 17, weight: .medium))
+        .frame(width: 32, height: 32)
+        .background(color.opacity(0.10), in: RoundedRectangle(cornerRadius: 9))
+      configuration.title
+        .fixedSize(horizontal: false, vertical: true)
+    }
+    .padding(.vertical, 3)
+  }
 }

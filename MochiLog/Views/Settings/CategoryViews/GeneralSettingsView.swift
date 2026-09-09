@@ -6,21 +6,15 @@ struct GeneralSettingsView: View {
 
   var body: some View {
     VStack(spacing: 16) {
-      GroupBox {
-        NavigationLink(destination: LanguageSettingsView()) {
-          Label(L10n.string("language_title", table: "Language"), systemImage: "globe")
-            .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
-        }
-        .accessibilityIdentifier("settings.language")
-      }
+      GroupBox { RecordInfoToggle() }
       // アクセントカラー
       GroupBox {
         HStack(spacing: 20) {
           // カラーパレットアイコン
           Image(systemName: "paintpalette.fill")
-            .font(.system(size: 36))
+            .font(.system(size: 24))
             .foregroundStyle(appSettings.accentColor.color)
-            .frame(width: 60, height: 60)
+            .frame(width: 40, height: 40)
 
           VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -69,9 +63,9 @@ struct GeneralSettingsView: View {
         } label: {
           HStack(spacing: 20) {
             Image(systemName: "eye.fill")
-              .font(.system(size: 32))
+              .font(.system(size: 24))
               .foregroundStyle(appSettings.accentColor.color)
-              .frame(width: 60)
+              .frame(width: 40)
 
             VStack(alignment: .leading, spacing: 4) {
               Text(L10n.string("view_sample_data", table: "Home"))
@@ -96,5 +90,20 @@ struct GeneralSettingsView: View {
       }
     }
     .padding(.horizontal)
+  }
+}
+
+struct RecordInfoToggle: View {
+  @AppStorage("showRecordInfoButtons") private var showInfoButtons = true
+
+  var body: some View {
+    Toggle(isOn: $showInfoButtons) {
+      VStack(alignment: .leading, spacing: 4) {
+        Text(L10n.string("show_record_info", table: "Settings"))
+        Text(L10n.string("show_record_info_description", table: "Settings"))
+          .font(.caption).foregroundStyle(.secondary)
+      }
+    }
+    .accessibilityIdentifier("settings.recordInfo")
   }
 }

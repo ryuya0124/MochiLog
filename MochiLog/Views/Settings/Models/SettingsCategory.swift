@@ -10,11 +10,13 @@ enum SettingsCategory: String, CaseIterable, Identifiable {
   case debug
   case advanced
   case about
+  case language
 
   var id: String { rawValue }
 
   var icon: String {
     switch self {
+    case .language: return "globe"
     case .general: return "gearshape.fill"
     case .iCloud: return "icloud.fill"
     case .appleWatch: return "applewatch"
@@ -28,9 +30,10 @@ enum SettingsCategory: String, CaseIterable, Identifiable {
 
   var title: String {
     switch self {
+    case .language: return L10n.string("language_title", table: "Language")
     case .general: return L10n.string("general", table: "Settings")
     case .iCloud: return L10n.string("icloud_sync_settings", defaultValue: "iCloud Sync", table: "Settings")
-    case .appleWatch: return L10n.string("apple_watch_settings", table: "Settings")
+    case .appleWatch: return "Apple Watch"
     case .dataManagement: return L10n.string("data_management", table: "Settings")
     case .support: return L10n.string("support", table: "Settings")
     case .about: return L10n.string("about_app", table: "Settings")

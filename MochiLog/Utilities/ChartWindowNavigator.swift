@@ -4,6 +4,21 @@ import Foundation
 /// グラフの期間移動に関する共通ロジック
 struct ChartWindowNavigator {
 
+  /// IDs alone cannot detect CloudKit updates to an existing record's measurements.
+  static func recordSignature(_ records: [BatteryRecord], selectedDevice: String?) -> Int {
+    var hasher = Hasher()
+    for record in records {
+      hasher.combine(record.id)
+      hasher.combine(record.deviceName)
+      hasher.combine(record.logDate)
+      hasher.combine(record.cycleCount)
+      hasher.combine(record.healthPercent)
+      hasher.combine(record.nominalHealthPercent)
+    }
+    hasher.combine(selectedDevice)
+    return hasher.finalize()
+  }
+
   // MARK: - 共通チャート計算
 
   /// レンジに応じた実効レンジを決定（autoの場合のみ）
@@ -39,7 +54,8 @@ struct ChartWindowNavigator {
     let effectiveRange = effectiveRange(for: recordDates, range: range)
     let effectiveEnd = effectiveEndDate(for: recordDates, windowEnd: windowEnd, range: range)
     let startDate = windowStart(for: effectiveEnd, range: effectiveRange, allRecords: [])
-    let startDay = calendar.startOfDay(for: startDate)
+    let automaticStart = recordDates.filter { $0 <= effectiveEnd }.min() ?? startDate
+    let startDay = calendar.startOfDay(for: range == .auto ? min(startDate, automaticStart) : startDate)
     let endDay = calendar.startOfDay(for: effectiveEnd)
 
     let visibleDates = recordDates.filter {
@@ -57,33 +73,20 @@ struct ChartWindowNavigator {
     currentEnd: Date,
     records: [BatteryRecord]
   ) -> Date {
-    let now = Date()
+    if range == .auto { return initializeWindowEnd(for: records, range: range) }
+    let end = alignedEnd(currentEnd, range: range)
+    let start = windowStart(for: end, range: range, allRecords: records)
+    return windowContainsData(start: start, end: end, in: records)
+      ? end : initializeWindowEnd(for: records, range: range)
+  }
 
-    // グラフの自動モード（自動センター）要求に応じ、.auto の場合は最も密集している場所を探す
-    if range == .auto {
-      return initializeWindowEnd(for: records, range: range)
-    }
-
+  private static func alignedEnd(_ date: Date, range: RangePreset) -> Date {
     switch range {
-    case .oneMonth:
-      let endOfCurrentMonth = endOfMonth(for: now)
-      let start = windowStart(for: endOfCurrentMonth, range: range, allRecords: records)
-      if windowContainsData(start: start, end: endOfCurrentMonth, in: records) {
-        return endOfCurrentMonth
-      }
-      return initializeWindowEnd(for: records, range: range)
-    case .threeMonths:
-      return endOfQuarter(for: now)
-    case .sixMonths:
-      return endOfHalfYear(for: now)
-    case .oneYear:
-      return endOfYear(for: now)
-    default:
-      let start = windowStart(for: currentEnd, range: range, allRecords: records)
-      if windowContainsData(start: start, end: currentEnd, in: records) {
-        return currentEnd
-      }
-      return initializeWindowEnd(for: records, range: range)
+    case .oneMonth: return endOfMonth(for: date)
+    case .threeMonths: return endOfQuarter(for: date)
+    case .sixMonths: return endOfHalfYear(for: date)
+    case .oneYear, .twoYears, .threeYears: return endOfYear(for: date)
+    default: return date
     }
   }
 
@@ -126,9 +129,9 @@ struct ChartWindowNavigator {
       let effectiveRange = autoRange(for: allRecords)
       return windowStart(for: endDate, range: effectiveRange, allRecords: allRecords)
     case .oneWeek:
-      return calendar.date(byAdding: .day, value: -7, to: endDate) ?? endDate
+      return calendar.date(byAdding: .day, value: -6, to: endDate) ?? endDate
     case .twoWeeks:
-      return calendar.date(byAdding: .day, value: -14, to: endDate) ?? endDate
+      return calendar.date(byAdding: .day, value: -13, to: endDate) ?? endDate
     case .oneMonth:
       // カレンダー月に固定：終了日の月の1日を開始日とする
       let components = calendar.dateComponents([.year, .month], from: endDate)
@@ -201,7 +204,8 @@ struct ChartWindowNavigator {
     let deviceGroups = Dictionary(grouping: records) { $0.deviceName }
     var result: [BatteryRecord] = []
 
-    for (_, deviceRecords) in deviceGroups {
+    for (_, unsortedRecords) in deviceGroups {
+      let deviceRecords = unsortedRecords.sorted { $0.logDate < $1.logDate }
       // このデバイスのウィンドウ内のレコード
       let visibleRecords = deviceRecords.filter {
         let d = cal.startOfDay(for: $0.logDate)
@@ -354,7 +358,8 @@ struct ChartWindowNavigator {
       }
     case .oneYear, .twoYears, .threeYears:
       // 翌年の末日
-      if let nextYear = cal.date(byAdding: .year, value: 1, to: currentEnd) {
+      let years = range == .threeYears ? 3 : range == .twoYears ? 2 : 1
+      if let nextYear = cal.date(byAdding: .year, value: years, to: currentEnd) {
         steppedEnd = endOfYear(for: nextYear)
       } else {
         steppedEnd = nil
@@ -388,12 +393,9 @@ struct ChartWindowNavigator {
     case .sixMonths: return endOfHalfYear(for: nextDataDate)
     case .oneYear, .twoYears, .threeYears: return endOfYear(for: nextDataDate)
     default:
-      if let comp = periodComponent(for: range),
-        let end = cal.date(byAdding: comp, to: cal.startOfDay(for: nextDataDate))
-      {
-        return end
-      }
-      return nextDataDate
+      let days = range == .twoWeeks ? 13 : 6
+      return cal.date(byAdding: .day, value: days, to: cal.startOfDay(for: nextDataDate))
+        ?? nextDataDate
     }
   }
 
@@ -479,13 +481,7 @@ struct ChartWindowNavigator {
     case .sixMonths: return endOfHalfYear(for: prevDataDate)
     case .oneYear, .twoYears, .threeYears: return endOfYear(for: prevDataDate)
     default:
-      // oneWeek, twoWeeks: 過去データの日付 + 期間
-      if let comp = periodComponent(for: range),
-        let end = cal.date(byAdding: comp, to: cal.startOfDay(for: prevDataDate))
-      {
-        return end
-      }
-      return prevDataDate
+      return cal.startOfDay(for: prevDataDate)
     }
   }
 
@@ -573,8 +569,8 @@ struct ChartWindowNavigator {
 
     let days = Calendar.current.dateComponents([.day], from: first, to: last).day ?? 0
 
-    if days <= 7 { return .oneWeek }
-    if days <= 14 { return .twoWeeks }
+    if days < 7 { return .oneWeek }
+    if days < 14 { return .twoWeeks }
     if days <= 30 { return .oneMonth }
     if days <= 90 { return .threeMonths }
     if days <= 180 { return .sixMonths }
@@ -588,8 +584,8 @@ struct ChartWindowNavigator {
     guard let first = recordDates.min(), let last = recordDates.max() else { return .oneMonth }
     let days = Calendar.current.dateComponents([.day], from: first, to: last).day ?? 0
 
-    if days <= 7 { return .oneWeek }
-    if days <= 14 { return .twoWeeks }
+    if days < 7 { return .oneWeek }
+    if days < 14 { return .twoWeeks }
     if days <= 30 { return .oneMonth }
     if days <= 90 { return .threeMonths }
     if days <= 180 { return .sixMonths }
@@ -634,49 +630,14 @@ struct ChartWindowNavigator {
 
   /// レコードに基づいてウィンドウ終了日を初期化
   static func initializeWindowEnd(for records: [BatteryRecord], range: RangePreset) -> Date {
-    guard !records.isEmpty else { return Date() }
-
-    let now = Date()
-
-    // 1ヶ月選択時は月末を終了日とする（完全な1ヶ月を表示）
-    if range == .oneMonth {
-      return endOfMonth(for: now)
-    }
-
-    // 3ヶ月選択時は四半期末を終了日とする（完全な四半期を表示）
-    if range == .threeMonths {
-      return endOfQuarter(for: now)
-    }
-
-    // 6ヶ月選択時は半年末を終了日とする（四半期2つ分、完全な半年を表示）
-    if range == .sixMonths {
-      return endOfHalfYear(for: now)
-    }
-
-    // 1年選択時は年末を終了日とする（完全な1年を表示）
-    if range == .oneYear {
-      return endOfYear(for: now)
-    }
-
-    // 3年選択時は最新データの日付を終了日とする
-    if range == .threeYears {
-      return records.max(by: { $0.logDate < $1.logDate })?.logDate ?? Date()
-    }
-
-    // 自動モード時は最も密集している期間を優先
+    guard let latest = records.max(by: { $0.logDate < $1.logDate })?.logDate else { return Date() }
     if range == .auto {
       let effective = autoRange(for: records)
-      if let densestEnd = findWindowWithMostData(in: records, range: effective) {
-        return densestEnd
-      }
+      return alignedEnd(latest, range: effective)
     }
-
-    // その他のレンジ：現在日付のウィンドウにデータがあれば今日、なければ最新データの日付
-    let startNow = windowStart(for: now, range: range, allRecords: records)
-    if windowContainsData(start: startNow, end: now, in: records) {
-      return now
-    }
-
-    return records.max(by: { $0.logDate < $1.logDate })?.logDate ?? now
+    let nowEnd = alignedEnd(Date(), range: range)
+    let start = windowStart(for: nowEnd, range: range, allRecords: records)
+    if windowContainsData(start: start, end: nowEnd, in: records) { return nowEnd }
+    return alignedEnd(latest, range: range)
   }
 }

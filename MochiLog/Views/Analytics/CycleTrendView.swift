@@ -33,12 +33,12 @@ struct CycleTrendView: View {
   }
 
   private var windowEnd: Date {
-    sharedWindowEndValue ?? localWindowEnd
+    sharedWindowEndValue ?? sharedWindowEnd?.wrappedValue ?? localWindowEnd
   }
 
   // 現在のウィンドウに含まれるレコードを計算
   private var visibleRecords: [BatteryRecord] {
-    let startDate = windowStart(for: effectiveEndDate, range: effectiveSelectedRange)
+    let startDate = startDay
     return ChartWindowNavigator.visibleRecordsWithContext(
       in: allRecords,
       start: startDate,
@@ -46,14 +46,13 @@ struct CycleTrendView: View {
     )
   }
 
-  private var startDay: Date {
-    Calendar.current.startOfDay(
-      for: windowStart(for: effectiveEndDate, range: effectiveSelectedRange))
+  private var chartWindow: (startDay: Date, endDay: Date, unit: AppSettings.ChartUnit) {
+    ChartWindowNavigator.computeChartWindow(recordDates: allRecords.map(\.logDate),
+      windowEnd: windowEnd, range: selectedRange)
   }
 
-  private var endDay: Date {
-    Calendar.current.startOfDay(for: effectiveEndDate)
-  }
+  private var startDay: Date { chartWindow.startDay }
+  private var endDay: Date { chartWindow.endDay }
 
   /// 全レコードのデバイス名（ソート済み）— 色の安定割り当て用
   private var sortedAllDeviceNames: [String] {
@@ -66,15 +65,15 @@ struct CycleTrendView: View {
   }
 
   private var canMoveNext: Bool {
-    sharedCanMoveNext
+    selectedRange != .auto && (sharedCanMoveNext
       ?? ChartWindowNavigator.canMoveNext(
-        currentEnd: effectiveLocalWindowEnd, range: effectiveLocalRange, records: allRecords)
+        currentEnd: effectiveLocalWindowEnd, range: effectiveLocalRange, records: allRecords))
   }
 
   private var canMovePrevious: Bool {
-    sharedCanMovePrevious
+    selectedRange != .auto && (sharedCanMovePrevious
       ?? ChartWindowNavigator.canMovePrevious(
-        currentEnd: effectiveLocalWindowEnd, range: effectiveLocalRange, records: allRecords)
+        currentEnd: effectiveLocalWindowEnd, range: effectiveLocalRange, records: allRecords))
   }
 
   private var effectiveLocalRange: RangePreset {
@@ -90,7 +89,7 @@ struct CycleTrendView: View {
   private var effectiveLocalWindowEnd: Date {
     // sharedWindowEndValue がある場合は親の値を使う（iPhone 連動用）
     let rangeToUse = sharedSelectedRange != nil ? selectedRange : localSelectedRange
-    let windowEndToUse = sharedWindowEndValue ?? localWindowEnd
+    let windowEndToUse = sharedWindowEndValue ?? sharedWindowEnd?.wrappedValue ?? localWindowEnd
     guard rangeToUse == .auto else { return windowEndToUse }
     let now = Date()
     if windowEndToUse <= now { return windowEndToUse }
@@ -143,27 +142,7 @@ struct CycleTrendView: View {
         Text(L10n.string("cycle_trend", table: "Analytics"))
           .font(.headline)
 
-        if horizontalSizeClass == .regular {
-          Spacer()
-          // 年・期間を表示（右寄せ）
-          HStack(spacing: 12) {
-            // 年
-            let startYear = Calendar.current.component(.year, from: startDay)
-            let endYear = Calendar.current.component(.year, from: endDay)
-            if startYear != endYear {
-              Text("\(String(startYear))年 ~ \(String(endYear))年")
-            } else {
-              Text("\(String(endYear))年")
-            }
 
-            // 日付
-            Text(
-              "\(startDay.formatted(.dateTime.month().day())) – \(endDay.formatted(.dateTime.month().day()))"
-            )
-          }
-          .font(.headline)
-          .foregroundStyle(.secondary)
-        }
       }
 
       if allRecords.isEmpty {
@@ -176,10 +155,16 @@ struct CycleTrendView: View {
         if horizontalSizeClass == .regular {
           ChartRangeSelector(
             selectedRange: Binding(
-              get: { localSelectedRange },
+              get: { selectedRange },
               set: {
                 isUserInteracted = true
-                localSelectedRange = $0
+                if let sharedSelectedRange {
+                  sharedSelectedRange.wrappedValue = $0
+                } else {
+                  localSelectedRange = $0
+                  localWindowEnd = ChartWindowNavigator.adjustedWindowEndForRangeChange(
+                    range: $0, currentEnd: localWindowEnd, records: allRecords)
+                }
               }
             ),
             canMoveNext: canMoveNext,
@@ -215,7 +200,7 @@ struct CycleTrendView: View {
             print(
               "[Warning] Device '\(deviceName)' not found in sortedAllDeviceNames, using fallback color"
             )
-            let fallbackIndex = abs(deviceName.hashValue) % ChartAxisHelper.deviceColorPalette.count
+            let fallbackIndex = Int(UInt(bitPattern: deviceName.hashValue) % UInt(ChartAxisHelper.deviceColorPalette.count))
             return ChartAxisHelper.deviceColorPalette[fallbackIndex]
           }
 
@@ -230,9 +215,9 @@ struct CycleTrendView: View {
           .frame(height: isChartReady ? 0 : (horizontalSizeClass == .regular ? 280 : 200))
       }
     }
-    .frame(minHeight: horizontalSizeClass == .regular ? 480 : nil, alignment: .top)
+    .frame(maxWidth: .infinity, alignment: .topLeading)
     .padding()
-    .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16))
+    .mochiCard()
     .onAppear {
       // 初期レンジを設定（一度だけ、親から渡されていない場合のみ）
       if !hasInitialized && sharedSelectedRange == nil {
@@ -295,14 +280,13 @@ struct CycleTrendView: View {
         LineMark(
           x: .value(
             L10n.string("date", table: "Common"),
-            Calendar.current.startOfDay(for: record.logDate),
-            unit: unit.calendarComponent),
+            record.logDate),
           y: .value(L10n.string("cycle_count", table: "Analytics"), record.cycleCount)
         )
         .foregroundStyle(
           by: .value(L10n.string("device_name", table: "Common"), record.deviceName)
         )
-        .interpolationMethod(.catmullRom)
+        .interpolationMethod(.linear)
         .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
       }
 
@@ -320,8 +304,7 @@ struct CycleTrendView: View {
             PointMark(
               x: .value(
                 L10n.string("date", table: "Common"),
-                Calendar.current.startOfDay(for: pointRecord.logDate),
-                unit: unit.calendarComponent),
+                pointRecord.logDate),
               y: .value(
                 L10n.string("cycle_count", table: "Analytics"),
                 pointRecord.cycleCount)
@@ -347,7 +330,7 @@ struct CycleTrendView: View {
 
       AxisMarks(values: .stride(by: strideComponent, count: strideCount)) { value in
         AxisGridLine()
-          .foregroundStyle(.white.opacity(0.95))
+          .foregroundStyle(Color.primary.opacity(0.06))
 
         AxisValueLabel {
           if let date = value.as(Date.self) {
@@ -364,18 +347,9 @@ struct CycleTrendView: View {
       }
     }
     .chartYScale(
-      domain: 0...(Double(visibleRecords.map { $0.cycleCount }.max() ?? 10) * 1.15)
+      domain: 0...max(10, Double(visibleRecords.map { $0.cycleCount }.max() ?? 0) * 1.15)
     )
-    .chartXScale(
-      domain: {
-        let cal = Calendar.current
-        let days = cal.dateComponents([.day], from: startDay, to: endDay).day ?? 0
-        if days < 7 {
-          return startDay...(cal.date(byAdding: .day, value: 7, to: startDay) ?? endDay)
-        }
-        return startDay...endDay
-      }()
-    )
+    .chartXScale(domain: startDay...(Calendar.current.date(byAdding: .day, value: 1, to: endDay) ?? endDay))
     .chartPlotStyle { plotArea in
       plotArea
         .clipped()

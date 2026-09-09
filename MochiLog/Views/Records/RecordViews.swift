@@ -12,6 +12,7 @@ struct InfoLabeledContent<V: View>: View {
   let hint: String
   let valueContent: V
 
+  @AppStorage("showRecordInfoButtons") private var showInfoButtons = true
   @State private var isShowingInfo = false
 
   init(_ label: String, hint: String, @ViewBuilder value: () -> V) {
@@ -26,6 +27,7 @@ struct InfoLabeledContent<V: View>: View {
     } label: {
       HStack(spacing: 4) {
         Text(label)
+        if showInfoButtons {
         Button {
           isShowingInfo = true
         } label: {
@@ -42,6 +44,9 @@ struct InfoLabeledContent<V: View>: View {
           // UIKitポップオーバーのアンカービューを背面に配置してタップを妨げないようにする
           InfoPopoverAnchor(isPresented: $isShowingInfo, title: label, hint: hint)
             .allowsHitTesting(false)
+        }
+        .accessibilityLabel(label)
+        .accessibilityIdentifier("record.info.\(label)")
         }
       }
     }
@@ -194,37 +199,44 @@ struct RecordRowView: View {
   @StateObject private var appSettings = AppSettings.shared
 
   var body: some View {
-    HStack {
-      VStack(alignment: .leading, spacing: 4) {
-        Text(record.deviceName)
-          .font(.headline)
-          .foregroundColor(.primary)
-        Text(record.logDate, style: .date)
-          .font(.caption)
-          .foregroundColor(.secondary)
-        Text(
-          String(
-            format: L10n.string("cycle_count_format", table: "Analytics"), record.cycleCount)
-        )
-        .font(.caption)
-        .foregroundColor(.secondary)
+    ViewThatFits(in: .horizontal) {
+      HStack(alignment: .center, spacing: 16) {
+        recordLabel
+        Spacer(minLength: 12)
+        healthLabel
       }
-      Spacer()
-      VStack(alignment: .trailing, spacing: 4) {
-        let health =
-          appSettings.analysisDataSource == .nominal
-          ? record.nominalHealthPercent : record.healthPercent
-        Text("\(String(format: "%.1f", health))%")
-          .font(.title2)
-          .bold()
-          .foregroundStyle(healthColor(health))
-        // 動的に計算した診断結果を表示（分析基準に応じて切り替え）
-        Text(record.cachedDiagnostic)
-          .font(.caption2)
-          .foregroundColor(.primary)
+      VStack(alignment: .leading, spacing: 12) {
+        recordLabel
+        healthLabel
       }
     }
-    .padding(.vertical, 4)
+    .padding(.vertical, 10)
+  }
+
+  private var recordLabel: some View {
+    VStack(alignment: .leading, spacing: 6) {
+      Text(record.logDate, style: .date)
+        .font(.subheadline.weight(.semibold))
+        .foregroundStyle(.primary)
+      Label(String(format: L10n.string("cycle_count_format", table: "Analytics"), record.cycleCount),
+        systemImage: "arrow.triangle.2.circlepath")
+        .font(.caption)
+        .foregroundStyle(.secondary)
+    }
+  }
+
+  private var healthLabel: some View {
+    let health = appSettings.analysisDataSource == .nominal
+      ? record.nominalHealthPercent : record.healthPercent
+    return VStack(alignment: .leading, spacing: 5) {
+      Text(health / 100, format: .percent.precision(.fractionLength(1)))
+        .font(.system(.title3, design: .rounded, weight: .semibold))
+        .monospacedDigit()
+        .foregroundStyle(healthColor(health))
+      Text(record.cachedDiagnostic)
+        .font(.caption2)
+        .foregroundStyle(.secondary)
+    }
   }
 
   private func healthColor(_ percent: Double) -> Color {
@@ -292,17 +304,14 @@ struct DetailCard<Content: View>: View {
           }
           .frame(width: 44, height: 44)
         }
-        Text(title).font(.headline)
+        Text(title).font(.subheadline.weight(.semibold))
         Spacer()
       }
       content
     }
     .padding()
-    .frame(minHeight: 120, maxHeight: .infinity, alignment: .top)
-    .background(
-      Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 18)
-    )
-    .overlay(RoundedRectangle(cornerRadius: 18).stroke(Color(uiColor: .separator).opacity(0.08)))
+    .frame(maxWidth: .infinity, alignment: .topLeading)
+    .mochiCard()
   }
 }
 
@@ -332,7 +341,7 @@ struct RecordDetailView: View {
       // iPad / Regular width: bento-styleカードグリッド with polished header and summary panel
       if horizontalSizeClass == .regular {
         ScrollView {
-          LazyVStack(spacing: 18) {
+          LazyVStack(spacing: 20) {
             // Header with large circular health ring and summary info
             HStack(alignment: .center, spacing: 20) {
               // 健康リング（動的コンテンツなのでCachedView削除）
@@ -423,11 +432,8 @@ struct RecordDetailView: View {
                 }
               }
             }
-            .padding()
-
-            .background(
-              Color(uiColor: .secondarySystemGroupedBackground),
-              in: RoundedRectangle(cornerRadius: 20))
+            .padding(24)
+            .mochiCard()
 
             // Device info spans full width on iPad
             DetailCard(
@@ -667,6 +673,8 @@ struct RecordDetailView: View {
             .padding(.vertical, 18)
           }
         }
+        .frame(maxWidth: 960)
+        .frame(maxWidth: .infinity)
         .scrollContentBackground(.hidden)
         .background(Color(uiColor: .systemGroupedBackground))
         .padding(.horizontal, 20)
@@ -674,6 +682,10 @@ struct RecordDetailView: View {
       } else {
         // Compact width (iPhone): 既存の List ベース UI
         List {
+          Section {
+            detailOverview
+              .listRowInsets(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20))
+          }
           Section(L10n.string("device_info", table: "Records")) {
             LabeledContent(
               L10n.string("device_name", table: "Common"), value: record.deviceName)
@@ -900,6 +912,8 @@ struct RecordDetailView: View {
         }
       }
     }
+    .scrollContentBackground(.hidden)
+    .background(Color(uiColor: .systemGroupedBackground).ignoresSafeArea())
     .sheet(
       isPresented: Binding(
         get: { horizontalSizeClass == .compact && isShowingSharingSheet },
@@ -923,6 +937,28 @@ struct RecordDetailView: View {
       }
     }
 
+  }
+
+  private var detailOverview: some View {
+    let health = appSettings.analysisDataSource == .nominal
+      ? record.nominalHealthPercent : record.healthPercent
+    return VStack(alignment: .leading, spacing: 16) {
+      VStack(alignment: .leading, spacing: 5) {
+        Text(record.deviceName).font(.title2.weight(.semibold))
+        Text(record.logDate, style: .date).foregroundStyle(.secondary).font(.subheadline)
+      }
+      Divider()
+      VStack(alignment: .leading, spacing: 6) {
+        Text(L10n.string("battery_health", table: "Records"))
+          .font(.subheadline).foregroundStyle(.secondary)
+        Text(health / 100, format: .percent.precision(.fractionLength(1)))
+          .font(.system(.largeTitle, design: .rounded, weight: .semibold))
+          .monospacedDigit().foregroundStyle(healthColorLocal(health))
+        Text(record.cachedDiagnostic).font(.subheadline).foregroundStyle(.secondary)
+      }
+    }
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .accessibilityIdentifier("record.overview")
   }
 
   // Generate share text for the record

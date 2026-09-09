@@ -9,6 +9,8 @@ struct SampleDataAnalyticsContent: View {
   @Binding var selectedRange: RangePreset
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
+  @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+  @State private var availableWidth: CGFloat = 0
   @State private var selectedDevice: String?
   @State private var windowEnd: Date = Date()
   @State private var hasInitialized = false
@@ -97,7 +99,7 @@ struct SampleDataAnalyticsContent: View {
       }()
 
       // iPad: 2列レイアウト、iPhone: 1列レイアウト
-      if horizontalSizeClass == .regular {
+      if availableWidth >= 850 && !dynamicTypeSize.isAccessibilitySize {
         // iPad向け2列グリッド
         VStack(spacing: 20) {
           HStack(alignment: .top, spacing: 20) {
@@ -119,7 +121,13 @@ struct SampleDataAnalyticsContent: View {
               allRecords: filteredRecords,
               unit: unit,
               initialRange: selectedRange,
-              allDeviceNames: sortedAllDeviceNames
+              allDeviceNames: sortedAllDeviceNames,
+              sharedSelectedRange: $selectedRange,
+              sharedWindowEnd: $windowEnd,
+              sharedCanMoveNext: canMoveNext,
+              sharedCanMovePrevious: canMovePrevious,
+              sharedShiftWindow: shiftWindow,
+              sharedWindowEndValue: windowEnd
             )
           }
 
@@ -160,7 +168,15 @@ struct SampleDataAnalyticsContent: View {
         StatisticsView(filteredRecords: visibleRecords)
       }
     }
+    .frame(maxWidth: 1200)
     .padding(.horizontal)
+    .frame(maxWidth: .infinity)
+    .background {
+      GeometryReader { geometry in
+        Color.clear.onAppear { availableWidth = geometry.size.width }
+          .onChange(of: geometry.size.width) { availableWidth = $0 }
+      }
+    }
     .onAppear {
       guard !hasInitialized else { return }
       hasInitialized = true
@@ -188,128 +204,7 @@ struct SampleDataAnalyticsContent: View {
     windowEnd: Date,
     range: RangePreset
   ) -> (startDay: Date, endDay: Date, unit: AppSettings.ChartUnit) {
-    let calendar = Calendar.current
-    let effectiveRange = computeEffectiveRange(for: recordDates, range: range)
-    let effectiveEnd = computeEffectiveEnd(
-      for: recordDates,
-      windowEnd: windowEnd,
-      range: range
-    )
-
-    let startDate = computeWindowStart(for: effectiveEnd, range: effectiveRange)
-    let startDay = calendar.startOfDay(for: startDate)
-    let endDay = calendar.startOfDay(for: effectiveEnd)
-
-    let visibleDates = recordDates.filter {
-      let d = calendar.startOfDay(for: $0)
-      return d >= startDay && d <= endDay
-    }
-
-    let unit = computeAutoUnit(for: visibleDates, startDay: startDay, endDay: endDay)
-
-    return (startDay, endDay, unit)
+    ChartWindowNavigator.computeChartWindow(recordDates: recordDates,
+      windowEnd: windowEnd, range: range)
   }
-
-  private func computeEffectiveRange(for recordDates: [Date], range: RangePreset) -> RangePreset {
-    guard range == .auto else { return range }
-    let now = Date()
-    let pastDates = recordDates.filter { $0 <= now }
-    let sourceDates = pastDates.isEmpty ? recordDates : pastDates
-    guard let first = sourceDates.min(), let last = sourceDates.max() else { return .oneMonth }
-    let days = Calendar.current.dateComponents([.day], from: first, to: last).day ?? 0
-
-    if days <= 7 { return .oneWeek }
-    if days <= 14 { return .twoWeeks }
-    if days <= 30 { return .oneMonth }
-    if days <= 90 { return .threeMonths }
-    if days <= 180 { return .sixMonths }
-    if days <= 365 { return .oneYear }
-    if days <= 730 { return .twoYears }
-    return .threeYears
-  }
-
-  private func computeEffectiveEnd(
-    for recordDates: [Date],
-    windowEnd: Date,
-    range: RangePreset
-  ) -> Date {
-    guard range == .auto else { return windowEnd }
-    let now = Date()
-    if windowEnd <= now { return windowEnd }
-    let pastDates = recordDates.filter { $0 <= now }
-    if let latestPast = pastDates.max() { return latestPast }
-    return min(windowEnd, now)
-  }
-
-  private func computeWindowStart(for endDate: Date, range: RangePreset) -> Date {
-    let calendar = Calendar.current
-    switch range {
-    case .auto:
-      return endDate
-    case .oneWeek:
-      return calendar.date(byAdding: .day, value: -7, to: endDate) ?? endDate
-    case .twoWeeks:
-      return calendar.date(byAdding: .day, value: -14, to: endDate) ?? endDate
-    case .oneMonth:
-      let components = calendar.dateComponents([.year, .month], from: endDate)
-      return calendar.date(from: components) ?? endDate
-    case .threeMonths:
-      let month = calendar.component(.month, from: endDate)
-      let year = calendar.component(.year, from: endDate)
-      let quarterStartMonth = ((month - 1) / 3) * 3 + 1
-      var components = DateComponents()
-      components.year = year
-      components.month = quarterStartMonth
-      components.day = 1
-      return calendar.date(from: components) ?? endDate
-    case .sixMonths:
-      let month = calendar.component(.month, from: endDate)
-      let year = calendar.component(.year, from: endDate)
-      var components = DateComponents()
-      components.year = year
-      components.month = month <= 6 ? 1 : 7
-      components.day = 1
-      return calendar.date(from: components) ?? endDate
-    case .oneYear:
-      let components = calendar.dateComponents([.year], from: endDate)
-      return calendar.date(from: components) ?? endDate
-    case .twoYears:
-      let year = calendar.component(.year, from: endDate)
-      var components = DateComponents()
-      components.year = year - 1
-      components.month = 1
-      components.day = 1
-      return calendar.date(from: components) ?? endDate
-    case .threeYears:
-      let year = calendar.component(.year, from: endDate)
-      var components = DateComponents()
-      components.year = year - 2
-      components.month = 1
-      components.day = 1
-      return calendar.date(from: components) ?? endDate
-    }
-  }
-
-  private func computeAutoUnit(
-    for dates: [Date],
-    startDay: Date,
-    endDay: Date
-  ) -> AppSettings.ChartUnit {
-    let calendar = Calendar.current
-    let days = calendar.dateComponents([.day], from: startDay, to: endDay).day ?? 0
-    let count = dates.count
-
-    if days <= 2 && count > 24 { return .hour }
-    if days <= 14 { return .day }
-    if days <= 120 { return .day }
-    if days <= 730 { return .week }
-    return .month
-  }
-}
-
-#Preview {
-  SampleDataAnalyticsContent(
-    showingSampleData: .constant(true),
-    selectedRange: .constant(.threeYears)
-  )
 }

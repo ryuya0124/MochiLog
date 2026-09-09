@@ -52,6 +52,9 @@ final class ICloudSyncManager: ObservableObject {
 
   @Published private(set) var isRunningDiagnostics = false
 
+  /// Local validation is informational; it does not establish upload success or failure.
+  @Published private(set) var lastDiagnosticReport: String?
+
   /// 現在未解決のコンフリクト一覧
   @Published var unresolvedConflicts: [SyncConflictItem] = []
 
@@ -320,6 +323,7 @@ final class ICloudSyncManager: ObservableObject {
     isRunningDiagnostics = true
     defer { isRunningDiagnostics = false }
     let report: String
+    var hasDiagnosticError = false
     if let store = dataStore {
       let records = store.recordsDescending
       let invalid = records.filter { record in
@@ -331,25 +335,31 @@ final class ICloudSyncManager: ObservableObject {
       if records.isEmpty {
         report = L10n.string("cloud_diagnostic_no_data", table: "Language")
       } else if !invalid.isEmpty {
+        hasDiagnosticError = true
         report = String(format: L10n.string("cloud_diagnostic_invalid", table: "Language"),
           invalid.prefix(20).map { $0.id.uuidString }.joined(separator: ", "))
       } else {
         let localReport = String(format: L10n.string("cloud_diagnostic_pass", table: "Language"), records.count)
         do {
           let status = try await CKContainer.default().accountStatus()
+          hasDiagnosticError = status != .available
           let accountReport = status == .available
             ? L10n.string("cloud_account_ready", table: "Language")
             : L10n.string("cloud_auth", table: "Language")
           report = localReport + "\n\n" + accountReport
         } catch {
+          hasDiagnosticError = true
           report = localReport + "\n\n" + friendlyErrorMessage(error)
         }
       }
     } else {
+      hasDiagnosticError = true
       report = L10n.string("cloud_diagnostic_no_store", table: "Language")
     }
-    lastErrorLog = report
-    ErrorLogStore.shared.saveLog(message: L10n.string("cloud_diagnostic_title", table: "Language"), rawText: report)
+    lastDiagnosticReport = report
+    if hasDiagnosticError {
+      ErrorLogStore.shared.saveLog(message: L10n.string("cloud_diagnostic_title", table: "Language"), rawText: report)
+    }
   }
 
   /// SwiftData/CoreDataの保存エラーから競合を抽出し、管理リストに追加する

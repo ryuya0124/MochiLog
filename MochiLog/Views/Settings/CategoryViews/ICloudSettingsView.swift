@@ -181,7 +181,7 @@ struct ICloudSettingsContentView: View {
 
                 Label(
                   L10n.string("icloud_sync_how2", defaultValue: "「強制同期」はローカルの変更をiCloudにプッシュし、既に受信済みのデータを表示に反映します", table: "Settings"),
-                  systemImage: "arrow.up.icloud"
+                  systemImage: "icloud.and.arrow.up"
                 )
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -195,7 +195,7 @@ struct ICloudSettingsContentView: View {
 
                 Label(
                   L10n.string("icloud_sync_how4", defaultValue: "強制同期後も表示されない場合は、アプリを完全に終了（スワイプアップ）して再起動すると反映されます", table: "Settings"),
-                  systemImage: "arrow.counterclockwise.icloud"
+                  systemImage: "arrow.counterclockwise"
                 )
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -255,12 +255,28 @@ struct ICloudSettingsContentView: View {
               Spacer()
             }
           }
-          .foregroundColor(.orange)
+          .foregroundColor(appSettings.accentColor.color)
           .padding(.vertical, 4)
           .disabled(syncManager.isRunningDiagnostics)
           Text(L10n.string("cloud_diagnostic_description", table: "Language"))
             .font(.caption)
             .foregroundStyle(.secondary)
+
+          if let report = syncManager.lastDiagnosticReport {
+            VStack(alignment: .leading, spacing: 8) {
+              Label(L10n.string("cloud_diagnostic_title", table: "Language"),
+                systemImage: "stethoscope")
+                .font(.caption.weight(.semibold))
+              Text(report)
+                .font(.caption)
+                .textSelection(.enabled)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(8)
+            .background(Color(uiColor: .secondarySystemGroupedBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .accessibilityIdentifier("icloud.diagnosticReport")
+          }
         }
         .padding(8)
       }

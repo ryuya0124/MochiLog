@@ -104,7 +104,7 @@ struct AdvancedSettingsView: View {
       // MARK: - 分析データの計算基準
       Section {
         analysisSourceCard
-          .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+          .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
           .listRowBackground(Color.clear)
       } header: {
         Text(L10n.string("analysis_source", table: "Settings"))
@@ -113,40 +113,42 @@ struct AdvancedSettingsView: View {
       // MARK: - 共有インポート設定
       Section {
         shareImportCard
-          .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+          .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
           .listRowBackground(Color.clear)
       }
 
       // MARK: - MagSafe設定
       Section {
         magSafeBatteryCard
-          .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+          .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
           .listRowBackground(Color.clear)
       }
 
       // MARK: - 容量検証設定
       Section {
         capacityValidationCard
-          .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+          .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
           .listRowBackground(Color.clear)
       }
 
       // MARK: - 重複ログ設定
       Section {
         duplicateRecordsCard
-          .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+          .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
           .listRowBackground(Color.clear)
       }
 
       // MARK: - iCloudストレージ設定
       Section {
         iCloudStorageCard
-          .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+          .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
           .listRowBackground(Color.clear)
       }
     }
     .listStyle(.insetGrouped)
     .scrollContentBackground(.hidden)
+    .background(Color(uiColor: .systemGroupedBackground))
+    .groupBoxStyle(SettingsCardGroupBoxStyle())
     .sheet(isPresented: $showingDevicePickerForRegistration) {
       HierarchicalDevicePickerView(allowedCategories: [.iphone, .ipad]) { name, _ in
         appSettings.registerDevice(name: name)
@@ -189,9 +191,9 @@ struct AdvancedSettingsView: View {
     GroupBox {
       HStack(spacing: 20) {
         Image(systemName: "chart.bar.fill")
-          .font(.system(size: 36))
+          .font(.system(size: 24))
           .foregroundStyle(.blue)
-          .frame(width: 60)
+          .frame(width: 36)
 
         VStack(alignment: .leading, spacing: 8) {
           Text(L10n.string("analysis_source", table: "Settings"))
@@ -218,9 +220,9 @@ struct AdvancedSettingsView: View {
     GroupBox {
       HStack(spacing: 20) {
         Image(systemName: "square.and.arrow.down.fill")
-          .font(.system(size: 36))
+          .font(.system(size: 24))
           .foregroundStyle(.green)
-          .frame(width: 60)
+          .frame(width: 36)
 
         VStack(alignment: .leading, spacing: 8) {
           Toggle(
@@ -243,9 +245,9 @@ struct AdvancedSettingsView: View {
     GroupBox {
       HStack(spacing: 20) {
         Image(systemName: "battery.100.bolt")
-          .font(.system(size: 36))
+          .font(.system(size: 24))
           .foregroundStyle(.green)
-          .frame(width: 60)
+          .frame(width: 36)
 
         VStack(alignment: .leading, spacing: 8) {
           Text("iPhone Air / MagSafeバッテリー判定")
@@ -273,9 +275,9 @@ struct AdvancedSettingsView: View {
       VStack(alignment: .leading, spacing: 12) {
         HStack(spacing: 20) {
           Image(systemName: "checkmark.shield.fill")
-            .font(.system(size: 36))
+            .font(.system(size: 24))
             .foregroundStyle(.orange)
-            .frame(width: 60)
+            .frame(width: 36)
 
           VStack(alignment: .leading, spacing: 8) {
             Toggle(
@@ -315,7 +317,7 @@ struct AdvancedSettingsView: View {
             }
             .pickerStyle(.menu)
           }
-          .padding(.leading, 80)
+          .padding(.leading, 56)
         }
       }
       .padding(.vertical, 8)
@@ -327,9 +329,9 @@ struct AdvancedSettingsView: View {
     GroupBox {
       HStack(spacing: 20) {
         Image(systemName: "doc.on.doc.fill")
-          .font(.system(size: 36))
+          .font(.system(size: 24))
           .foregroundStyle(.purple)
-          .frame(width: 60)
+          .frame(width: 36)
 
         VStack(alignment: .leading, spacing: 8) {
           Toggle(
@@ -352,9 +354,9 @@ struct AdvancedSettingsView: View {
     GroupBox {
       HStack(spacing: 20) {
         Image(systemName: "icloud.fill")
-          .font(.system(size: 36))
+          .font(.system(size: 24))
           .foregroundStyle(.cyan)
-          .frame(width: 60)
+          .frame(width: 36)
 
         VStack(alignment: .leading, spacing: 12) {
           Text(L10n.string("icloud_storage_threshold", table: "Settings"))

@@ -1,6 +1,38 @@
 {
   "sourceLanguage" : "ja",
   "strings" : {
+  "show_record_info": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "ログ詳細のiマークを表示"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Show Info Buttons"
+        }
+      }
+    }
+  },
+  "show_record_info_description": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "各項目の説明ボタンを表示します。"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Show explanation buttons beside log details."
+        }
+      }
+    }
+  },
     "about_app" : {
       "extractionState" : "stale",
       "localizations" : {

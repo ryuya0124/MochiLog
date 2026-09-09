@@ -1,7 +1,6 @@
 import SwiftUI
 
-/// チャート用のレンジ選択コントロール（レスポンシブ対応）
-/// 横幅に応じて segmented / menu スタイルを自動切り替え
+/// Shared controls with readable date boundaries and full-size touch targets.
 struct ChartRangeSelector: View {
   @Binding var selectedRange: RangePreset
   let canMoveNext: Bool
@@ -10,132 +9,39 @@ struct ChartRangeSelector: View {
   let startDay: Date
   let endDay: Date
 
-  @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-
-  /// 横幅の閾値（この値未満では menu スタイル）
-  private let menuStyleThreshold: CGFloat = 600
-
   var body: some View {
-    GeometryReader { geometry in
-      let useMenuStyle = geometry.size.width < menuStyleThreshold
-
-      if horizontalSizeClass == .compact {
-        // iPhone: 常に menu スタイル
-        compactLayout
-      } else if useMenuStyle {
-        // iPad 狭い幅: menu スタイル
-        regularMenuLayout
-      } else {
-        // iPad 広い幅: segmented スタイル
-        regularSegmentedLayout
-      }
-    }
-    .frame(height: 60)
-  }
-
-  // MARK: - iPhone用レイアウト
-  private var compactLayout: some View {
-    HStack(spacing: 8) {
-      VStack(alignment: .leading, spacing: 4) {
-        Text(L10n.string("chart_range", table: "Analytics"))
-          .font(.caption)
-          .foregroundStyle(.secondary)
-        HStack(spacing: 8) {
-          navigationButtons
-
-          Picker("", selection: $selectedRange) {
-            rangeOptions
+    VStack(alignment: .leading, spacing: 12) {
+      Text("\(startDay.formatted(date: .abbreviated, time: .omitted)) – \(endDay.formatted(date: .abbreviated, time: .omitted))")
+        .font(.caption)
+        .foregroundStyle(.secondary)
+        .fixedSize(horizontal: false, vertical: true)
+      HStack(spacing: 8) {
+        Picker(L10n.string("chart_range", table: "Analytics"), selection: $selectedRange) {
+          ForEach(RangePreset.manualCases) { preset in
+            Text(preset.localizedName).tag(preset)
           }
-          .pickerStyle(.menu)
-          .accessibilityLabel(Text(L10n.string("chart_range", table: "Analytics")))
-
-          yearLabel
         }
-      }
-      .frame(maxWidth: .infinity, alignment: .leading)
-    }
-  }
-
-  // MARK: - iPad menu スタイル
-  private var regularMenuLayout: some View {
-    HStack(spacing: 12) {
-      VStack(alignment: .leading, spacing: 6) {
-        Text(L10n.string("chart_range", table: "Analytics"))
-          .font(.caption)
-          .foregroundStyle(.secondary)
-        HStack(spacing: 12) {
-          navigationButtons
-
-          Picker("", selection: $selectedRange) {
-            rangeOptions
-          }
-          .pickerStyle(.menu)
-          .accessibilityLabel(Text(L10n.string("chart_range", table: "Analytics")))
+        .pickerStyle(.menu)
+        .accessibilityIdentifier("chart.range")
+        .frame(minHeight: 44)
+        Spacer(minLength: 0)
+        Button { shiftWindow(true) } label: {
+          Image(systemName: "chevron.left").frame(width: 44, height: 44)
         }
-      }
-    }
-  }
-
-  // MARK: - iPad segmented スタイル
-  private var regularSegmentedLayout: some View {
-    HStack(spacing: 12) {
-      VStack(alignment: .leading, spacing: 6) {
-        Text(L10n.string("chart_range", table: "Analytics"))
-          .font(.caption)
-          .foregroundStyle(.secondary)
-        HStack(spacing: 12) {
-          navigationButtons
-
-          Picker("", selection: $selectedRange) {
-            rangeOptions
-          }
-          .pickerStyle(.segmented)
-          .accessibilityLabel(Text(L10n.string("chart_range", table: "Analytics")))
+        .accessibilityLabel(L10n.string("back", table: "Common"))
+        .accessibilityIdentifier("chart.previous")
+        .disabled(!canMovePrevious)
+        Button { shiftWindow(false) } label: {
+          Image(systemName: "chevron.right").frame(width: 44, height: 44)
         }
+        .accessibilityLabel(L10n.string("next", table: "Common"))
+        .accessibilityIdentifier("chart.next")
+        .disabled(!canMoveNext)
       }
-    }
-  }
-
-  // MARK: - 共通コンポーネント
-  private var navigationButtons: some View {
-    Group {
-      Button {
-        shiftWindow(true)
-      } label: {
-        Image(systemName: "chevron.left")
-      }
-      .disabled(!canMovePrevious)
-
-      Button {
-        shiftWindow(false)
-      } label: {
-        Image(systemName: "chevron.right")
-      }
-      .disabled(!canMoveNext)
-    }
-  }
-
-  private var rangeOptions: some View {
-    ForEach(RangePreset.manualCases) { preset in
-      Text(preset.localizedName).tag(preset)
-    }
-  }
-
-  @ViewBuilder
-  private var yearLabel: some View {
-    // iPhone のみ年を表示
-    if horizontalSizeClass == .compact {
-      let startYear = Calendar.current.component(.year, from: startDay)
-      let endYear = Calendar.current.component(.year, from: endDay)
-      if startYear != endYear {
-        Text("\(String(startYear))年 ~ \(String(endYear))年")
-          .font(.caption)
-          .foregroundStyle(.secondary)
-      } else {
-        Text("\(String(endYear))年")
-          .font(.caption)
-          .foregroundStyle(.secondary)
-      }
+      .font(.subheadline.weight(.medium))
+      .buttonStyle(.borderless)
+      .padding(.horizontal, 8)
+      .background(Color(uiColor: .tertiarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16))
     }
   }
 }

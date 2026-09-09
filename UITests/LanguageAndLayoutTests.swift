@@ -18,6 +18,102 @@ final class LanguageAndLayoutTests: XCTestCase {
     app.terminate()
   }
 
+  func testRefreshedOverviewScreens() {
+    verifyOverview(size: "UICTContentSizeCategoryL")
+  }
+
+  func testRefreshedOverviewAtAccessibilitySize() {
+    verifyOverview(size: "UICTContentSizeCategoryAccessibilityXXXL")
+  }
+
+  func testRefreshedLandscapeOverview() {
+    XCUIDevice.shared.orientation = .landscapeLeft
+    verifyOverview(size: "UICTContentSizeCategoryL")
+  }
+
+  func testRecordInfoSettingPersists() {
+    app.launch()
+    func openSettings() {
+      let tab = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Settings")).firstMatch
+      XCTAssertTrue(tab.waitForExistence(timeout: 10))
+      tab.tap()
+    }
+    openSettings()
+    let toggle = app.switches["settings.recordInfo"].firstMatch
+    XCTAssertTrue(toggle.waitForExistence(timeout: 10))
+    let original = toggle.value as? String
+    toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.93, dy: 0.5)).tap()
+    let changed = toggle.value as? String
+    XCTAssertNotEqual(original, changed)
+    screenshot("Settings Info Toggle")
+    app.terminate()
+    app.launch()
+    openSettings()
+    XCTAssertTrue(toggle.waitForExistence(timeout: 10))
+    XCTAssertEqual(toggle.value as? String, changed)
+    toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.93, dy: 0.5)).tap()
+    XCTAssertEqual(toggle.value as? String, original)
+  }
+
+  func testStatisticsCards() {
+    app.launchArguments += ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryL"]
+    app.launch()
+    let tab = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Analytics")).firstMatch
+    XCTAssertTrue(tab.waitForExistence(timeout: 10))
+    tab.tap()
+    let statistics = app.otherElements["analytics.statistics"].firstMatch
+    for _ in 0..<6 {
+      if statistics.exists && statistics.isHittable { break }
+      app.swipeUp()
+    }
+    app.swipeUp()
+    XCTAssertTrue(app.staticTexts["Statistics"].firstMatch.exists)
+    screenshot("Device Statistics")
+  }
+
+  func testLanguageAtBottom() {
+    app.launch()
+    openLanguage()
+    XCTAssertTrue(app.buttons["language.en"].exists)
+    screenshot("Language Settings at Bottom")
+  }
+
+  func testSettingsSidebarRemainsVisible() {
+    app.launchArguments += ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryL"]
+    app.launch()
+    openLanguage()
+    let watch = app.buttons["settings.category.appleWatch"]
+    screenshot("Language Sidebar")
+    XCTAssertTrue(watch.exists, app.debugDescription)
+    let sidebar = app.scrollViews.containing(.button, identifier: "settings.language").firstMatch
+    if !watch.isHittable { sidebar.swipeDown() }
+    watch.tap()
+    screenshot("Watch Settings Sidebar")
+    XCTAssertTrue(app.buttons["settings.language"].exists)
+    app.buttons["settings.category.advanced"].tap()
+    screenshot("Advanced Light Settings")
+  }
+
+  private func verifyOverview(size: String) {
+    app.launchArguments += ["-UIPreferredContentSizeCategoryName", size]
+    app.launch()
+    if app.buttons["View Sample Data"].exists { app.buttons["View Sample Data"].tap() }
+    XCTAssertTrue(app.staticTexts["iPhone 15 Pro"].firstMatch.waitForExistence(timeout: 15))
+    screenshot("Refreshed Home")
+    for title in ["Analytics", "Settings"] {
+      let tab = app.descendants(matching: .any).matching(
+        NSPredicate(format: "label == %@", title)).firstMatch
+      XCTAssertTrue(tab.waitForExistence(timeout: 5), app.debugDescription)
+      tab.tap()
+      if title == "Analytics" {
+        XCTAssertTrue(app.buttons["chart.range"].firstMatch.waitForExistence(timeout: 10), app.debugDescription)
+      } else {
+        XCTAssertTrue(app.switches["settings.recordInfo"].firstMatch.waitForExistence(timeout: 10), app.debugDescription)
+      }
+      screenshot("Refreshed " + title)
+    }
+  }
+
   private func openLanguage() {
     if app.buttons["language.en"].exists { return }
     if app.tabBars.buttons.count >= 3 {
@@ -33,7 +129,8 @@ final class LanguageAndLayoutTests: XCTestCase {
     let link = app.buttons["settings.language"]
     for _ in 0..<8 {
       if link.exists && link.isHittable { break }
-      app.swipeUp()
+      let sidebar = app.scrollViews.containing(.button, identifier: "settings.language").firstMatch
+      if sidebar.exists { sidebar.swipeUp() } else { app.swipeUp() }
     }
     XCTAssertTrue(link.waitForExistence(timeout: 5))
     link.tap()

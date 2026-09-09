@@ -54,14 +54,14 @@ struct AnalyticsContentView: View {
   }
 
   private var canMoveNext: Bool {
-    ChartWindowNavigator.canMoveNext(
+    selectedRange != .auto && ChartWindowNavigator.canMoveNext(
       currentEnd: effectiveWindowEndForNavigation,
       range: effectiveRangeForNavigation,
       records: filteredRecords)
   }
 
   private var canMovePrevious: Bool {
-    ChartWindowNavigator.canMovePrevious(
+    selectedRange != .auto && ChartWindowNavigator.canMovePrevious(
       currentEnd: effectiveWindowEndForNavigation,
       range: effectiveRangeForNavigation,
       records: filteredRecords)
@@ -123,7 +123,13 @@ struct AnalyticsContentView: View {
                     allRecords: cachedFilteredRecords,
                     unit: cachedUnit,
                     initialRange: selectedRange,
-                    allDeviceNames: cachedAllDeviceNames
+                    allDeviceNames: cachedAllDeviceNames,
+                    sharedSelectedRange: $selectedRange,
+                    sharedWindowEnd: $windowEnd,
+                    sharedCanMoveNext: canMoveNext,
+                    sharedCanMovePrevious: canMovePrevious,
+                    sharedShiftWindow: shiftWindow,
+                    sharedWindowEndValue: windowEnd
                   )
                 }
 
@@ -167,7 +173,9 @@ struct AnalyticsContentView: View {
               }
             }
           }
-          .padding()
+          .frame(maxWidth: 1200)
+          .padding(horizontalSizeClass == .regular ? 24 : 16)
+          .frame(maxWidth: .infinity)
         }
       }
 
@@ -200,7 +208,7 @@ struct AnalyticsContentView: View {
       let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
       print("[Performance] AnalyticsContentView.onAppear完了: \(String(format: "%.2f", elapsed))ms")
     }
-    .onChange(of: records) { _ in
+    .onChange(of: Self.quickSignature(records: records, selectedDevice: selectedDevice)) { _ in
       prepareFilteredRecordsIfNeeded()
     }
     .onChange(of: selectedDevice) { _ in
@@ -277,7 +285,6 @@ struct AnalyticsContentView: View {
     let recordDates = filteredSnapshot.map { $0.logDate }
     let currentWindowEnd = windowEnd
     let currentRange = selectedRange
-    let capturedSelectedDevice = selectedDevice
 
     // 全デバイス名を全レコードから計算（色を固定するため、フィルタ前のデータを使用）
     let allDeviceNamesSnapshot = Array(Set(records.map { $0.deviceName })).sorted()
@@ -314,6 +321,14 @@ struct AnalyticsContentView: View {
 
       // MainActor に戻って UI 更新
       await MainActor.run {
+        let latestHash = Self.makeParametersHash(records: cachedFilteredRecords,
+          windowEnd: windowEnd, selectedRange: selectedRange, selectedDevice: selectedDevice)
+        guard latestHash == parametersHash else {
+          isPreparingChartData = false
+          pendingParametersHash = nil
+          prepareChartDataIfNeeded()
+          return
+        }
         let uiUpdateStartTime = CFAbsoluteTimeGetCurrent()
 
         let visibleStart = result.startDay
@@ -353,7 +368,7 @@ struct AnalyticsContentView: View {
           records: cachedFilteredRecords,
           windowEnd: windowEnd,
           selectedRange: selectedRange,
-          selectedDevice: capturedSelectedDevice
+          selectedDevice: selectedDevice
         )
 
         if parametersHash != currentHash || pendingParametersHash != nil {
@@ -373,9 +388,7 @@ struct AnalyticsContentView: View {
     selectedDevice: String?
   ) -> Int {
     var hasher = Hasher()
-    hasher.combine(records.count)
-    hasher.combine(records.first?.logDate)
-    hasher.combine(records.last?.logDate)
+    hasher.combine(quickSignature(records: records, selectedDevice: selectedDevice))
     hasher.combine(windowEnd)
     hasher.combine(selectedRange)
     hasher.combine(selectedDevice)
@@ -388,137 +401,14 @@ struct AnalyticsContentView: View {
     windowEnd: Date,
     range: RangePreset
   ) -> (startDay: Date, endDay: Date, unit: AppSettings.ChartUnit) {
-    let calendar = Calendar.current
-    let effectiveRange = computeEffectiveRange(for: recordDates, range: range)
-    let effectiveEnd = computeEffectiveEnd(
-      for: recordDates,
-      windowEnd: windowEnd,
-      range: range
-    )
-
-    let startDate = computeWindowStart(for: effectiveEnd, range: effectiveRange)
-    let startDay = calendar.startOfDay(for: startDate)
-    let endDay = calendar.startOfDay(for: effectiveEnd)
-
-    let visibleDates = recordDates.filter {
-      let d = calendar.startOfDay(for: $0)
-      return d >= startDay && d <= endDay
-    }
-
-    let unit = computeAutoUnit(for: visibleDates, startDay: startDay, endDay: endDay)
-
-    return (startDay, endDay, unit)
-  }
-
-  private func computeEffectiveRange(for recordDates: [Date], range: RangePreset) -> RangePreset {
-    guard range == .auto else { return range }
-    let now = Date()
-    let pastDates = recordDates.filter { $0 <= now }
-    let sourceDates = pastDates.isEmpty ? recordDates : pastDates
-    guard let first = sourceDates.min(), let last = sourceDates.max() else { return .oneMonth }
-    let days = Calendar.current.dateComponents([.day], from: first, to: last).day ?? 0
-
-    if days <= 7 { return .oneWeek }
-    if days <= 14 { return .twoWeeks }
-    if days <= 30 { return .oneMonth }
-    if days <= 90 { return .threeMonths }
-    if days <= 180 { return .sixMonths }
-    if days <= 365 { return .oneYear }
-    if days <= 730 { return .twoYears }
-    return .threeYears
-  }
-
-  private func computeEffectiveEnd(
-    for recordDates: [Date],
-    windowEnd: Date,
-    range: RangePreset
-  ) -> Date {
-    guard range == .auto else { return windowEnd }
-    let now = Date()
-    if windowEnd <= now { return windowEnd }
-    let pastDates = recordDates.filter { $0 <= now }
-    if let latestPast = pastDates.max() { return latestPast }
-    return min(windowEnd, now)
-  }
-
-  private func computeWindowStart(for endDate: Date, range: RangePreset) -> Date {
-    let calendar = Calendar.current
-    switch range {
-    case .auto:
-      return endDate
-    case .oneWeek:
-      return calendar.date(byAdding: .day, value: -7, to: endDate) ?? endDate
-    case .twoWeeks:
-      return calendar.date(byAdding: .day, value: -14, to: endDate) ?? endDate
-    case .oneMonth:
-      let components = calendar.dateComponents([.year, .month], from: endDate)
-      return calendar.date(from: components) ?? endDate
-    case .threeMonths:
-      let month = calendar.component(.month, from: endDate)
-      let year = calendar.component(.year, from: endDate)
-      let quarterStartMonth = ((month - 1) / 3) * 3 + 1
-      var components = DateComponents()
-      components.year = year
-      components.month = quarterStartMonth
-      components.day = 1
-      return calendar.date(from: components) ?? endDate
-    case .sixMonths:
-      let month = calendar.component(.month, from: endDate)
-      let year = calendar.component(.year, from: endDate)
-      var components = DateComponents()
-      components.year = year
-      components.month = month <= 6 ? 1 : 7
-      components.day = 1
-      return calendar.date(from: components) ?? endDate
-    case .oneYear:
-      let components = calendar.dateComponents([.year], from: endDate)
-      return calendar.date(from: components) ?? endDate
-    case .twoYears:
-      let year = calendar.component(.year, from: endDate)
-      var components = DateComponents()
-      components.year = year - 1
-      components.month = 1
-      components.day = 1
-      return calendar.date(from: components) ?? endDate
-    case .threeYears:
-      let year = calendar.component(.year, from: endDate)
-      var components = DateComponents()
-      components.year = year - 2
-      components.month = 1
-      components.day = 1
-      return calendar.date(from: components) ?? endDate
-    }
-  }
-
-  private func computeAutoUnit(
-    for dates: [Date],
-    startDay: Date,
-    endDay: Date
-  ) -> AppSettings.ChartUnit {
-    let calendar = Calendar.current
-    let days = calendar.dateComponents([.day], from: startDay, to: endDay).day ?? 0
-    let count = dates.count
-
-    if days <= 2 && count > 24 { return .hour }
-    if days <= 14 { return .day }
-    if days <= 120 { return .day }
-    if days <= 730 { return .week }
-    return .month
+    ChartWindowNavigator.computeChartWindow(
+      recordDates: recordDates, windowEnd: windowEnd, range: range)
   }
 
   private static func quickSignature(
     records: [BatteryRecord],
     selectedDevice: String?
   ) -> Int {
-    var hasher = Hasher()
-    hasher.combine(records.count)
-    hasher.combine(records.first?.logDate)
-    hasher.combine(records.last?.logDate)
-    if records.count > 2 {
-      hasher.combine(records[records.count / 2].logDate)
-    }
-    hasher.combine(selectedDevice)
-    return hasher.finalize()
+    ChartWindowNavigator.recordSignature(records, selectedDevice: selectedDevice)
   }
-
 }

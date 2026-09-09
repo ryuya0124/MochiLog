@@ -22,3 +22,9 @@ Keep `MochiLog Main Scene` and its UIKit delegate declared in `Info.plist`, with
 To check this migration, launch a version using the former SwiftUI `App` lifecycle, then install the current app over it without uninstalling or clearing its data. Verify the home screen and existing records load, then terminate and relaunch. Also background and foreground the app and check that URL imports still reach the queue. A clean install alone does not exercise the saved-session migration.
 
 Verified on a connected iPhone 17: the failing session archive referenced `SwiftUI.AppSceneDelegate`; after installing the named UIKit configuration, the same session referenced `MochiLog Main Scene`. Launching through Xcode reached `HomeView.onAppear` and loaded 158 existing records without the AppGraph failure.
+
+## Chart and overview regression checks
+
+Run `bash scripts/test-charts.sh` for the production date/window and downsampling helpers. The fixtures cover inclusive 7/14-day windows, leap years and DST, old-only datasets, unordered context neighbors, sparse previous/next navigation, 2-year navigation round trips, automatic windows across month boundaries, preserving extrema/latest points, and edits that keep the same record ID and date. The script runs in Asia/Tokyo and America/Los_Angeles.
+
+`LanguageAndLayoutTests.testRefreshedOverviewScreens` and `testRefreshedOverviewAtAccessibilitySize` capture Home, Analytics and Settings at normal and largest accessibility text sizes. Use the import-fixture simulators described above; on an empty installation the test opens sample data. iCloud is disabled by launch arguments for these UI checks.

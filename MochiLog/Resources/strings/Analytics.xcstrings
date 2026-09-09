@@ -1,6 +1,38 @@
 {
   "sourceLanguage" : "ja",
   "strings" : {
+  "statistics_scope": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "表示期間内の記録を端末ごとに集計。最新値は各端末の最終記録、平均は期間内の全記録から算出します。"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Grouped by device for the displayed period. Latest values use each device’s last record; averages include all its records in the period."
+        }
+      }
+    }
+  },
+  "statistics_empty": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "この期間には記録がありません。"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "No records in this period."
+        }
+      }
+    }
+  },
     "analytics" : {
       "extractionState" : "stale",
       "localizations" : {

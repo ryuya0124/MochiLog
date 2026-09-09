@@ -4,13 +4,17 @@ struct DevicePickerView: View {
   let deviceNames: [String]
   @Binding var selectedDevice: String?
 
+  @Environment(\.dynamicTypeSize) private var dynamicTypeSize
   @State private var isShowingDevicePicker: Bool = false
   @State private var deviceSearchQuery: String = ""
   @StateObject private var appSettings = AppSettings.shared
 
   var body: some View {
     VStack(alignment: .leading, spacing: 8) {
-      HStack(alignment: .center) {
+      let layout = dynamicTypeSize.isAccessibilitySize
+        ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
+        : AnyLayout(HStackLayout(alignment: .center, spacing: 12))
+      layout {
         VStack(alignment: .leading, spacing: 4) {
           Text(L10n.string("select_a_device", table: "Analytics"))
             .font(.headline)
@@ -19,7 +23,7 @@ struct DevicePickerView: View {
           Text(L10n.string("select_a_device_description", table: "Analytics"))
             .font(.caption)
             .foregroundStyle(.secondary)
-            .lineLimit(2)
+            .fixedSize(horizontal: false, vertical: true)
         }
 
         Spacer()
@@ -36,7 +40,7 @@ struct DevicePickerView: View {
           }
           .padding(.vertical, 8)
           .padding(.horizontal, 12)
-          .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+          .background(appSettings.accentColor.color.opacity(0.08), in: Capsule())
         }
         .accessibilityLabel(Text(L10n.string("select_a_device", table: "Analytics")))
         .frame(minWidth: 140)
@@ -94,6 +98,8 @@ struct DevicePickerView: View {
         }
       }
     }
+    .padding(20)
+    .mochiCard()
   }
 }
 

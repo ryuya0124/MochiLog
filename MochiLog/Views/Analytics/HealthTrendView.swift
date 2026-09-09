@@ -32,27 +32,7 @@ struct HealthTrendView: View {
         )
         .font(.headline)
 
-        if horizontalSizeClass == .regular {
-          Spacer()
-          // 年・期間を表示（右寄せ）
-          HStack(spacing: 12) {
-            // 年
-            let startYear = Calendar.current.component(.year, from: startDay)
-            let endYear = Calendar.current.component(.year, from: endDay)
-            if startYear != endYear {
-              Text("\(String(startYear))年 ~ \(String(endYear))年")
-            } else {
-              Text("\(String(endYear))年")
-            }
 
-            // 日付
-            Text(
-              "\(startDay.formatted(.dateTime.month().day())) – \(endDay.formatted(.dateTime.month().day()))"
-            )
-          }
-          .font(.headline)
-          .foregroundStyle(.secondary)
-        }
       }
 
       if visibleRecords.isEmpty {
@@ -92,7 +72,7 @@ struct HealthTrendView: View {
             // フォールバック: allDeviceNamesにない場合はデバイス名のハッシュから色を選択
             print(
               "[Warning] Device '\(deviceName)' not found in allDeviceNames, using fallback color")
-            let fallbackIndex = abs(deviceName.hashValue) % ChartAxisHelper.deviceColorPalette.count
+            let fallbackIndex = Int(UInt(bitPattern: deviceName.hashValue) % UInt(ChartAxisHelper.deviceColorPalette.count))
             return ChartAxisHelper.deviceColorPalette[fallbackIndex]
           }
 
@@ -108,9 +88,9 @@ struct HealthTrendView: View {
 
       }
     }
-    .frame(minHeight: horizontalSizeClass == .regular ? 480 : nil, alignment: .top)
+    .frame(maxWidth: .infinity, alignment: .topLeading)
     .padding()
-    .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16))
+    .mochiCard()
     .onAppear {
       // 次のランループでChart描画を開始（タブ切り替えアニメーションをブロックしない）
       if !isChartReady {
@@ -130,6 +110,13 @@ struct HealthTrendView: View {
     }
   }
 
+  private var healthDomain: ClosedRange<Double> {
+    let values = visibleRecords.map {
+      analysisDataSource == .nominal ? $0.nominalHealthPercent : $0.healthPercent
+    }.filter { $0.isFinite }
+    return min(68, (values.min() ?? 68) - 3)...max(107, (values.max() ?? 107) + 3)
+  }
+
   // MARK: - チャートビュー（bodyから分離してコンパイラの型チェック負荷を軽減）
   @ViewBuilder
   private func healthChartView(
@@ -140,8 +127,7 @@ struct HealthTrendView: View {
         LineMark(
           x: .value(
             L10n.string("date", table: "Common"),
-            Calendar.current.startOfDay(for: record.logDate),
-            unit: unit.calendarComponent),
+            record.logDate),
           y: .value(
             L10n.string("real_capacity", table: "Analytics"),
             analysisDataSource == .nominal
@@ -150,7 +136,7 @@ struct HealthTrendView: View {
         .foregroundStyle(
           by: .value(L10n.string("device_name", table: "Common"), record.deviceName)
         )
-        .interpolationMethod(.catmullRom)
+        .interpolationMethod(.linear)
       }
 
       if !chartRecords.isEmpty {
@@ -167,8 +153,7 @@ struct HealthTrendView: View {
             PointMark(
               x: .value(
                 L10n.string("date", table: "Common"),
-                Calendar.current.startOfDay(for: pointRecord.logDate),
-                unit: unit.calendarComponent),
+                pointRecord.logDate),
               y: .value(
                 L10n.string("real_capacity", table: "Analytics"),
                 analysisDataSource == .nominal
@@ -187,7 +172,7 @@ struct HealthTrendView: View {
       domain: visibleDeviceNames,
       range: visibleDeviceColors
     )
-    .chartYScale(domain: 68...107)
+    .chartYScale(domain: healthDomain)
     .chartXAxis {
       let (strideComponent, strideCount, labelFormat) =
         ChartAxisHelper.calculateXAxisStride(
@@ -195,7 +180,7 @@ struct HealthTrendView: View {
 
       AxisMarks(values: .stride(by: strideComponent, count: strideCount)) { value in
         AxisGridLine()
-          .foregroundStyle(.white.opacity(0.95))
+          .foregroundStyle(Color.primary.opacity(0.06))
 
         AxisValueLabel {
           if let date = value.as(Date.self) {
@@ -211,22 +196,13 @@ struct HealthTrendView: View {
         }
       }
     }
-    .chartXScale(
-      domain: {
-        let cal = Calendar.current
-        let days = cal.dateComponents([.day], from: startDay, to: endDay).day ?? 0
-        if days < 7 {
-          return startDay...(cal.date(byAdding: .day, value: 7, to: startDay) ?? endDay)
-        }
-        return startDay...endDay
-      }()
-    )
+    .chartXScale(domain: startDay...(Calendar.current.date(byAdding: .day, value: 1, to: endDay) ?? endDay))
     .chartYAxis {
-      AxisMarks(values: [70, 80, 90, 100]) { value in
+      AxisMarks(values: .automatic(desiredCount: 5)) { value in
         AxisGridLine()
         AxisValueLabel {
-          if let intValue = value.as(Int.self) {
-            Text("\(intValue)%")
+          if let intValue = value.as(Double.self) {
+            Text(intValue / 100, format: .percent.precision(.fractionLength(0)))
           }
         }
       }

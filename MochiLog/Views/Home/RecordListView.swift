@@ -114,12 +114,19 @@ struct RecordListView<Header: View>: View {
   private var iPadGridLayout: some View {
     GeometryReader { geometry in
       ScrollView {
-        header
-          .padding(.horizontal, 20)
+        VStack(spacing: 16) {
+          header
+          if UIDevice.current.userInterfaceIdiom == .pad {
+            LibrarySummaryView(records: records)
+          }
+        }
+        .frame(maxWidth: 1200)
+        .padding(.horizontal, 24)
+        .padding(.top, 12)
 
-        let availableWidth = geometry.size.width
+        let availableWidth = min(geometry.size.width, 1248) - 48
         let minSectionWidth: CGFloat = 340
-        let maxColumns = max(1, Int(availableWidth / minSectionWidth))
+        let maxColumns = max(1, Int((availableWidth + 24) / (minSectionWidth + 24)))
         let columnsCount = min(cachedSections.count, maxColumns)
 
         // LazyVGridは「行内の最大高さに全セルを揃える」ため、
@@ -200,11 +207,7 @@ struct RecordListView<Header: View>: View {
                 }
                 .animation(.spring(response: 0.4, dampingFraction: 0.8), value: collapsedSections)
                 .padding(20)
-                .background(
-                  Color(uiColor: .secondarySystemGroupedBackground)
-                    .shadow(color: Color.black.opacity(0.04), radius: 12, x: 0, y: 6)
-                )
-                .clipShape(RoundedRectangle(cornerRadius: 24))
+                .mochiCard()
                 .transition(
                   .asymmetric(
                     insertion: .move(edge: .top).combined(with: .opacity),
@@ -215,7 +218,9 @@ struct RecordListView<Header: View>: View {
             .frame(maxWidth: .infinity)
           }
         }
-        .padding(20)
+        .frame(maxWidth: 1200)
+        .padding(24)
+        .frame(maxWidth: .infinity)
       }
     }
     .background(Color(uiColor: .systemGroupedBackground))
@@ -224,6 +229,13 @@ struct RecordListView<Header: View>: View {
   // MARK: - iPhone レイアウト
   private var iPhoneLayout: some View {
     List {
+      if UIDevice.current.userInterfaceIdiom == .pad {
+        LibrarySummaryView(records: records)
+          .listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
+          .listRowSeparator(.hidden)
+          .listRowBackground(Color.clear)
+      }
+
       header
         .listRowInsets(EdgeInsets())
         .listRowSeparator(.hidden)
@@ -290,9 +302,15 @@ struct RecordListView<Header: View>: View {
               .buttonStyle(.borderless)
             }
           } label: {
-            Text(section.displayName)
-              .font(.headline)
-              .foregroundColor(.primary)
+            Label {
+              Text(section.displayName).font(.headline)
+            } icon: {
+              Image(systemName: section.displayName.contains("Watch") ? "applewatch"
+                : section.displayName.contains("iPad") ? "ipad" : "iphone")
+                .foregroundStyle(appSettings.accentColor.color)
+            }
+            .padding(.vertical, 6)
+            .foregroundColor(.primary)
           }
           .animation(.snappy, value: collapsedSections)
         }
@@ -434,17 +452,17 @@ private struct ModerniPadRecordCard: View {
             .foregroundColor(.primary)
         }
 
-        HStack(spacing: 12) {
+        VStack(alignment: .leading, spacing: 5) {
           Label(
             String(format: L10n.string("cycle_count_format", table: "Analytics"), record.cycleCount),
             systemImage: "arrow.triangle.2.circlepath"
           )
           .font(.caption)
-          .foregroundStyle(.secondary)
+          .foregroundStyle(Color.secondary)
 
           Label("\(record.nominalCapacity) mAh", systemImage: "battery.100")
             .font(.caption)
-            .foregroundStyle(.secondary)
+            .foregroundStyle(Color.secondary)
         }
 
         Text(record.cachedDiagnostic)

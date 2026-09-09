@@ -48,40 +48,30 @@ struct ChartAxisHelper {
     startDay: Date,
     endDay: Date
   ) -> [BatteryRecord] {
+    let sorted = records.sorted { $0.logDate < $1.logDate }
     let intervalDays = pointIntervalDays(startDay: startDay, endDay: endDay)
-    guard intervalDays > 1 else { return records }
-
+    guard intervalDays > 1 else { return sorted }
     let calendar = Calendar.current
-    var buckets: [String: [Int: BatteryRecord]] = [:]
-    var contextRecords: [BatteryRecord] = []  // ウィンドウ外のコンテキストレコード
-
-    for record in records {
-      let day = calendar.startOfDay(for: record.logDate)
-
-      // ウィンドウ外のレコードはコンテキストとして保持（補間線描画用）
-      if day < startDay || day > endDay {
-        contextRecords.append(record)
-        continue
+    var result: [BatteryRecord] = []
+    for deviceRecords in Dictionary(grouping: sorted, by: \.deviceName).values {
+      let buckets = Dictionary(grouping: deviceRecords) { record in
+        (calendar.dateComponents([.day], from: startDay,
+          to: calendar.startOfDay(for: record.logDate)).day ?? 0) / intervalDays
       }
-
-      let diff = calendar.dateComponents([.day], from: startDay, to: day).day ?? 0
-      let bucket = diff / intervalDays
-      var deviceBuckets = buckets[record.deviceName] ?? [:]
-      if deviceBuckets[bucket] == nil {
-        deviceBuckets[bucket] = record
+      for bucket in buckets.values {
+        // Keep endpoints and extrema: choosing only the first record hid drops and recoveries.
+        var selected = [bucket.first!, bucket.last!]
+        for key in [\BatteryRecord.healthPercent, \BatteryRecord.nominalHealthPercent] {
+          selected.append(bucket.min { $0[keyPath: key] < $1[keyPath: key] }!)
+          selected.append(bucket.max { $0[keyPath: key] < $1[keyPath: key] }!)
+        }
+        selected.append(bucket.min { $0.cycleCount < $1.cycleCount }!)
+        selected.append(bucket.max { $0.cycleCount < $1.cycleCount }!)
+        result.append(contentsOf: selected)
       }
-      buckets[record.deviceName] = deviceBuckets
     }
-
-    let downsampledRecords = buckets
-      .values
-      .flatMap { deviceBuckets in
-        deviceBuckets.keys.sorted().compactMap { deviceBuckets[$0] }
-      }
-      .sorted { $0.logDate < $1.logDate }
-
-    // コンテキストレコードとダウンサンプリング済みレコードを結合
-    return (contextRecords + downsampledRecords).sorted { $0.logDate < $1.logDate }
+    var seen = Set<UUID>()
+    return result.filter { seen.insert($0.id).inserted }.sorted { $0.logDate < $1.logDate }
   }
 
   /// 期間に応じてデータポイントのインデックスを間引く

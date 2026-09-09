@@ -31,19 +31,7 @@ struct AnalyticsView: View {
 
   /// データの分布に基づいて初期レンジを決定する（短い期間しかなければ小さいレンジを選ぶ）
   private func autoRange(for records: [BatteryRecord]) -> RangePreset {
-    guard let first = records.min(by: { $0.logDate < $1.logDate })?.logDate,
-      let last = records.max(by: { $0.logDate < $1.logDate })?.logDate
-    else { return .oneMonth }
-
-    let days = Calendar.current.dateComponents([.day], from: first, to: last).day ?? 0
-
-    if days <= 7 { return .oneWeek }
-    if days <= 30 { return .oneMonth }
-    if days <= 90 { return .threeMonths }
-    if days <= 180 { return .sixMonths }
-    if days <= 365 { return .oneYear }
-    if days <= 730 { return .twoYears }
-    return .threeYears
+    ChartWindowNavigator.autoRange(for: records)
   }
 
   /// レコードに応じて表示単位（Hour/Day/Week/Month）を自動決定する
@@ -100,12 +88,6 @@ struct AnalyticsView: View {
             print("[Performance] selectedRange onChange スキップ（サンプルモード中）")
             return
           }
-          // ガード: 既に同じ値なら何もしない
-          guard appSettings.selectedChartRange != newValue.rawValue else {
-            print("[Performance] selectedRange onChange スキップ（既に同じ値）")
-            return
-          }
-
           // レンジ変更時にAppSettingsに保存（再起動後も保持）
           appSettings.selectedChartRange = newValue.rawValue
 
@@ -254,24 +236,7 @@ struct AnalyticsView: View {
   /// バックグラウンドスレッドで安全に呼べるautoRange計算
   /// 未来のデータは無視して現在日時以前のデータのみを考慮
   private func calculateAutoRange(for records: [BatteryRecord]) -> RangePreset {
-    let now = Date()
-    // 未来のデータを除外
-    let pastRecords = records.filter { $0.logDate <= now }
-
-    guard let first = pastRecords.min(by: { $0.logDate < $1.logDate })?.logDate,
-      let last = pastRecords.max(by: { $0.logDate < $1.logDate })?.logDate
-    else { return .oneMonth }
-
-    let days = Calendar.current.dateComponents([.day], from: first, to: last).day ?? 0
-
-    if days <= 7 { return .oneWeek }
-    if days <= 14 { return .twoWeeks }
-    if days <= 30 { return .oneMonth }
-    if days <= 90 { return .threeMonths }
-    if days <= 180 { return .sixMonths }
-    if days <= 365 { return .oneYear }
-    if days <= 730 { return .twoYears }
-    return .threeYears
+    ChartWindowNavigator.effectiveRange(for: records.map(\.logDate), range: .auto)
   }
 
   // MARK: - records変更時の処理（キャッシュから取得するため不要）

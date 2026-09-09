@@ -189,6 +189,8 @@ struct AdvancedSettingsDetailView: View {
         Text(L10n.string("icloud_storage_description", table: "Settings"))
       }
     }
+    .scrollContentBackground(.hidden)
+    .background(Color(uiColor: .systemGroupedBackground).ignoresSafeArea())
     .navigationTitle(L10n.string("advanced_settings", table: "Settings"))
     .navigationBarTitleDisplayMode(.inline)
     .sheet(isPresented: $showingDevicePickerForRegistration) {

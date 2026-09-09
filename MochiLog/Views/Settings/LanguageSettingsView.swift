@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct LanguageSettingsView: View {
+  var isEmbedded = false
   @ObservedObject private var languageSettings = LanguageSettings.shared
 
   var body: some View {
@@ -28,6 +29,17 @@ struct LanguageSettingsView: View {
         Text(L10n.string("language_description", table: "Language"))
       }
     }
-    .navigationTitle(L10n.string("language_title", table: "Language"))
+    .modifier(LanguageNavigationTitle(isEmbedded: isEmbedded))
+  }
+}
+
+private struct LanguageNavigationTitle: ViewModifier {
+  let isEmbedded: Bool
+  @ViewBuilder func body(content: Content) -> some View {
+    if isEmbedded {
+      content
+    } else {
+      content.navigationTitle(L10n.string("language_title", table: "Language"))
+    }
   }
 }
