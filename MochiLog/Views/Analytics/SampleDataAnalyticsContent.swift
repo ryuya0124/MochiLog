@@ -7,6 +7,9 @@ import SwiftUI
 struct SampleDataAnalyticsContent: View {
   @Binding var showingSampleData: Bool
   @Binding var selectedRange: RangePreset
+  @State private var cycleRange: RangePreset = .auto
+  @State private var cycleWindowEnd = Date()
+  private var independentCharts: Bool { UIDevice.current.userInterfaceIdiom == .pad }
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
   @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -50,6 +53,23 @@ struct SampleDataAnalyticsContent: View {
       range: selectedRange,
       records: filteredRecords
     )
+  }
+
+  private var cycleShiftWindow: ((Bool) -> Void)? {
+    if independentCharts { return nil }
+    return { shiftWindow(backward: $0) }
+  }
+
+  private func cycleTrend(unit: AppSettings.ChartUnit) -> some View {
+    CycleTrendView(
+      allRecords: filteredRecords, unit: unit,
+      initialRange: selectedRange, allDeviceNames: sortedAllDeviceNames,
+      sharedSelectedRange: independentCharts ? $cycleRange : $selectedRange,
+      sharedWindowEnd: independentCharts ? $cycleWindowEnd : $windowEnd,
+      sharedCanMoveNext: independentCharts ? nil : canMoveNext,
+      sharedCanMovePrevious: independentCharts ? nil : canMovePrevious,
+      sharedShiftWindow: cycleShiftWindow,
+      sharedWindowEndValue: independentCharts ? cycleWindowEnd : windowEnd)
   }
 
   var body: some View {
@@ -117,18 +137,7 @@ struct SampleDataAnalyticsContent: View {
             )
 
             // サイクル推移グラフ（iPadは独立動作、initialRangeで初期化）
-            CycleTrendView(
-              allRecords: filteredRecords,
-              unit: unit,
-              initialRange: selectedRange,
-              allDeviceNames: sortedAllDeviceNames,
-              sharedSelectedRange: $selectedRange,
-              sharedWindowEnd: $windowEnd,
-              sharedCanMoveNext: canMoveNext,
-              sharedCanMovePrevious: canMovePrevious,
-              sharedShiftWindow: shiftWindow,
-              sharedWindowEndValue: windowEnd
-            )
+            cycleTrend(unit: unit)
           }
 
           // 統計情報（iPad）
@@ -151,18 +160,7 @@ struct SampleDataAnalyticsContent: View {
         )
 
         // サイクル推移グラフ（iPhoneでは親と期間を共有）
-        CycleTrendView(
-          allRecords: filteredRecords,
-          unit: unit,
-          initialRange: selectedRange,
-          allDeviceNames: sortedAllDeviceNames,
-          sharedSelectedRange: $selectedRange,
-          sharedWindowEnd: $windowEnd,
-          sharedCanMoveNext: canMoveNext,
-          sharedCanMovePrevious: canMovePrevious,
-          sharedShiftWindow: shiftWindow,
-          sharedWindowEndValue: windowEnd
-        )
+        cycleTrend(unit: unit)
 
         // 統計情報（iPhone）
         StatisticsView(filteredRecords: visibleRecords)
@@ -185,7 +183,7 @@ struct SampleDataAnalyticsContent: View {
       windowEnd = ChartWindowNavigator.initializeWindowEnd(
         for: filteredRecords, range: selectedRange)
       // 自動でレンジを設定
-      let autoRange = ChartWindowNavigator.autoRange(for: filteredRecords)
+      let autoRange: RangePreset = .auto
       if selectedRange != autoRange {
         selectedRange = autoRange
       }

@@ -12,7 +12,7 @@ struct InfoLabeledContent<V: View>: View {
   let hint: String
   let valueContent: V
 
-  @AppStorage("showRecordInfoButtons") private var showInfoButtons = true
+  @AppStorage("showRecordInfoButtons") private var showInfoButtons = false
   @State private var isShowingInfo = false
 
   init(_ label: String, hint: String, @ViewBuilder value: () -> V) {
@@ -199,6 +199,55 @@ struct RecordRowView: View {
   @StateObject private var appSettings = AppSettings.shared
 
   var body: some View {
+    if UIDevice.current.userInterfaceIdiom == .phone {
+      phoneRow
+    } else {
+      existingRow
+    }
+  }
+
+  private var phoneRow: some View {
+    ViewThatFits(in: .horizontal) {
+      HStack(alignment: .center, spacing: 20) {
+        phoneRecordLabel
+        Spacer(minLength: 12)
+        phoneHealthLabel
+      }
+      VStack(alignment: .leading, spacing: 10) {
+        phoneRecordLabel
+        phoneHealthLabel
+      }
+    }
+    .padding(.vertical, 12)
+    .accessibilityElement(children: .combine)
+  }
+
+  private var phoneRecordLabel: some View {
+    VStack(alignment: .leading, spacing: 6) {
+      Text(record.logDate, style: .date)
+        .font(.subheadline.weight(.medium))
+        .foregroundStyle(.primary)
+      (Text(L10n.string("cycle_count", table: "Analytics")) + Text("  ")
+        + Text(record.cycleCount, format: .number))
+        .font(.caption)
+        .foregroundStyle(.secondary)
+    }
+    .fixedSize(horizontal: false, vertical: true)
+  }
+
+  private var phoneHealthLabel: some View {
+    let health = appSettings.analysisDataSource == .nominal
+      ? record.nominalHealthPercent : record.healthPercent
+    return Text(health / 100, format: .percent.precision(.fractionLength(1)))
+      .font(.system(.title3, design: .rounded, weight: .semibold))
+      .monospacedDigit()
+      .foregroundStyle(health < 80 ? Color.red : health < 90 ? Color.orange : appSettings.accentColor.color)
+      .fixedSize()
+      .accessibilityLabel(L10n.string("battery_health", table: "Records"))
+      .accessibilityValue(Text(health / 100, format: .percent.precision(.fractionLength(1))))
+  }
+
+  private var existingRow: some View {
     ViewThatFits(in: .horizontal) {
       HStack(alignment: .center, spacing: 16) {
         recordLabel
@@ -927,15 +976,7 @@ struct RecordDetailView: View {
         )
       }
     }
-    .onAppear {
-      // 共有ボタンを押す前に画像を事前生成してキャッシュ
-      Task.detached(priority: .userInitiated) {
-        let image = await generateChartImageAsync()
-        await MainActor.run {
-          cachedChartImage = image
-        }
-      }
-    }
+
 
   }
 

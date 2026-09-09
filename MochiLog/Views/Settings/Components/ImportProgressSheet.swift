@@ -6,6 +6,8 @@ import SwiftUI
 /// interactiveDismissDisabled(true) で閉じられないように制御される
 struct ImportProgressSheet: View {
   @Binding var progress: Double
+  @ObservedObject private var rendering = RenderingPreferences.shared
+  @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
   /// アイコンアニメーション用のState（iOS 16用ローテーションアニメーション）
   @State private var isAnimating = false
@@ -54,7 +56,11 @@ struct ImportProgressSheet: View {
           )
           .frame(width: 96, height: 96)
 
-        if #available(iOS 17, *) {
+        if rendering.reduced || reduceMotion {
+          Image(systemName: "arrow.down.doc.fill")
+            .font(.system(size: 40, weight: .semibold))
+            .foregroundStyle(.tint)
+        } else if #available(iOS 17, *) {
           // iOS 17+: symbolEffect で pulse アニメーション
           Image(systemName: "arrow.down.doc.fill")
             .font(.system(size: 40, weight: .semibold))

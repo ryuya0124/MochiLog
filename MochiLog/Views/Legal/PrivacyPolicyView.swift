@@ -60,7 +60,7 @@ struct PrivacyPolicyView: View {
           .background(.regularMaterial)
           .cornerRadius(12)
           .padding(.horizontal)
-          .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)
+          .mochiShadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)
         }
         .padding(.vertical)
       }

@@ -11,6 +11,12 @@ struct AdvancedSettingsView: View {
 
   var body: some View {
     List {
+      Section {
+        NavigationLink(destination: DeviceProfilesView()) {
+          Label(L10n.string("profile_library", table: "Settings"), systemImage: "cpu")
+        }
+        .accessibilityIdentifier("settings.deviceProfiles")
+      }
       // MARK: - デバイス選択モード
       Section {
         ForEach(AppSettings.DeviceSelectionMode.allCases) { mode in

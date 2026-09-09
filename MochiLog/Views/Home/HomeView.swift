@@ -10,6 +10,8 @@ struct MainTabView: View {
   @EnvironmentObject var dataStore: DataStore
   private let appSettings = AppSettings.shared
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+  @ObservedObject private var deviceProfiles = DeviceProfileStore.shared
+  @State private var showingProfileConflicts = false
   @State private var showingTutorial = false
   @State private var showingDiscordAnnouncement = false
   @State private var selectedTab: AppTab
@@ -64,6 +66,24 @@ struct MainTabView: View {
       }
     }
     .background(RecordsObserverView())
+    .safeAreaInset(edge: .top) {
+      if !deviceProfiles.conflicts.isEmpty {
+        Button { showingProfileConflicts = true } label: {
+          Label(L10n.string("profile_conflict_banner", table: "Settings"), systemImage: "exclamationmark.triangle")
+            .font(.subheadline).padding(12).frame(maxWidth: .infinity)
+            .background(.regularMaterial)
+        }
+      }
+    }
+    .sheet(isPresented: $showingProfileConflicts) {
+      NavigationStack {
+        DeviceProfilesView().toolbar {
+          ToolbarItem(placement: .cancellationAction) {
+            Button(L10n.string("close", table: "Common")) { showingProfileConflicts = false }
+          }
+        }
+      }
+    }
     .onAppear {
       let elapsed = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
       print("[Performance] MainTabView.body構築完了: \(String(format: "%.2f", elapsed))ms")
@@ -828,7 +848,7 @@ struct HomeView: View {
           .foregroundColor(.white)
       }
       .padding(32)
-      .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+      .mochiLoadingSurface()
     }
   }
 }

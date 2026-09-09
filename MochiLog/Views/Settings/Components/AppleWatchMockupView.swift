@@ -37,7 +37,7 @@ struct AppleWatchMockupView: View {
       }
       .scaleEffect(scale)
       .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-      .shadow(color: .black.opacity(0.4), radius: 20 * scale, x: 0, y: 10 * scale)
+      .mochiShadow(color: .black.opacity(0.4), radius: 20 * scale, x: 0, y: 10 * scale)
     }
     .frame(height: 250)
   }
@@ -140,8 +140,8 @@ struct AppleWatchMockupView: View {
               lineWidth: 1.5
             )
         )
-        .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 5)
-        .shadow(color: .black.opacity(0.3), radius: 20, x: 0, y: 10)
+        .mochiShadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 5)
+        .mochiShadow(color: .black.opacity(0.3), radius: 20, x: 0, y: 10)
 
       // ディスプレイ（黒い画面）
       RoundedRectangle(cornerRadius: isUltra ? 18 : 28)
@@ -164,7 +164,7 @@ struct AppleWatchMockupView: View {
               )
             )
         )
-        .shadow(color: .black.opacity(0.6), radius: 3, x: 0, y: 2)
+        .mochiShadow(color: .black.opacity(0.6), radius: 3, x: 0, y: 2)
 
       // 文字盤
       watchFace
@@ -189,7 +189,7 @@ struct AppleWatchMockupView: View {
           )
         )
         .frame(width: 8, height: 40)
-        .shadow(color: .black.opacity(0.4), radius: 2, x: -1, y: 0)
+        .mochiShadow(color: .black.opacity(0.4), radius: 2, x: -1, y: 0)
 
       // Crownの溝（リアルな質感）
       VStack(spacing: 2.5) {
@@ -248,7 +248,7 @@ struct AppleWatchMockupView: View {
             lineWidth: 0.5
           )
       )
-      .shadow(color: .black.opacity(0.4), radius: 1.5, x: -0.5, y: 0)
+      .mochiShadow(color: .black.opacity(0.4), radius: 1.5, x: -0.5, y: 0)
   }
 
   // MARK: - 文字盤（実機スタイル - Modular）
@@ -268,7 +268,7 @@ struct AppleWatchMockupView: View {
         Text("9:41")
           .font(.system(size: 50, weight: .semibold, design: .rounded))
           .foregroundStyle(Color.white)
-          .shadow(color: .black.opacity(0.35), radius: 2, x: 0, y: 1)
+          .mochiShadow(color: .black.opacity(0.35), radius: 2, x: 0, y: 1)
 
         Text("SUNNY 23°")
           .font(.system(size: 11, weight: .medium, design: .rounded))

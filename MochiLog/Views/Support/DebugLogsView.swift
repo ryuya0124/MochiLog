@@ -48,7 +48,7 @@ struct DebugLogsView: View {
                   )
                 )
                 .frame(width: 100, height: 100)
-                .shadow(color: Color.green.opacity(0.3), radius: 20, x: 0, y: 10)
+                .mochiShadow(color: Color.green.opacity(0.3), radius: 20, x: 0, y: 10)
 
               Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 50))
@@ -175,7 +175,7 @@ struct DebugLogsView: View {
                 )
               )
               .frame(width: 120, height: 120)
-              .shadow(color: Color.purple.opacity(0.3), radius: 20, x: 0, y: 10)
+              .mochiShadow(color: Color.purple.opacity(0.3), radius: 20, x: 0, y: 10)
 
             Image(systemName: "doc.text.magnifyingglass")
               .font(.system(size: 60))
@@ -212,7 +212,7 @@ struct DebugLogsView: View {
             )
           )
           .frame(width: 50, height: 50)
-          .shadow(color: Color.red.opacity(0.3), radius: 8, x: 0, y: 4)
+          .mochiShadow(color: Color.red.opacity(0.3), radius: 8, x: 0, y: 4)
 
         Image(systemName: "exclamationmark.triangle.fill")
           .font(.system(size: 22))
@@ -290,7 +290,7 @@ struct DebugLogDetailContentView: View {
                   )
                 )
                 .frame(width: 60, height: 60)
-                .shadow(color: Color.red.opacity(0.3), radius: 12, x: 0, y: 6)
+                .mochiShadow(color: Color.red.opacity(0.3), radius: 12, x: 0, y: 6)
 
               Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 28))
@@ -335,7 +335,7 @@ struct DebugLogDetailContentView: View {
                 endPoint: .bottomTrailing
               )
             )
-            .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 4)
+            .mochiShadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 4)
         )
         .overlay(
           RoundedRectangle(cornerRadius: 20)
@@ -379,7 +379,7 @@ struct DebugLogDetailContentView: View {
         .background(
           RoundedRectangle(cornerRadius: 16)
             .fill(Color(.secondarySystemGroupedBackground))
-            .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 2)
+            .mochiShadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 2)
         )
 
         // 生テキスト
@@ -452,7 +452,7 @@ struct DebugLogDetailContentView: View {
         .background(
           RoundedRectangle(cornerRadius: 16)
             .fill(Color(.secondarySystemGroupedBackground))
-            .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 2)
+            .mochiShadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 2)
         )
       }
       .padding(20)

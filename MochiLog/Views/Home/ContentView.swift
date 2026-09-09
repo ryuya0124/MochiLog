@@ -19,7 +19,7 @@ struct MochiCardSurface: ViewModifier {
         RoundedRectangle(cornerRadius: 24, style: .continuous)
           .strokeBorder(Color.primary.opacity(colorScheme == .dark ? 0.09 : 0.045), lineWidth: 1)
       }
-      .shadow(color: .black.opacity(colorScheme == .dark ? 0 : 0.025), radius: 12, y: 5)
+      .mochiShadow(color: .black.opacity(colorScheme == .dark ? 0 : 0.025), radius: 12, y: 5)
   }
 }
 
@@ -29,11 +29,17 @@ extension View {
 
 struct LibrarySummaryView: View {
   let records: [BatteryRecord]
+  private let recordsByDevice: [String: [BatteryRecord]]
+
+  init(records: [BatteryRecord]) {
+    self.records = records
+    self.recordsByDevice = Dictionary(grouping: records, by: \.deviceName)
+  }
   @ObservedObject private var settings = AppSettings.shared
   @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
   private var deviceNames: [String] {
-    let names = Set(records.map(\.deviceName))
+    let names = Set(recordsByDevice.keys)
     let preferred = settings.deviceSortOrder.filter { names.contains($0) }
     return preferred + names.subtracting(preferred).sorted()
   }
@@ -43,7 +49,7 @@ struct LibrarySummaryView: View {
       ? [GridItem(.flexible())]
       : [GridItem(.adaptive(minimum: 280), spacing: 16)], spacing: 16) {
       ForEach(deviceNames, id: \.self) { name in
-        let deviceRecords = records.filter { $0.deviceName == name }
+        let deviceRecords = (recordsByDevice[name] ?? [])
         if let latest = deviceRecords.max(by: {
           if $0.logDate != $1.logDate { return $0.logDate < $1.logDate }
           if $0.createdAt != $1.createdAt { return $0.createdAt < $1.createdAt }

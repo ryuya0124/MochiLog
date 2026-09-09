@@ -272,6 +272,25 @@ final class CoreDataStore: DataStore {
     return cdRecords.map { $0.toBatteryRecord() }
   }
 
+  override func applyDeviceProfile(_ profile: DeviceProfile, names: Set<String>, identifiers: Set<String>) throws -> Int {
+    let all = try viewContext.fetch(NSFetchRequest<CDBatteryRecord>(entityName: "CDBatteryRecord"))
+    let matches = all.filter { names.contains($0.deviceName) || identifiers.contains($0.deviceModelCode ?? "") }
+    for record in matches {
+      record.deviceName = profile.name
+      record.designCapacity = Int64(profile.capacity)
+      // Keep existing model identifiers and every measured field unchanged.
+    }
+    do {
+      try viewContext.save()
+    } catch {
+      viewContext.rollback()
+      refreshRecords()
+      throw error
+    }
+    refreshRecords()
+    return matches.count
+  }
+
   override func refreshRecords() {
     let request = NSFetchRequest<CDBatteryRecord>(entityName: "CDBatteryRecord")
     request.sortDescriptors = [NSSortDescriptor(key: "logDate", ascending: false)]

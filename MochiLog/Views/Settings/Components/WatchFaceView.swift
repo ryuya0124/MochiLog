@@ -37,7 +37,7 @@ struct WatchFaceView: View {
                 endPoint: .bottom
               )
           )
-          .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
+          .mochiShadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
 
         Spacer()
           .frame(height: 12)

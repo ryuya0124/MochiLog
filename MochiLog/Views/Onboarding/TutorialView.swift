@@ -289,7 +289,7 @@ struct TutorialPageView: View {
             .scaledToFit()
             .frame(width: 80, height: 80)
             .cornerRadius(18)
-            .shadow(radius: 4)
+            .mochiShadow(radius: 4)
         } else {
           Image(systemName: page.icon)
             .font(.system(size: 50))

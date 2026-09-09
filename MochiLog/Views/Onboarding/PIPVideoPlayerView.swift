@@ -37,7 +37,7 @@ struct PIPVideoPlayerView: View {
           .frame(maxWidth: .infinity)
           .frame(height: 200)
           .cornerRadius(16)
-          .shadow(radius: 5)
+          .mochiShadow(radius: 5)
           .background(
             PIPSourceView { view in
               self.sourceView = view

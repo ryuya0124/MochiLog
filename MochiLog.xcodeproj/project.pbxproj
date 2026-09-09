@@ -92,8 +92,6 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		4E0CF1412EF9542800307800 /* MochiLog */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = MochiLog;
 			sourceTree = "<group>";
 		};
@@ -107,8 +105,6 @@
 		};
 		A02700000000000000000001 /* Shared */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = Shared;
 			sourceTree = "<group>";
 		};
@@ -199,7 +195,6 @@
 			children = (
 				28577E54F8F793BF56F606D7 /* LanguageAndLayoutTests.swift */,
 			);
-			name = UITests;
 			path = UITests;
 			sourceTree = "<group>";
 		};
@@ -216,7 +211,6 @@
 			children = (
 				2CBF473DDFC0446BB61C4CE9 /* WatchLayoutTests.swift */,
 			);
-			name = WatchUITests;
 			path = WatchUITests;
 			sourceTree = "<group>";
 		};

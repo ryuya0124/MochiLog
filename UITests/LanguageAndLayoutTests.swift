@@ -1,4 +1,5 @@
 import XCTest
+import UIKit
 
 final class LanguageAndLayoutTests: XCTestCase {
   private var app: XCUIApplication!
@@ -18,6 +19,11 @@ final class LanguageAndLayoutTests: XCTestCase {
     app.terminate()
   }
 
+  func testReducedEffectsOverview() {
+    app.launchArguments += ["-renderingMode", "reduced"]
+    verifyOverview(size: "UICTContentSizeCategoryL")
+  }
+
   func testRefreshedOverviewScreens() {
     verifyOverview(size: "UICTContentSizeCategoryL")
   }
@@ -32,7 +38,9 @@ final class LanguageAndLayoutTests: XCTestCase {
   }
 
   func testRecordInfoSettingPersists() {
+    app.launchArguments += ["-recordInfoDefaultsRelease", "older-release"]
     app.launch()
+    app.launchArguments.removeLast(2)
     func openSettings() {
       let tab = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Settings")).firstMatch
       XCTAssertTrue(tab.waitForExistence(timeout: 10))
@@ -42,6 +50,7 @@ final class LanguageAndLayoutTests: XCTestCase {
     let toggle = app.switches["settings.recordInfo"].firstMatch
     XCTAssertTrue(toggle.waitForExistence(timeout: 10))
     let original = toggle.value as? String
+    XCTAssertEqual(original, "0", "An updated release starts with info buttons OFF")
     toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.93, dy: 0.5)).tap()
     let changed = toggle.value as? String
     XCTAssertNotEqual(original, changed)
@@ -92,6 +101,140 @@ final class LanguageAndLayoutTests: XCTestCase {
     XCTAssertTrue(app.buttons["settings.language"].exists)
     app.buttons["settings.category.advanced"].tap()
     screenshot("Advanced Light Settings")
+  }
+
+  func testDeviceProfileEditAndRestore() {
+    app.launchArguments += ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryL"]
+    app.launch()
+    let settings = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Settings")).firstMatch
+    XCTAssertTrue(settings.waitForExistence(timeout: 10))
+    settings.tap()
+    let advanced = app.buttons["settings.category.advanced"].exists
+      ? app.buttons["settings.category.advanced"] : app.buttons["settings.advanced"]
+    for _ in 0..<8 {
+      if advanced.isHittable { break }
+      app.swipeUp()
+    }
+    advanced.tap()
+    let library = app.buttons["settings.deviceProfiles"]
+    XCTAssertTrue(library.waitForExistence(timeout: 10))
+    library.tap()
+    let search = app.textFields["profiles.search"]
+    XCTAssertTrue(search.waitForExistence(timeout: 10))
+    search.tap(); search.typeText("iPhone 15 Pro")
+    let model = app.buttons["profiles.model.bundled:iPhone 15 Pro"]
+    XCTAssertTrue(model.waitForExistence(timeout: 5)); model.tap()
+    let capacity = app.textFields["profiles.capacity"]
+    XCTAssertTrue(capacity.waitForExistence(timeout: 5))
+    let original = capacity.value as! String
+    capacity.tap()
+    capacity.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: original.count) + "4000")
+    if app.buttons["Close"].exists { app.buttons["Close"].tap() }
+    app.swipeUp()
+    func tap(_ identifier: String) {
+      let button = app.buttons[identifier]
+      for _ in 0..<8 { if button.isHittable { break }; app.swipeUp() }
+      XCTAssertTrue(button.exists); button.tap()
+    }
+    tap("profiles.save")
+    XCTAssertTrue(app.alerts.firstMatch.waitForExistence(timeout: 5))
+    app.alerts.buttons["OK"].tap()
+    tap("profiles.apply")
+    app.alerts.buttons["Apply Saved Values to Logs"].tap()
+    XCTAssertTrue(app.alerts.buttons["OK"].waitForExistence(timeout: 10))
+    screenshot("Profile Applied")
+    app.alerts.buttons["OK"].tap()
+    tap("profiles.restore")
+    app.alerts.buttons["Restore Initial Values"].tap()
+    app.alerts.buttons["OK"].tap()
+    tap("profiles.apply")
+    app.alerts.buttons["Apply Saved Values to Logs"].tap()
+    XCTAssertTrue(app.alerts.buttons["OK"].waitForExistence(timeout: 10))
+    app.alerts.buttons["OK"].tap()
+    for _ in 0..<8 { if capacity.isHittable { break }; app.swipeDown() }
+    XCTAssertEqual(capacity.value as? String, original)
+    screenshot("Profile Restored")
+  }
+
+  func testChartRangeIndependence() {
+    app.launchArguments += ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryL"]
+    app.launch()
+    if app.buttons["View Sample Data"].exists { app.buttons["View Sample Data"].tap() }
+    let analytics = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Analytics")).firstMatch
+    XCTAssertTrue(analytics.waitForExistence(timeout: 10)); analytics.tap()
+    let health = app.buttons["chart.range"].firstMatch
+    XCTAssertTrue(health.waitForExistence(timeout: 10)); health.tap()
+    app.buttons["1m"].firstMatch.tap()
+    let healthWindow = app.staticTexts["chart.window"].firstMatch.label
+    let cycle = app.buttons["chart.cycle.range"].firstMatch
+    if UIDevice.current.userInterfaceIdiom == .pad {
+      for _ in 0..<5 { if cycle.isHittable { break }; app.swipeUp() }
+      XCTAssertTrue(cycle.exists); cycle.tap(); app.buttons["1w"].firstMatch.tap()
+      XCTAssertTrue(cycle.label.contains("1w"))
+      for _ in 0..<5 { if health.isHittable { break }; app.swipeDown() }
+      XCTAssertTrue(health.label.contains("1m"))
+      XCTAssertEqual(app.staticTexts["chart.window"].firstMatch.label, healthWindow)
+      health.tap(); app.buttons["Auto"].firstMatch.tap()
+      XCUIDevice.shared.orientation = .landscapeLeft
+      for _ in 0..<5 { if cycle.isHittable { break }; app.swipeUp() }
+      XCTAssertTrue(cycle.label.contains("1w"), "Cycle range must survive health changes and rotation")
+    } else {
+      app.swipeUp()
+      XCTAssertFalse(cycle.exists, "iPhone keeps one shared range selector")
+    }
+    screenshot("Chart Range Independence")
+  }
+
+  func testAddDeviceFromLibrary() {
+    app.launchArguments += ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryL"]
+    app.launch()
+    let settings = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Settings")).firstMatch
+    XCTAssertTrue(settings.waitForExistence(timeout: 10)); settings.tap()
+    let advanced = app.buttons["settings.category.advanced"].exists
+      ? app.buttons["settings.category.advanced"] : app.buttons["settings.advanced"]
+    for _ in 0..<8 { if advanced.isHittable { break }; app.swipeUp() }
+    advanced.tap(); app.buttons["settings.deviceProfiles"].tap()
+    XCTAssertTrue(app.buttons["profiles.addRow"].waitForExistence(timeout: 10))
+    app.buttons["profiles.addRow"].tap()
+    let name = "Manual Test " + UUID().uuidString.prefix(8)
+    let identifier = "iPhone999," + String(Int(Date().timeIntervalSince1970))
+    let field = app.textFields["profiles.name"]
+    XCTAssertTrue(field.waitForExistence(timeout: 5)); field.tap(); field.typeText(name)
+    app.textFields["profiles.capacity"].tap(); app.textFields["profiles.capacity"].typeText("4000")
+    let ids = app.textViews["profiles.identifiers"]
+    for _ in 0..<4 { if ids.isHittable { break }; app.swipeUp() }
+    ids.tap(); ids.typeText(identifier)
+    app.buttons["profiles.addSave"].tap()
+    XCTAssertTrue(app.textFields["profiles.search"].waitForExistence(timeout: 5))
+    app.terminate(); app.launch(); settings.tap()
+    for _ in 0..<8 { if advanced.isHittable { break }; app.swipeUp() }
+    advanced.tap(); app.buttons["settings.deviceProfiles"].tap()
+    let search = app.textFields["profiles.search"]
+    XCTAssertTrue(search.waitForExistence(timeout: 5)); search.tap(); search.typeText(name)
+    XCTAssertTrue(app.staticTexts[name].firstMatch.waitForExistence(timeout: 5))
+    screenshot("Manually Added Device")
+  }
+
+  func testDeviceCategoriesAndGeneralSettings() {
+    app.launchArguments += ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryL"]
+    app.launch()
+    let settings = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Settings")).firstMatch
+    XCTAssertTrue(settings.waitForExistence(timeout: 10)); settings.tap()
+    if app.buttons["settings.category.general"].exists { app.buttons["settings.category.general"].tap() }
+    screenshot("General Settings Unified")
+    let advanced = app.buttons["settings.category.advanced"].exists
+      ? app.buttons["settings.category.advanced"] : app.buttons["settings.advanced"]
+    for _ in 0..<8 { if advanced.isHittable { break }; app.swipeUp() }
+    advanced.tap()
+    app.buttons["settings.deviceProfiles"].tap()
+    XCTAssertTrue(app.textFields["profiles.search"].waitForExistence(timeout: 10))
+    for category in ["iPhone", "iPad", "Apple Watch", "iPod", "other"] {
+      XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "profiles.category." + category).firstMatch.exists)
+    }
+    screenshot("Device Categories")
+    let search = app.textFields["profiles.search"]
+    search.tap(); search.typeText("iPhone 15 Pro")
+    XCTAssertTrue(app.buttons["profiles.model.bundled:iPhone 15 Pro"].waitForExistence(timeout: 5))
   }
 
   private func verifyOverview(size: String) {

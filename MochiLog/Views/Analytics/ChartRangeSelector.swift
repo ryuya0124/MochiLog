@@ -8,10 +8,12 @@ struct ChartRangeSelector: View {
   let shiftWindow: (Bool) -> Void
   let startDay: Date
   let endDay: Date
+  var identifierPrefix = "chart"
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
       Text("\(startDay.formatted(date: .abbreviated, time: .omitted)) – \(endDay.formatted(date: .abbreviated, time: .omitted))")
+        .accessibilityIdentifier(identifierPrefix + ".window")
         .font(.caption)
         .foregroundStyle(.secondary)
         .fixedSize(horizontal: false, vertical: true)
@@ -22,20 +24,20 @@ struct ChartRangeSelector: View {
           }
         }
         .pickerStyle(.menu)
-        .accessibilityIdentifier("chart.range")
+        .accessibilityIdentifier(identifierPrefix + ".range")
         .frame(minHeight: 44)
         Spacer(minLength: 0)
         Button { shiftWindow(true) } label: {
           Image(systemName: "chevron.left").frame(width: 44, height: 44)
         }
         .accessibilityLabel(L10n.string("back", table: "Common"))
-        .accessibilityIdentifier("chart.previous")
+        .accessibilityIdentifier(identifierPrefix + ".previous")
         .disabled(!canMovePrevious)
         Button { shiftWindow(false) } label: {
           Image(systemName: "chevron.right").frame(width: 44, height: 44)
         }
         .accessibilityLabel(L10n.string("next", table: "Common"))
-        .accessibilityIdentifier("chart.next")
+        .accessibilityIdentifier(identifierPrefix + ".next")
         .disabled(!canMoveNext)
       }
       .font(.subheadline.weight(.medium))

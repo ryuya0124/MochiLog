@@ -595,21 +595,21 @@ struct DeviceLibrary {
   ]
 
   // MARK: - 旧API互換用
-  /// deviceNames は deviceNamesJa のエイリアス
+  /// Standard definitions plus locally saved device profiles.
   static var deviceNames: [String: String] {
-    return deviceNamesJa
+    return DeviceProfileStore.shared.names
   }
 
   // MARK: - ヘルパーメソッド
 
   /// 識別子（例: iPhone16,1）から機種名を取得
   static func getDeviceName(for identifier: String) -> String? {
-    return deviceNamesJa[identifier]
+    return deviceNames[identifier]
   }
 
   /// 機種名から識別子を取得（例: "Apple Watch 9 (45mm)" -> "Watch7,2"）
   static func getIdentifierForDeviceName(_ deviceName: String) -> String? {
-    return deviceNamesJa.first { $0.value == deviceName }?.key
+    return DeviceProfileStore.shared.modelIdentifier(for: deviceName)
   }
 
   /// 実行中デバイスのモデル識別子を取得（hw.machine を利用）
@@ -634,7 +634,7 @@ struct DeviceLibrary {
 
   /// Board ID（例: D83AP）から識別子を取得
   static func getIdentifier(for boardId: String) -> String? {
-    return boardToIdentifier[boardId]
+    return DeviceProfileStore.shared.identifier(for: boardId)
   }
 
   /// Board ID から機種名を取得
@@ -645,7 +645,7 @@ struct DeviceLibrary {
 
   /// 機種名からSoCを取得
   static func getSoC(for deviceName: String) -> String? {
-    return socInfo[deviceName]
+    return DeviceProfileStore.shared.soc(deviceName)
   }
 
   /// 識別子からSoCを取得
@@ -656,7 +656,7 @@ struct DeviceLibrary {
 
   /// 機種名から設計容量を取得
   static func getCapacity(for deviceName: String) -> Int? {
-    return designCapacities[deviceName]
+    return DeviceProfileStore.shared.capacity(deviceName)
   }
 
   /// 識別子から設計容量を取得
@@ -689,8 +689,8 @@ struct DeviceLibrary {
     let keywords = ["Pro", "Air", "mini", "SE", "Ultra", "Plus"]
     var seriesToMaxIdentifier: [String: String] = [:]
 
-    for (identifier, name) in deviceNamesJa {
-      guard name.starts(with: category.rawValue) else { continue }
+    for (identifier, name) in deviceNames {
+      guard identifier.hasPrefix(category == .watch ? "Watch" : category.rawValue) else { continue }
 
       let components = name.components(separatedBy: " ")
       var foundKeyword = false
@@ -732,8 +732,8 @@ struct DeviceLibrary {
 
     // モデル名ごとに、そのモデルに属する最大の識別子を紐付ける
     var modelToMaxIdentifier: [String: String] = [:]
-    for (identifier, name) in deviceNamesJa {
-      guard name.starts(with: category.rawValue) else { continue }
+    for (identifier, name) in deviceNames {
+      guard identifier.hasPrefix(category == .watch ? "Watch" : category.rawValue) else { continue }
 
       let components = name.components(separatedBy: " ")
       let isStandard = !components.contains(where: { keywords.contains($0) })
@@ -761,6 +761,6 @@ struct DeviceLibrary {
 
   /// 機種名から最初の識別子を取得
   static func getFirstIdentifier(for deviceName: String) -> String? {
-    return deviceNamesJa.first(where: { $1 == deviceName })?.key
+    return DeviceProfileStore.shared.modelIdentifier(for: deviceName)
   }
 }

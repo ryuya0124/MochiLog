@@ -61,6 +61,30 @@ struct ChartLogicTests {
     assert(auto.startDay <= autoDates[0] && auto.endDay >= autoDates[1],
       "Auto range must include data crossing calendar boundaries")
 
+    let updatedAuto = ChartWindowNavigator.computeChartWindow(
+      recordDates: autoDates + [day(2024, 4, 2)], windowEnd: autoDates[1], range: .auto)
+    assert(updatedAuto.endDay == day(2024, 4, 2), "Auto must follow newly synced logs, not the old window end")
+    let filteredAuto = ChartWindowNavigator.computeChartWindow(
+      recordDates: [day(2020, 6, 3)], windowEnd: day(2024, 4, 2), range: .auto)
+    assert(filteredAuto.endDay == day(2020, 6, 3), "Device filtering must remove trailing years of empty space")
+    let futureDate = Calendar.current.date(byAdding: .year, value: 1, to: Date())!
+    let mixedAuto = ChartWindowNavigator.computeChartWindow(
+      recordDates: autoDates + [futureDate], windowEnd: futureDate, range: .auto)
+    assert(mixedAuto.endDay == autoDates[1], "Future logs must not extend Auto")
+    assert(ChartWindowNavigator.initializeWindowEnd(for: autoDates.map { BatteryRecord(logDate: $0) },
+      range: .auto) == autoDates[1], "Auto must end at latest log instead of a calendar boundary")
+    let spanningYears = [day(2015, 12, 31), day(2024, 1, 1)]
+    let longAuto = ChartWindowNavigator.computeChartWindow(recordDates: spanningYears,
+      windowEnd: spanningYears[1], range: .auto)
+    assert(longAuto.startDay <= spanningYears[0] && longAuto.endDay == spanningYears[1])
+    let lateNight = Calendar.current.date(byAdding: .hour, value: 23, to: day(2024, 3, 1))!
+    assert(ChartWindowNavigator.autoRange(forDates: [lateNight, day(2024, 3, 8)]) == .twoWeeks,
+      "Eight calendar dates must not be classified as one week because of time of day")
+    let emptyAuto = ChartWindowNavigator.computeChartWindow(recordDates: [], windowEnd: day(2020, 1, 1), range: .auto)
+    assert(emptyAuto.startDay <= emptyAuto.endDay)
+    let futureOnly = ChartWindowNavigator.computeChartWindow(recordDates: [futureDate], windowEnd: futureDate, range: .auto)
+    assert(futureOnly.endDay == Calendar.current.startOfDay(for: Date()))
+
     let values = [95.0, 60, 98, 96, 94]
     let points = values.enumerated().map { index, value in
       BatteryRecord(logDate: day(2024, 3, index + 1), healthPercent: value)

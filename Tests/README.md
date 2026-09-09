@@ -28,3 +28,33 @@ Verified on a connected iPhone 17: the failing session archive referenced `Swift
 Run `bash scripts/test-charts.sh` for the production date/window and downsampling helpers. The fixtures cover inclusive 7/14-day windows, leap years and DST, old-only datasets, unordered context neighbors, sparse previous/next navigation, 2-year navigation round trips, automatic windows across month boundaries, preserving extrema/latest points, and edits that keep the same record ID and date. The script runs in Asia/Tokyo and America/Los_Angeles.
 
 `LanguageAndLayoutTests.testRefreshedOverviewScreens` and `testRefreshedOverviewAtAccessibilitySize` capture Home, Analytics and Settings at normal and largest accessibility text sizes. Use the import-fixture simulators described above; on an empty installation the test opens sample data. iCloud is disabled by launch arguments for these UI checks.
+
+## Performance regression checks
+
+`bash scripts/test-log-dates.sh` measures 3,000 mixed timestamp parses and verifies fractional seconds, time zones, legacy formats, invalid input and concurrent callers. A local optimized macOS run measured 1.540 s before formatter reuse and 0.697 s after; this is a date-parser microbenchmark, not end-to-end import timing or device FPS.
+
+Home/summary/statistics group records once per view input instead of filtering the full array for every row/card. Statistics find the latest record in linear time. Detail views generate share images only when requested. Store cache inputs must already be descending by log date, as supplied by both persistent stores' fetch descriptors.
+
+## Editable device library
+
+`bash scripts/test-device-profiles.sh` uses the production profile catalog and store with an isolated UserDefaults suite. It verifies persistence, retention of original standard/custom values, restoring values, duplicate/name/board validation and conflicts after standard definitions change. It simulates a manually added model later appearing in standard data and tests adopting the standard values without losing the initial manual values.
+
+`LanguageAndLayoutTests.testDeviceProfileEditAndRestore` runs against synthetic simulator records with iCloud disabled. It changes iPhone 15 Pro design capacity, saves, applies it to existing records, restores the original profile and reapplies it. Real-device installation does not apply edits to user records.
+
+Profile overrides are local to each installation. Standard dictionaries remain immutable. Existing-log updates modify only model name and design capacity in one persistent-store save; errors roll back. Model identifiers, IDs, measured values and dates are preserved. The editor shows the matching count and saved values before applying; restoring profile defaults is separate from updating logs. Matching historical names/identifiers are retained across edits.
+
+### Reduced rendering and device sections
+
+`testReducedEffectsOverview` launches with `-renderingMode reduced` and checks Home, Analytics and Settings. `testDeviceCategoriesAndGeneralSettings` checks the five device categories and cross-category search on iPhone/iPad.
+
+Rendering Quality has Automatic, Reduced Effects and Standard modes. Reduced Effects omits custom shadows, makes loading surfaces opaque, avoids forced chart drawing groups and stops the decorative import pulse. It does not reduce stored log precision or chart input data. Automatic uses Low Power Mode, serious/critical thermal state or <=4 GiB physical memory as a conservative budget heuristic; this is not a GPU benchmark. On-device FPS/GPU-time measurements are still needed to quantify gains on older hardware.
+
+### Independent iPad chart ranges and Auto
+
+`testChartRangeIndependence` changes the health and cycle ranges independently on iPad and verifies retention after rotation; on iPhone it verifies the single shared control. Real iPad cycle settings use a separate `cycleChartRange` preference, while sample settings stay temporary. Statistics continue to use the health chart period.
+
+`test-charts.sh` also covers Auto following new records, device-filtered historical records, future dates, empty input, ranges longer than three years, calendar boundaries and time-of-day/DST boundaries in Tokyo and Los Angeles. Auto ends at the latest nonfuture log and includes the earliest eligible log; saved manual presets remain manual.
+
+### Record explanation defaults
+
+`bash scripts/test-record-info.sh` checks fresh installs, migration from older settings, version/build updates and preserving a user's ON setting within the same release. `testRecordInfoSettingPersists` simulates an older release marker, verifies OFF on launch, then verifies that enabling the toggle survives a normal relaunch. The independent marker is `recordInfoDefaultsRelease` so other version migrations cannot consume this reset.

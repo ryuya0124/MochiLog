@@ -91,10 +91,17 @@ class DataStore: ObservableObject {
 
   /// 取得したレコードでキャッシュを更新
   func updateCachedRecords(_ records: [BatteryRecord]) {
-    let sorted = records.sorted { $0.logDate > $1.logDate }
+    // Both stores fetch in descending date order; avoid sorting the same data twice.
+    let sorted = records
     recordsDescending = sorted
     recordsAscending = sorted.reversed()
-    deviceNames = Array(Set(records.map { $0.deviceName })).sorted()
+    let names = Array(Set(records.map { $0.deviceName })).sorted()
+    if deviceNames != names { deviceNames = names }
+  }
+
+  /// Update only device metadata; measured capacities, dates and record IDs stay intact.
+  func applyDeviceProfile(_ profile: DeviceProfile, names: Set<String>, identifiers: Set<String>) throws -> Int {
+    fatalError("Subclass must override applyDeviceProfile")
   }
 
   // MARK: - Factory

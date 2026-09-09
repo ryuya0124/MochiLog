@@ -286,6 +286,10 @@ final class AppSettings: ObservableObject {
   // MARK: - Initialization
 
   private init() {
+    let releaseVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0"
+    let releaseBuild = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "0"
+    RecordInfoPreferences.prepareForLaunch(release: releaseVersion + "(" + releaseBuild + ")")
+
     // Watchデータのマイグレーション: 旧形式（単一）から新形式（複数）へ
     if let savedWatches = UserDefaults.standard.stringArray(forKey: Keys.registeredWatches) {
       self.registeredWatches = savedWatches

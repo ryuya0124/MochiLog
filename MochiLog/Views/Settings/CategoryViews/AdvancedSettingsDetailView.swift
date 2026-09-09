@@ -11,6 +11,12 @@ struct AdvancedSettingsDetailView: View {
 
   var body: some View {
     Form {
+      Section {
+        NavigationLink(destination: DeviceProfilesView()) {
+          Label(L10n.string("profile_library", table: "Settings"), systemImage: "cpu")
+        }
+        .accessibilityIdentifier("settings.deviceProfiles")
+      }
       // MARK: - デバイス選択
       Section {
         Picker(

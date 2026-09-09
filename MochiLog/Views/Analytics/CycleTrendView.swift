@@ -77,58 +77,28 @@ struct CycleTrendView: View {
   }
 
   private var effectiveLocalRange: RangePreset {
-    // sharedSelectedRange がある場合は親の値を使う（iPhone 連動用）
-    let rangeToUse = sharedSelectedRange != nil ? selectedRange : localSelectedRange
-    guard rangeToUse == .auto else { return rangeToUse }
-    let now = Date()
-    let pastRecords = allRecords.filter { $0.logDate <= now }
-    let sourceRecords = pastRecords.isEmpty ? allRecords : pastRecords
-    return ChartWindowNavigator.autoRange(for: sourceRecords)
+    ChartWindowNavigator.effectiveRange(for: allRecords.map(\.logDate), range: selectedRange)
   }
 
   private var effectiveLocalWindowEnd: Date {
-    // sharedWindowEndValue がある場合は親の値を使う（iPhone 連動用）
-    let rangeToUse = sharedSelectedRange != nil ? selectedRange : localSelectedRange
-    let windowEndToUse = sharedWindowEndValue ?? sharedWindowEnd?.wrappedValue ?? localWindowEnd
-    guard rangeToUse == .auto else { return windowEndToUse }
-    let now = Date()
-    if windowEndToUse <= now { return windowEndToUse }
-    let pastRecords = allRecords.filter { $0.logDate <= now }
-    if let latestPast = pastRecords.max(by: { $0.logDate < $1.logDate })?.logDate {
-      return latestPast
-    }
-    return min(windowEndToUse, now)
+    ChartWindowNavigator.effectiveEndDate(for: allRecords.map(\.logDate),
+      windowEnd: windowEnd, range: selectedRange)
   }
 
-  private var effectiveSelectedRange: RangePreset {
-    guard selectedRange == .auto else { return selectedRange }
-    let now = Date()
-    let pastRecords = allRecords.filter { $0.logDate <= now }
-    let sourceRecords = pastRecords.isEmpty ? allRecords : pastRecords
-    return ChartWindowNavigator.autoRange(for: sourceRecords)
-  }
-
-  private var effectiveEndDate: Date {
-    guard selectedRange == .auto else { return windowEnd }
-    let now = Date()
-    if windowEnd <= now { return windowEnd }
-    let pastRecords = allRecords.filter { $0.logDate <= now }
-    if let latestPast = pastRecords.max(by: { $0.logDate < $1.logDate })?.logDate {
-      return latestPast
-    }
-    return min(windowEnd, now)
-  }
+  private var effectiveEndDate: Date { effectiveLocalWindowEnd }
 
   private func shiftWindow(backward: Bool) {
     if let sharedShift = sharedShiftWindow {
       sharedShift(backward)
     } else {
-      localWindowEnd = ChartWindowNavigator.shiftWindow(
+      let newEnd = ChartWindowNavigator.shiftWindow(
         currentEnd: effectiveLocalWindowEnd,
         backward: backward,
         range: effectiveLocalRange,
         records: allRecords
       )
+      if let sharedWindowEnd { sharedWindowEnd.wrappedValue = newEnd }
+      else { localWindowEnd = newEnd }
     }
   }
 
@@ -152,7 +122,7 @@ struct CycleTrendView: View {
           .padding()
       } else {
         // iPad向け期間セレクター
-        if horizontalSizeClass == .regular {
+        if UIDevice.current.userInterfaceIdiom == .pad {
           ChartRangeSelector(
             selectedRange: Binding(
               get: { selectedRange },
@@ -160,6 +130,10 @@ struct CycleTrendView: View {
                 isUserInteracted = true
                 if let sharedSelectedRange {
                   sharedSelectedRange.wrappedValue = $0
+                  if sharedShiftWindow == nil, let sharedWindowEnd {
+                    sharedWindowEnd.wrappedValue = ChartWindowNavigator.adjustedWindowEndForRangeChange(
+                      range: $0, currentEnd: windowEnd, records: allRecords)
+                  }
                 } else {
                   localSelectedRange = $0
                   localWindowEnd = ChartWindowNavigator.adjustedWindowEndForRangeChange(
@@ -174,7 +148,8 @@ struct CycleTrendView: View {
               shiftWindow(backward: backward)
             },
             startDay: startDay,
-            endDay: endDay
+            endDay: endDay,
+            identifierPrefix: "chart.cycle"
           )
         }
 
@@ -226,6 +201,11 @@ struct CycleTrendView: View {
           for: allRecords, range: initialRange)
         hasInitialized = true
       }
+      if !hasInitialized, sharedShiftWindow == nil, let sharedWindowEnd {
+        sharedWindowEnd.wrappedValue = ChartWindowNavigator.adjustedWindowEndForRangeChange(
+          range: selectedRange, currentEnd: windowEnd, records: allRecords)
+        hasInitialized = true
+      }
       // 次のランループでChart描画を開始（タブ切り替えアニメーションをブロックしない）
       if !isChartReady {
         DispatchQueue.main.async {
@@ -237,6 +217,13 @@ struct CycleTrendView: View {
     .onDisappear {
       // タブ切り替え時にリセット → 次回表示時に遅延レンダリングが再度有効になる
       isChartReady = false
+    }
+    .onChange(of: ChartWindowNavigator.recordSignature(allRecords, selectedDevice: nil)) { _ in
+      guard sharedShiftWindow == nil else { return }
+      let newEnd = ChartWindowNavigator.adjustedWindowEndForRangeChange(
+        range: selectedRange, currentEnd: windowEnd, records: allRecords)
+      if let sharedWindowEnd { sharedWindowEnd.wrappedValue = newEnd }
+      else { localWindowEnd = newEnd }
     }
     .onChange(of: selectedRange) { _ in
       // レンジ変更時のみアニメーション実行
@@ -355,7 +342,7 @@ struct CycleTrendView: View {
         .clipped()
         .padding(.trailing, 24)
     }
-    .drawingGroup()
+    .mochiChartRendering()
     .frame(height: horizontalSizeClass == .regular ? 280 : 200)
   }
 }

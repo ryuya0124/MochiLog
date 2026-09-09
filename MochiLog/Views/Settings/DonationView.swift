@@ -257,7 +257,7 @@ private struct ThankYouFullScreenView: View {
             .font(.system(size: 48, weight: .semibold))
             .foregroundStyle(.white)
         }
-        .shadow(color: Color.black.opacity(0.25), radius: 20, x: 0, y: 12)
+        .mochiShadow(color: Color.black.opacity(0.25), radius: 20, x: 0, y: 12)
 
         VStack(spacing: 8) {
           Text(L10n.string("donation_thanks_title", table: "Settings"))
@@ -284,7 +284,7 @@ private struct ThankYouFullScreenView: View {
                 : Color(red: 0.02, green: 0.55, blue: 0.42)
             )
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .shadow(color: Color.black.opacity(0.18), radius: 10, x: 0, y: 6)
+            .mochiShadow(color: Color.black.opacity(0.18), radius: 10, x: 0, y: 6)
         }
         .padding(.horizontal, 24)
         .padding(.bottom, 28)

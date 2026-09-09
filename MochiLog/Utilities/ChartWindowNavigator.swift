@@ -26,8 +26,7 @@ struct ChartWindowNavigator {
     guard range == .auto else { return range }
     let now = Date()
     let pastDates = recordDates.filter { $0 <= now }
-    let sourceDates = pastDates.isEmpty ? recordDates : pastDates
-    return autoRange(forDates: sourceDates)
+    return autoRange(forDates: pastDates)
   }
 
   /// レンジに応じた実効終了日を決定（autoの場合のみ、未来日を回避）
@@ -38,10 +37,8 @@ struct ChartWindowNavigator {
   ) -> Date {
     guard range == .auto else { return windowEnd }
     let now = Date()
-    if windowEnd <= now { return windowEnd }
-    let pastDates = recordDates.filter { $0 <= now }
-    if let latestPast = pastDates.max() { return latestPast }
-    return min(windowEnd, now)
+    // Auto always follows the latest eligible log, including newly synced records.
+    return recordDates.filter { $0 <= now }.max() ?? now
   }
 
   /// recordDatesに基づいてウィンドウ開始・終了日と表示単位を計算
@@ -563,26 +560,15 @@ struct ChartWindowNavigator {
 
   /// データ分布に基づいて初期レンジを決定
   static func autoRange(for records: [BatteryRecord]) -> RangePreset {
-    guard let first = records.min(by: { $0.logDate < $1.logDate })?.logDate,
-      let last = records.max(by: { $0.logDate < $1.logDate })?.logDate
-    else { return .oneMonth }
-
-    let days = Calendar.current.dateComponents([.day], from: first, to: last).day ?? 0
-
-    if days < 7 { return .oneWeek }
-    if days < 14 { return .twoWeeks }
-    if days <= 30 { return .oneMonth }
-    if days <= 90 { return .threeMonths }
-    if days <= 180 { return .sixMonths }
-    if days <= 365 { return .oneYear }
-    if days <= 730 { return .twoYears }
-    return .threeYears
+    autoRange(forDates: records.map(\.logDate))
   }
 
   /// 日付配列に基づいて初期レンジを決定
   static func autoRange(forDates recordDates: [Date]) -> RangePreset {
     guard let first = recordDates.min(), let last = recordDates.max() else { return .oneMonth }
-    let days = Calendar.current.dateComponents([.day], from: first, to: last).day ?? 0
+    let calendar = Calendar.current
+    let days = calendar.dateComponents([.day], from: calendar.startOfDay(for: first),
+      to: calendar.startOfDay(for: last)).day ?? 0
 
     if days < 7 { return .oneWeek }
     if days < 14 { return .twoWeeks }
@@ -630,11 +616,10 @@ struct ChartWindowNavigator {
 
   /// レコードに基づいてウィンドウ終了日を初期化
   static func initializeWindowEnd(for records: [BatteryRecord], range: RangePreset) -> Date {
-    guard let latest = records.max(by: { $0.logDate < $1.logDate })?.logDate else { return Date() }
     if range == .auto {
-      let effective = autoRange(for: records)
-      return alignedEnd(latest, range: effective)
+      return effectiveEndDate(for: records.map(\.logDate), windowEnd: Date(), range: .auto)
     }
+    guard let latest = records.max(by: { $0.logDate < $1.logDate })?.logDate else { return Date() }
     let nowEnd = alignedEnd(Date(), range: range)
     let start = windowStart(for: nowEnd, range: range, allRecords: records)
     if windowContainsData(start: start, end: nowEnd, in: records) { return nowEnd }

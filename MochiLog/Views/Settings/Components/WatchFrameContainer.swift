@@ -71,8 +71,8 @@ struct WatchFrameContainer<Content: View>: View {
               height: model.deviceSize.height
             )
         }
-        .shadow(color: .black.opacity(0.6), radius: 8, x: 0, y: 4)  // 近い影
-        .shadow(color: .black.opacity(0.3), radius: 16, x: 0, y: 8)  // 遠い影
+        .mochiShadow(color: .black.opacity(0.6), radius: 8, x: 0, y: 4)  // 近い影
+        .mochiShadow(color: .black.opacity(0.3), radius: 16, x: 0, y: 8)  // 遠い影
 
         // 画面エリア（コンテンツ）
         RoundedRectangle(cornerRadius: model.cornerRadius - 4)
@@ -106,7 +106,7 @@ struct WatchFrameContainer<Content: View>: View {
                 )
               )
           )
-          .shadow(color: .black.opacity(0.7), radius: 2, x: 0, y: 1)
+          .mochiShadow(color: .black.opacity(0.7), radius: 2, x: 0, y: 1)
 
         // Digital Crown（右上）
         digitalCrown

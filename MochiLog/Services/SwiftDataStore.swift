@@ -281,6 +281,25 @@ final class SwiftDataStore: DataStore {
     return sdRecords.map { $0.toBatteryRecord() }
   }
 
+  override func applyDeviceProfile(_ profile: DeviceProfile, names: Set<String>, identifiers: Set<String>) throws -> Int {
+    let all = try modelContext.fetch(FetchDescriptor<SDBatteryRecord>())
+    let matches = all.filter { names.contains($0.deviceName) || identifiers.contains($0.deviceModelCode ?? "") }
+    for record in matches {
+      record.deviceName = profile.name
+      record.designCapacity = profile.capacity
+      // Keep existing model identifiers and every measured field unchanged.
+    }
+    do {
+      try modelContext.save()
+    } catch {
+      modelContext.rollback()
+      refreshRecords()
+      throw error
+    }
+    refreshRecords()
+    return matches.count
+  }
+
   override func refreshRecords() {
     let descriptor = FetchDescriptor<SDBatteryRecord>(
       sortBy: [SortDescriptor(\.logDate, order: .reverse)]

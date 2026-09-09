@@ -5,6 +5,7 @@ import UIKit
 /// サンプルデータと実データで同じレイアウトを使用するための共通コンポーネント
 struct RecordListView<Header: View>: View {
   let records: [BatteryRecord]
+  private let recordsByDevice: [String: [BatteryRecord]]
   let onRecordTap: ((BatteryRecord) -> Void)?
   let onRecordDelete: ((BatteryRecord) -> Void)?
   let showContextMenu: Bool
@@ -27,7 +28,7 @@ struct RecordListView<Header: View>: View {
   /// recordsから直接デバイスセクションを計算
   private var cachedSections: [DeviceSection] {
     // デバイス名を抽出（重複排除）
-    let deviceNames = Array(Set(records.map { $0.deviceName }))
+    let deviceNames = Array(recordsByDevice.keys)
 
     // AppSettings.deviceSortOrderでソート
     let sortedNames: [String]
@@ -58,6 +59,7 @@ struct RecordListView<Header: View>: View {
     @ViewBuilder header: () -> Header = { EmptyView() }
   ) {
     self.records = records
+    self.recordsByDevice = Dictionary(grouping: records, by: \.deviceName)
     self.onRecordTap = onRecordTap
     self.onRecordDelete = onRecordDelete
     self.showContextMenu = showContextMenu
@@ -86,7 +88,7 @@ struct RecordListView<Header: View>: View {
   /// セクションIDから表示するレコードを取得するヘルパー（ページネーション対応）
   private func recordsForSection(_ section: DeviceSection) -> [BatteryRecord] {
     // recordsから直接フィルタ
-    let filtered = records.filter { $0.deviceName == section.id }
+    let filtered = recordsByDevice[section.id] ?? []
     // 表示件数制限を適用
     let limit = displayLimits[section.id] ?? initialDisplayLimit
     return Array(filtered.prefix(limit))
@@ -94,7 +96,7 @@ struct RecordListView<Header: View>: View {
 
   /// セクションの全レコード数を取得
   private func totalRecordsForSection(_ section: DeviceSection) -> Int {
-    return records.filter { $0.deviceName == section.id }.count
+    return recordsByDevice[section.id]?.count ?? 0
   }
 
   /// 「もっと読み込む」ボタンを表示すべきか
@@ -127,7 +129,8 @@ struct RecordListView<Header: View>: View {
         let availableWidth = min(geometry.size.width, 1248) - 48
         let minSectionWidth: CGFloat = 340
         let maxColumns = max(1, Int((availableWidth + 24) / (minSectionWidth + 24)))
-        let columnsCount = min(cachedSections.count, maxColumns)
+        let sections = cachedSections
+        let columnsCount = min(sections.count, maxColumns)
 
         // LazyVGridは「行内の最大高さに全セルを揃える」ため、
         // セルの高さが異なると空白が発生する。
@@ -136,9 +139,9 @@ struct RecordListView<Header: View>: View {
         HStack(alignment: .top, spacing: 24) {
           ForEach(0..<columnsCount, id: \.self) { columnIndex in
             // カラムに属するセクションを振り分け（2列なら偶数/奇数インデックス）
-            let columnSections = cachedSections.indices
+            let columnSections = sections.indices
               .filter { $0 % columnsCount == columnIndex }
-              .map { cachedSections[$0] }
+              .map { sections[$0] }
             VStack(alignment: .leading, spacing: 24) {
               ForEach(columnSections, id: \.id) { section in
                 let sectionRecords = recordsForSection(section)
@@ -370,7 +373,7 @@ struct RecordListView<Header: View>: View {
         .padding(16)
         .background(
           Color(uiColor: .tertiarySystemGroupedBackground)
-            .shadow(color: Color.black.opacity(0.02), radius: 5, x: 0, y: 2)
+            .mochiShadow(color: Color.black.opacity(0.02), radius: 5, x: 0, y: 2)
         )
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(

@@ -8,6 +8,9 @@ struct AnalyticsContentView: View {
   @Binding var selectedDevice: String?
   let cachedDeviceNames: [String]
   @Binding var selectedRange: RangePreset
+  @AppStorage("cycleChartRange") private var cycleRange: RangePreset = .auto
+  @State private var cycleWindowEnd = Date()
+  private var independentCharts: Bool { UIDevice.current.userInterfaceIdiom == .pad }
   @Binding var windowEnd: Date
 
   @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -44,13 +47,8 @@ struct AnalyticsContentView: View {
 
   private var effectiveWindowEndForNavigation: Date {
     if selectedRange != .auto { return windowEnd }
-    let now = Date()
-    if windowEnd <= now { return windowEnd }
-    let pastRecords = filteredRecords.filter { $0.logDate <= now }
-    if let latestPast = pastRecords.max(by: { $0.logDate < $1.logDate })?.logDate {
-      return latestPast
-    }
-    return min(windowEnd, now)
+    return ChartWindowNavigator.effectiveEndDate(for: filteredRecords.map(\.logDate),
+      windowEnd: windowEnd, range: selectedRange)
   }
 
   private var canMoveNext: Bool {
@@ -74,6 +72,23 @@ struct AnalyticsContentView: View {
       range: effectiveRangeForNavigation,
       records: filteredRecords
     )
+  }
+
+  private var cycleShiftWindow: ((Bool) -> Void)? {
+    if independentCharts { return nil }
+    return { shiftWindow(backward: $0) }
+  }
+
+  private func cycleTrend(unit: AppSettings.ChartUnit) -> some View {
+    CycleTrendView(
+      allRecords: cachedFilteredRecords, unit: unit,
+      initialRange: selectedRange, allDeviceNames: cachedAllDeviceNames,
+      sharedSelectedRange: independentCharts ? $cycleRange : $selectedRange,
+      sharedWindowEnd: independentCharts ? $cycleWindowEnd : $windowEnd,
+      sharedCanMoveNext: independentCharts ? nil : canMoveNext,
+      sharedCanMovePrevious: independentCharts ? nil : canMovePrevious,
+      sharedShiftWindow: cycleShiftWindow,
+      sharedWindowEndValue: independentCharts ? cycleWindowEnd : windowEnd)
   }
 
   var body: some View {
@@ -119,18 +134,7 @@ struct AnalyticsContentView: View {
                   )
 
                   // サイクル推移グラフ
-                  CycleTrendView(
-                    allRecords: cachedFilteredRecords,
-                    unit: cachedUnit,
-                    initialRange: selectedRange,
-                    allDeviceNames: cachedAllDeviceNames,
-                    sharedSelectedRange: $selectedRange,
-                    sharedWindowEnd: $windowEnd,
-                    sharedCanMoveNext: canMoveNext,
-                    sharedCanMovePrevious: canMovePrevious,
-                    sharedShiftWindow: shiftWindow,
-                    sharedWindowEndValue: windowEnd
-                  )
+                  cycleTrend(unit: cachedUnit)
                 }
 
                 // 統計情報（iPad）
@@ -155,17 +159,7 @@ struct AnalyticsContentView: View {
               )
 
               // サイクル推移グラフ（iPhoneでは親と期間を共有）
-              CycleTrendView(
-                allRecords: cachedFilteredRecords,
-                unit: cachedUnit,
-                initialRange: selectedRange, allDeviceNames: cachedAllDeviceNames,
-                sharedSelectedRange: $selectedRange,
-                sharedWindowEnd: $windowEnd,
-                sharedCanMoveNext: canMoveNext,
-                sharedCanMovePrevious: canMovePrevious,
-                sharedShiftWindow: shiftWindow,
-                sharedWindowEndValue: windowEnd
-              )
+              cycleTrend(unit: cachedUnit)
 
               // 統計情報（iPhone）
               if !cachedFilteredRecords.isEmpty {
@@ -188,7 +182,7 @@ struct AnalyticsContentView: View {
             .foregroundStyle(.secondary)
         }
         .padding(12)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .mochiLoadingSurface(cornerRadius: 12)
         .allowsHitTesting(false)
       }
     }

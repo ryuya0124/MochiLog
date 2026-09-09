@@ -7,7 +7,7 @@ struct AnalyticsView: View {
   private let appSettings = AppSettings.shared
   @EnvironmentObject private var dataStore: DataStore
 
-  @State private var selectedRange: RangePreset = .oneMonth
+  @State private var selectedRange: RangePreset = .auto
   // 表示ウィンドウの終了日時（endDate）。範囲を前後に移動すると変更される。デフォルトは現在時刻。
   @State private var windowEnd: Date = Date()
 
@@ -225,18 +225,12 @@ struct AnalyticsView: View {
     {
       selectedRange = savedRange
     } else if !appSettings.hasAutoInitializedChartRange {
-      selectedRange = calculateAutoRange(for: records)
+      selectedRange = .auto
       appSettings.hasAutoInitializedChartRange = true
     }
 
     // ウィンドウ終了日を設定
     windowEnd = ChartWindowNavigator.initializeWindowEnd(for: records, range: selectedRange)
-  }
-
-  /// バックグラウンドスレッドで安全に呼べるautoRange計算
-  /// 未来のデータは無視して現在日時以前のデータのみを考慮
-  private func calculateAutoRange(for records: [BatteryRecord]) -> RangePreset {
-    ChartWindowNavigator.effectiveRange(for: records.map(\.logDate), range: .auto)
   }
 
   // MARK: - records変更時の処理（キャッシュから取得するため不要）
@@ -250,7 +244,7 @@ struct AnalyticsView: View {
           selectedDevice.map { device in records.filter { $0.deviceName == device } } ?? records
 
         if !appSettings.hasAutoInitializedChartRange {
-          selectedRange = calculateAutoRange(for: filteredRecords)
+          selectedRange = .auto
           windowEnd = ChartWindowNavigator.initializeWindowEnd(
             for: filteredRecords, range: selectedRange)
           appSettings.hasAutoInitializedChartRange = true

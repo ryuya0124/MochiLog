@@ -1,6 +1,742 @@
 {
   "sourceLanguage" : "ja",
   "strings" : {
+  "rendering_title": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "描画品質"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Rendering Quality"
+        }
+      }
+    }
+  },
+  "rendering_automatic": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "自動"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Automatic"
+        }
+      }
+    }
+  },
+  "rendering_reduced": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "軽量"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Reduced Effects"
+        }
+      }
+    }
+  },
+  "rendering_full": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "標準"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Standard"
+        }
+      }
+    }
+  },
+  "rendering_description": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "軽量では影・ぼかしとグラフの追加合成を抑えます。自動は省電力・高温・メモリ4GB以下で切り替えます。"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Reduced effects limit shadows, blur and extra chart compositing. Automatic switches in Low Power Mode, high temperatures or on devices with 4 GB of memory or less."
+        }
+      }
+    }
+  },
+  "profile_category_other": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "その他"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Other"
+        }
+      }
+    }
+  },
+  "profile_search": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "機種名・識別子で検索"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Search models or identifiers"
+        }
+      }
+    }
+  },
+  "profile_library": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "デバイス情報の管理"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Device Library"
+        }
+      }
+    }
+  },
+  "profile_add": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "デバイスを追加"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Add Device Model"
+        }
+      }
+    }
+  },
+  "profile_conflicts": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "標準データとの重複・更新"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Standard Data Conflicts"
+        }
+      }
+    }
+  },
+  "profile_customized": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "ユーザー設定あり"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Customized"
+        }
+      }
+    }
+  },
+  "profile_library_footer": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "変更内容はこの端末に保存されます。標準データは保持され、初期値に戻せます。"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Changes are saved on this device. Standard data is preserved and initial values can be restored."
+        }
+      }
+    }
+  },
+  "profile_conflict_description": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "アップデートの標準データとユーザー設定が重複、または標準値が更新されました。採用するデータを選んでください。選択するまではユーザー設定を使用します。"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Standard data now overlaps your settings or has changed. Choose which values to use. Your settings remain active until you choose."
+        }
+      }
+    }
+  },
+  "profile_your_values": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "ユーザー設定"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Your Values"
+        }
+      }
+    }
+  },
+  "profile_bundled_values": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "アップデートの標準値"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Updated Standard Values"
+        }
+      }
+    }
+  },
+  "profile_keep_custom": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "ユーザー設定を維持"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Keep My Values"
+        }
+      }
+    }
+  },
+  "profile_use_bundled": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "この標準値を採用"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Use These Standard Values"
+        }
+      }
+    }
+  },
+  "profile_parameters": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "基本情報"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Parameters"
+        }
+      }
+    }
+  },
+  "profile_name": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "機種名"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Model Name"
+        }
+      }
+    }
+  },
+  "profile_capacity": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "設計容量（mAh）"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Design Capacity (mAh)"
+        }
+      }
+    }
+  },
+  "profile_identifiers": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "モデル識別子"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Model Identifiers"
+        }
+      }
+    }
+  },
+  "profile_identifiers_help": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "1行に1つ入力（例：iPhone16,1、iPad16,3、Watch7,1）。自動判定と機種の分類に使用します。"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "One per line, e.g. iPhone16,1, iPad16,3 or Watch7,1. Used for automatic detection and model categories."
+        }
+      }
+    }
+  },
+  "profile_boards": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Board ID の対応"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Board ID Mappings"
+        }
+      }
+    }
+  },
+  "profile_boards_help": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "1行に「D83AP=iPhone16,1」の形式で入力。モデル識別子欄にある値を指定します。不明な場合は空欄にできます。"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "One mapping per line, e.g. D83AP=iPhone16,1. Use an identifier listed above. Leave empty if unknown."
+        }
+      }
+    }
+  },
+  "profile_save": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "変更を保存"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Save Changes"
+        }
+      }
+    }
+  },
+  "profile_save_help": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "保存後は今後のログ取り込みに使用します。既存ログの機種名・設計容量は下の操作で反映できます。SoCの説明表示は保存後に更新されます。"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Saved values are used for future imports. Update existing log names and design capacities using the action below. Displayed SoC information updates after saving."
+        }
+      }
+    }
+  },
+  "profile_existing_logs": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "既存ログへの反映"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Existing Logs"
+        }
+      }
+    }
+  },
+  "profile_matching_count": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "対象の記録：%d件"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Matching records: %d"
+        }
+      }
+    }
+  },
+  "profile_apply": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "保存済みの値を既存ログに反映"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Apply Saved Values to Logs"
+        }
+      }
+    }
+  },
+  "profile_apply_help": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "保存済みの機種名と設計容量を反映します。実測・公称容量、サイクル数、日時、記録IDは変更しません。初期値に戻した後も再度反映できます。"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Applies saved model name and design capacity. Measured and nominal capacities, cycles, dates and record IDs are preserved. You can apply initial values again after restoring."
+        }
+      }
+    }
+  },
+  "profile_defaults": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "初期値"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Initial Values"
+        }
+      }
+    }
+  },
+  "profile_initial_values": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "編集開始時／手動追加時の初期値"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Values Before Editing / At Creation"
+        }
+      }
+    }
+  },
+  "profile_restore": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "初期値に戻す"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Restore Initial Values"
+        }
+      }
+    }
+  },
+  "profile_apply_confirmation": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "%d件の記録を「%@」、設計容量 %d mAh に更新します。"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Update %d records to %@ with design capacity %d mAh?"
+        }
+      }
+    }
+  },
+  "profile_restore_help": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "保存した初期値に戻します。既存ログも戻す場合は、その後「既存ログに反映」を実行してください。"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Restores the saved initial values. To also restore existing logs, apply these values afterwards."
+        }
+      }
+    }
+  },
+  "profile_restored": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "初期値に戻しました。"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Initial values restored."
+        }
+      }
+    }
+  },
+  "profile_saved": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "保存しました。既存ログへの反映は別途実行できます。"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Saved. You can apply the values to existing logs separately."
+        }
+      }
+    }
+  },
+  "profile_applied": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "%d件の記録を更新しました。"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Updated %d records."
+        }
+      }
+    }
+  },
+  "profile_conflict_banner": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "デバイス情報の標準値が更新されました。採用する値を選択"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Device library update: choose which values to use"
+        }
+      }
+    }
+  },
+  "profile_name_required": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "機種名を入力してください。"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Enter a model name."
+        }
+      }
+    }
+  },
+  "profile_capacity_invalid": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "設計容量は1〜100000 mAhの整数で入力してください。"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Enter a whole-number capacity from 1 to 100000 mAh."
+        }
+      }
+    }
+  },
+  "profile_identifiers_invalid": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "モデル識別子は iPhone16,1 のような形式で1行に1つ、重複せず入力してください。"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Enter unique identifiers such as iPhone16,1, one per line."
+        }
+      }
+    }
+  },
+  "profile_boards_invalid": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Board IDは「Board ID=モデル識別子」の形式で、識別子欄にある値を指定してください。"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Use Board ID=Model Identifier and an identifier from the list above."
+        }
+      }
+    }
+  },
+  "profile_duplicate": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "同じ機種名またはモデル識別子が登録済みです。既存の項目を編集してください。"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "This name or identifier already exists. Edit the existing model instead."
+        }
+      }
+    }
+  },
+  "profile_board_duplicate": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "このBoard IDは別の機種で使用されています。"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "This Board ID is used by another model."
+        }
+      }
+    }
+  },
+  "profile_multiple_matches": {
+    "localizations": {
+      "ja": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "標準機種が複数一致しています。採用する標準値を選択してください。"
+        }
+      },
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Multiple standard models match. Choose the standard values to use."
+        }
+      }
+    }
+  },
   "show_record_info": {
     "localizations": {
       "ja": {

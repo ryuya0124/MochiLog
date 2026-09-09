@@ -2,11 +2,17 @@ import SwiftUI
 
 struct StatisticsView: View {
   let filteredRecords: [BatteryRecord]
+  private let recordsByDevice: [String: [BatteryRecord]]
+
+  init(filteredRecords: [BatteryRecord]) {
+    self.filteredRecords = filteredRecords
+    self.recordsByDevice = Dictionary(grouping: filteredRecords, by: \.deviceName)
+  }
   @Environment(\.dynamicTypeSize) private var dynamicTypeSize
   @ObservedObject private var appSettings = AppSettings.shared
 
   private var deviceNames: [String] {
-    let names = Set(filteredRecords.map(\.deviceName))
+    let names = Set(recordsByDevice.keys)
     var remaining = names
     let preferred = appSettings.deviceSortOrder.filter { remaining.remove($0) != nil }
     return preferred + remaining.sorted()
@@ -43,12 +49,13 @@ struct StatisticsView: View {
 
   @ViewBuilder
   private func deviceStatistics(_ name: String) -> some View {
-    let records = filteredRecords.filter { $0.deviceName == name }.sorted {
+    let records = (recordsByDevice[name] ?? [])
+    let latest = records.max {
       if $0.logDate != $1.logDate { return $0.logDate < $1.logDate }
       if $0.createdAt != $1.createdAt { return $0.createdAt < $1.createdAt }
       return $0.id.uuidString < $1.id.uuidString
     }
-    if let latest = records.last {
+    if let latest {
       let values = records.map { health($0) }.filter { $0.isFinite }
       let average = values.isEmpty ? nil : values.reduce(0, +) / Double(values.count)
       VStack(alignment: .leading, spacing: 18) {

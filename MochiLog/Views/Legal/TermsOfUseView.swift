@@ -59,7 +59,7 @@ struct TermsOfUseView: View {
           .background(.regularMaterial)
           .cornerRadius(12)
           .padding(.horizontal)
-          .shadow(color: Color.black.opacity(0.06), radius: 6, x: 0, y: 3)
+          .mochiShadow(color: Color.black.opacity(0.06), radius: 6, x: 0, y: 3)
         }
         .padding(.vertical)
       }

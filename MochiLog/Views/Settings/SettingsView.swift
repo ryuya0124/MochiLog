@@ -260,7 +260,10 @@ struct SettingsView: View {
         Divider()
 
         // 右側：選択されたカテゴリの詳細（Apple Watch・高度な設定はList表示）
-        if selectedCategory.wrappedValue == .appleWatch {
+        if selectedCategory.wrappedValue == .general {
+          GeneralSettingsView(appSettings: appSettings)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else if selectedCategory.wrappedValue == .appleWatch {
           VStack(spacing: 0) {
             Divider()  // ヘッダーとの境界線
             AppleWatchSettingsView(
@@ -287,9 +290,7 @@ struct SettingsView: View {
               VStack(spacing: 0) {
                 switch selectedCategory.wrappedValue {
                 case .general:
-                  GeneralSettingsView(
-                    appSettings: appSettings
-                  )
+                  EmptyView()
                 case .iCloud:
                   ICloudSettingsView(appSettings: appSettings)
                 case .appleWatch:
@@ -395,6 +396,7 @@ struct SettingsView: View {
       .pickerStyle(.menu)
 
       RecordInfoToggle()
+      RenderingSettingsRow()
 
       // サンプルデータ表示
       Button {
@@ -636,6 +638,7 @@ struct SettingsView: View {
           systemImage: "gearshape.2.fill"
         )
       }
+      .accessibilityIdentifier("settings.advanced")
     }
 
     // MARK: - アプリについて

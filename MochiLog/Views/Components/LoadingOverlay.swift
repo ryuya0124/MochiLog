@@ -24,7 +24,7 @@ struct LoadingOverlay: View {
             .foregroundColor(.white)
         }
         .padding(32)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+        .mochiLoadingSurface()
       }
       .transition(.opacity)
       .animation(.easeInOut(duration: 0.2), value: isLoading)

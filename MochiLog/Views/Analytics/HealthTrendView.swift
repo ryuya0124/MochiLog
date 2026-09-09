@@ -212,7 +212,7 @@ struct HealthTrendView: View {
         .clipped()
         .padding(.trailing, 24)
     }
-    .drawingGroup()
+    .mochiChartRendering()
     .frame(height: horizontalSizeClass == .regular ? 280 : 200)
   }
 }
