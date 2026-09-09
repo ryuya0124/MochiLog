@@ -487,7 +487,7 @@ extension HomeView {
     defer { queue.finish() }
     isProcessing = true
     defer { isProcessing = false }
-    if !showingBatchResults { batchImportResults = [] }
+    batchImportResults = []
     showingBatchResults = queue.shouldPresentResults
     let validation = AppSettings.shared.enableCapacityValidation
     let threshold = AppSettings.shared.capacityValidationThreshold
@@ -542,6 +542,18 @@ extension HomeView {
     if !queue.shouldPresentResults {
       if batchImportResults.contains(where: { $0.status == .needsReview || $0.status == .error }) {
         showingBatchResults = true
+      } else if queue.shouldOpenDetail {
+        if batchImportResults.count == 1,
+          let result = batchImportResults.first,
+          let date = result.parsedDate, let name = result.deviceName,
+          let record = records.first(where: {
+            $0.deviceName == name && abs($0.logDate.timeIntervalSince(date)) < 1.0
+          }) {
+          isProcessing = false
+          showRecordDetail(record)
+        } else {
+          showingBatchResults = true
+        }
       } else {
         SettingsRedirectHelper.redirectToPrivacyAnalytics()
       }
@@ -571,7 +583,7 @@ extension HomeView {
         deviceName: nil,
         rawText: rawText,
         status: .error,
-        errorMessage: L10n.string("parse_error", table: "Home")
+        errorMessage: parseResult.failureDescription ?? L10n.string("parse_error", table: "Home")
       )
     }
 

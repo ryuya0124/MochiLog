@@ -53,6 +53,21 @@ struct SharedImportQueueTests {
     queue.acknowledge(third)
     queue.finish()
 
+    now = now.addingTimeInterval(3)
+    queue.enqueue(first, presentsResults: false, opensDetail: true)
+    assert(queue.shouldOpenDetail && !queue.shouldPresentResults,
+      "Direct single-file import must request detail without the batch sheet")
+    assert(queue.begin())
+    assert(queue.takeNext() == [first])
+    queue.enqueue(second, presentsResults: true)
+    assert(queue.shouldPresentResults, "Extension input must retain the batch sheet even during a direct import")
+    assert(queue.takeNext() == [second])
+    queue.acknowledge(first)
+    queue.acknowledge(second)
+    queue.finish()
+    assert(!queue.shouldOpenDetail && !queue.shouldPresentResults,
+      "Presentation preferences must not leak into the next import")
+
     let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
     try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
     defer { try? FileManager.default.removeItem(at: directory) }

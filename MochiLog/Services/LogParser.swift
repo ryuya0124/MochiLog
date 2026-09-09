@@ -5,6 +5,7 @@ struct LogParser {
   // 解析結果の入れ物
   struct ParseResult {
     // --- 基本 ---
+    var failureDescription: String?
     var logDate: Date?
     var osVersion: String?
     var deviceModelCode: String?
@@ -146,7 +147,10 @@ struct LogParser {
       let msg = batObj.message
     else {
 
-      let msg = L10n.string("log_parse_error_no_battery_data", table: "Support")
+      let msg = lastBatteryJSONString == nil
+        ? L10n.string("import_no_battery_measurements", table: "Home")
+        : L10n.string("import_invalid_battery_format", table: "Home")
+      result.failureDescription = msg
       // デバッグログは常に保存
       ErrorLogStore.shared.saveLog(message: msg, rawText: text)
       NotificationCenter.default.post(name: NSNotification.Name("ParseErrorSaved"), object: nil)

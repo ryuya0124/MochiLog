@@ -58,3 +58,11 @@ Rendering Quality has Automatic, Reduced Effects and Standard modes. Reduced Eff
 ### Record explanation defaults
 
 `bash scripts/test-record-info.sh` checks fresh installs, migration from older settings, version/build updates and preserving a user's ON setting within the same release. `testRecordInfoSettingPersists` simulates an older release marker, verifies OFF on launch, then verifies that enabling the toggle survives a normal relaunch. The independent marker is `recordInfoDefaultsRelease` so other version migrations cannot consume this reset.
+
+### Multiple logs from Settings sharing
+
+The document Open In route on the tested iOS 27 iPhone delivered one URL after selecting roughly eight logs. An on-device receipt diagnostic confirmed this. `MochiLogShareExtension` receives every attachment from every `NSExtensionItem`, copies provider files before their callback returns and publishes the completed batch into the app group. Choose **Import to MochiLog**, tap Done and open the app to process the batch. The extension does not use unsupported app-opening APIs.
+
+`bash scripts/test-shared-log-inbox.sh` verifies eight same-named files, no partial visibility, restart recovery, acknowledgment, failure retention and preservation of provider originals. `bash scripts/test-batch-log-parser.sh` verifies seven synthetic valid logs plus one log without battery measurements and differentiates malformed battery JSON. Real imported logs are not checked into the repository.
+
+The on-device failed log contained no battery capacity/cycle fields. Its UI error now says so explicitly. Debug receipts record filename/count only. Failed extension copies stay in `SharedLogInbox/Review` in the app group; normal source files are untouched.

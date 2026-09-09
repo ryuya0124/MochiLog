@@ -13,16 +13,18 @@ final class SharedImportQueue: ObservableObject {
   private var recentlyCompleted: [URL: Date] = [:]
   private(set) var isConsuming = false
   private(set) var shouldPresentResults = false
+  private(set) var shouldOpenDetail = false
   private let now: () -> Date
 
   init(now: @escaping () -> Date = Date.init) { self.now = now }
 
-  func enqueue(_ url: URL, accessRoots: [URL] = [], presentsResults: Bool = true) {
+  func enqueue(_ url: URL, accessRoots: [URL] = [], presentsResults: Bool = true, opensDetail: Bool = false) {
     recentlyCompleted = recentlyCompleted.filter { now().timeIntervalSince($0.value) < 2 }
     guard recentlyCompleted[url] == nil else { return }
     guard url.isFileURL, known.insert(url).inserted else { return }
     scopes[url] = ([url] + accessRoots).filter { $0.startAccessingSecurityScopedResource() }
     shouldPresentResults = shouldPresentResults || presentsResults
+    shouldOpenDetail = shouldOpenDetail || opensDetail
     pending.append(url)
     AppSettings.shared.selectedTabIndex = 0
     revision += 1
@@ -43,9 +45,13 @@ final class SharedImportQueue: ObservableObject {
   func finish() {
     isConsuming = false
     shouldPresentResults = false
+    shouldOpenDetail = false
   }
 
   func acknowledge(_ url: URL, saved: Bool = false) {
+    if let root = SharedLogInbox.root {
+      try? SharedLogInbox.acknowledge(url, saved: saved, at: root)
+    }
     if saved, let inbox = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
       .first?.appendingPathComponent("Inbox", isDirectory: true) {
       let path = url.standardizedFileURL.resolvingSymlinksInPath().path

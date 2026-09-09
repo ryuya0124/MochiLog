@@ -31,11 +31,20 @@ final class MochiLogApp: UIResponder, UIApplicationDelegate {
   }
 
   static func route(_ urls: [URL]) {
+    let files = urls.filter(\.isFileURL)
+    if !files.isEmpty {
+      ErrorLogStore.shared.saveLog(
+        message: "[Import receipt] Received \(files.count) file URL(s): "
+          + files.map(\.lastPathComponent).joined(separator: ", "), rawText: nil)
+    }
     for url in urls {
       if url.scheme == "mochilog" {
         handleShortcutCallback(url)
       } else {
-        SharedImportQueue.shared.enqueue(url, presentsResults: AppSettings.shared.openAppAfterShareImport)
+        let interactive = AppSettings.shared.openAppAfterShareImport
+        SharedImportQueue.shared.enqueue(url,
+          presentsResults: interactive && files.count > 1,
+          opensDetail: interactive && files.count == 1)
       }
     }
   }
@@ -117,6 +126,19 @@ final class MochiLogSceneDelegate: UIResponder, UIWindowSceneDelegate {
 
   func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
     open(URLContexts)
+  }
+
+  func sceneDidBecomeActive(_ scene: UIScene) {
+    guard let root = SharedLogInbox.root else { return }
+    do {
+      let files = try SharedLogInbox.pendingFiles(at: root)
+      if !files.isEmpty {
+        ErrorLogStore.shared.saveLog(message: "[Share extension receipt] \(files.count) file(s)", rawText: nil)
+      }
+      for file in files { SharedImportQueue.shared.enqueue(file, presentsResults: true) }
+    } catch {
+      ErrorLogStore.shared.saveLog(message: "Shared import inbox: \(error.localizedDescription)", rawText: nil)
+    }
   }
 
   private func open(_ contexts: Set<UIOpenURLContext>) {
