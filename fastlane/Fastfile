@@ -73,19 +73,24 @@ platform :ios do
   # ============================================
   desc "TestFlightにアップロード"
   lane :upload_testflight do
-    api_key = app_store_connect_api_key(
-      key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
-      issuer_id: ENV["APP_STORE_CONNECT_API_ISSUER_ID"],
-      key_content: ENV["APP_STORE_CONNECT_API_KEY_CONTENT"],
-      is_key_content_base64: true
-    )
+    api_key = if ENV["APP_STORE_CONNECT_API_KEY_ID"] &&
+                 ENV["APP_STORE_CONNECT_API_ISSUER_ID"] &&
+                 ENV["APP_STORE_CONNECT_API_KEY_CONTENT"]
+      app_store_connect_api_key(
+        key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
+        issuer_id: ENV["APP_STORE_CONNECT_API_ISSUER_ID"],
+        key_content: ENV["APP_STORE_CONNECT_API_KEY_CONTENT"],
+        is_key_content_base64: true
+      )
+    end
     
     begin
-      upload_to_testflight(
-        api_key: api_key,
+      upload_options = {
         ipa: "./build/MochiLog.ipa",
         skip_waiting_for_build_processing: true
-      )
+      }
+      upload_options[:api_key] = api_key if api_key
+      upload_to_testflight(upload_options)
     rescue => ex
       # ビルド番号重複エラーの場合は分かりやすいメッセージを表示
       if ex.message.include?("bundle version must be higher") || ex.message.include?("DUPLICATE")
