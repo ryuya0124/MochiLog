@@ -1,13 +1,6 @@
 {
   "sourceLanguage" : "ja",
   "strings" : {
-    "profile_esim_capacity" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "eSIM-Kapazität" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "eSIM capacity" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Capacidad eSIM" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Capacité eSIM" } }, "ja" : { "stringUnit" : { "state" : "translated", "value" : "eSIMモデルの容量" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "eSIM 용량" } }, "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "eSIM 容量" } }, "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "eSIM 容量" } } } },
-    "profile_model_numbers" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Modellnummern" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Model numbers" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Números de modelo" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Numéros de modèle" } }, "ja" : { "stringUnit" : { "state" : "translated", "value" : "モデル番号" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "모델 번호" } }, "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "型号编号" } }, "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "型號編號" } } } },
-    "profile_model_numbers_help" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Geben Sie eine Modellnummer pro Zeile ein." } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Enter one model number per line." } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Introduce un número de modelo por línea." } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Saisissez un numéro de modèle par ligne." } }, "ja" : { "stringUnit" : { "state" : "translated", "value" : "モデル番号を1行に1つ入力します。" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "모델 번호를 한 줄에 하나씩 입력합니다." } }, "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "每行输入一个型号编号。" } }, "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "每行輸入一個型號編號。" } } } },
-    "profile_physical_sim_capacity" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Physische SIM (Hongkong)" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Physical SIM (Hong Kong)" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "SIM física (Hong Kong)" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "SIM physique (Hong Kong)" } }, "ja" : { "stringUnit" : { "state" : "translated", "value" : "物理SIMモデル（香港版）" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "물리 SIM(홍콩)" } }, "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "实体 SIM（香港版）" } }, "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "實體 SIM（香港版）" } } } },
-    "profile_sim_capacities" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "SIM-spezifische Kapazitäten" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "SIM-specific capacities" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Capacidades según SIM" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Capacités selon la SIM" } }, "ja" : { "stringUnit" : { "state" : "translated", "value" : "SIM別の容量" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "SIM별 용량" } }, "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "不同 SIM 的容量" } }, "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "不同 SIM 的容量" } } } },
-    "profile_sim_detection_pending" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Die Erkennung physischer SIM-Modelle ist noch nicht aktiviert. Ein leeres Feld bedeutet unbekannt." } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Physical SIM detection is not enabled yet. An empty value means unknown." } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "La detección de SIM física aún no está habilitada. Un valor vacío significa desconocido." } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "La détection des modèles avec SIM physique n’est pas encore activée. Une valeur vide signifie inconnue." } }, "ja" : { "stringUnit" : { "state" : "translated", "value" : "物理SIMモデルの自動判定はまだ行いません。空欄は容量不明です。" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "물리 SIM 모델 자동 감지는 아직 활성화되지 않았습니다. 빈 값은 알 수 없음을 의미합니다." } }, "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "尚未启用实体 SIM 机型检测。留空表示未知。" } }, "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "尚未啟用實體 SIM 機型偵測。留空表示未知。" } } } },
-    "profile_unknown" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Unbekannt" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Unknown" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Desconocido" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Inconnu" } }, "ja" : { "stringUnit" : { "state" : "translated", "value" : "不明" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "알 수 없음" } }, "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "未知" } }, "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "未知" } } } },
     "about_app" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -6739,6 +6732,59 @@
         }
       }
     },
+    "profile_esim_capacity" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "eSIM-Kapazität"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "eSIM capacity"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Capacidad eSIM"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Capacité eSIM"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "eSIMモデルの容量"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "eSIM 용량"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "eSIM 容量"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "eSIM 容量"
+          }
+        }
+      }
+    },
     "profile_existing_logs" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -6892,6 +6938,112 @@
         }
       }
     },
+    "profile_model_numbers" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modellnummern"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Model numbers"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Números de modelo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Numéros de modèle"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "モデル番号"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모델 번호"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "型号编号"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "型號編號"
+          }
+        }
+      }
+    },
+    "profile_model_numbers_help" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geben Sie eine Modellnummer pro Zeile ein."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter one model number per line."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Introduce un número de modelo por línea."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saisissez un numéro de modèle par ligne."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "モデル番号を1行に1つ入力します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모델 번호를 한 줄에 하나씩 입력합니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每行输入一个型号编号。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每行輸入一個型號編號。"
+          }
+        }
+      }
+    },
     "profile_multiple_matches" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -6956,6 +7108,59 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "基本情報"
+          }
+        }
+      }
+    },
+    "profile_physical_sim_capacity" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Physische SIM (Hongkong)"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Physical SIM (Hong Kong)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SIM física (Hong Kong)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SIM physique (Hong Kong)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "物理SIMモデル（香港版）"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "물리 SIM(홍콩)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "实体 SIM（香港版）"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "實體 SIM（香港版）"
           }
         }
       }
@@ -7075,6 +7280,165 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "機種名・識別子で検索"
+          }
+        }
+      }
+    },
+    "profile_sim_capacities" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SIM-spezifische Kapazitäten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SIM-specific capacities"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Capacidades según SIM"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Capacités selon la SIM"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SIM別の容量"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SIM별 용량"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不同 SIM 的容量"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不同 SIM 的容量"
+          }
+        }
+      }
+    },
+    "profile_sim_detection_pending" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Erkennung physischer SIM-Modelle ist noch nicht aktiviert. Ein leeres Feld bedeutet unbekannt."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Physical SIM detection is not enabled yet. An empty value means unknown."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La detección de SIM física aún no está habilitada. Un valor vacío significa desconocido."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La détection des modèles avec SIM physique n’est pas encore activée. Une valeur vide signifie inconnue."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "物理SIMモデルの自動判定はまだ行いません。空欄は容量不明です。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "물리 SIM 모델 자동 감지는 아직 활성화되지 않았습니다. 빈 값은 알 수 없음을 의미합니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "尚未启用实体 SIM 机型检测。留空表示未知。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "尚未啟用實體 SIM 機型偵測。留空表示未知。"
+          }
+        }
+      }
+    },
+    "profile_unknown" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unbekannt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unknown"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desconocido"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inconnu"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不明"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알 수 없음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未知"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未知"
           }
         }
       }

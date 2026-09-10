@@ -1,66 +1,6 @@
 {
   "sourceLanguage" : "ja",
   "strings" : {
-    "hint_product_sku" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The sales-region code recorded in the analytics log, such as C/A or J/A." } },
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Der im Analyseprotokoll aufgezeichnete Verkaufregionscode, z. B. C/A oder J/A." } },
-        "es" : { "stringUnit" : { "state" : "translated", "value" : "El código de región de venta registrado en el registro de análisis, como C/A o J/A." } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Le code de région de vente enregistré dans le journal d’analyse, par exemple C/A ou J/A." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "解析ログに記録された販売地域コードです。例：C/A、J/A" } }
-        ,"ko" : { "stringUnit" : { "state" : "translated", "value" : "분석 로그에 기록된 판매 지역 코드입니다. 예: C/A, J/A" } }
-        ,"zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "分析日志中记录的销售地区代码，例如 C/A 或 J/A。" } }
-        ,"zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "分析記錄中記載的銷售地區代碼，例如 C/A 或 J/A。" } }
-      }
-    },
-    "product_sku" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Region" } },
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Region" } },
-        "es" : { "stringUnit" : { "state" : "translated", "value" : "Región" } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Région" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "リージョン" } }
-        ,"ko" : { "stringUnit" : { "state" : "translated", "value" : "지역" } }
-        ,"zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "地区" } }
-        ,"zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "地區" } }
-      }
-    },
-    "sim_profile" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Capacity profile" } },
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Kapazitätsprofil" } },
-        "es" : { "stringUnit" : { "state" : "translated", "value" : "Perfil de capacidad" } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Profil de capacité" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "容量プロファイル" } }
-        ,"ko" : { "stringUnit" : { "state" : "translated", "value" : "용량 프로필" } }
-        ,"zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "容量配置" } }
-        ,"zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "容量設定" } }
-      }
-    },
-    "sim_profile_esim" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "eSIM model" } },
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "eSIM-Modell" } },
-        "es" : { "stringUnit" : { "state" : "translated", "value" : "Modelo eSIM" } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Modèle eSIM" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "eSIMモデル" } }
-        ,"ko" : { "stringUnit" : { "state" : "translated", "value" : "eSIM 모델" } }
-        ,"zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "eSIM 机型" } }
-        ,"zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "eSIM 機型" } }
-      }
-    },
-    "sim_profile_physical_hk" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Physical SIM model (Hong Kong)" } },
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Modell mit physischer SIM (Hongkong)" } },
-        "es" : { "stringUnit" : { "state" : "translated", "value" : "Modelo con SIM física (Hong Kong)" } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Modèle avec SIM physique (Hong Kong)" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "物理SIMモデル（香港版）" } }
-        ,"ko" : { "stringUnit" : { "state" : "translated", "value" : "물리 SIM 모델(홍콩)" } }
-        ,"zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "实体 SIM 机型（香港版）" } }
-        ,"zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "實體 SIM 機型（香港版）" } }
-      }
-    },
     "battery_health" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1227,6 +1167,59 @@
         }
       }
     },
+    "hint_product_sku" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der im Analyseprotokoll aufgezeichnete Verkaufregionscode, z. B. C/A oder J/A."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The sales-region code recorded in the analytics log, such as C/A or J/A."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El código de región de venta registrado en el registro de análisis, como C/A o J/A."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le code de région de vente enregistré dans le journal d’analyse, par exemple C/A ou J/A."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析ログに記録された販売地域コードです。例：C/A、J/A"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "분석 로그에 기록된 판매 지역 코드입니다. 예: C/A, J/A"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分析日志中记录的销售地区代码，例如 C/A 或 J/A。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分析記錄中記載的銷售地區代碼，例如 C/A 或 J/A。"
+          }
+        }
+      }
+    },
     "hint_ram" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -2022,6 +2015,59 @@
         }
       }
     },
+    "product_sku" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Region"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Region"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Región"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Région"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リージョン"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지역"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "地区"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "地區"
+          }
+        }
+      }
+    },
     "ram" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -2601,6 +2647,165 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%d年%d天"
+          }
+        }
+      }
+    },
+    "sim_profile" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kapazitätsprofil"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Capacity profile"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Perfil de capacidad"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Profil de capacité"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "容量プロファイル"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "용량 프로필"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "容量配置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "容量設定"
+          }
+        }
+      }
+    },
+    "sim_profile_esim" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "eSIM-Modell"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "eSIM model"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modelo eSIM"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modèle eSIM"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "eSIMモデル"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "eSIM 모델"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "eSIM 机型"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "eSIM 機型"
+          }
+        }
+      }
+    },
+    "sim_profile_physical_hk" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modell mit physischer SIM (Hongkong)"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Physical SIM model (Hong Kong)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modelo con SIM física (Hong Kong)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modèle avec SIM physique (Hong Kong)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "物理SIMモデル（香港版）"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "물리 SIM 모델(홍콩)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "实体 SIM 机型（香港版）"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "實體 SIM 機型（香港版）"
           }
         }
       }

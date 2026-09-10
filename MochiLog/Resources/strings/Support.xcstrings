@@ -2,27 +2,56 @@
   "sourceLanguage" : "ja",
   "strings" : {
     "battery_capacity_report_template" : {
+      "extractionState" : "stale",
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Device name:\nModel identifier (example: iPhone19,2):\nSIM model (iPhone 17 or later, excluding Air/Duo):\nCapacity currently shown in MochiLog:\nCorrect capacity:\nInformation source URL (optional):\n\nAdditional details:" } },
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Gerätename:\nModellkennung (Beispiel: iPhone19,2):\nSIM-Modell (iPhone 17 oder neuer, außer Air/Duo):\nDerzeit in MochiLog angezeigte Kapazität:\nKorrekte Kapazität:\nURL der Informationsquelle (optional):\n\nZusätzliche Angaben:" } },
-        "es" : { "stringUnit" : { "state" : "translated", "value" : "Nombre del dispositivo:\nIdentificador del modelo (ejemplo: iPhone19,2):\nModelo de SIM (iPhone 17 o posterior, excepto Air/Duo):\nCapacidad que muestra actualmente MochiLog:\nCapacidad correcta:\nURL de la fuente de información (opcional):\n\nDetalles adicionales:" } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Nom de l’appareil :\nIdentifiant du modèle (exemple : iPhone19,2) :\nModèle SIM (iPhone 17 ou ultérieur, sauf Air/Duo) :\nCapacité actuellement affichée dans MochiLog :\nCapacité correcte :\nURL de la source d’information (facultatif) :\n\nInformations complémentaires :" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "機種名：\nモデル識別子（例：iPhone19,2）：\nSIMモデル（17以降、Air／Duoを除く）：\nMochiLogで現在表示される容量：\n正しい容量：\n情報元のURL（任意）：\n\n補足：" } }
-        ,"ko" : { "stringUnit" : { "state" : "translated", "value" : "기기 이름:\n모델 식별자(예: iPhone19,2):\nSIM 모델(iPhone 17 이후, Air/Duo 제외):\nMochiLog에 현재 표시되는 용량:\n올바른 용량:\n정보 출처 URL(선택 사항):\n\n추가 정보:" } }
-        ,"zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "设备名称：\n型号标识符（例如 iPhone19,2）：\nSIM 机型（iPhone 17 及以后，不含 Air/Duo）：\nMochiLog 当前显示的容量：\n正确容量：\n信息来源 URL（可选）：\n\n补充说明：" } }
-        ,"zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "裝置名稱：\n型號識別碼（例如 iPhone19,2）：\nSIM 機型（iPhone 17 及以後，不含 Air/Duo）：\nMochiLog 目前顯示的容量：\n正確容量：\n資訊來源 URL（選填）：\n\n補充說明：" } }
-      }
-    },
-    "inquiry_battery_capacity" : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Incorrect battery capacity" } },
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Falsche Batterie- oder Geräteinformationen" } },
-        "es" : { "stringUnit" : { "state" : "translated", "value" : "Capacidad o información del dispositivo incorrecta" } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Capacité ou informations d’appareil incorrectes" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "バッテリー容量・機種情報の誤り" } }
-        ,"ko" : { "stringUnit" : { "state" : "translated", "value" : "잘못된 배터리 용량 또는 기기 정보" } }
-        ,"zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "电池容量或设备信息错误" } }
-        ,"zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "電池容量或裝置資訊錯誤" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gerätename:\nModellkennung (Beispiel: iPhone19,2):\nSIM-Modell (iPhone 17 oder neuer, außer Air/Duo):\nDerzeit in MochiLog angezeigte Kapazität:\nKorrekte Kapazität:\nURL der Informationsquelle (optional):\n\nZusätzliche Angaben:"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device name:\nModel identifier (example: iPhone19,2):\nSIM model (iPhone 17 or later, excluding Air/Duo):\nCapacity currently shown in MochiLog:\nCorrect capacity:\nInformation source URL (optional):\n\nAdditional details:"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nombre del dispositivo:\nIdentificador del modelo (ejemplo: iPhone19,2):\nModelo de SIM (iPhone 17 o posterior, excepto Air/Duo):\nCapacidad que muestra actualmente MochiLog:\nCapacidad correcta:\nURL de la fuente de información (opcional):\n\nDetalles adicionales:"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nom de l’appareil :\nIdentifiant du modèle (exemple : iPhone19,2) :\nModèle SIM (iPhone 17 ou ultérieur, sauf Air/Duo) :\nCapacité actuellement affichée dans MochiLog :\nCapacité correcte :\nURL de la source d’information (facultatif) :\n\nInformations complémentaires :"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "機種名：\nモデル識別子（例：iPhone19,2）：\nSIMモデル（17以降、Air／Duoを除く）：\nMochiLogで現在表示される容量：\n正しい容量：\n情報元のURL（任意）：\n\n補足："
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기기 이름:\n모델 식별자(예: iPhone19,2):\nSIM 모델(iPhone 17 이후, Air/Duo 제외):\nMochiLog에 현재 표시되는 용량:\n올바른 용량:\n정보 출처 URL(선택 사항):\n\n추가 정보:"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设备名称：\n型号标识符（例如 iPhone19,2）：\nSIM 机型（iPhone 17 及以后，不含 Air/Duo）：\nMochiLog 当前显示的容量：\n正确容量：\n信息来源 URL（可选）：\n\n补充说明："
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "裝置名稱：\n型號識別碼（例如 iPhone19,2）：\nSIM 機型（iPhone 17 及以後，不含 Air/Duo）：\nMochiLog 目前顯示的容量：\n正確容量：\n資訊來源 URL（選填）：\n\n補充說明："
+          }
+        }
       }
     },
     "contact_form" : {
@@ -339,6 +368,59 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "錯誤日誌"
+          }
+        }
+      }
+    },
+    "inquiry_battery_capacity" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falsche Batterie- oder Geräteinformationen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Incorrect battery capacity"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Capacidad o información del dispositivo incorrecta"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Capacité ou informations d’appareil incorrectes"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バッテリー容量・機種情報の誤り"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "잘못된 배터리 용량 또는 기기 정보"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "电池容量或设备信息错误"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "電池容量或裝置資訊錯誤"
           }
         }
       }

@@ -1,38 +1,6 @@
 {
   "sourceLanguage" : "ja",
   "strings" : {
-    "import_no_battery_measurements" : {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "この解析ログにはバッテリーの容量・サイクル数が含まれていません。バッテリー情報を含む別のAnalyticsログを選んでください。"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This analytics log does not contain battery capacity or cycle counts. Choose another Analytics log containing battery information."
-          }
-        }
-      }
-    },
-    "import_invalid_battery_format" : {
-      "localizations": {
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "バッテリー情報はありますが、データ形式を読み取れませんでした。設定のデバッグログから対象ログを確認できます。"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Battery information was found, but its format could not be read. You can inspect this file in Settings > Debug Logs."
-          }
-        }
-      }
-    },
     "add_data" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -453,6 +421,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "檔案選擇錯誤"
+          }
+        }
+      }
+    },
+    "import_invalid_battery_format" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Battery information was found, but its format could not be read. You can inspect this file in Settings > Debug Logs."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バッテリー情報はありますが、データ形式を読み取れませんでした。設定のデバッグログから対象ログを確認できます。"
+          }
+        }
+      }
+    },
+    "import_no_battery_measurements" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This analytics log does not contain battery capacity or cycle counts. Choose another Analytics log containing battery information."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この解析ログにはバッテリーの容量・サイクル数が含まれていません。バッテリー情報を含む別のAnalyticsログを選んでください。"
           }
         }
       }
