@@ -73,6 +73,9 @@ struct SettingsView: View {
   var body: some View {
     NavigationStack {
       settingsList
+        .navigationDestination(isPresented: $appSettings.showingICloudSettings) {
+          ICloudSettingsView(appSettings: appSettings)
+        }
         .navigationTitle(L10n.string("settings_title", table: "Settings"))
         .onAppear {
           setupShortcutNotification()
@@ -373,9 +376,6 @@ struct SettingsView: View {
               .font(.system(size: 14, weight: .semibold))
               .foregroundColor(Color(UIColor.tertiaryLabel))
           }
-        }
-        .navigationDestination(isPresented: $appSettings.showingICloudSettings) {
-          ICloudSettingsView(appSettings: appSettings)
         }
       }
 

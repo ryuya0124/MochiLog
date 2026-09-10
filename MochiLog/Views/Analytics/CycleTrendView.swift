@@ -153,17 +153,9 @@ struct CycleTrendView: View {
           )
         }
 
-        // 描画用データは期間に応じて間引き（負荷軽減）
-        let downsampleStart = CFAbsoluteTimeGetCurrent()
-        let chartRecords = ChartAxisHelper.downsampledRecords(
-          visibleRecords, startDay: startDay, endDay: endDay)
-        let downsampleElapsed = (CFAbsoluteTimeGetCurrent() - downsampleStart) * 1000
-        let _ = print(
-          "[Performance] CycleTrendView.downsample: \(String(format: "%.2f", downsampleElapsed))ms (\(visibleRecords.count) -> \(chartRecords.count)件)"
-        )
-
-        // 遅延レンダリング: タブ切り替え時はプレースホルダーを表示し、次フレームでChart描画
         if isChartReady {
+          let chartRecords = ChartAxisHelper.downsampledRecords(
+            visibleRecords, startDay: startDay, endDay: endDay)
           // 表示されているデバイス名とその色のマッピングを計算
           let visibleDeviceNames = Array(Set(chartRecords.map { $0.deviceName })).sorted()
           let visibleDeviceColors = visibleDeviceNames.map { deviceName -> Color in
@@ -183,11 +175,10 @@ struct CycleTrendView: View {
             chartRecords: chartRecords, visibleDeviceNames: visibleDeviceNames,
             visibleDeviceColors: visibleDeviceColors
           )
-          .transition(.opacity.animation(.easeOut(duration: 0.3)))
+        } else {
+          Color.clear
+            .frame(height: horizontalSizeClass == .regular ? 280 : 200)
         }
-        // チャート領域の高さを常に確保（プレースホルダー兼用）
-        Color.clear
-          .frame(height: isChartReady ? 0 : (horizontalSizeClass == .regular ? 280 : 200))
       }
     }
     .frame(maxWidth: .infinity, alignment: .topLeading)
@@ -213,10 +204,6 @@ struct CycleTrendView: View {
         }
       }
       animateChart = true
-    }
-    .onDisappear {
-      // タブ切り替え時にリセット → 次回表示時に遅延レンダリングが再度有効になる
-      isChartReady = false
     }
     .onChange(of: ChartWindowNavigator.recordSignature(allRecords, selectedDevice: nil)) { _ in
       guard sharedShiftWindow == nil else { return }

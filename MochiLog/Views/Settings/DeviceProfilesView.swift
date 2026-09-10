@@ -36,7 +36,7 @@ struct DeviceProfilesView: View {
         || $0.name.localizedCaseInsensitiveContains(search)
         || $0.identifiers.contains(where: { $0.localizedCaseInsensitiveContains(search) }) }, by: \.category)
       ForEach(DeviceProfile.Category.allCases) { category in
-        let profiles = grouped[category] ?? []
+        let profiles = newestFirst(grouped[category] ?? [])
         if search.isEmpty || !profiles.isEmpty {
           Section {
             DisclosureGroup(isExpanded: Binding(
@@ -87,6 +87,21 @@ struct DeviceProfilesView: View {
       }
     }
     .accessibilityIdentifier("profiles.list")
+  }
+  private func newestFirst(_ profiles: [DeviceProfile]) -> [DeviceProfile] {
+    // Match the model picker: compare identifier generations numerically, not model names.
+    let keyed = profiles.map { profile in
+      (profile: profile, identifier: profile.identifiers.max {
+        $0.compare($1, options: .numeric) == .orderedAscending
+      } ?? "")
+    }
+    return keyed.sorted { lhs, rhs in
+      let order = lhs.identifier.compare(rhs.identifier, options: .numeric)
+      if order != .orderedSame { return order == .orderedDescending }
+      let nameOrder = lhs.profile.name.localizedStandardCompare(rhs.profile.name)
+      if nameOrder != .orderedSame { return nameOrder == .orderedAscending }
+      return lhs.profile.id < rhs.profile.id
+    }.map(\.profile)
   }
 }
 
@@ -204,11 +219,13 @@ private struct DeviceProfileEditor: View {
           TextField(profileText("profile_name"), text: $name)
             .textFieldStyle(.roundedBorder).focused($focusedField, equals: "name").accessibilityIdentifier("profiles.name")
         }
-        VStack(alignment: .leading, spacing: 8) {
-          Text(profileText("profile_capacity")).font(.caption).foregroundStyle(.secondary)
-          TextField("mAh", text: $capacity)
-            .textFieldStyle(.roundedBorder).keyboardType(.numberPad).focused($focusedField, equals: "capacity")
-            .accessibilityIdentifier("profiles.capacity")
+        if profile.capacityVariants.isEmpty {
+          capacityField(profileText("profile_capacity"), text: $capacity, field: "capacity")
+        } else {
+          capacityField(profileText("profile_esim_capacity"), text: $esimCapacity, field: "esimCapacity")
+          if profile.capacityVariants.contains(where: { $0.configuration == .physicalSIM }) {
+            capacityField(profileText("profile_physical_sim_capacity"), text: $physicalSIMCapacity, field: "physicalSIMCapacity")
+          }
         }
         VStack(alignment: .leading, spacing: 8) {
           Text("SoC").font(.caption).foregroundStyle(.secondary)
@@ -229,26 +246,25 @@ private struct DeviceProfileEditor: View {
         TextEditor(text: $modelNumbers).focused($focusedField, equals: "modelNumbers").frame(minHeight: 72)
           .textInputAutocapitalization(.characters).autocorrectionDisabled()
       } header: { Text(profileText("profile_model_numbers")) } footer: { Text(profileText("profile_model_numbers_help")) }
-      if !profile.capacityVariants.isEmpty {
-        Section {
-          LabeledContent(profileText("profile_esim_capacity")) {
-            TextField("mAh", text: $esimCapacity).keyboardType(.numberPad)
-              .multilineTextAlignment(.trailing).focused($focusedField, equals: "esimCapacity")
-          }
-          if profile.capacityVariants.contains(where: { $0.configuration == .physicalSIM }) {
-            LabeledContent(profileText("profile_physical_sim_capacity")) {
-              TextField(profileText("profile_unknown"), text: $physicalSIMCapacity).keyboardType(.numberPad)
-                .multilineTextAlignment(.trailing).focused($focusedField, equals: "physicalSIMCapacity")
-            }
-          }
-        } header: { Text(profileText("profile_sim_capacities")) }
-          footer: { Text(profileText("profile_sim_detection_pending")) }
-      }
       if !isNew {
         Section {
           actionButton("profile_save", action: save).accessibilityIdentifier("profiles.save")
         } footer: { Text(profileText("profile_save_help")) }
       }
+  }
+
+  private func capacityField(_ title: String, text: Binding<String>, field: String) -> some View {
+    VStack(alignment: .leading, spacing: 8) {
+      Text(title).font(.caption).foregroundStyle(.secondary)
+      HStack {
+        TextField(profileText("profile_unknown"), text: text)
+          .textFieldStyle(.roundedBorder)
+          .keyboardType(.numberPad)
+          .focused($focusedField, equals: field)
+          .accessibilityIdentifier("profiles.\(field)")
+        Text("mAh").foregroundStyle(.secondary)
+      }
+    }
   }
 
   @ViewBuilder private var existingLogSection: some View {
@@ -310,7 +326,7 @@ private struct DeviceProfileEditor: View {
     let models = modelNumbers.split(whereSeparator: \.isNewline).map { $0.trimmingCharacters(in: .whitespaces) }
     if (isNew || !profile.identifiers.isEmpty) && ids.isEmpty { throw DeviceProfileStore.ProfileError(key: "profile_identifiers_invalid") }
     return DeviceProfile(id: profile.id, name: name.trimmingCharacters(in: .whitespacesAndNewlines),
-      identifiers: ids, capacity: Int(capacity) ?? 0, soc: soc.trimmingCharacters(in: .whitespacesAndNewlines), boards: mappings,
+      identifiers: ids, capacity: Int(profile.capacityVariants.isEmpty ? capacity : esimCapacity) ?? 0, soc: soc.trimmingCharacters(in: .whitespacesAndNewlines), boards: mappings,
       modelNumbers: models, modelNumbersByIdentifier: profile.modelNumbersByIdentifier,
       capacityVariants: profile.capacityVariants.map { variant in
         switch variant.configuration {

@@ -40,8 +40,9 @@ jobs:
         env:
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          BUILD_NUMBER: ${{ github.event.inputs.build_number || github.run_number }}
+          BUILD_NUMBER: ${{ github.event.inputs.build_number }}
         run: |
+          export BUILD_NUMBER="${BUILD_NUMBER:-$((1000 + GITHUB_RUN_NUMBER))}"
           fastlane build_appstore
 
       - name: Upload to TestFlight
@@ -63,6 +64,7 @@ jobs:
   # 署名なしIPA（開発・配布用）
   # ============================================
   build-unsigned:
+    if: github.event_name != 'workflow_dispatch' || github.event.inputs.upload_to_testflight != 'true'
     name: Build Unsigned IPA
     runs-on: macos-latest
     steps:

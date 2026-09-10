@@ -10,6 +10,13 @@ enum DeviceLibrary {
   static func getDeviceName(for identifier: String) -> String? { "Test Device" }
   static func getCapacity(for name: String) -> Int? { 4000 }
 }
+enum DeviceProfileStore {
+  static let shared = DeviceProfileStoreStub()
+}
+struct DeviceProfileStoreStub {
+  struct Variant { let capacity: Int? }
+  func capacityVariant(for name: String, productSku: String?) -> Variant? { nil }
+}
 final class ErrorLogStore {
   static let shared = ErrorLogStore()
   func saveLog(message: String, rawText: String?) {}

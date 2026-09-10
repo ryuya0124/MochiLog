@@ -110,7 +110,7 @@ struct AnalyticsContentView: View {
       } else {
         // コンテンツ表示
         ScrollView {
-          VStack(spacing: 20) {
+          LazyVStack(spacing: 20) {
             // デバイス選択ピッカー（スクロールと一緒に動く）
             DevicePickerView(deviceNames: cachedDeviceNames, selectedDevice: $selectedDevice)
 

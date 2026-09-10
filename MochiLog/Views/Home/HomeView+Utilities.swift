@@ -28,7 +28,8 @@ extension HomeView {
   ) -> BatteryRecord {
     let logDate = result.logDate ?? Date()
     let modelCodeUsed = deviceModelCodeOverride ?? result.deviceModelCode
-    let designCapacityUsed = designCapacityOverride ?? result.designCapacity ?? 0
+    let designCapacityUsed = DeviceProfileStore.shared.capacityVariant(for: deviceName, productSku: result.productSku)?.capacity
+      ?? designCapacityOverride ?? result.designCapacity ?? 0
     let record = BatteryRecord(
       logDate: logDate,
       deviceName: deviceName,

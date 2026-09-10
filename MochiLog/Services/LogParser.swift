@@ -174,7 +174,7 @@ struct LogParser {
     if let id = result.deviceModelCode,
       !id.isEmpty,
       let name = DeviceLibrary.getDeviceName(for: id),
-      let cap = DeviceLibrary.getCapacity(for: name)
+      let cap = DeviceProfileStore.shared.capacityVariant(for: name, productSku: result.productSku)?.capacity ?? DeviceLibrary.getCapacity(for: name)
     {
       result.designCapacity = cap
     }

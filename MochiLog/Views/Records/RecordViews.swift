@@ -6,7 +6,7 @@ import SwiftUI
 
 private func simCapacityProfile(for record: BatteryRecord) -> String? {
   guard let variant = DeviceProfileStore.shared.capacityVariant(
-    for: record.deviceName, capacity: record.designCapacity) else { return nil }
+    for: record.deviceName, productSku: record.productSku) else { return nil }
   switch variant.configuration {
   case .esim:
     return L10n.string("sim_profile_esim", table: "Records")

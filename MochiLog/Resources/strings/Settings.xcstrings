@@ -6738,49 +6738,49 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "eSIM-Kapazität"
+            "value" : "Auslegungskapazität des eSIM-Modells"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "eSIM capacity"
+            "value" : "eSIM model design capacity"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Capacidad eSIM"
+            "value" : "Capacidad de diseño del modelo eSIM"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Capacité eSIM"
+            "value" : "Capacité nominale du modèle eSIM"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "eSIMモデルの容量"
+            "value" : "eSIMモデルの設計容量"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "eSIM 용량"
+            "value" : "eSIM 모델 설계 용량"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "eSIM 容量"
+            "value" : "eSIM 机型设计容量"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "eSIM 容量"
+            "value" : "eSIM 机型设计容量"
           }
         }
       }
@@ -7118,49 +7118,49 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Physische SIM (Hongkong)"
+            "value" : "Auslegungskapazität des Modells mit physischer SIM (Hongkong)"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Physical SIM (Hong Kong)"
+            "value" : "Physical SIM model design capacity (Hong Kong)"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "SIM física (Hong Kong)"
+            "value" : "Capacidad de diseño del modelo con SIM física (Hong Kong)"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "SIM physique (Hong Kong)"
+            "value" : "Capacité nominale du modèle SIM physique (Hong Kong)"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "物理SIMモデル（香港版）"
+            "value" : "物理SIMモデルの設計容量（香港版）"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "물리 SIM(홍콩)"
+            "value" : "물리 SIM 모델 설계 용량(홍콩)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "实体 SIM（香港版）"
+            "value" : "实体 SIM 机型设计容量（香港版）"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "實體 SIM（香港版）"
+            "value" : "實體 SIM 機型設計容量（香港版）"
           }
         }
       }

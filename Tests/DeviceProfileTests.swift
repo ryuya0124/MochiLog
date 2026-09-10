@@ -57,7 +57,22 @@ struct DeviceProfileTests {
     let defaults = UserDefaults(suiteName: suite)!
     defer { defaults.removePersistentDomain(forName: suite) }
     let store = DeviceProfileStore(defaults: defaults)
-    var standard = store.profiles[0]
+    var simDevice = baseline
+    simDevice.id = "sim-test"
+    simDevice.name = "iPhone SIM Test"
+    simDevice.identifiers = ["iPhone97,1"]
+    simDevice.capacityVariants = [
+      DeviceCapacityVariant(configuration: .esim, capacity: 4288, region: nil),
+      DeviceCapacityVariant(configuration: .physicalSIM, capacity: 4056, region: "HK")
+    ]
+    try store.save(simDevice)
+    precondition(store.capacityVariant(for: simDevice.name, productSku: "ZP/A")?.capacity == 4056)
+    for sku in ["J/A", "C/A", "", "zp/a"] {
+      precondition(store.capacityVariant(for: simDevice.name, productSku: sku)?.capacity == 4288)
+    }
+    precondition(store.capacityVariant(for: simDevice.name, productSku: nil)?.capacity == 4288)
+    precondition(store.capacityVariant(for: "iPhone Test", productSku: "ZP/A") == nil)
+    var standard = store.profiles.first { $0.name == "iPhone Test" }!
     let original = standard
     standard.capacity = 4500
     try store.save(standard)
