@@ -12,16 +12,19 @@ if [[ -n "$(git status --porcelain)" ]]; then
   exit 1
 fi
 branch=$(git symbolic-ref --quiet --short HEAD) || { echo 'ブランチをチェックアウトしてください。'; exit 1; }
-args=()
+
 if [[ -n "${1:-}" ]]; then
   [[ "$1" =~ ^[1-9][0-9]*$ ]] || { echo 'ビルド番号は正の整数にしてください。'; exit 1; }
-  args+=(-f "build_number=$1")
 fi
 # Only committed changes are pushed. No force push or automatic staging.
 git push origin "HEAD:refs/heads/$branch"
 sha=$(git rev-parse HEAD)
 previous=$(gh run list --workflow ios.yml --branch "$branch" --limit 1 --json databaseId --jq '.[0].databaseId // 0')
-gh workflow run ios.yml --ref "$branch" -f upload_to_testflight=true "${args[@]}"
+if [[ -n "${1:-}" ]]; then
+  gh workflow run ios.yml --ref "$branch" -f upload_to_testflight=true -f "build_number=$1"
+else
+  gh workflow run ios.yml --ref "$branch" -f upload_to_testflight=true
+fi
 echo 'アップロード処理を開始しました。実行IDを取得しています…'
 run_id=''
 for ((attempt=0; attempt<30; attempt++)); do
