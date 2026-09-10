@@ -4,6 +4,17 @@ import Foundation
 // 一覧行ビューと詳細ビュー
 import SwiftUI
 
+private func simCapacityProfile(for record: BatteryRecord) -> String? {
+  guard let variant = DeviceProfileStore.shared.capacityVariant(
+    for: record.deviceName, capacity: record.designCapacity) else { return nil }
+  switch variant.configuration {
+  case .esim:
+    return L10n.string("sim_profile_esim", table: "Records")
+  case .physicalSIM:
+    return L10n.string("sim_profile_physical_hk", table: "Records")
+  }
+}
+
 // MARK: - ⓘボタン付きLabeledContentラッパー
 /// ラベルの横にⓘボタンを表示し、タップでポップオーバーを表示するコンポーネント
 /// iPad / iPhone どちらも吹き出しスタイルで表示（UIKitブリッジ使用）
@@ -514,6 +525,12 @@ struct RecordDetailView: View {
                     hint: L10n.string("hint_model_code", table: "Records"),
                     value: modelCode)
                 }
+                if let productSku = record.productSku, !productSku.isEmpty {
+                  InfoLabeledContent(
+                    L10n.string("product_sku", table: "Records"),
+                    hint: L10n.string("hint_product_sku", table: "Records"),
+                    value: productSku)
+                }
 
                 if !isMagSafe {
                   if record.storage != nil, let formatted = record.formattedStorage {
@@ -567,6 +584,9 @@ struct RecordDetailView: View {
                     L10n.string("design_capacity", table: "Analytics"),
                     hint: L10n.string("hint_design_capacity", table: "Records"),
                     value: L10n.string("unknown", table: "Common"))
+                }
+                if let simProfile = simCapacityProfile(for: record) {
+                  LabeledContent(L10n.string("sim_profile", table: "Records"), value: simProfile)
                 }
                 InfoLabeledContent(
                   L10n.string("nominal_capacity", table: "Analytics"),
@@ -761,6 +781,12 @@ struct RecordDetailView: View {
                 hint: L10n.string("hint_model_code", table: "Records"),
                 value: modelCode)
             }
+            if let productSku = record.productSku, !productSku.isEmpty {
+              InfoLabeledContent(
+                L10n.string("product_sku", table: "Records"),
+                hint: L10n.string("hint_product_sku", table: "Records"),
+                value: productSku)
+            }
 
             if !isMagSafe {
               if record.storage != nil, let formatted = record.formattedStorage {
@@ -807,6 +833,9 @@ struct RecordDetailView: View {
                 L10n.string("design_capacity", table: "Analytics"),
                 hint: L10n.string("hint_design_capacity", table: "Records"),
                 value: L10n.string("unknown", table: "Common"))
+            }
+            if let simProfile = simCapacityProfile(for: record) {
+              LabeledContent(L10n.string("sim_profile", table: "Records"), value: simProfile)
             }
             InfoLabeledContent(
               L10n.string("nominal_capacity", table: "Analytics"),

@@ -1,6 +1,36 @@
 {
   "sourceLanguage" : "ja",
   "strings" : {
+    "hint_product_sku" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The sales-region code recorded in the analytics log, such as C/A or J/A." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "解析ログに記録された販売地域コードです。例：C/A、J/A" } }
+      }
+    },
+    "product_sku" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Product SKU" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "販売地域コード" } }
+      }
+    },
+    "sim_profile" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Capacity profile" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "容量プロファイル" } }
+      }
+    },
+    "sim_profile_esim" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "eSIM model" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "eSIMモデル" } }
+      }
+    },
+    "sim_profile_physical_hk" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Physical SIM model (Hong Kong)" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "物理SIMモデル（香港版）" } }
+      }
+    },
     "battery_health" : {
       "extractionState" : "stale",
       "localizations" : {

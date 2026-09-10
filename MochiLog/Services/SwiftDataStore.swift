@@ -15,6 +15,7 @@ enum CurrentBatterySchema: VersionedSchema {
     var deviceName: String = "Unknown"
     var deviceModelCode: String?
     var osVersion: String?
+    var productSku: String?
     var storage: String?
     var ram: String?
     var manufactureDate: String?
@@ -46,6 +47,7 @@ enum CurrentBatterySchema: VersionedSchema {
       self.deviceName = record.deviceName
       self.deviceModelCode = record.deviceModelCode
       self.osVersion = record.osVersion
+      self.productSku = record.productSku
       self.storage = record.storage
       self.ram = record.ram
       self.manufactureDate = record.manufactureDate
@@ -80,6 +82,7 @@ enum CurrentBatterySchema: VersionedSchema {
         deviceName: deviceName,
         deviceModelCode: deviceModelCode,
         osVersion: osVersion,
+        productSku: productSku,
         storage: storage,
         ram: ram,
         manufactureDate: manufactureDate,
@@ -108,6 +111,7 @@ enum CurrentBatterySchema: VersionedSchema {
       self.deviceName = record.deviceName
       self.deviceModelCode = record.deviceModelCode
       self.osVersion = record.osVersion
+      self.productSku = record.productSku
       self.storage = record.storage
       self.ram = record.ram
       self.manufactureDate = record.manufactureDate

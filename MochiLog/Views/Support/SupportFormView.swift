@@ -4,6 +4,7 @@ import SwiftUI
 // MARK: - 問い合わせの種類
 enum InquiryType: String, CaseIterable, Identifiable {
   case bug = "inquiry_bug"
+  case batteryCapacity = "inquiry_battery_capacity"
   case feature = "inquiry_feature"
   case question = "inquiry_question"
   case other = "inquiry_other"
@@ -12,6 +13,11 @@ enum InquiryType: String, CaseIterable, Identifiable {
 
   var localizedName: String {
     L10n.string(String.LocalizationValue(rawValue), table: "Support")
+  }
+
+  var messageTemplate: String? {
+    guard self == .batteryCapacity else { return nil }
+    return L10n.string("battery_capacity_report_template", table: "Support")
   }
 }
 
@@ -54,6 +60,11 @@ struct SupportFormView: View {
             }
           }
           .pickerStyle(.menu)
+          .onChange(of: inquiryType) { newValue in
+            guard let template = newValue.messageTemplate,
+              message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+            message = template
+          }
         }
 
         Section {

@@ -35,6 +35,7 @@ struct DataExportService {
     let deviceName: String
     let deviceModelCode: String?
     let osVersion: String?
+    let productSku: String?
 
     // ハードウェア/製造情報
     let storage: String?
@@ -74,6 +75,7 @@ struct DataExportService {
       self.deviceName = record.deviceName
       self.deviceModelCode = record.deviceModelCode
       self.osVersion = record.osVersion
+      self.productSku = record.productSku
 
       self.storage = record.storage
       self.ram = record.ram

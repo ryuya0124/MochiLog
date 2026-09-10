@@ -20,7 +20,10 @@ final class DeviceProfileStore: ObservableObject {
       let identifiers = DeviceLibrary.deviceNamesJa.filter { $0.value == name }.keys.sorted()
       return DeviceProfile(id: "bundled:" + name, name: name, identifiers: identifiers,
         capacity: DeviceLibrary.designCapacities[name] ?? 0, soc: DeviceLibrary.socInfo[name] ?? "",
-        boards: DeviceLibrary.boardToIdentifier.filter { identifiers.contains($0.value) })
+        boards: DeviceLibrary.boardToIdentifier.filter { identifiers.contains($0.value) },
+        modelNumbers: DeviceLibrary.modelNumbers[name] ?? [],
+        modelNumbersByIdentifier: DeviceLibrary.modelNumbersByIdentifier.filter { identifiers.contains($0.key) },
+        capacityVariants: DeviceLibrary.capacityVariants[name] ?? [])
     }
   }()
 
@@ -38,6 +41,10 @@ final class DeviceProfileStore: ObservableObject {
   }
   func capacity(_ name: String) -> Int? { lock.lock(); defer { lock.unlock() }; return capacityMap[name] }
   func soc(_ name: String) -> String? { lock.lock(); defer { lock.unlock() }; return socMap[name] }
+  func capacityVariant(for name: String, capacity: Int) -> DeviceCapacityVariant? {
+    lock.lock(); defer { lock.unlock() }
+    return resolved.first(where: { $0.name == name })?.capacityVariants.first { $0.capacity == capacity }
+  }
   func identifier(for board: String) -> String? { lock.lock(); defer { lock.unlock() }; return boardMap[board] }
 
   func modelIdentifier(for name: String) -> String? {

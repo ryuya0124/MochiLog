@@ -34,6 +34,7 @@ extension HomeView {
       deviceName: deviceName,
       deviceModelCode: modelCodeUsed,
       osVersion: result.osVersion,
+      productSku: result.productSku,
       storage: result.storage,
       ram: result.ram,
       manufactureDate: nil,

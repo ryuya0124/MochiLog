@@ -9,6 +9,7 @@ struct LogParser {
     var logDate: Date?
     var osVersion: String?
     var deviceModelCode: String?
+    var productSku: String?
 
     // --- ハードウェア ---
     var storage: String?  // GB
@@ -59,7 +60,8 @@ struct LogParser {
 
   private struct HardwareJSON: Codable {
     let deviceCapacity: Int?  // GB
-    let dramSize: Int?  // GB
+    let dramSize: Double?  // GB（7.5のような小数を含む）
+    let productSku: String?
   }
 
   private struct BatteryJSON: Codable {
@@ -137,7 +139,10 @@ struct LogParser {
     {
 
       if let cap = hw.deviceCapacity { result.storage = "\(cap) GB" }
-      if let dram = hw.dramSize { result.ram = "\(dram) GB" }
+      if let dram = hw.dramSize {
+        result.ram = dram.rounded() == dram ? "\(Int(dram)) GB" : "\(dram) GB"
+      }
+      result.productSku = hw.productSku?.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     // 3. バッテリー情報の取得 (最後に見つかったものだけ採用)

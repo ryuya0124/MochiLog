@@ -11,6 +11,7 @@ final class BatteryRecord: Identifiable, Hashable {
   var deviceName: String = "Unknown"  // 機種名 (例: iPhone 15 Pro)
   var deviceModelCode: String?  // 内部モデル名 (例: iPhone16,1)
   var osVersion: String?  // os_version (例: iOS 18.0)
+  var productSku: String?  // 販売地域コード (例: C/A, J/A)
 
   // --- ハードウェア/製造情報 ---
   var storage: String?  // ストレージ容量
@@ -57,6 +58,7 @@ final class BatteryRecord: Identifiable, Hashable {
     deviceName: String,
     deviceModelCode: String? = nil,
     osVersion: String? = nil,
+    productSku: String? = nil,
     storage: String? = nil,
     ram: String? = nil,
     manufactureDate: String? = nil,
@@ -82,6 +84,7 @@ final class BatteryRecord: Identifiable, Hashable {
     self.deviceName = deviceName
     self.deviceModelCode = deviceModelCode
     self.osVersion = osVersion
+    self.productSku = productSku
     self.storage = storage
     self.ram = ram
     self.manufactureDate = manufactureDate

@@ -7,12 +7,25 @@ enum DeviceLibrary {
   static let designCapacities = ["iPhone Test": 4000]
   static let socInfo = ["iPhone Test": "A99"]
   static let boardToIdentifier = ["TESTAP": "iPhone99,1"]
+  static let modelNumbers: [String: [String]] = [:]
+  static let modelNumbersByIdentifier: [String: [String]] = [:]
+  static let capacityVariants: [String: [DeviceCapacityVariant]] = [:]
 }
 
 @main
 struct DeviceProfileTests {
   static func main() throws {
     let baseline = DeviceProfile(id: "standard", name: "iPhone Future", identifiers: ["iPhone100,1"], capacity: 4000, soc: "A100", boards: [:])
+    let legacyJSON = #"{"id":"legacy","name":"iPhone Legacy","identifiers":["iPhone98,1"],"capacity":3000,"soc":"A98","boards":{}}"#.data(using: .utf8)!
+    let legacy = try JSONDecoder().decode(DeviceProfile.self, from: legacyJSON)
+    precondition(legacy.modelNumbers.isEmpty && legacy.modelNumbersByIdentifier.isEmpty
+      && legacy.capacityVariants.isEmpty)
+    let esimOnly = DeviceProfile(id: "esim", name: "iPhone eSIM", identifiers: ["iPhone98,2"],
+      capacity: 3000, soc: "A98", boards: [:], capacityVariants: [
+        DeviceCapacityVariant(configuration: .esim, capacity: 3000, region: nil)
+      ])
+    precondition(esimOnly.capacityVariants.count == 1)
+    precondition(esimOnly.capacityVariants.first?.configuration == .esim)
     precondition(baseline.category == .iphone)
     var accessory = baseline; accessory.identifiers = []; accessory.name = "iPhone Air MagSafe"
     precondition(accessory.category == .other)

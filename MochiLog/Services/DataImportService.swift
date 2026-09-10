@@ -53,6 +53,7 @@ struct DataImportService {
     var deviceName: String
     var deviceModelCode: String?
     let osVersion: String?
+    let productSku: String?
     let storage: String?
     let ram: String?
     let manufactureDate: String?
@@ -178,6 +179,7 @@ struct DataImportService {
               deviceName: exportRecord.deviceName,
               deviceModelCode: exportRecord.deviceModelCode,
               osVersion: exportRecord.osVersion,
+              productSku: exportRecord.productSku,
               storage: exportRecord.storage,
               ram: exportRecord.ram,
               manufactureDate: exportRecord.manufactureDate,
@@ -256,6 +258,7 @@ struct DataImportService {
             deviceName: converted.deviceName,
             deviceModelCode: converted.deviceModelCode,
             osVersion: converted.osVersion,
+            productSku: converted.productSku,
             storage: converted.storage,
             ram: converted.ram,
             manufactureDate: converted.manufactureDate,

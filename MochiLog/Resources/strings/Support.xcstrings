@@ -1,6 +1,18 @@
 {
   "sourceLanguage" : "ja",
   "strings" : {
+    "battery_capacity_report_template" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Device name:\nModel identifier (example: iPhone19,2):\nSIM model (iPhone 17 or later, excluding Air/Duo):\nCapacity currently shown in MochiLog:\nCorrect capacity:\nInformation source URL (optional):\n\nAdditional details:" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "機種名：\nモデル識別子（例：iPhone19,2）：\nSIMモデル（17以降、Air／Duoを除く）：\nMochiLogで現在表示される容量：\n正しい容量：\n情報元のURL（任意）：\n\n補足：" } }
+      }
+    },
+    "inquiry_battery_capacity" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Incorrect battery capacity" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "バッテリー容量・機種情報の誤り" } }
+      }
+    },
     "contact_form" : {
       "extractionState" : "stale",
       "localizations" : {

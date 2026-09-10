@@ -1,6 +1,13 @@
 {
   "sourceLanguage" : "ja",
   "strings" : {
+    "profile_esim_capacity" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "eSIM capacity" } }, "ja" : { "stringUnit" : { "state" : "translated", "value" : "eSIMモデルの容量" } } } },
+    "profile_model_numbers" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Model numbers" } }, "ja" : { "stringUnit" : { "state" : "translated", "value" : "モデル番号" } } } },
+    "profile_model_numbers_help" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Enter one model number per line." } }, "ja" : { "stringUnit" : { "state" : "translated", "value" : "モデル番号を1行に1つ入力します。" } } } },
+    "profile_physical_sim_capacity" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Physical SIM (Hong Kong)" } }, "ja" : { "stringUnit" : { "state" : "translated", "value" : "物理SIMモデル（香港版）" } } } },
+    "profile_sim_capacities" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "SIM-specific capacities" } }, "ja" : { "stringUnit" : { "state" : "translated", "value" : "SIM別の容量" } } } },
+    "profile_sim_detection_pending" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Physical SIM detection is not enabled yet. An empty value means unknown." } }, "ja" : { "stringUnit" : { "state" : "translated", "value" : "物理SIMモデルの自動判定はまだ行いません。空欄は容量不明です。" } } } },
+    "profile_unknown" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Unknown" } }, "ja" : { "stringUnit" : { "state" : "translated", "value" : "不明" } } } },
     "about_app" : {
       "extractionState" : "stale",
       "localizations" : {

@@ -463,6 +463,7 @@ final class ICloudSyncManager: ObservableObject {
       deviceName: deviceName,
       deviceModelCode: dict["deviceModelCode"] as? String,
       osVersion: dict["osVersion"] as? String,
+      productSku: dict["productSku"] as? String,
       storage: dict["storage"] as? String,
       ram: dict["ram"] as? String,
       manufactureDate: dict["manufactureDate"] as? String,

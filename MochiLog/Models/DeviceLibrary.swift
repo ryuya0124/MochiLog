@@ -53,6 +53,10 @@ struct DeviceLibrary {
     "iPhone18,3": "iPhone 17",
     "iPhone18,4": "iPhone Air",
     "iPhone18,5": "iPhone 17e",
+    "iPhone19,2": "iPhone 18 Pro",
+    "iPhone19,3": "iPhone 18 Pro Max",
+    "iPhone19,4": "iPhone Duo",
+    "iPhone19,7": "iPhone 18 Pro Max",
 
     // iPad
     "iPad4,1": "iPad Air (第1世代)",
@@ -256,6 +260,10 @@ struct DeviceLibrary {
     "V53AP": "iPhone18,1",
     "V54AP": "iPhone18,2",
     "V159AP": "iPhone18,5",
+    "V63AP": "iPhone19,2",
+    "V64AP": "iPhone19,3",
+    "V68AP": "iPhone19,4",
+    "V64sAP": "iPhone19,7",
 
     // iPad
     "J81AP": "iPad5,3",
@@ -350,6 +358,9 @@ struct DeviceLibrary {
   // MARK: - SoC情報（機種名からSoCを取得）
   static let socInfo: [String: String] = [
     // iPhone
+    "iPhone Duo": "A20 Pro",
+    "iPhone 18 Pro Max": "A20 Pro",
+    "iPhone 18 Pro": "A20 Pro",
     "iPhone 17 Pro Max": "A19 Pro",
     "iPhone Air": "A19 Pro",
     "iPhone 17 Pro": "A19 Pro",
@@ -472,6 +483,9 @@ struct DeviceLibrary {
   // MARK: - 設計容量（機種名からmAhを取得）
   static let designCapacities: [String: Int] = [
     // iPhone
+    "iPhone Duo": 4700,
+    "iPhone 18 Pro Max": 5567,
+    "iPhone 18 Pro": 4288,
     "iPhone 17 Pro Max": 5088,
     "iPhone Air": 3149,
     "iPhone 17 Pro": 4252,
@@ -593,6 +607,35 @@ struct DeviceLibrary {
     // Accessories
     "iPhone Air MagSafeバッテリー": 3149,
   ]
+
+  static let modelNumbers: [String: [String]] = [
+    "iPhone Duo": ["A3447", "A3719", "A3720", "A3721"],
+    "iPhone 18 Pro": ["A3472", "A3713", "A3714", "A3715"],
+    "iPhone 18 Pro Max": ["A3473", "A3716", "A3717", "A3718"],
+  ]
+
+  static let modelNumbersByIdentifier: [String: [String]] = [
+    "iPhone19,2": ["A3472", "A3713", "A3714", "A3715"],
+    "iPhone19,3": ["A3473"],
+    "iPhone19,4": ["A3447", "A3719", "A3720", "A3721"],
+    "iPhone19,7": ["A3716", "A3717", "A3718"],
+  ]
+
+  static let capacityVariants: [String: [DeviceCapacityVariant]] = [
+    "iPhone 17": simVariants(esim: 3692, physicalSIM: 3692),
+    "iPhone 17e": simVariants(esim: 4005, physicalSIM: 4005),
+    "iPhone 17 Pro": simVariants(esim: 4252, physicalSIM: 3988),
+    "iPhone 17 Pro Max": simVariants(esim: 5088, physicalSIM: 4823),
+    "iPhone 18 Pro": simVariants(esim: 4288, physicalSIM: 4056),
+    "iPhone 18 Pro Max": simVariants(esim: 5567, physicalSIM: 5391),
+  ]
+
+  private static func simVariants(esim: Int, physicalSIM: Int?) -> [DeviceCapacityVariant] {
+    [
+      DeviceCapacityVariant(configuration: .esim, capacity: esim, region: nil),
+      DeviceCapacityVariant(configuration: .physicalSIM, capacity: physicalSIM, region: "HK"),
+    ]
+  }
 
   // MARK: - 旧API互換用
   /// Standard definitions plus locally saved device profiles.

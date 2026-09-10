@@ -101,6 +101,9 @@ private struct DeviceProfileEditor: View {
   @State private var capacity: String
   @State private var soc: String
   @State private var boards: String
+  @State private var modelNumbers: String
+  @State private var esimCapacity: String
+  @State private var physicalSIMCapacity: String
   @State private var message: String?
   @State private var confirmApply = false
   @State private var confirmRestore = false
@@ -115,6 +118,9 @@ private struct DeviceProfileEditor: View {
     _capacity = State(initialValue: profile.capacity > 0 ? String(profile.capacity) : "")
     _soc = State(initialValue: profile.soc)
     _boards = State(initialValue: profile.boards.keys.sorted().map { "\($0)=\(profile.boards[$0]!)" }.joined(separator: "\n"))
+    _modelNumbers = State(initialValue: profile.modelNumbers.joined(separator: "\n"))
+    _esimCapacity = State(initialValue: profile.capacityVariants.first(where: { $0.configuration == .esim })?.capacity.map(String.init) ?? "")
+    _physicalSIMCapacity = State(initialValue: profile.capacityVariants.first(where: { $0.configuration == .physicalSIM })?.capacity.map(String.init) ?? "")
   }
 
   private var entry: DeviceProfileEntry? { store.entry(for: profile.id) }
@@ -219,6 +225,25 @@ private struct DeviceProfileEditor: View {
         TextEditor(text: $boards).focused($focusedField, equals: "boards").frame(minHeight: 72)
           .textInputAutocapitalization(.never).autocorrectionDisabled()
       } header: { Text(profileText("profile_boards")) } footer: { Text(profileText("profile_boards_help")) }
+      Section {
+        TextEditor(text: $modelNumbers).focused($focusedField, equals: "modelNumbers").frame(minHeight: 72)
+          .textInputAutocapitalization(.characters).autocorrectionDisabled()
+      } header: { Text(profileText("profile_model_numbers")) } footer: { Text(profileText("profile_model_numbers_help")) }
+      if !profile.capacityVariants.isEmpty {
+        Section {
+          LabeledContent(profileText("profile_esim_capacity")) {
+            TextField("mAh", text: $esimCapacity).keyboardType(.numberPad)
+              .multilineTextAlignment(.trailing).focused($focusedField, equals: "esimCapacity")
+          }
+          if profile.capacityVariants.contains(where: { $0.configuration == .physicalSIM }) {
+            LabeledContent(profileText("profile_physical_sim_capacity")) {
+              TextField(profileText("profile_unknown"), text: $physicalSIMCapacity).keyboardType(.numberPad)
+                .multilineTextAlignment(.trailing).focused($focusedField, equals: "physicalSIMCapacity")
+            }
+          }
+        } header: { Text(profileText("profile_sim_capacities")) }
+          footer: { Text(profileText("profile_sim_detection_pending")) }
+      }
       if !isNew {
         Section {
           actionButton("profile_save", action: save).accessibilityIdentifier("profiles.save")
@@ -257,6 +282,17 @@ private struct DeviceProfileEditor: View {
       Text(value.name).font(.headline)
       Text("\(value.capacity) mAh · \(value.soc)")
       Text(value.identifiers.joined(separator: " · ")).font(.caption)
+      if !value.modelNumbers.isEmpty && value.modelNumbersByIdentifier.isEmpty {
+        Text(value.modelNumbers.joined(separator: " · ")).font(.caption)
+      }
+      ForEach(value.modelNumbersByIdentifier.keys.sorted(), id: \.self) { identifier in
+        Text("\(identifier): \(value.modelNumbersByIdentifier[identifier, default: []].joined(separator: " · "))")
+          .font(.caption)
+      }
+      ForEach(value.capacityVariants) { variant in
+        let label = variant.configuration == .esim ? "eSIM" : "Physical SIM (HK)"
+        Text("\(label): \(variant.capacity.map { "\($0) mAh" } ?? "—")").font(.caption)
+      }
       if !value.boards.isEmpty {
         Text(value.boards.keys.sorted().map { "\($0)=\(value.boards[$0]!)" }.joined(separator: "\n")).font(.caption)
       }
@@ -271,9 +307,19 @@ private struct DeviceProfileEditor: View {
       mappings[parts[0]] = parts[1]
     }
     let ids = identifiers.split(whereSeparator: \.isNewline).map { $0.trimmingCharacters(in: .whitespaces) }
+    let models = modelNumbers.split(whereSeparator: \.isNewline).map { $0.trimmingCharacters(in: .whitespaces) }
     if (isNew || !profile.identifiers.isEmpty) && ids.isEmpty { throw DeviceProfileStore.ProfileError(key: "profile_identifiers_invalid") }
     return DeviceProfile(id: profile.id, name: name.trimmingCharacters(in: .whitespacesAndNewlines),
-      identifiers: ids, capacity: Int(capacity) ?? 0, soc: soc.trimmingCharacters(in: .whitespacesAndNewlines), boards: mappings)
+      identifiers: ids, capacity: Int(capacity) ?? 0, soc: soc.trimmingCharacters(in: .whitespacesAndNewlines), boards: mappings,
+      modelNumbers: models, modelNumbersByIdentifier: profile.modelNumbersByIdentifier,
+      capacityVariants: profile.capacityVariants.map { variant in
+        switch variant.configuration {
+        case .esim:
+          return DeviceCapacityVariant(configuration: .esim, capacity: Int(esimCapacity), region: nil)
+        case .physicalSIM:
+          return DeviceCapacityVariant(configuration: .physicalSIM, capacity: Int(physicalSIMCapacity), region: "HK")
+        }
+      })
   }
   private func save() {
     focusedField = nil
@@ -290,6 +336,9 @@ private struct DeviceProfileEditor: View {
     name = value.name; capacity = String(value.capacity); soc = value.soc
     identifiers = value.identifiers.joined(separator: "\n")
     boards = value.boards.keys.sorted().map { "\($0)=\(value.boards[$0]!)" }.joined(separator: "\n")
+    modelNumbers = value.modelNumbers.joined(separator: "\n")
+    esimCapacity = value.capacityVariants.first(where: { $0.configuration == .esim })?.capacity.map(String.init) ?? ""
+    physicalSIMCapacity = value.capacityVariants.first(where: { $0.configuration == .physicalSIM })?.capacity.map(String.init) ?? ""
   }
   private func apply() {
     applying = true
