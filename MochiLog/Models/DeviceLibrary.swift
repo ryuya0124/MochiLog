@@ -201,6 +201,11 @@ struct DeviceLibrary {
     "Watch7,19": "Apple Watch 11 (42mm)",
     "Watch7,20": "Apple Watch 11 (46mm)",
     "Watch7,12": "Apple Watch Ultra (第3世代)",
+    "Watch8,1": "Apple Watch Ultra (第4世代)",
+    "Watch8,2": "Apple Watch 12 (42mm)",
+    "Watch8,3": "Apple Watch 12 (46mm)",
+    "Watch8,4": "Apple Watch 12 (42mm) Cellular",
+    "Watch8,5": "Apple Watch 12 (46mm) Cellular",
 
     // Accessories
     "A3385": "iPhone Air MagSafeバッテリー",
@@ -353,6 +358,13 @@ struct DeviceLibrary {
 
     // iPod
     "N112AP": "iPod9,1",
+
+    // Apple Watch
+    "N240AP": "Watch8,1",
+    "N237sAP": "Watch8,2",
+    "N237bAP": "Watch8,3",
+    "N238sAP": "Watch8,4",
+    "N238bAP": "Watch8,5",
   ]
 
   // MARK: - SoC情報（機種名からSoCを取得）
@@ -449,6 +461,11 @@ struct DeviceLibrary {
     "iPod touch (第6世代)": "A8",
 
     // Apple Watch
+    "Apple Watch Ultra (第4世代)": "S11",
+    "Apple Watch 12 (46mm)": "S11",
+    "Apple Watch 12 (42mm)": "S11",
+    "Apple Watch 12 (46mm) Cellular": "S10",
+    "Apple Watch 12 (42mm) Cellular": "S10",
     "Apple Watch Ultra (第3世代)": "S10",
     "Apple Watch Ultra (第2世代)": "S9",
     "Apple Watch Ultra (第1世代)": "S8",
@@ -619,6 +636,11 @@ struct DeviceLibrary {
     "iPhone19,3": ["A3473"],
     "iPhone19,4": ["A3447", "A3719", "A3720", "A3721"],
     "iPhone19,7": ["A3716", "A3717", "A3718"],
+    "Watch8,1": ["A3579", "A3580"],
+    "Watch8,2": ["A3581", "A3583"],
+    "Watch8,3": ["A3584", "A3585"],
+    "Watch8,4": ["A3582", "A3586"],
+    "Watch8,5": ["A3587", "A3588"],
   ]
 
   static let capacityVariants: [String: [DeviceCapacityVariant]] = [
