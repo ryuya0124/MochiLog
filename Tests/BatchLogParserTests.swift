@@ -24,10 +24,11 @@ struct BatchLogParserTests {
     let queue = SharedImportQueue()
     for index in 1...8 {
       let header = "{\"timestamp\":\"2026-09-0\(index) 09:00:00.00 +0900\",\"bug_type\":\"211\"}"
+      let metadata = "{\"deviceCapacity\":256,\"dramSize\":7.5,\"productSku\":\"C/A\"}"
       let battery = "{\"hardwareModel\":\"iPhone99,1\",\"message\":{\"last_value_CycleCount\":42,\"last_value_NominalChargeCapacity\":3900,\"last_value_AppleRawMaxCapacity\":3950}}"
       let unrelated = "{\"message\":{\"Count\":1,\"errorCode\":0}}"
       let url = directory.appendingPathComponent("Analytics-\(index).ips.ca.synced")
-      try (header + "\n" + (index == 8 ? unrelated : battery)).write(to: url, atomically: true, encoding: .utf8)
+      try (header + "\n" + metadata + "\n" + (index == 8 ? unrelated : battery)).write(to: url, atomically: true, encoding: .utf8)
       queue.enqueue(url)
     }
     assert(queue.begin())
@@ -40,6 +41,7 @@ struct BatchLogParserTests {
       if parsed.failureDescription == "import_no_battery_measurements" { unsupported += 1 }
       else {
         assert(parsed.logDate != nil && parsed.cycleCount == 42 && parsed.nominalCapacity == 3900)
+        assert(parsed.productSku == "C/A" && parsed.storage == "256 GB" && parsed.ram == "7.5 GB")
         valid += 1
       }
       queue.acknowledge(url)
