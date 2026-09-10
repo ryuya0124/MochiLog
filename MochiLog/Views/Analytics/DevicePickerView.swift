@@ -73,7 +73,7 @@ struct DevicePickerView: View {
                   isShowingDevicePicker = false
                 } label: {
                   HStack {
-                    Text(device)
+                    Text(DeviceLibrary.localizedName(for: device))
                     Spacer()
                     if selectedDevice == device {
                       Image(systemName: "checkmark")
@@ -112,7 +112,7 @@ struct DeviceChip: View {
 
   var body: some View {
     Button(action: action) {
-      Text(name)
+      Text(DeviceLibrary.localizedName(for: name))
         .font(.subheadline)
         .fontWeight(isSelected ? .semibold : .regular)
         .padding(.horizontal, 16)

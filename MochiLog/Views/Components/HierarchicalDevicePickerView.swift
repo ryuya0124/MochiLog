@@ -105,7 +105,7 @@ struct HierarchicalDevicePickerView: View {
                   dismiss()
                 }
               } label: {
-                Text(model)
+                Text(DeviceLibrary.localizedName(for: model))
               }
               .foregroundStyle(.primary)
             }

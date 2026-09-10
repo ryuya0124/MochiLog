@@ -631,6 +631,12 @@ struct DeviceLibrary {
     "iPhone 18 Pro Max": ["A3473", "A3716", "A3717", "A3718"],
   ]
 
+  /// GPS/Cellularでバッテリー容量を共通扱いする機種。
+  static let capacityReferenceNames: [String: String] = [
+    "Apple Watch 12 (42mm) Cellular": "Apple Watch 12 (42mm)",
+    "Apple Watch 12 (46mm) Cellular": "Apple Watch 12 (46mm)",
+  ]
+
   static let modelNumbersByIdentifier: [String: [String]] = [
     "iPhone19,2": ["A3472", "A3713", "A3714", "A3715"],
     "iPhone19,3": ["A3473"],
@@ -670,6 +676,48 @@ struct DeviceLibrary {
   /// 識別子（例: iPhone16,1）から機種名を取得
   static func getDeviceName(for identifier: String) -> String? {
     return deviceNames[identifier]
+  }
+
+  /// 保存・集計に使う機種名は変えず、画面表示時だけ世代表記を選択言語へ変換する。
+  static func localizedName(for canonicalName: String) -> String {
+    guard let regex = try? NSRegularExpression(pattern: "第([0-9]+)世代"),
+      let match = regex.firstMatch(in: canonicalName, range: NSRange(canonicalName.startIndex..., in: canonicalName)),
+      let numberRange = Range(match.range(at: 1), in: canonicalName),
+      let wholeRange = Range(match.range(at: 0), in: canonicalName)
+    else {
+      if canonicalName == "iPhone Air MagSafeバッテリー" {
+        return L10n.language == "ja" ? canonicalName : "iPhone Air MagSafe Battery"
+      }
+      return canonicalName
+    }
+    let number = String(canonicalName[numberRange])
+    let replacement: String
+    switch L10n.language {
+    case "ja": replacement = "第\(number)世代"
+    case "de": replacement = "\(number). Generation"
+    case "es": replacement = "\(number).ª generación"
+    case "fr": replacement = "\(number)e génération"
+    case "ko": replacement = "\(number)세대"
+    case "zh-Hans", "zh-Hant": replacement = "第\(number)代"
+    default: replacement = "\(englishOrdinal(number)) generation"
+    }
+    return canonicalName.replacingCharacters(in: wholeRange, with: replacement)
+  }
+
+  private static func englishOrdinal(_ value: String) -> String {
+    guard let number = Int(value) else { return value }
+    let lastTwo = number % 100
+    let suffix: String
+    if 11...13 ~= lastTwo { suffix = "th" }
+    else {
+      switch number % 10 {
+      case 1: suffix = "st"
+      case 2: suffix = "nd"
+      case 3: suffix = "rd"
+      default: suffix = "th"
+      }
+    }
+    return "\(number)\(suffix)"
   }
 
   /// 機種名から識別子を取得（例: "Apple Watch 9 (45mm)" -> "Watch7,2"）

@@ -25,7 +25,7 @@ struct DeviceDeletePickerView: View {
             dismiss()
           }) {
             HStack {
-              Text(deviceName)
+              Text(DeviceLibrary.localizedName(for: deviceName))
                 .foregroundStyle(.primary)
               Spacer()
               Image(systemName: "trash")

@@ -126,7 +126,7 @@ struct DataManagementSettingsView: View {
               Text(L10n.string("select_device", table: "Settings"))
                 .tag("")
               ForEach(availableDevices, id: \.self) { device in
-                Text(device)
+                Text(DeviceLibrary.localizedName(for: device))
                   .tag(device)
               }
             }

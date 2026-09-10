@@ -271,7 +271,7 @@ struct CycleTrendView: View {
           y: .value(L10n.string("cycle_count", table: "Analytics"), record.cycleCount)
         )
         .foregroundStyle(
-          by: .value(L10n.string("device_name", table: "Common"), record.deviceName)
+          by: .value(L10n.string("device_name", table: "Common"), record.localizedDeviceName)
         )
         .interpolationMethod(.linear)
         .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))

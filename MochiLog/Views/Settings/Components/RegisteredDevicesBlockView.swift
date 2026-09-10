@@ -28,7 +28,7 @@ struct RegisteredDevicesBlockView: View {
           let icon = deviceName.contains("iPad") ? "ipad.gen2" : "iphone.gen3"
           row {
             HStack(spacing: 12) {
-              Label(deviceName, systemImage: icon)
+              Label(DeviceLibrary.localizedName(for: deviceName), systemImage: icon)
               Spacer()
               Button {
                 deviceToRemove = deviceName

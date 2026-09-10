@@ -48,7 +48,7 @@ struct DeviceProfilesView: View {
               ForEach(profiles) { profile in
                 NavigationLink { DeviceProfileEditor(profile: profile) } label: {
                   VStack(alignment: .leading, spacing: 4) {
-                    Text(profile.name)
+                    Text(DeviceLibrary.localizedName(for: profile.name))
                     if !profile.identifiers.isEmpty {
                       Text(profile.identifiers.joined(separator: " · "))
                         .font(.caption).foregroundStyle(.secondary)
@@ -144,7 +144,7 @@ private struct DeviceProfileEditor: View {
       fieldsSection
       existingLogSection
     }
-    .navigationTitle(isNew ? profileText("profile_add") : current.name)
+    .navigationTitle(isNew ? profileText("profile_add") : DeviceLibrary.localizedName(for: current.name))
     .navigationBarTitleDisplayMode(.inline)
     .scrollDismissesKeyboard(.interactively)
     .scrollContentBackground(.hidden)
@@ -279,7 +279,7 @@ private struct DeviceProfileEditor: View {
   private func summary(_ value: DeviceProfile, title: String) -> some View {
     VStack(alignment: .leading, spacing: 5) {
       Text(title).font(.caption).foregroundStyle(.secondary)
-      Text(value.name).font(.headline)
+      Text(DeviceLibrary.localizedName(for: value.name)).font(.headline)
       Text("\(value.capacity) mAh · \(value.soc)")
       Text(value.identifiers.joined(separator: " · ")).font(.caption)
       if !value.modelNumbers.isEmpty && value.modelNumbersByIdentifier.isEmpty {

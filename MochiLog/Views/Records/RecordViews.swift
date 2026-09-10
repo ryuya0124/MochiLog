@@ -235,7 +235,7 @@ struct RecordRowView: View {
 
   private var phoneRecordLabel: some View {
     VStack(alignment: .leading, spacing: 5) {
-      Text(record.deviceName)
+      Text(record.localizedDeviceName)
         .font(.body.weight(.semibold))
         .foregroundStyle(.primary)
       Text(record.logDate, style: .date)
@@ -445,7 +445,7 @@ struct RecordDetailView: View {
               .padding(10)
 
               VStack(alignment: .leading, spacing: 6) {
-                Text(record.deviceName).font(.title2).bold()
+                Text(record.localizedDeviceName).font(.title2).bold()
                 if let code = record.deviceModelCode {
                   Text(code).font(.subheadline).foregroundStyle(.secondary)
                 }
@@ -508,7 +508,7 @@ struct RecordDetailView: View {
             ) {
               VStack(alignment: .leading, spacing: 8) {
                 LabeledContent(
-                  L10n.string("device_name", table: "Common"), value: record.deviceName)
+                  L10n.string("device_name", table: "Common"), value: record.localizedDeviceName)
 
                 if !isMagSafe {
                   if let soc = record.soc {
@@ -764,7 +764,7 @@ struct RecordDetailView: View {
           }
           Section(L10n.string("device_info", table: "Records")) {
             LabeledContent(
-              L10n.string("device_name", table: "Common"), value: record.deviceName)
+              L10n.string("device_name", table: "Common"), value: record.localizedDeviceName)
 
             if !isMagSafe {
               if let soc = record.soc {
@@ -1021,7 +1021,7 @@ struct RecordDetailView: View {
       ? record.nominalHealthPercent : record.healthPercent
     return VStack(alignment: .leading, spacing: 16) {
       VStack(alignment: .leading, spacing: 5) {
-        Text(record.deviceName).font(.title2.weight(.semibold))
+        Text(record.localizedDeviceName).font(.title2.weight(.semibold))
         Text(record.logDate, style: .date).foregroundStyle(.secondary).font(.subheadline)
       }
       Divider()
@@ -1052,7 +1052,7 @@ struct RecordDetailView: View {
     text += "\n\n"
 
     // デバイス名（モデルコードは表示しない）
-    text += "\(record.deviceName)\n"
+    text += "\(record.localizedDeviceName)\n"
 
     // 記録日付
     text += "\(dateFormatter.string(from: record.logDate))\n\n"

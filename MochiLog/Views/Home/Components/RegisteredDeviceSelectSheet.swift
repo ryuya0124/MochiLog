@@ -14,7 +14,7 @@ struct RegisteredDeviceSelectSheet: View {
           ForEach(appSettings.registeredDevices, id: \.self) { deviceName in
             HStack {
               Label {
-                Text(deviceName)
+                Text(DeviceLibrary.localizedName(for: deviceName))
               } icon: {
                 let icon = deviceName.contains("iPad") ? "ipad.gen2" : "iphone.gen3"
                 Image(systemName: icon)

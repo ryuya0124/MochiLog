@@ -110,7 +110,7 @@ struct LibrarySummaryView: View {
 
   private func device(_ record: BatteryRecord) -> some View {
     VStack(alignment: .leading, spacing: 5) {
-      Text(record.deviceName).font(.headline)
+      Text(record.localizedDeviceName).font(.headline)
       Text(record.logDate, style: .date).font(.subheadline).foregroundStyle(.secondary)
     }
     .fixedSize(horizontal: false, vertical: true)

@@ -253,7 +253,7 @@ private struct ResultRowView: View {
       VStack(alignment: .leading, spacing: 5) {
         // デバイス名
         if let device = result.deviceName {
-          Text(device)
+          Text(DeviceLibrary.localizedName(for: device))
             .font(.body.weight(.semibold))
             .foregroundStyle(.primary)
             .transition(.opacity)

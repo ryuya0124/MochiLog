@@ -48,7 +48,9 @@ struct RecordListView<Header: View>: View {
       sortedNames = ordered
     }
 
-    return sortedNames.map { DeviceSection(id: $0, displayName: $0, recordIDs: []) }
+    return sortedNames.map {
+      DeviceSection(id: $0, displayName: DeviceLibrary.localizedName(for: $0), recordIDs: [])
+    }
   }
 
   init(

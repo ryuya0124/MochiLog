@@ -145,7 +145,7 @@ struct DeviceSelectionSettingsView: View {
   private func deviceRow(for deviceName: String) -> some View {
     HStack(spacing: 12) {
       let icon = deviceName.contains("iPad") ? "ipad.gen2" : "iphone.gen3"
-      Label(deviceName, systemImage: icon)
+      Label(DeviceLibrary.localizedName(for: deviceName), systemImage: icon)
       Spacer()
     }
     .swipeActions(edge: .trailing, allowsFullSwipe: false) {

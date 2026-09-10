@@ -94,7 +94,7 @@ struct AppleWatchSettingsView: View {
 
   private func watchRow(for watchModel: String) -> some View {
     return HStack(spacing: 12) {
-      Label(watchModel, systemImage: "applewatch")
+      Label(DeviceLibrary.localizedName(for: watchModel), systemImage: "applewatch")
       Spacer()
     }
     .swipeActions(edge: .trailing, allowsFullSwipe: false) {

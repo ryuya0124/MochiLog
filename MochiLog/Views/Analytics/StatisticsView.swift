@@ -60,7 +60,7 @@ struct StatisticsView: View {
       let average = values.isEmpty ? nil : values.reduce(0, +) / Double(values.count)
       VStack(alignment: .leading, spacing: 18) {
         VStack(alignment: .leading, spacing: 5) {
-          Text(name).font(.headline)
+          Text(DeviceLibrary.localizedName(for: name)).font(.headline)
           Text(latest.logDate, style: .date)
             .font(.caption).foregroundStyle(.secondary)
         }

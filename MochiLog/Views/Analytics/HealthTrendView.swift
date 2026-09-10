@@ -134,7 +134,7 @@ struct HealthTrendView: View {
               ? record.nominalHealthPercent : record.healthPercent)
         )
         .foregroundStyle(
-          by: .value(L10n.string("device_name", table: "Common"), record.deviceName)
+          by: .value(L10n.string("device_name", table: "Common"), record.localizedDeviceName)
         )
         .interpolationMethod(.linear)
       }

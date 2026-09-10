@@ -67,7 +67,7 @@ struct AdvancedSettingsView: View {
           } else {
             ForEach(appSettings.registeredDevices, id: \.self) { deviceName in
               let icon = deviceName.contains("iPad") ? "ipad.gen2" : "iphone.gen3"
-              Label(deviceName, systemImage: icon)
+              Label(DeviceLibrary.localizedName(for: deviceName), systemImage: icon)
                 .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                   Button(role: .destructive) {
                     deviceToRemove = deviceName

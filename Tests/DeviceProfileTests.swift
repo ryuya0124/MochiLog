@@ -10,6 +10,7 @@ enum DeviceLibrary {
   static let modelNumbers: [String: [String]] = [:]
   static let modelNumbersByIdentifier: [String: [String]] = [:]
   static let capacityVariants: [String: [DeviceCapacityVariant]] = [:]
+  static let capacityReferenceNames: [String: String] = [:]
 }
 
 @main

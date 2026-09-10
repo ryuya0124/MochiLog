@@ -18,8 +18,9 @@ final class DeviceProfileStore: ObservableObject {
     let names = Set(DeviceLibrary.deviceNamesJa.values).union(DeviceLibrary.designCapacities.keys)
     return names.sorted().map { name in
       let identifiers = DeviceLibrary.deviceNamesJa.filter { $0.value == name }.keys.sorted()
+      let capacityName = DeviceLibrary.capacityReferenceNames[name] ?? name
       return DeviceProfile(id: "bundled:" + name, name: name, identifiers: identifiers,
-        capacity: DeviceLibrary.designCapacities[name] ?? 0, soc: DeviceLibrary.socInfo[name] ?? "",
+        capacity: DeviceLibrary.designCapacities[capacityName] ?? 0, soc: DeviceLibrary.socInfo[name] ?? "",
         boards: DeviceLibrary.boardToIdentifier.filter { identifiers.contains($0.value) },
         modelNumbers: DeviceLibrary.modelNumbers[name] ?? [],
         modelNumbersByIdentifier: DeviceLibrary.modelNumbersByIdentifier.filter { identifiers.contains($0.key) },

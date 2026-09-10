@@ -421,7 +421,7 @@ struct SettingsView: View {
       } else {
         ForEach(appSettings.registeredWatches, id: \.self) { watchModel in
           HStack {
-            Label(watchModel, systemImage: "applewatch")
+            Label(DeviceLibrary.localizedName(for: watchModel), systemImage: "applewatch")
           }
           .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             Button(role: .destructive) {

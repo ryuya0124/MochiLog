@@ -111,6 +111,10 @@ final class BatteryRecord: Identifiable, Hashable {
     return logDate
   }
 
+  var localizedDeviceName: String {
+    DeviceLibrary.localizedName(for: deviceName)
+  }
+
   var realCapacitymAh: Int {
     return rawCapacity
   }
