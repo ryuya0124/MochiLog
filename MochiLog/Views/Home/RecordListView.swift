@@ -72,12 +72,12 @@ struct RecordListView<Header: View>: View {
     ZStack {
       // コンテンツ表示
       Group {
-        if UIDevice.current.userInterfaceIdiom == .phone {
-          phoneLogList
-        } else if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
+        if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
           iPadGridLayout
-        } else {
+        } else if UIDevice.current.userInterfaceIdiom == .pad {
           iPhoneLayout
+        } else {
+          phoneLogList
         }
       }
       // スクロール中の不要なアニメーションを抑制
@@ -122,9 +122,7 @@ struct RecordListView<Header: View>: View {
       ScrollView {
         VStack(spacing: 16) {
           header
-          if UIDevice.current.userInterfaceIdiom == .pad {
-            LibrarySummaryView(records: records)
-          }
+          LibrarySummaryView(records: records)
         }
         .frame(maxWidth: 1200)
         .padding(.horizontal, 24)
@@ -279,6 +277,7 @@ struct RecordListView<Header: View>: View {
                   .contentShape(Rectangle())
               }
               .buttonStyle(.plain)
+              .accessibilityIdentifier("home.record.\(record.id)")
               .listRowInsets(EdgeInsets(top: 2, leading: 24, bottom: 2, trailing: 24))
             }
             .onDelete { offsets in
@@ -453,7 +452,9 @@ struct RecordListView<Header: View>: View {
   /// iPad用個別レコードカード
   @ViewBuilder
   private func iPadRecordCard(record: BatteryRecord, section: DeviceSection) -> some View {
-    NavigationLink(destination: RecordDetailView(record: record)) {
+    Button {
+      onRecordTap?(record)
+    } label: {
       ModerniPadRecordCard(record: record)
         .padding(16)
         .background(
@@ -467,6 +468,8 @@ struct RecordListView<Header: View>: View {
         )
         .frame(maxWidth: .infinity)
     }
+    .buttonStyle(.plain)
+    .accessibilityIdentifier("home.record.\(record.id)")
     .contextMenu {
       if showContextMenu, let onDelete = onRecordDelete {
         Button(role: .destructive) {

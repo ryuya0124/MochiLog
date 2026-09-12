@@ -19,6 +19,45 @@ final class LanguageAndLayoutTests: XCTestCase {
     app.terminate()
   }
 
+  func testDuoAspectRatioAndResize() {
+    app.launchEnvironment["MOCHI_LAYOUT_TEST"] = "1"
+    app.launchArguments += ["-selectedTabIndex", "0"]
+    app.launch()
+    let sample = app.buttons["View Sample Data"]
+    if sample.waitForExistence(timeout: 5) { sample.tap() }
+    XCTAssertTrue(app.staticTexts["iPhone 15 Pro"].firstMatch.waitForExistence(timeout: 15))
+    screenshot("Duo approximation 800x1120 Home")
+    for title in ["Analytics", "Settings"] {
+      let tab = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", title)).firstMatch
+      XCTAssertTrue(tab.waitForExistence(timeout: 10))
+      tab.tap()
+      if title == "Analytics" {
+        XCTAssertTrue(app.buttons["chart.range"].firstMatch.waitForExistence(timeout: 10))
+      } else {
+        XCTAssertTrue(app.buttons["settings.category.general"].waitForExistence(timeout: 10))
+      }
+      screenshot("Duo approximation 800x1120 " + title)
+      app.buttons["layout.mode.1"].tap()
+      screenshot("Compact 390x844 " + title)
+      app.buttons["layout.mode.2"].tap()
+      screenshot("Wide landscape 980x700 " + title)
+      app.buttons["layout.mode.0"].tap()
+    }
+    let home = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Home")).firstMatch
+    home.tap()
+    let record = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "home.record.")).firstMatch
+    XCTAssertTrue(record.waitForExistence(timeout: 10))
+    record.tap()
+    let detail = app.navigationBars["Details"]
+    XCTAssertTrue(detail.waitForExistence(timeout: 10))
+    screenshot("Duo approximation Detail")
+    app.buttons["layout.mode.1"].tap()
+    XCTAssertTrue(detail.waitForExistence(timeout: 5), "Resizing must preserve the selected record")
+    screenshot("Compact Detail after resize")
+    app.buttons["layout.mode.0"].tap()
+    XCTAssertTrue(detail.waitForExistence(timeout: 5))
+  }
+
   func testReducedEffectsOverview() {
     app.launchArguments += ["-renderingMode", "reduced"]
     verifyOverview(size: "UICTContentSizeCategoryL")
@@ -241,7 +280,9 @@ final class LanguageAndLayoutTests: XCTestCase {
     app.launchArguments += ["-UIPreferredContentSizeCategoryName", size]
     app.launch()
     if app.buttons["View Sample Data"].exists { app.buttons["View Sample Data"].tap() }
-    XCTAssertTrue(app.staticTexts["iPhone 15 Pro"].firstMatch.waitForExistence(timeout: 15))
+    // A phone list lazily creates rows; the first device can be a Watch.
+    let record = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "home.record.")).firstMatch
+    XCTAssertTrue(record.waitForExistence(timeout: 15))
     screenshot("Refreshed Home")
     for title in ["Analytics", "Settings"] {
       let tab = app.descendants(matching: .any).matching(

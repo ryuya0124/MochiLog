@@ -400,14 +400,9 @@ struct HomeView: View {
       } message: {
         Text(errorMessage)
       }
-      .sheet(
-        item: Binding(
-          get: { horizontalSizeClass == .compact ? selectedRecord : nil },
-          set: { selectedRecord = $0 }
-        )
-      ) { record in
+      .sheet(item: $selectedRecord) { record in
         NavigationStack {
-          RecordDetailView(record: record)
+          RecordDetailView(record: record, showsCloseButton: true)
         }
       }
       .navigationDestination(

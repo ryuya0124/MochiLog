@@ -120,7 +120,7 @@ private struct InfoPopoverAnchor: UIViewRepresentable {
       verticalFittingPriority: .fittingSizeLevel
     )
     // 画面の半分を超えないようキャップする
-    let maxHeight = UIScreen.main.bounds.height * 0.5
+    let maxHeight = max(1, topVC.view.safeAreaLayoutGuide.layoutFrame.height * 0.5)
     hostingVC.preferredContentSize = CGSize(width: 300, height: min(fittingSize.height, maxHeight))
 
     if let pop = hostingVC.popoverPresentationController {
@@ -209,11 +209,13 @@ struct RecordRowView: View {
   let record: BatteryRecord
   @StateObject private var appSettings = AppSettings.shared
 
+  @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
   var body: some View {
-    if UIDevice.current.userInterfaceIdiom == .phone {
-      phoneRow
-    } else {
+    if horizontalSizeClass == .regular {
       existingRow
+    } else {
+      phoneRow
     }
   }
 
@@ -384,6 +386,7 @@ struct DetailCard<Content: View>: View {
 
 struct RecordDetailView: View {
   let record: BatteryRecord
+  var showsCloseButton = false
   @StateObject private var appSettings = AppSettings.shared
   @Environment(\.dismiss) private var dismiss
   @Environment(\.displayScale) private var displayScale
@@ -397,6 +400,7 @@ struct RecordDetailView: View {
   @State private var cachedChartImage: UIImage?
 
   @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+  @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
   private var isMagSafe: Bool {
     record.deviceName == "iPhone Air MagSafeバッテリー"
@@ -404,9 +408,10 @@ struct RecordDetailView: View {
 
   var body: some View {
 
+    GeometryReader { geometry in
     Group {
       // iPad / Regular width: bento-styleカードグリッド with polished header and summary panel
-      if horizontalSizeClass == .regular {
+      if horizontalSizeClass == .regular && geometry.size.width >= 620 && !dynamicTypeSize.isAccessibilitySize {
         ScrollView {
           LazyVStack(spacing: 20) {
             // Header with large circular health ring and summary info
@@ -468,36 +473,6 @@ struct RecordDetailView: View {
 
               Spacer()
 
-              Button {
-                Task {
-                  isGeneratingImage = true
-                  let image: UIImage?
-                  if let cached = cachedChartImage {
-                    image = cached
-                  } else {
-                    image = await generateChartImageAsync()
-                  }
-                  isGeneratingImage = false
-                  shareContent(text: generateShareText(), image: image)
-                }
-              } label: {
-                if isGeneratingImage {
-                  ProgressView()
-                } else {
-                  Label(
-                    L10n.string("share", table: "Common"),
-                    systemImage: "square.and.arrow.up")
-                }
-              }
-              .buttonStyle(.borderedProminent)
-              .popover(isPresented: $isShowingSharingSheet) {
-                if !shareItems.isEmpty {
-                  ActivityViewController(
-                    activityItems: shareItems,
-                    thumbnailImage: cachedChartImage
-                  )
-                }
-              }
             }
             .padding(24)
             .mochiCard()
@@ -965,15 +940,17 @@ struct RecordDetailView: View {
         }
       }
     }
+    }
     .navigationTitle(L10n.string("detail", table: "Records"))
     .navigationBarTitleDisplayMode(.inline)
     .toolbar {
-      if horizontalSizeClass != .regular {
+      if showsCloseButton {
         ToolbarItem(placement: .navigationBarLeading) {
           Button(L10n.string("close", table: "Common")) {
             dismiss()
           }
         }
+      }
         ToolbarItem(placement: .navigationBarTrailing) {
           Button {
             Task {
@@ -995,16 +972,10 @@ struct RecordDetailView: View {
             }
           }
         }
-      }
     }
     .scrollContentBackground(.hidden)
     .background(Color(uiColor: .systemGroupedBackground).ignoresSafeArea())
-    .sheet(
-      isPresented: Binding(
-        get: { horizontalSizeClass == .compact && isShowingSharingSheet },
-        set: { if !$0 { isShowingSharingSheet = false } }
-      )
-    ) {
+    .sheet(isPresented: $isShowingSharingSheet) {
       if !shareItems.isEmpty {
         ActivityViewController(
           activityItems: shareItems,

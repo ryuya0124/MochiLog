@@ -119,7 +119,7 @@ struct SampleDataAnalyticsContent: View {
       }()
 
       // iPad: 2列レイアウト、iPhone: 1列レイアウト
-      if availableWidth >= 850 && !dynamicTypeSize.isAccessibilitySize {
+      if horizontalSizeClass == .regular && availableWidth >= 740 && !dynamicTypeSize.isAccessibilitySize {
         // iPad向け2列グリッド
         VStack(spacing: 20) {
           HStack(alignment: .top, spacing: 20) {

@@ -72,7 +72,9 @@ struct SettingsView: View {
 
   var body: some View {
     NavigationStack {
-      settingsList
+      GeometryReader { geometry in
+        settingsList(availableWidth: geometry.size.width)
+      }
         .navigationDestination(isPresented: $appSettings.showingICloudSettings) {
           ICloudSettingsView(appSettings: appSettings)
         }
@@ -232,8 +234,8 @@ struct SettingsView: View {
 
   // MARK: - iPad/iPhone向けList
   @ViewBuilder
-  private var settingsList: some View {
-    if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
+  private func settingsList(availableWidth: CGFloat) -> some View {
+    if horizontalSizeClass == .regular && availableWidth >= 700 && !dynamicTypeSize.isAccessibilitySize {
       // iPad: 2カラムレイアウト（左:カテゴリ一覧、右:詳細） - スクロール分離
       HStack(alignment: .top, spacing: 0) {
         // 左側：カテゴリ一覧（独立したScrollView）
@@ -256,7 +258,7 @@ struct SettingsView: View {
             .padding()
           }
         }
-        .frame(width: 260)
+        .frame(width: min(260, availableWidth * 0.32))
         .frame(maxHeight: .infinity)
         .clipped()
 

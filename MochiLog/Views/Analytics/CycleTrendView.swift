@@ -122,7 +122,7 @@ struct CycleTrendView: View {
           .padding()
       } else {
         // iPad向け期間セレクター
-        if UIDevice.current.userInterfaceIdiom == .pad {
+        if horizontalSizeClass == .regular || UIDevice.current.userInterfaceIdiom == .pad {
           ChartRangeSelector(
             selectedRange: Binding(
               get: { selectedRange },

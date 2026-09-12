@@ -1,18 +1,18 @@
 import Foundation
 
 enum LogDateParser {
-  private static let lock = NSLock()
-  private static let fractional: ISO8601DateFormatter = {
+  nonisolated private static let lock = NSLock()
+  nonisolated(unsafe) private static let fractional: ISO8601DateFormatter = {
     let formatter = ISO8601DateFormatter()
     formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
     return formatter
   }()
-  private static let standard: ISO8601DateFormatter = {
+  nonisolated(unsafe) private static let standard: ISO8601DateFormatter = {
     let formatter = ISO8601DateFormatter()
     formatter.formatOptions = [.withInternetDateTime]
     return formatter
   }()
-  private static let legacy: [DateFormatter] = {
+  nonisolated private static let legacy: [DateFormatter] = {
     ["yyyy-MM-dd HH:mm:ss.SS Z", "yyyy-MM-dd HH:mm:ss.S Z", "yyyy-MM-dd HH:mm:ss Z"].map { format in
       let formatter = DateFormatter()
       formatter.locale = Locale(identifier: "en_US_POSIX")

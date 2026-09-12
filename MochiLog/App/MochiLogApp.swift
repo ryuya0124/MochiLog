@@ -118,7 +118,15 @@ final class MochiLogSceneDelegate: UIResponder, UIWindowSceneDelegate {
   ) {
     guard let windowScene = scene as? UIWindowScene else { return }
     let window = UIWindow(windowScene: windowScene)
+    #if DEBUG && targetEnvironment(simulator)
+    if ProcessInfo.processInfo.environment["MOCHI_LAYOUT_TEST"] == "1" {
+      window.rootViewController = UIHostingController(rootView: LayoutValidationHost())
+    } else {
+      window.rootViewController = UIHostingController(rootView: MochiLogRootView())
+    }
+    #else
     window.rootViewController = UIHostingController(rootView: MochiLogRootView())
+    #endif
     self.window = window
     window.makeKeyAndVisible()
     open(connectionOptions.urlContexts)

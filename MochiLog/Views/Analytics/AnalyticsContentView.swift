@@ -115,7 +115,7 @@ struct AnalyticsContentView: View {
             DevicePickerView(deviceNames: cachedDeviceNames, selectedDevice: $selectedDevice)
 
             // iPad: 2列レイアウト、iPhone: 1列レイアウト
-            if availableWidth >= 850 && !dynamicTypeSize.isAccessibilitySize {
+            if horizontalSizeClass == .regular && availableWidth >= 740 && !dynamicTypeSize.isAccessibilitySize {
               // iPad向け：グラフと統計を同じ幅にまとめる
               VStack(spacing: 20) {
                 // iPad向け2列グリッド
