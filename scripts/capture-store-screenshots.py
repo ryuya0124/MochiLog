@@ -123,7 +123,13 @@ if 'watch' in selected:
 (OUTPUT / 'capture.json').write_text(json.dumps({'gitCommit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
     'xcode': version.strip(), 'devices': {'iphone': phone, 'ipad': pad, 'watch': watch}, 'appearance': 'dark'}, indent=2))
 print(f'\n{len(list((OUTPUT / "screenshots").rglob("*.png")))} screenshots saved: {OUTPUT / "screenshots"}', flush=True)
+artwork = OUTPUT / 'app-store-artwork'
+run('swift', 'scripts/compose-store-screenshots.swift', str(OUTPUT / 'screenshots'), str(artwork))
 with zipfile.ZipFile(OUTPUT / 'MochiLog-screenshots.zip', 'w', zipfile.ZIP_DEFLATED) as archive:
     for screenshot in sorted((OUTPUT / 'screenshots').rglob('*.png')):
         archive.write(screenshot, screenshot.relative_to(OUTPUT / 'screenshots'))
-run('open', str(OUTPUT / 'screenshots'))
+with zipfile.ZipFile(OUTPUT / 'MochiLog-App-Store-artwork.zip', 'w', zipfile.ZIP_DEFLATED) as archive:
+    for screenshot in sorted(artwork.rglob('*.png')):
+        archive.write(screenshot, screenshot.relative_to(artwork))
+print(f'{len(list(artwork.rglob("*.png")))} designed screenshots saved: {artwork}', flush=True)
+run('open', str(artwork))
