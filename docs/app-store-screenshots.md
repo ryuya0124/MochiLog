@@ -19,3 +19,5 @@ CLI: `python3 scripts/capture-store-screenshots.py`。撮影済みの実画面�
 バイナリーのアップロードは撮影と独立しています。既存の `Upload-AppStore.command` はGitHub Actions側のXcodeを使用するため、Macの既定Xcodeとは一致するとは限りません。撮影だけでApp Store Connectのスクリーンショット更新・審査提出・公開は行いません。
 
 機種を限定して撮り直す場合: `python3 scripts/capture-store-screenshots.py --devices iphone`。Watchを指定した場合は、サンプルデータを用意するためiPhoneも撮影します。
+
+App Store Connectへ登録する際は `app-store-artwork` の各言語フォルダーから、`iphone_01`〜`04`、`ipad_01`〜`04`、`watch_01`〜`04` の順に対応する端末枠へ入れます。ZIPをそのままアップロードせず、PNGを使用します。説明文など既存のストアテキストは変更しません。Appleの規則では審査承認済みの版のスクリーンショットを直接差し替えられず、次の編集可能なアプリ版が必要です（[Appleの手順](https://developer.apple.com/help/app-store-connect/manage-app-information/upload-app-previews-and-screenshots)）。
